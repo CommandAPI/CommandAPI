@@ -368,6 +368,32 @@ public class MockNMS extends Enums {
 			Mockito.when(css.getPosition()).thenReturn(new Vec3(0, 0, 0));
 			Mockito.when(css.getRotation()).thenReturn(new Vec2(0, 0));
 		}
+
+		// NativeProxyCommandSender construction (NMS#createNativeProxyCommandSender)
+		//  Make sure these builder methods work as expected
+		Mockito.when(css.withPosition(any())).thenAnswer(invocation -> {
+			Mockito.when(css.getPosition()).thenReturn(invocation.getArgument(0));
+			return css;
+		});
+		Mockito.when(css.withRotation(any())).thenAnswer(invocation -> {
+			Mockito.when(css.getRotation()).thenReturn(invocation.getArgument(0));
+			return css;
+		});
+		Mockito.when(css.withLevel(any())).thenAnswer(invocation -> {
+			Mockito.when(css.getLevel()).thenReturn(invocation.getArgument(0));
+			return css;
+		});
+		Mockito.when(css.withEntity(any())).thenAnswer(invocation -> {
+			net.minecraft.world.entity.Entity entity = invocation.getArgument(0);
+			String name = entity.getName().getString();
+			net.minecraft.network.chat.Component displayName = entity.getDisplayName();
+
+			Mockito.when(css.getEntity()).thenReturn(entity);
+			Mockito.when(css.getTextName()).thenReturn(name);
+			Mockito.when(css.getDisplayName()).thenReturn(displayName);
+			return css;
+		});
+
 		return css;
 	}
 

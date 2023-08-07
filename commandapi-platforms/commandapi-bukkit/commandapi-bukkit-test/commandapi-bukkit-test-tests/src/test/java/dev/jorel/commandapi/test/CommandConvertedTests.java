@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
 import dev.jorel.commandapi.Converter;
-import dev.jorel.commandapi.wrappers.NativeProxyCommandSender;
 
 /**
  * Tests for converted commands
@@ -42,8 +41,8 @@ class CommandConvertedTests extends TestBase {
 		Converter.convert(plugin, "mycommand");
 		
 		PlayerMock player = server.addPlayer();
-		NativeProxyCommandSender nativeProxyMockedPlayer = new NativeProxyCommandSender(player, player, player.getLocation(), player.getWorld());
-		server.dispatchBrigadierCommand(nativeProxyMockedPlayer, "mycommand");
+
+		server.dispatchBrigadierCommand(player, "mycommand");
 
 		assertEquals("hello", player.nextMessage());
 	}
