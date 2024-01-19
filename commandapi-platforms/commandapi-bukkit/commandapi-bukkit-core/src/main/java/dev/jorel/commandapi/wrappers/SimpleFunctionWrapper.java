@@ -63,7 +63,7 @@ public class SimpleFunctionWrapper implements Keyed {
 	 * @return a SimpleFunctionWrapper[], which is an array of all of the functions that this tag contains
 	 */
 	public static SimpleFunctionWrapper[] getTag(NamespacedKey key) {
-		return CommandAPIBukkit.get().getTag(key);
+		return CommandAPIBukkit.get().getNMS().getTag(key);
 	}
 	
 	/**
@@ -72,7 +72,7 @@ public class SimpleFunctionWrapper implements Keyed {
 	 * @return a SimpleFunctionWrapper representation of the Minecraft function for the provided NamespacedKey
 	 */
 	public static SimpleFunctionWrapper getFunction(NamespacedKey key) {
-		return CommandAPIBukkit.get().getFunction(key);
+		return CommandAPIBukkit.get().getNMS().getFunction(key);
 	}
 	
 	/**
@@ -80,7 +80,7 @@ public class SimpleFunctionWrapper implements Keyed {
 	 * @return a set of all functions that the server has registered
 	 */
 	public static Set<NamespacedKey> getFunctions() {
-		return CommandAPIBukkit.get().getFunctions();
+		return CommandAPIBukkit.get().getNMS().getFunctions();
 	}
 	
 	/**
@@ -88,7 +88,7 @@ public class SimpleFunctionWrapper implements Keyed {
 	 * @return a set of all tags that the server has registered
 	 */
 	public static Set<NamespacedKey> getTags() {
-		return CommandAPIBukkit.get().getTags();
+		return CommandAPIBukkit.get().getNMS().getTags();
 	}
 	
 	/**

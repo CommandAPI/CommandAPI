@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>dev.jorel</groupId>
+		<artifactId>commandapi-paper</artifactId>
+		<version>10.2.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>commandapi-bukkit-plugin-mojang-mapped</artifactId>
+	<name>CommandAPI - Paper support Mojang-mapped plugin</name>
+
+	<repositories>
+		<repository>
+			<id>codemc-repo</id>
+			<url>https://repo.codemc.org/repository/maven-public/</url>
+			<layout>default</layout>
+		</repository>
+		<repository>
+			<id>spigot-repo</id>
+			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+		</repository>
+		<repository>
+			<id>papermc</id>
+			<url>https://repo.papermc.io/repository/maven-public/</url>
+		</repository>
+	</repositories>
+
+	<dependencies>
+		<dependency>
+			<groupId>dev.jorel</groupId>
+			<artifactId>commandapi-paper-core</artifactId>
+			<version>${project.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<!-- This dependency must be placed above commandapi-paper-vh,
+			because commandapi-paper-vh depends on commandapi-paper-nms-dependency -->
+			<groupId>dev.jorel</groupId>
+			<artifactId>commandapi-paper-nms-dependency-mojang-mapped</artifactId>
+			<version>${project.version}</version>
+			<type>pom</type>
+		</dependency>
+		<dependency>
+			<groupId>dev.jorel</groupId>
+			<artifactId>commandapi-paper-vh</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>dev.jorel</groupId>
+			<artifactId>commandapi-paper-mojang-mapped</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>dev.jorel</groupId>
+			<artifactId>commandapi-bukkit-plugin-common</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.papermc.paper</groupId>
+			<artifactId>paper-api</artifactId>
+			<version>${paper.version}</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering> <!-- Fill ${project.version} in plugin.yml -->
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<!-- Remove commandapi-core's VersionHandlers in favor of ours which
+								loads CommandAPIBukkit for the current version and sets up mojang mappings -->
+							<filters>
+								<filter>
+									<artifact>dev.jorel:commandapi-core</artifact>
+									<excludes>
+										<exclude>dev/jorel/commandapi/CommandAPIVersionHandler**</exclude>
+										<exclude>dev/jorel/commandapi/MojangMappedVersionHandler**</exclude>
+									</excludes>
+								</filter>
+							</filters>
+							<relocations>
+								<relocation>
+									<pattern>org.bukkit.craftbukkit.v1_20_R4</pattern>
+									<shadedPattern>org.bukkit.craftbukkit</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>org.bukkit.craftbukkit.v1_21_R1</pattern>
+									<shadedPattern>org.bukkit.craftbukkit</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>org.bukkit.craftbukkit.v1_21_R2</pattern>
+									<shadedPattern>org.bukkit.craftbukkit</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>org.bukkit.craftbukkit.v1_21_R3</pattern>
+									<shadedPattern>org.bukkit.craftbukkit</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>org.bukkit.craftbukkit.v1_21_R4</pattern>
+									<shadedPattern>org.bukkit.craftbukkit</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>org.bukkit.craftbukkit.v1_21_R5</pattern>
+									<shadedPattern>org.bukkit.craftbukkit</shadedPattern>
+								</relocation>
+							</relocations>
+							<transformers>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+									<resource>LICENSE</resource>
+								</transformer>
+							</transformers>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- Add the maven-jar-plugin to mark the Mojang mapped plugin (this one) as mojang mapped
+			 as Paper would assume Spigot mappings when no manifest entry is given and a plugin.yml is used -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.4.2</version>
+				<configuration>
+					<archive>
+						<manifestEntries>
+							<paperweight-mappings-namespace>mojang</paperweight-mappings-namespace>
+						</manifestEntries>
+					</archive>
+				</configuration>
+				<executions>
+					<execution>
+						<id>empty-javadoc-jar</id>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<classifier>javadoc</classifier>
+							<classesDirectory>${basedir}/javadoc</classesDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

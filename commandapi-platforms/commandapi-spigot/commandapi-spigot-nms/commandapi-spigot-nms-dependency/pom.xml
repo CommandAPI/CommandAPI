@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>dev.jorel</groupId>
+		<artifactId>commandapi-spigot-nms</artifactId>
+		<version>10.2.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>commandapi-spigot-nms-dependency</artifactId>
+	<packaging>pom</packaging>
+
+	<dependencies>
+		<!-- Common NMS for 1.17+ -->
+		<dependency>
+			<groupId>dev.jorel</groupId>
+			<artifactId>commandapi-spigot-nms-common</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<!-- NMS-specific implementations -->
+		<dependency>
+			<groupId>dev.jorel</groupId>
+			<artifactId>commandapi-spigot-1.21.6</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>dev.jorel</groupId>
+			<artifactId>commandapi-spigot-1.21.5</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>dev.jorel</groupId>
+			<artifactId>commandapi-spigot-1.21.4</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>dev.jorel</groupId>
+			<artifactId>commandapi-spigot-1.21.2</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>dev.jorel</groupId>
+			<artifactId>commandapi-spigot-1.21</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>dev.jorel</groupId>
+			<artifactId>commandapi-spigot-1.20.5</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>dev.jorel</groupId>
+			<artifactId>commandapi-spigot-1.20.3</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>dev.jorel</groupId>
+			<artifactId>commandapi-spigot-1.20.2</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>dev.jorel</groupId>
+			<artifactId>commandapi-spigot-1.20</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	</dependencies>
+
+</project>

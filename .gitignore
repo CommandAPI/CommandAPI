@@ -16,3 +16,4 @@ docssrc/src/.markdownlint-cli2.yaml
 .gradle
 *.versionsBackup
 dependency-reduced-pom.xml
+.paper-nms

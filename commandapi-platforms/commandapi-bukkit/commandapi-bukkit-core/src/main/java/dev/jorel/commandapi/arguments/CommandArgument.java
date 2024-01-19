@@ -45,7 +45,7 @@ public class CommandArgument extends Argument<CommandResult> implements GreedyAr
 		super.replaceSuggestions((info, builder) -> {
 			// Extract information
 			CommandSender sender = info.sender();
-			CommandMap commandMap = CommandAPIBukkit.get().getSimpleCommandMap();
+			CommandMap commandMap = CommandAPIBukkit.get().getNMS().getSimpleCommandMap();
 			String command = info.currentArg();
 
 			// Setup context for errors
@@ -193,7 +193,7 @@ public class CommandArgument extends Argument<CommandResult> implements GreedyAr
 	public <CommandSourceStack> CommandResult parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
 		// Extract information
 		String command = cmdCtx.getArgument(key, String.class);
-		CommandMap commandMap = CommandAPIBukkit.get().getSimpleCommandMap();
+		CommandMap commandMap = CommandAPIBukkit.get().getNMS().getSimpleCommandMap();
 		CommandSender sender = CommandAPIBukkit.<CommandSourceStack>get().getSenderForCommand(cmdCtx, false).getSource();
 
 		StringReader context = new StringReader(command);

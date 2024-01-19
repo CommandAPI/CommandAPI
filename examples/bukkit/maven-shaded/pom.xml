@@ -9,10 +9,10 @@
 	</properties>
 
 	<repositories>
-		<!-- This adds the Spigot Maven repository to the build -->
+		<!-- This adds the Paper Maven repository to the build -->
 		<repository>
-			<id>spigot-repo</id>
-			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+			<id>papermc</id>
+			<url>https://papermc.io/repo/repository/maven-public/</url>
 		</repository>
 
 		<!-- CodeMC repository for the NBT API -->
@@ -27,14 +27,14 @@
 		<!-- The CommandAPI dependency used when shading for bukkit and its forks -->
 		<dependency>
 			<groupId>dev.jorel</groupId>
-			<artifactId>commandapi-bukkit-shade</artifactId>
+			<artifactId>commandapi-paper-shade</artifactId>
 			<version>10.2.0-SNAPSHOT</version>
 		</dependency>
 
 		<!--This adds the Spigot API artifact to the build -->
 		<dependency>
-			<groupId>org.spigotmc</groupId>
-			<artifactId>spigot-api</artifactId>
+			<groupId>io.papermc.paper</groupId>
+			<artifactId>paper-api</artifactId>
 			<version>1.20.1-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>

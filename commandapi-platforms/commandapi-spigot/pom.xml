@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>dev.jorel</groupId>
+		<artifactId>commandapi-platforms</artifactId>
+		<version>10.2.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>commandapi-spigot</artifactId>
+	<packaging>pom</packaging>
+
+	<modules>
+        <module>commandapi-spigot-annotations</module>
+		<module>commandapi-spigot-core</module>
+		<module>commandapi-spigot-nms</module>
+        <module>commandapi-spigot-vh</module>
+        <module>commandapi-spigot-mojang-mapped</module>
+		<module>commandapi-spigot-plugin</module>
+		<module>commandapi-spigot-shade</module>
+		<module>commandapi-spigot-plugin-mojang-mapped</module>
+		<module>commandapi-spigot-shade-mojang-mapped</module>
+
+		<!-- Do not compile, I only need the code for when I do the documentation -->
+		<!--<module>commandapi-spigot-documentation-code</module> -->
+
+		<!-- Tests do not compile
+		<module>../../commandapi-test/commandapi-test-spigot</module> -->
+    </modules>
+
+</project>

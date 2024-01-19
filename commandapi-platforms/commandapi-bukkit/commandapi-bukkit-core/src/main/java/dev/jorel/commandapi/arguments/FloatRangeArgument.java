@@ -38,7 +38,7 @@ public class FloatRangeArgument extends SafeOverrideableArgument<FloatRange, Flo
 	 * @param nodeName the name of the node for this argument
 	 */
 	public FloatRangeArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get()._ArgumentFloatRange(), FloatRange::toString);
+		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentFloatRange(), FloatRange::toString);
 	}
 
 	@Override
@@ -53,6 +53,6 @@ public class FloatRangeArgument extends SafeOverrideableArgument<FloatRange, Flo
 	
 	@Override
 	public <CommandSourceStack> FloatRange parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-		return CommandAPIBukkit.<CommandSourceStack>get().getFloatRange(cmdCtx, key);
+		return CommandAPIBukkit.<CommandSourceStack>get().getNMS().getFloatRange(cmdCtx, key);
 	}
 }

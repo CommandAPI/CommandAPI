@@ -38,7 +38,7 @@ public class ItemStackArgument extends SafeOverrideableArgument<ItemStack, ItemS
 	 * @param nodeName the name of the node for this argument
 	 */
 	public ItemStackArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get()._ArgumentItemStack(), CommandAPIBukkit.get()::convert);
+		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentItemStack(), CommandAPIBukkit.get().getNMS()::convert);
 	}
 
 	@Override
@@ -53,6 +53,6 @@ public class ItemStackArgument extends SafeOverrideableArgument<ItemStack, ItemS
 	
 	@Override
 	public <CommandSourceStack> ItemStack parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-		return CommandAPIBukkit.<CommandSourceStack>get().getItemStack(cmdCtx, key);
+		return CommandAPIBukkit.<CommandSourceStack>get().getNMS().getItemStack(cmdCtx, key);
 	}
 }

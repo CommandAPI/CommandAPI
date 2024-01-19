@@ -58,8 +58,8 @@ public class LocationArgument extends SafeOverrideableArgument<Location, Locatio
 	 * @param centerPosition whether LocationType.PRECISE_POSITION should center the position of the location within a block
 	 */
 	public LocationArgument(String nodeName, LocationType type, boolean centerPosition) {
-		super(nodeName, type == LocationType.BLOCK_POSITION ? CommandAPIBukkit.get()._ArgumentPosition()
-				: CommandAPIBukkit.get()._ArgumentVec3(centerPosition),
+		super(nodeName, type == LocationType.BLOCK_POSITION ? CommandAPIBukkit.get().getNMS()._ArgumentPosition()
+				: CommandAPIBukkit.get().getNMS()._ArgumentVec3(centerPosition),
 				type == LocationType.BLOCK_POSITION
 						? (Location l) -> l.getBlockX() + " " + l.getBlockY() + " " + l.getBlockZ()
 						: (Location l) -> l.getX() + " " + l.getY() + " " + l.getZ());
@@ -89,7 +89,7 @@ public class LocationArgument extends SafeOverrideableArgument<Location, Locatio
 	@Override
 	public <CommandSourceStack> Location parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
 		return isPrecise ?
-			CommandAPIBukkit.<CommandSourceStack>get().getLocationPrecise(cmdCtx, key) :
-			CommandAPIBukkit.<CommandSourceStack>get().getLocationBlock(cmdCtx, key);
+			CommandAPIBukkit.<CommandSourceStack>get().getNMS().getLocationPrecise(cmdCtx, key) :
+			CommandAPIBukkit.<CommandSourceStack>get().getNMS().getLocationBlock(cmdCtx, key);
 	}
 }

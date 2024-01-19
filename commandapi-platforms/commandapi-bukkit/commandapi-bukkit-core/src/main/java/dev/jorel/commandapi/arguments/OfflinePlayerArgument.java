@@ -40,7 +40,7 @@ public class OfflinePlayerArgument extends SafeOverrideableArgument<OfflinePlaye
 	 * @param nodeName the name of the node for this argument
 	 */
 	public OfflinePlayerArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get()._ArgumentProfile(), OfflinePlayer::getName);
+		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentProfile(), OfflinePlayer::getName);
 	}
 
 	@Override
@@ -55,6 +55,6 @@ public class OfflinePlayerArgument extends SafeOverrideableArgument<OfflinePlaye
 	
 	@Override
 	public <CommandSourceStack> OfflinePlayer parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-		return CommandAPIBukkit.<CommandSourceStack>get().getOfflinePlayer(cmdCtx, key);
+		return CommandAPIBukkit.<CommandSourceStack>get().getNMS().getOfflinePlayer(cmdCtx, key);
 	}
 }

@@ -20,6 +20,8 @@
  *******************************************************************************/
 package dev.jorel.commandapi.nms;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Map;
@@ -28,7 +30,11 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import com.mojang.brigadier.CommandDispatcher;
 import dev.jorel.commandapi.CommandRegistrationStrategy;
+import dev.jorel.commandapi.commandsenders.AbstractCommandSender;
+import dev.jorel.commandapi.commandsenders.BukkitCommandSender;
+import dev.jorel.commandapi.preprocessor.Unimplemented;
 import org.bukkit.Axis;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -74,57 +80,62 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 
-public interface NMS<CommandListenerWrapper> {
+import static dev.jorel.commandapi.preprocessor.Unimplemented.REASON.REQUIRES_CRAFTBUKKIT;
+import static dev.jorel.commandapi.preprocessor.Unimplemented.REASON.REQUIRES_CSS;
+import static dev.jorel.commandapi.preprocessor.Unimplemented.REASON.REQUIRES_MINECRAFT_SERVER;
+import static dev.jorel.commandapi.preprocessor.Unimplemented.REASON.VERSION_SPECIFIC_IMPLEMENTATION;
+
+public abstract class NMS<CommandListenerWrapper> {
 
 	/**
 	 * @return Advancement argument (api:advancement)
 	 */
-	ArgumentType<?> _ArgumentAdvancement();
+	public abstract ArgumentType<?> _ArgumentAdvancement();
 
 	/**
 	 * @return Angle argument (minecraft:angle)
 	 */
-	ArgumentType<?> _ArgumentAngle();
+	public abstract ArgumentType<?> _ArgumentAngle();
 
 	/**
 	 * @return Axis argument (minecraft:swizzle)
 	 */
-	ArgumentType<?> _ArgumentAxis();
+	public abstract ArgumentType<?> _ArgumentAxis();
 
 	/**
 	 * @return Block predicate argument (minecraft:block_predicate)
 	 */
-	ArgumentType<?> _ArgumentBlockPredicate();
+	public abstract ArgumentType<?> _ArgumentBlockPredicate();
 
 	/**
 	 * @return Block state argument (minecraft:block_state)
 	 */
-	ArgumentType<?> _ArgumentBlockState();
+	public abstract ArgumentType<?> _ArgumentBlockState();
 
 	/**
 	 * @return Chat argument (minecraft:message)
 	 */
-	ArgumentType<?> _ArgumentChat();
+	public abstract ArgumentType<?> _ArgumentChat();
 
 	/**
 	 * @return Chat component argument (minecraft:component)
 	 */
-	ArgumentType<?> _ArgumentChatComponent();
+	public abstract ArgumentType<?> _ArgumentChatComponent();
 
 	/**
 	 * @return Chat color argument (minecraft:color)
 	 */
-	ArgumentType<?> _ArgumentChatFormat();
+	public abstract ArgumentType<?> _ArgumentChatFormat();
 
 	/**
 	 * @return Dimension argument (minecraft:dimension)
 	 */
-	ArgumentType<?> _ArgumentDimension();
+	public abstract ArgumentType<?> _ArgumentDimension();
 
 	/**
 	 * @return Enchantment argument (minecraft:item_enchantment)
 	 */
-	ArgumentType<?> _ArgumentEnchantment();
+	public abstract ArgumentType<?> _ArgumentEnchantment();
 
 	/**
 	 * @param subType one of {@link ArgumentSubType#ENTITYSELECTOR_MANY_ENTITIES},
@@ -133,134 +144,134 @@ public interface NMS<CommandListenerWrapper> {
 	 *                {@link ArgumentSubType#ENTITYSELECTOR_ONE_PLAYER}
 	 * @return Entity selector argument (minecraft:entity)
 	 */
-	ArgumentType<?> _ArgumentEntity(ArgumentSubType subType);
+	public abstract ArgumentType<?> _ArgumentEntity(ArgumentSubType subType);
 
 	/**
 	 * @return Entity type argument (minecraft:entity_summon)
 	 */
-	ArgumentType<?> _ArgumentEntitySummon();
+	public abstract ArgumentType<?> _ArgumentEntitySummon();
 
 	/**
 	 * @return Float range argument (minecraft:float_range)
 	 */
-	ArgumentType<?> _ArgumentFloatRange();
+	public abstract ArgumentType<?> _ArgumentFloatRange();
 
 	/**
 	 * @return Int range argument (minecraft:int_range)
 	 */
-	ArgumentType<?> _ArgumentIntRange();
+	public abstract ArgumentType<?> _ArgumentIntRange();
 
 	/**
 	 * @return Item predicate argument (minecraft:item_predicate)
 	 */
-	ArgumentType<?> _ArgumentItemPredicate();
+	public abstract ArgumentType<?> _ArgumentItemPredicate();
 
 	/**
 	 * @return Itemstack argument (minecraft:item_stack)
 	 */
-	ArgumentType<?> _ArgumentItemStack();
+	public abstract ArgumentType<?> _ArgumentItemStack();
 
 	/**
 	 * @return Math operation argument (minecraft:operation)
 	 */
-	ArgumentType<?> _ArgumentMathOperation();
+	public abstract ArgumentType<?> _ArgumentMathOperation();
 
 	/**
 	 * @return Minecraft key argument (minecraft:resource_location)
 	 */
-	ArgumentType<?> _ArgumentMinecraftKeyRegistered();
+	public abstract ArgumentType<?> _ArgumentMinecraftKeyRegistered();
 
 	/**
 	 * @return Potion effect argument (minecraft:mob_effect)
 	 */
-	ArgumentType<?> _ArgumentMobEffect();
+	public abstract ArgumentType<?> _ArgumentMobEffect();
 
 	/**
 	 * @return NBT compound tag argument (minecraft:nbt_compound_tag)
 	 */
-	ArgumentType<?> _ArgumentNBTCompound();
+	public abstract ArgumentType<?> _ArgumentNBTCompound();
 
 	/**
 	 * @return Particle argument (minecraft:particle)
 	 */
-	ArgumentType<?> _ArgumentParticle();
+	public abstract ArgumentType<?> _ArgumentParticle();
 
 	/**
 	 * @return Position argument (minecraft:block_pos)
 	 */
-	ArgumentType<?> _ArgumentPosition();
+	public abstract ArgumentType<?> _ArgumentPosition();
 
 	/**
 	 * @return 2D position (column) argument (minecraft:column_pos)
 	 */
-	ArgumentType<?> _ArgumentPosition2D();
+	public abstract ArgumentType<?> _ArgumentPosition2D();
 
 	/**
 	 * @return Player argument (minecraft:game_profile)
 	 */
-	ArgumentType<?> _ArgumentProfile();
+	public abstract ArgumentType<?> _ArgumentProfile();
 
 	/**
 	 * @return Recipe argument (api:recipe)
 	 */
-	ArgumentType<?> _ArgumentRecipe();
+	public abstract ArgumentType<?> _ArgumentRecipe();
 
 	/**
 	 * @return Rotation argument (minecraft:rotation)
 	 */
-	ArgumentType<?> _ArgumentRotation();
+	public abstract ArgumentType<?> _ArgumentRotation();
 
 	/**
 	 * @return Scoreboard objective criteria argument (minecraft:objective_criteria)
 	 */
-	ArgumentType<?> _ArgumentScoreboardCriteria();
+	public abstract ArgumentType<?> _ArgumentScoreboardCriteria();
 
 	/**
 	 * @return Scoreboard objective argument (minecraft:objective)
 	 */
-	ArgumentType<?> _ArgumentScoreboardObjective();
+	public abstract ArgumentType<?> _ArgumentScoreboardObjective();
 
 	/**
 	 * @return Scoreboard slot argument (minecraft:scoreboard_slot)
 	 */
-	ArgumentType<?> _ArgumentScoreboardSlot();
+	public abstract ArgumentType<?> _ArgumentScoreboardSlot();
 
 	/**
 	 * @return Scoreboard team argument (minecraft:team)
 	 */
-	ArgumentType<?> _ArgumentScoreboardTeam();
+	public abstract ArgumentType<?> _ArgumentScoreboardTeam();
 
 	/**
 	 * @param subType one of {@link ArgumentSubType#SCOREHOLDER_MULTIPLE} or
 	 *                {@link ArgumentSubType#SCOREHOLDER_SINGLE}
 	 * @return Scoreholder argument (minecraft:score_holder)
 	 */
-	ArgumentType<?> _ArgumentScoreholder(ArgumentSubType subType);
+	public abstract ArgumentType<?> _ArgumentScoreholder(ArgumentSubType subType);
 
 	/**
 	 * @return Function argument (minecraft:function)
 	 */
-	ArgumentType<?> _ArgumentTag();
+	public abstract ArgumentType<?> _ArgumentTag();
 
 	/**
 	 * @return Time argument (minecraft:time)
 	 */
-	ArgumentType<?> _ArgumentTime();
+	public abstract ArgumentType<?> _ArgumentTime();
 
 	/**
 	 * @return UUID argument (minecraft:uuid)
 	 */
-	ArgumentType<?> _ArgumentUUID();
+	public abstract ArgumentType<?> _ArgumentUUID();
 
 	/**
 	 * @return Location 2D argument (precise position) (minecraft:vec2)
 	 */
-	ArgumentType<?> _ArgumentVec2(boolean centerPosition);
+	public abstract ArgumentType<?> _ArgumentVec2(boolean centerPosition);
 
 	/**
 	 * @return Location argument (precise position) (minecraft:vec3)
 	 */
-	ArgumentType<?> _ArgumentVec3(boolean centerPosition);
+	public abstract ArgumentType<?> _ArgumentVec3(boolean centerPosition);
 
 	/*
 	 * Synthetic arguments - arguments that don't actually exist, but have
@@ -270,7 +281,7 @@ public interface NMS<CommandListenerWrapper> {
 	 * to it as an _ArgumentSyntheticBiome
 	 */
 
-	ArgumentType<?> _ArgumentSyntheticBiome();
+	public abstract ArgumentType<?> _ArgumentSyntheticBiome();
 
 	/**
 	 * A String array of Minecraft versions that this NMS implementation is
@@ -280,130 +291,118 @@ public interface NMS<CommandListenerWrapper> {
 	 * 
 	 * @return A String array of compatible Minecraft versions
 	 */
-	String[] compatibleVersions();
+	public abstract String[] compatibleVersions();
 
-	String convert(ItemStack is);
+	public abstract String convert(ItemStack is);
 
-	String convert(ParticleData<?> particle);
+	public abstract String convert(ParticleData<?> particle);
 
-	String convert(PotionEffectType potion);
+	public abstract String convert(PotionEffectType potion);
 
-	String convert(Sound sound);
+	public abstract String convert(Sound sound);
 
-	Advancement getAdvancement(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException;
+	public abstract Advancement getAdvancement(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException;
 
-	Component getAdventureChat(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException;
+	public abstract float getAngle(CommandContext<CommandListenerWrapper> cmdCtx, String key);
 
-	NamedTextColor getAdventureChatColor(CommandContext<CommandListenerWrapper> cmdCtx, String key);
+	public abstract EnumSet<Axis> getAxis(CommandContext<CommandListenerWrapper> cmdCtx, String key);
 
-	Component getAdventureChatComponent(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException;
+	public abstract Object getBiome(CommandContext<CommandListenerWrapper> cmdCtx, String key, ArgumentSubType subType) throws CommandSyntaxException;
 
-	float getAngle(CommandContext<CommandListenerWrapper> cmdCtx, String key);
-
-	EnumSet<Axis> getAxis(CommandContext<CommandListenerWrapper> cmdCtx, String key);
-
-	Object getBiome(CommandContext<CommandListenerWrapper> cmdCtx, String key, ArgumentSubType subType) throws CommandSyntaxException;
-
-	Predicate<Block> getBlockPredicate(CommandContext<CommandListenerWrapper> cmdCtx, String key)
+	public abstract Predicate<Block> getBlockPredicate(CommandContext<CommandListenerWrapper> cmdCtx, String key)
 		throws CommandSyntaxException;
 
-	BlockData getBlockState(CommandContext<CommandListenerWrapper> cmdCtx, String key);
+	public abstract BlockData getBlockState(CommandContext<CommandListenerWrapper> cmdCtx, String key);
 
-	BaseComponent[] getChat(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException;
+	public abstract World getDimension(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException;
 
-	ChatColor getChatColor(CommandContext<CommandListenerWrapper> cmdCtx, String key);
+	public abstract Enchantment getEnchantment(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException; // Throws exception in 1.19.3
 
-	BaseComponent[] getChatComponent(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException;
-
-	World getDimension(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException;
-
-	Enchantment getEnchantment(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException; // Throws exception in 1.19.3
-
-	Object getEntitySelector(CommandContext<CommandListenerWrapper> cmdCtx, String key, ArgumentSubType subType, boolean allowEmpty)
+	public abstract Object getEntitySelector(CommandContext<CommandListenerWrapper> cmdCtx, String key, ArgumentSubType subType, boolean allowEmpty)
 		throws CommandSyntaxException;
 
-	EntityType getEntityType(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException;
+	public abstract EntityType getEntityType(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException;
 
-	FloatRange getFloatRange(CommandContext<CommandListenerWrapper> cmdCtx, String key);
+	public abstract FloatRange getFloatRange(CommandContext<CommandListenerWrapper> cmdCtx, String key);
 
-	FunctionWrapper[] getFunction(CommandContext<CommandListenerWrapper> cmdCtx, String key)
+	public abstract FunctionWrapper[] getFunction(CommandContext<CommandListenerWrapper> cmdCtx, String key)
 		throws CommandSyntaxException;
 
-	SimpleFunctionWrapper getFunction(NamespacedKey key);
+	public abstract SimpleFunctionWrapper getFunction(NamespacedKey key);
 
-	Set<NamespacedKey> getFunctions();
+	public abstract Set<NamespacedKey> getFunctions();
 
-	IntegerRange getIntRange(CommandContext<CommandListenerWrapper> cmdCtx, String key);
+	public abstract IntegerRange getIntRange(CommandContext<CommandListenerWrapper> cmdCtx, String key);
 
-	ItemStack getItemStack(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException;
+	public abstract ItemStack getItemStack(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException;
 
-	Predicate<ItemStack> getItemStackPredicate(CommandContext<CommandListenerWrapper> cmdCtx, String key)
+	public abstract Predicate<ItemStack> getItemStackPredicate(CommandContext<CommandListenerWrapper> cmdCtx, String key)
 		throws CommandSyntaxException;
 
-	Location2D getLocation2DBlock(CommandContext<CommandListenerWrapper> cmdCtx, String key)
+	public abstract Location2D getLocation2DBlock(CommandContext<CommandListenerWrapper> cmdCtx, String key)
 		throws CommandSyntaxException;
 
-	Location2D getLocation2DPrecise(CommandContext<CommandListenerWrapper> cmdCtx, String key)
+	public abstract Location2D getLocation2DPrecise(CommandContext<CommandListenerWrapper> cmdCtx, String key)
 		throws CommandSyntaxException;
 
-	Location getLocationBlock(CommandContext<CommandListenerWrapper> cmdCtx, String str) throws CommandSyntaxException;
+	public abstract Location getLocationBlock(CommandContext<CommandListenerWrapper> cmdCtx, String str) throws CommandSyntaxException;
 
-	Location getLocationPrecise(CommandContext<CommandListenerWrapper> cmdCtx, String str)
+	public abstract Location getLocationPrecise(CommandContext<CommandListenerWrapper> cmdCtx, String str)
 		throws CommandSyntaxException;
 
-	LootTable getLootTable(CommandContext<CommandListenerWrapper> cmdCtx, String key);
+	public abstract LootTable getLootTable(CommandContext<CommandListenerWrapper> cmdCtx, String key);
 
-	MathOperation getMathOperation(CommandContext<CommandListenerWrapper> cmdCtx, String key)
+	public abstract MathOperation getMathOperation(CommandContext<CommandListenerWrapper> cmdCtx, String key)
 		throws CommandSyntaxException;
 
-	NamespacedKey getMinecraftKey(CommandContext<CommandListenerWrapper> cmdCtx, String key);
+	public abstract NamespacedKey getMinecraftKey(CommandContext<CommandListenerWrapper> cmdCtx, String key);
 
-	<NBTContainer> Object getNBTCompound(CommandContext<CommandListenerWrapper> cmdCtx, String key,
+	public abstract <NBTContainer> Object getNBTCompound(CommandContext<CommandListenerWrapper> cmdCtx, String key,
 		Function<Object, NBTContainer> nbtContainerConstructor);
 
-	Objective getObjective(CommandContext<CommandListenerWrapper> cmdCtx, String key)
+	public abstract Objective getObjective(CommandContext<CommandListenerWrapper> cmdCtx, String key)
 		throws IllegalArgumentException, CommandSyntaxException;
 
-	String getObjectiveCriteria(CommandContext<CommandListenerWrapper> cmdCtx, String key);
+	public abstract String getObjectiveCriteria(CommandContext<CommandListenerWrapper> cmdCtx, String key);
 
-	ParticleData<?> getParticle(CommandContext<CommandListenerWrapper> cmdCtx, String key);
+	public abstract ParticleData<?> getParticle(CommandContext<CommandListenerWrapper> cmdCtx, String key);
 
-	Player getPlayer(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException;
+	public abstract Player getPlayer(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException;
 
-	OfflinePlayer getOfflinePlayer(CommandContext<CommandListenerWrapper> cmdCtx, String key)
+	public abstract OfflinePlayer getOfflinePlayer(CommandContext<CommandListenerWrapper> cmdCtx, String key)
 		throws CommandSyntaxException;
 
-	Object getPotionEffect(CommandContext<CommandListenerWrapper> cmdCtx, String key, ArgumentSubType subType)
+	public abstract Object getPotionEffect(CommandContext<CommandListenerWrapper> cmdCtx, String key, ArgumentSubType subType)
 		throws CommandSyntaxException;
 
-	Recipe getRecipe(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException;
+	public abstract Recipe getRecipe(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException;
 
-	Rotation getRotation(CommandContext<CommandListenerWrapper> cmdCtx, String key);
+	public abstract Rotation getRotation(CommandContext<CommandListenerWrapper> cmdCtx, String key);
 
-	ScoreboardSlot getScoreboardSlot(CommandContext<CommandListenerWrapper> cmdCtx, String key);
+	public abstract ScoreboardSlot getScoreboardSlot(CommandContext<CommandListenerWrapper> cmdCtx, String key);
 
-	Collection<String> getScoreHolderMultiple(CommandContext<CommandListenerWrapper> cmdCtx, String key)
+	public abstract Collection<String> getScoreHolderMultiple(CommandContext<CommandListenerWrapper> cmdCtx, String key)
 		throws CommandSyntaxException;
 
-	String getScoreHolderSingle(CommandContext<CommandListenerWrapper> cmdCtx, String key)
+	public abstract String getScoreHolderSingle(CommandContext<CommandListenerWrapper> cmdCtx, String key)
 		throws CommandSyntaxException;
 
-	Team getTeam(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException;
+	public abstract Team getTeam(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException;
 
-	int getTime(CommandContext<CommandListenerWrapper> cmdCtx, String key);
+	public abstract int getTime(CommandContext<CommandListenerWrapper> cmdCtx, String key);
 
-	UUID getUUID(CommandContext<CommandListenerWrapper> cmdCtx, String key);
+	public abstract UUID getUUID(CommandContext<CommandListenerWrapper> cmdCtx, String key);
 
-	World getWorldForCSS(CommandListenerWrapper clw);
+	public abstract World getWorldForCSS(CommandListenerWrapper clw);
 
 	/**
 	 * Returns the Server's internal (OBC) CommandMap
 	 * 
 	 * @return A SimpleCommandMap from the OBC server
 	 */
-	SimpleCommandMap getSimpleCommandMap();
+	public abstract SimpleCommandMap getSimpleCommandMap();
 
-	Object getSound(CommandContext<CommandListenerWrapper> cmdCtx, String key, ArgumentSubType subType);
+	public abstract Object getSound(CommandContext<CommandListenerWrapper> cmdCtx, String key, ArgumentSubType subType);
 
 	/**
 	 * Retrieve a specific NMS implemented SuggestionProvider
@@ -411,24 +410,38 @@ public interface NMS<CommandListenerWrapper> {
 	 * @param provider The SuggestionProvider type to retrieve
 	 * @return A SuggestionProvider that matches the SuggestionProviders input
 	 */
-	SuggestionProvider<CommandListenerWrapper> getSuggestionProvider(SuggestionProviders provider);
+	public abstract SuggestionProvider<CommandListenerWrapper> getSuggestionProvider(SuggestionProviders provider);
 
-	SimpleFunctionWrapper[] getTag(NamespacedKey key);
+	public abstract SimpleFunctionWrapper[] getTag(NamespacedKey key);
 
-	Set<NamespacedKey> getTags();
+	public abstract Set<NamespacedKey> getTags();
 
 	/**
 	 * Reloads the datapacks by using the updated the commandDispatcher tree
 	 */
-	void reloadDataPacks();
+	public abstract void reloadDataPacks();
 
-	HelpTopic generateHelpTopic(String commandName, String shortDescription, String fullDescription, String permission);
+	public abstract HelpTopic generateHelpTopic(String commandName, String shortDescription, String fullDescription, String permission);
 
-	Map<String, HelpTopic> getHelpMap();
+	public abstract Map<String, HelpTopic> getHelpMap();
 
-	Message generateMessageFromJson(String json);
+	public abstract Message generateMessageFromJson(String json);
 
-	CommandRegistrationStrategy<CommandListenerWrapper> createCommandRegistrationStrategy();
+	@Unimplemented(because = REQUIRES_CSS)
+	public abstract BukkitCommandSender<? extends CommandSender> getSenderForCommand(CommandContext<CommandListenerWrapper> cmdCtx, boolean forceNative);
 
-	NativeProxyCommandSender createNativeProxyCommandSender(CommandSender caller, CommandSender callee, Location location, World world);
+	@Unimplemented(because = REQUIRES_CSS)
+	public abstract BukkitCommandSender<? extends CommandSender> getCommandSenderFromCommandSource(CommandListenerWrapper css);
+
+	@Unimplemented(because = REQUIRES_CRAFTBUKKIT)
+	public abstract CommandListenerWrapper getBrigadierSourceFromCommandSender(AbstractCommandSender<? extends CommandSender> sender);
+
+	@Unimplemented(because = {REQUIRES_MINECRAFT_SERVER, VERSION_SPECIFIC_IMPLEMENTATION})
+	public abstract void createDispatcherFile(File file, CommandDispatcher<CommandListenerWrapper> brigadierDispatcher) throws IOException;
+
+	@Unimplemented(because = REQUIRES_MINECRAFT_SERVER) // What are the odds?
+	public abstract <T> T getMinecraftServer();
+
+	public abstract NativeProxyCommandSender createNativeProxyCommandSender(CommandSender caller, CommandSender callee, Location location, World world);
+
 }

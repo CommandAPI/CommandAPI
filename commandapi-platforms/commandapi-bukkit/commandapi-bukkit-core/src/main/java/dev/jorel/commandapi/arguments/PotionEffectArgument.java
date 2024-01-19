@@ -39,7 +39,7 @@ public class PotionEffectArgument extends SafeOverrideableArgument<PotionEffectT
 	 * @param nodeName the name of the node for this argument
 	 */
 	public PotionEffectArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get()._ArgumentMobEffect(), CommandAPIBukkit.get()::convert);
+		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentMobEffect(), CommandAPIBukkit.get().getNMS()::convert);
 	}
 
 	@Override
@@ -54,7 +54,7 @@ public class PotionEffectArgument extends SafeOverrideableArgument<PotionEffectT
 	
 	@Override
 	public <CommandSourceStack> PotionEffectType parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-		return (PotionEffectType) CommandAPIBukkit.<CommandSourceStack>get().getPotionEffect(cmdCtx, key, ArgumentSubType.POTION_EFFECT_POTION_EFFECT);
+		return (PotionEffectType) CommandAPIBukkit.<CommandSourceStack>get().getNMS().getPotionEffect(cmdCtx, key, ArgumentSubType.POTION_EFFECT_POTION_EFFECT);
 	}
 
 	/**
@@ -70,7 +70,7 @@ public class PotionEffectArgument extends SafeOverrideableArgument<PotionEffectT
 		 * @param nodeName The name of the node for this argument
 		 */
 		public NamespacedKey(String nodeName) {
-			super(nodeName, CommandAPIBukkit.get()._ArgumentMinecraftKeyRegistered(), org.bukkit.NamespacedKey::toString);
+			super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentMinecraftKeyRegistered(), org.bukkit.NamespacedKey::toString);
 		}
 
 		@Override
@@ -90,7 +90,7 @@ public class PotionEffectArgument extends SafeOverrideableArgument<PotionEffectT
 
 		@Override
 		public <CommandSourceStack> org.bukkit.NamespacedKey parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-			return (org.bukkit.NamespacedKey) CommandAPIBukkit.<CommandSourceStack>get().getPotionEffect(cmdCtx, key, ArgumentSubType.POTION_EFFECT_NAMESPACEDKEY);
+			return (org.bukkit.NamespacedKey) CommandAPIBukkit.<CommandSourceStack>get().getNMS().getPotionEffect(cmdCtx, key, ArgumentSubType.POTION_EFFECT_NAMESPACEDKEY);
 		}
 	}
 

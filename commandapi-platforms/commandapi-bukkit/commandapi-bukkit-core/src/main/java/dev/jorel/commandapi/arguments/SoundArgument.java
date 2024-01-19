@@ -40,7 +40,7 @@ public class SoundArgument extends SafeOverrideableArgument<Sound, Sound> implem
 	 * @param nodeName the name of the node for this argument
 	 */
 	public SoundArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get()._ArgumentMinecraftKeyRegistered(), CommandAPIBukkit.get()::convert);
+		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentMinecraftKeyRegistered(), CommandAPIBukkit.get().getNMS()::convert);
 	}
 
 	@Override
@@ -60,7 +60,7 @@ public class SoundArgument extends SafeOverrideableArgument<Sound, Sound> implem
 	
 	@Override
 	public <CommandSourceStack> Sound parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-		return (Sound) CommandAPIBukkit.<CommandSourceStack>get().getSound(cmdCtx, key, ArgumentSubType.SOUND_SOUND);
+		return (Sound) CommandAPIBukkit.<CommandSourceStack>get().getNMS().getSound(cmdCtx, key, ArgumentSubType.SOUND_SOUND);
 	}
 
 	/**
@@ -77,7 +77,7 @@ public class SoundArgument extends SafeOverrideableArgument<Sound, Sound> implem
 		 * @param nodeName the name of the node for argument
 		 */
 		public NamespacedKey(String nodeName) {
-			super(nodeName, CommandAPIBukkit.get()._ArgumentMinecraftKeyRegistered(), org.bukkit.NamespacedKey::toString);
+			super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentMinecraftKeyRegistered(), org.bukkit.NamespacedKey::toString);
 		}
 
 		@Override
@@ -97,7 +97,7 @@ public class SoundArgument extends SafeOverrideableArgument<Sound, Sound> implem
 
 		@Override
 		public <CommandSourceStack> org.bukkit.NamespacedKey parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-			return (org.bukkit.NamespacedKey) CommandAPIBukkit.<CommandSourceStack>get().getSound(cmdCtx, key, ArgumentSubType.SOUND_NAMESPACEDKEY);
+			return (org.bukkit.NamespacedKey) CommandAPIBukkit.<CommandSourceStack>get().getNMS().getSound(cmdCtx, key, ArgumentSubType.SOUND_NAMESPACEDKEY);
 		}
 
 	}

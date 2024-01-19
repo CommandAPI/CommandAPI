@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>dev.jorel</groupId>
+		<artifactId>commandapi-paper</artifactId>
+		<version>10.2.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>commandapi-paper-nms</artifactId>
+	<packaging>pom</packaging>
+
+	<modules>
+		<module>commandapi-paper-nms-common</module>
+        <module>commandapi-paper-nms-common-mojang-mapped</module>
+
+		<module>commandapi-paper-1.21.6</module>
+		<module>commandapi-paper-1.21.5</module>
+		<module>commandapi-paper-1.21.4</module>
+		<module>commandapi-paper-1.21.2</module>
+		<module>commandapi-paper-1.21</module>
+		<module>commandapi-paper-1.20.5</module>
+		<module>commandapi-paper-1.20.3</module>
+		<module>commandapi-paper-1.20.2</module>
+		<module>commandapi-paper-1.20</module>
+
+		<module>commandapi-paper-nms-dependency</module>
+		<module>commandapi-paper-nms-dependency-mojang-mapped</module>
+	</modules>
+
+</project>

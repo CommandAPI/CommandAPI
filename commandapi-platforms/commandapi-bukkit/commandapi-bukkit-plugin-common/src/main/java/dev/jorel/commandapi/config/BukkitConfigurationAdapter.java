@@ -110,11 +110,6 @@ public record BukkitConfigurationAdapter(YamlConfiguration config, File configFi
 	}
 
 	@Override
-	public DefaultBukkitConfig createDefaultConfig() {
-		return DefaultBukkitConfig.createDefault();
-	}
-
-	@Override
 	public ConfigurationAdapter<YamlConfiguration> loadFromFile() {
 		YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
 		return new BukkitConfigurationAdapter(config, configFile);

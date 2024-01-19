@@ -31,7 +31,7 @@
 	<properties>
 		<minecraft.mappings>1.21.1-R0.1-SNAPSHOT</minecraft.mappings>
 		<spigot.version>1.21.1-R0.1-SNAPSHOT</spigot.version>
-		<paper.version>1.21-R0.1-SNAPSHOT</paper.version>
+		<paper.version>1.21.1-R0.1-SNAPSHOT</paper.version>
 	</properties>
 
 	<repositories>

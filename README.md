@@ -393,6 +393,31 @@ This is the current roadmap for the CommandAPI (as of 1st April 2025):
     </thead>
     <tbody>
         <tr>
+            <td valign="top"><b>11.0.0</b></td>
+            <td valign="top">???</td>
+            <td valign="top">
+                <ul>
+                    <li>https://github.com/JorelAli/CommandAPI/pull/517 Splits up the CommandAPI into modules specific for Paper and Spigot:
+                        <ul>
+                            <li>Removes the <code>commandapi-bukkit-shade</code> module and the <code>commandapi-bukkit-shade-mojang-mapped</code> module</li>
+                            <li>Adds the <code>commandapi-paper-core</code>, <code>commandapi-paper-shade</code> and the <code>commandapi-paper-shade-mojang-mapped</code> modules which are made to work on Paper</li>
+                            <li>Adds the <code>commandapi-spigot-core</code>, <code>commandapi-spigot-shade</code> and the <code>commandapi-spigot-shade-mojang-mapped</code> modules which do not include the logic required for Paper</li>
+                            <li>Changed the <code>CommandAPIBukkitConfig</code> class into an abstract one in favour of the newly added <code>CommandAPIPaperConfig</code> or <code>CommandAPISpigotConfig</code> classes, depending on the modules you use</li>
+                            <li>Moves and adds a few Kotlin DSL modules:
+                                <ul>
+                                    <li><code>commandapi-core-kotlin -> commandapi-kotlin-core</code></li>
+                                    <li><code>commandapi-bukkit-kotlin -> commandapi-kotlin-bukkit</code></li>
+                                    <li><code>commandapi-velocity-kotlin -> commandapi-kotlin-velocity</code></li>
+                                    <li>Newly added: <code>commandapi-kotlin-paper</code></li>
+                                    <li>Newly added: <code>commandapi-kotlin-spigot</code></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+           </td>
+        </tr>
+        <tr>
             <td valign="top"><b>10.1.0</b></td>
             <td valign="top">June 2025</td>
             <td valign="top">
@@ -449,7 +474,7 @@ This is the current roadmap for the CommandAPI (as of 1st April 2025):
                 </ul>
             </td>
         </tr>
-        <tr>
+       <tr>
             <td valign="top"><b>9.7.0</b></td>
             <td valign="top">December 2024</td>
             <td valign="top">
