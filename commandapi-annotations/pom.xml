@@ -35,6 +35,7 @@
 			<groupId>dev.jorel</groupId>
 			<artifactId>commandapi-bukkit-core</artifactId>
 			<version>${project.version}</version>
+			<scope>provided</scope> <!-- Platform specific annotation modules implement their platform themselves -->
 		</dependency>
 		<dependency>
 			<groupId>com.google.auto.service</groupId>
@@ -54,18 +55,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>testCompile</goal>
-						</goals>
-						<configuration>
-							<annotationProcessors>
-								<annotationProcessor>dev.jorel.commandapi.annotations.Annotations</annotationProcessor>
-							</annotationProcessors>
-						</configuration>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 	</build>

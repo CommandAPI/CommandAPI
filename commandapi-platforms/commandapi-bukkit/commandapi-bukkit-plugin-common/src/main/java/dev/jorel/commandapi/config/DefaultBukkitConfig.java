@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings("DuplicatedCode")
 public class DefaultBukkitConfig extends DefaultConfig {
 
 	public static final CommentedConfigOption<Boolean> USE_LATEST_NMS_VERSION = new CommentedConfigOption<>(
@@ -74,7 +75,7 @@ public class DefaultBukkitConfig extends DefaultConfig {
 	private DefaultBukkitConfig() {
 	}
 
-	public static DefaultBukkitConfig createDefault() {
+	public static DefaultBukkitConfig createDefaultPaperConfig() {
 		Map<String, CommentedConfigOption<?>> options = new LinkedHashMap<>();
 		options.put("verbose-outputs", VERBOSE_OUTPUTS);
 		options.put("silent-logs", SILENT_LOGS);
@@ -83,6 +84,25 @@ public class DefaultBukkitConfig extends DefaultConfig {
 		options.put("use-latest-nms-version", USE_LATEST_NMS_VERSION);
 		options.put("be-lenient-for-minor-versions", BE_LENIENT_FOR_MINOR_VERSIONS);
 		options.put("hook-paper-reload", SHOULD_HOOK_PAPER_RELOAD);
+		options.put("skip-initial-datapack-reload", SKIP_RELOAD_DATAPACKS);
+		options.put("plugins-to-convert", PLUGINS_TO_CONVERT);
+		options.put("other-commands-to-convert", OTHER_COMMANDS_TO_CONVERT);
+		options.put("skip-sender-proxy", SKIP_SENDER_PROXY);
+
+		Map<String, CommentedSection> sections = new LinkedHashMap<>();
+		sections.put("messages", SECTION_MESSAGE);
+
+		return DefaultBukkitConfig.create(options, sections);
+	}
+
+	public static DefaultBukkitConfig createDefaultSpigotConfig() {
+		Map<String, CommentedConfigOption<?>> options = new LinkedHashMap<>();
+		options.put("verbose-outputs", VERBOSE_OUTPUTS);
+		options.put("silent-logs", SILENT_LOGS);
+		options.put("messages.missing-executor-implementation", MISSING_EXECUTOR_IMPLEMENTATION);
+		options.put("create-dispatcher-json", CREATE_DISPATCHER_JSON);
+		options.put("use-latest-nms-version", USE_LATEST_NMS_VERSION);
+		options.put("be-lenient-for-minor-versions", BE_LENIENT_FOR_MINOR_VERSIONS);
 		options.put("skip-initial-datapack-reload", SKIP_RELOAD_DATAPACKS);
 		options.put("plugins-to-convert", PLUGINS_TO_CONVERT);
 		options.put("other-commands-to-convert", OTHER_COMMANDS_TO_CONVERT);

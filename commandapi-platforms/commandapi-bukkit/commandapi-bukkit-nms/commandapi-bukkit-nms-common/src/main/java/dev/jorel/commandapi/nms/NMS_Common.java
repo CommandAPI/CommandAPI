@@ -314,18 +314,7 @@ public abstract class NMS_Common extends CommandAPIBukkit<CommandSourceStack> {
 
 	@Override
 	@Unimplemented(because = VERSION_SPECIFIC_IMPLEMENTATION, introducedIn = "1.20.2")
-	public abstract org.bukkit.advancement.Advancement getAdvancement(CommandContext<CommandSourceStack> cmdCtx, String key)
-		throws CommandSyntaxException;
-
-	@Override
-	@Overridden(in = "1.20.5", because = "Serializer.toJson now needs a Provider")
-	public Component getAdventureChat(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		return GsonComponentSerializer.gson().deserialize(Serializer.toJson(MessageArgument.getMessage(cmdCtx, key)));
-	}
-
-	@Override
-	@Unimplemented(because = VERSION_SPECIFIC_IMPLEMENTATION, from = "ofExact", to = "namedColor", in = "NamedTextColor", introducedIn = "Adventure 4.10.0", info = "1.18 uses Adventure 4.9.3. 1.18.2 uses Adventure 4.11.0")
-	public abstract NamedTextColor getAdventureChatColor(CommandContext<CommandSourceStack> cmdCtx, String key);
+	public abstract org.bukkit.advancement.Advancement getAdvancement(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException;
 
 	@Override
 	public final float getAngle(CommandContext<CommandSourceStack> cmdCtx, String key) {
@@ -354,22 +343,6 @@ public abstract class NMS_Common extends CommandAPIBukkit<CommandSourceStack> {
 	@Override
 	@Unimplemented(because = REQUIRES_CRAFTBUKKIT, classNamed = "CraftBlockData")
 	public abstract BlockData getBlockState(CommandContext<CommandSourceStack> cmdCtx, String key);
-
-	@Override
-	@Overridden(in = "1.20.5", because = "Serializer.toJson now needs a Provider")
-	public BaseComponent[] getChat(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		return ComponentSerializer.parse(Serializer.toJson(MessageArgument.getMessage(cmdCtx, key)));
-	}
-
-	@Override
-	public final ChatColor getChatColor(CommandContext<CommandSourceStack> cmdCtx, String key) {
-		return ChatColor.getByChar(ColorArgument.getColor(cmdCtx, key).getChar());
-	}
-
-	@Override
-	public BaseComponent[] getChatComponent(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		return ComponentSerializer.parse(Serializer.toJson(ComponentArgument.getComponent(cmdCtx, key)));
-	}
 
 	@Override
 	public abstract CommandSourceStack getBrigadierSourceFromCommandSender(AbstractCommandSender<? extends CommandSender> sender);
@@ -593,10 +566,4 @@ public abstract class NMS_Common extends CommandAPIBukkit<CommandSourceStack> {
 	@Override
 	@Unimplemented(because = VERSION_SPECIFIC_IMPLEMENTATION)
 	public abstract void reloadDataPacks();
-
-	@Override
-	@Unimplemented(because = NAME_CHANGED, info = "MinecraftServer#getCommands() obfuscated differently across multiple versions")
-	@Unimplemented(because = REQUIRES_CRAFTBUKKIT, classNamed = "VanillaCommandWrapper")
-	@Unimplemented(because = REQUIRES_CRAFTBUKKIT, classNamed = "BukkitCommandWrapper")
-	public abstract CommandRegistrationStrategy<CommandSourceStack> createCommandRegistrationStrategy();
 }

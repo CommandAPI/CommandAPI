@@ -207,7 +207,6 @@ public class NMS_1_20_R4 extends NMS_Common {
 	private static final Field entitySelectorUsesSelector;
 	// private static final SafeVarHandle<ItemInput, CompoundTag> itemInput;
 	private static final Field serverFunctionLibraryDispatcher;
-	private static final boolean vanillaCommandDispatcherFieldExists;
 
 	// Derived from net.minecraft.commands.Commands;
 	private static final CommandBuildContext COMMAND_BUILD_CONTEXT;
@@ -228,16 +227,6 @@ public class NMS_1_20_R4 extends NMS_Common {
 		// itemInput = SafeVarHandle.ofOrNull(ItemInput.class, "c", "tag", CompoundTag.class);
 		// For some reason, MethodHandles fails for this field, but Field works okay
 		serverFunctionLibraryDispatcher = CommandAPIHandler.getField(ServerFunctionLibrary.class, "g", "dispatcher");
-
-		boolean fieldExists;
-		try {
-			MinecraftServer.class.getDeclaredField("vanillaCommandDispatcher");
-			fieldExists = true;
-		} catch (NoSuchFieldException | SecurityException e) {
-			// Expected on Paper-1.20.6-65 or later due to https://github.com/PaperMC/Paper/pull/8235
-			fieldExists = false;
-		}
-		vanillaCommandDispatcherFieldExists = fieldExists;
 	}
 
 	private static NamespacedKey fromResourceLocation(ResourceLocation key) {
@@ -406,25 +395,6 @@ public class NMS_1_20_R4 extends NMS_Common {
 			throws CommandSyntaxException {
 		return ResourceLocationArgument.getAdvancement(cmdCtx, key).toBukkit();
 	}
-	
-	@Differs(from = "1.20.4", by = "Serializer.toJson now needs a Provider")
-	@Override
-	public Component getAdventureChat(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		return GsonComponentSerializer.gson().deserialize(Serializer.toJson(MessageArgument.getMessage(cmdCtx, key), COMMAND_BUILD_CONTEXT));
-	}
-
-	@Override
-	public NamedTextColor getAdventureChatColor(CommandContext<CommandSourceStack> cmdCtx, String key) {
-		final Integer color = ColorArgument.getColor(cmdCtx, key).getColor();
-		return color == null ? NamedTextColor.WHITE : NamedTextColor.namedColor(color);
-	}
-
-	@Override
-	public final Component getAdventureChatComponent(CommandContext<CommandSourceStack> cmdCtx, String key) {
-		// TODO: Figure out if an empty provider is suitable for this context
-		return GsonComponentSerializer.gson()
-				.deserialize(Serializer.toJson(ComponentArgument.getComponent(cmdCtx, key), COMMAND_BUILD_CONTEXT));
-	}
 
 	@Override
 	public final Object getBiome(CommandContext<CommandSourceStack> cmdCtx, String key, ArgumentSubType subType)
@@ -463,12 +433,6 @@ public class NMS_1_20_R4 extends NMS_Common {
 	public CommandSourceStack getBrigadierSourceFromCommandSender(
 			AbstractCommandSender<? extends CommandSender> sender) {
 		return VanillaCommandWrapper.getListener(sender.getSource());
-	}
-
-	@Differs(from = "1.20.4", by = "Serializer.toJson now needs a Provider")
-	@Override
-	public final BaseComponent[] getChat(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		return ComponentSerializer.parse(Serializer.toJson(MessageArgument.getMessage(cmdCtx, key), COMMAND_BUILD_CONTEXT));
 	}
 
 	@Override
@@ -1072,39 +1036,5 @@ public class NMS_1_20_R4 extends NMS_Common {
 	@Override
 	public ArgumentType<?> _ArgumentEntitySummon() {
 		return ResourceArgument.resource(COMMAND_BUILD_CONTEXT, Registries.ENTITY_TYPE);
-	}
-
-	@Override
-	public CommandRegistrationStrategy<CommandSourceStack> createCommandRegistrationStrategy() {
-		if (vanillaCommandDispatcherFieldExists) {
-			return new SpigotCommandRegistration<>(
-				this.<MinecraftServer>getMinecraftServer().vanillaCommandDispatcher.getDispatcher(),
-				(SimpleCommandMap) getPaper().getCommandMap(),
-				() -> this.<MinecraftServer>getMinecraftServer().getCommands().getDispatcher(),
-				command -> command instanceof VanillaCommandWrapper,
-				node -> new VanillaCommandWrapper(this.<MinecraftServer>getMinecraftServer().vanillaCommandDispatcher, node),
-				node -> node.getCommand() instanceof BukkitCommandWrapper
-			);
-		} else {
-			// This class is Paper-server specific, so we need to use paper's userdev plugin to
-			//  access it directly. That might need gradle, but there might also be a maven version?
-			//  https://discord.com/channels/289587909051416579/1121227200277004398/1246910745761812480
-			Class<?> bukkitCommandNode_bukkitBrigCommand;
-			try {
-				bukkitCommandNode_bukkitBrigCommand = Class.forName("io.papermc.paper.command.brigadier.bukkit.BukkitCommandNode$BukkitBrigCommand");
-			} catch (ClassNotFoundException e) {
-				throw new IllegalStateException("Expected to find class", e);
-			}
-			return new PaperCommandRegistration<>(
-				() -> this.<MinecraftServer>getMinecraftServer().getCommands().getDispatcher(),
-				() -> {
-					SimpleHelpMap helpMap = (SimpleHelpMap) Bukkit.getServer().getHelpMap();
-					helpMap.clear();
-					helpMap.initializeGeneralTopics();
-					helpMap.initializeCommands();
-				},
-				node -> bukkitCommandNode_bukkitBrigCommand.isInstance(node.getCommand())
-			);
-		}
 	}
 }
