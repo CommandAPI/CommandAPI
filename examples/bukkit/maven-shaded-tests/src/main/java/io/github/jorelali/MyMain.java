@@ -8,7 +8,7 @@ import org.bukkit.plugin.java.JavaPluginLoader;
 
 import de.tr7zw.changeme.nbtapi.NBTContainer;
 import dev.jorel.commandapi.CommandAPI;
-import dev.jorel.commandapi.CommandAPIBukkitConfig;
+import dev.jorel.commandapi.CommandAPIPaperConfig;
 import dev.jorel.commandapi.CommandAPILogger;
 
 public class MyMain extends JavaPlugin {
@@ -20,7 +20,7 @@ public class MyMain extends JavaPlugin {
 		// Load the CommandAPI
 		CommandAPI.onLoad(
 			// Configure the CommandAPI
-			new CommandAPIBukkitConfig(this)
+			new CommandAPIPaperConfig(this)
 				// Turn on verbose output for command registration logs
 				.verboseOutput(true)
 				// Give file where Brigadier's command registration tree should be dumped

@@ -8,14 +8,9 @@ import org.bukkit.plugin.java.JavaPlugin;
  * only ever read from, nothing is ever written to it. That's why there's only
  * getter methods.
  */
-public class InternalBukkitConfig extends InternalConfig {
+public abstract class InternalBukkitConfig extends InternalConfig {
 	// The plugin that is loading the CommandAPI
 	private final JavaPlugin plugin;
-
-	// Whether to hook into paper's reload event to reload datapacks when /minecraft:reload is run
-	private final boolean shouldHookPaperReload;
-	
-	private final boolean skipReloadDatapacks;
 
 	/**
 	 * Creates an {@link InternalBukkitConfig} from a {@link CommandAPIBukkitConfig}
@@ -25,8 +20,6 @@ public class InternalBukkitConfig extends InternalConfig {
 	public InternalBukkitConfig(CommandAPIBukkitConfig config) {
 		super(config);
 		this.plugin = config.plugin;
-		this.shouldHookPaperReload = config.shouldHookPaperReload;
-		this.skipReloadDatapacks = config.skipReloadDatapacks;
 	}
 
 	/**
@@ -36,21 +29,4 @@ public class InternalBukkitConfig extends InternalConfig {
 		return plugin;
 	}
 
-	/**
-	 * @return Whether the CommandAPI should hook into Paper's {@link ServerResourcesReloadedEvent}
-	 * when available to perform the CommandAPI's custom datapack reload when {@code /minecraft:reload}
-	 * is run.
-	 */
-	public boolean shouldHookPaperReload() {
-		return shouldHookPaperReload;
-	}
-	
-
-
-	/**
-	 * @return Whether the CommandAPI should skip reloading datapacks when the server has finished loading
-	 */
-	public boolean skipReloadDatapacks() {
-		return skipReloadDatapacks;
-	}
 }
