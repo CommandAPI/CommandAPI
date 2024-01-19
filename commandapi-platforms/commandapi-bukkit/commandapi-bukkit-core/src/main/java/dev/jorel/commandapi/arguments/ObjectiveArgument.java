@@ -38,7 +38,7 @@ public class ObjectiveArgument extends SafeOverrideableArgument<Objective, Objec
 	 * @param nodeName the name of the node for this argument
 	 */
 	public ObjectiveArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get()._ArgumentScoreboardObjective(), Objective::getName);
+		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentScoreboardObjective(), Objective::getName);
 	}
 
 	@Override
@@ -53,6 +53,6 @@ public class ObjectiveArgument extends SafeOverrideableArgument<Objective, Objec
 	
 	@Override
 	public <CommandSourceStack> Objective parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-		return CommandAPIBukkit.<CommandSourceStack>get().getObjective(cmdCtx, key);
+		return CommandAPIBukkit.<CommandSourceStack>get().getNMS().getObjective(cmdCtx, key);
 	}
 }

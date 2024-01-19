@@ -335,7 +335,7 @@ public class MockNMS extends Enums {
 				Mockito.when(craftPlayerMock.getName()).thenReturn(name);
 				Mockito.when(craftPlayerMock.getUniqueId()).thenReturn(uuid);
 				Mockito.when(entityPlayerMock.getBukkitEntity()).thenReturn(craftPlayerMock);
-				Mockito.when(entityPlayerMock.getDisplayName()).thenReturn(net.minecraft.network.chat.Component.literal(name)); // ChatArgument, AdventureChatArgument
+				Mockito.when(entityPlayerMock.getDisplayName()).thenReturn(Component.literal(name)); // ChatArgument, AdventureChatArgument
 				Mockito.when(entityPlayerMock.getScoreboardName()).thenReturn(name); // ScoreHolderArgument
 				Mockito.when(entityPlayerMock.getType()).thenReturn((net.minecraft.world.entity.EntityType) net.minecraft.world.entity.EntityType.PLAYER); // EntitySelectorArgument
 				players.add(entityPlayerMock);
@@ -447,7 +447,7 @@ public class MockNMS extends Enums {
 		// return BuiltInRegistries.PARTICLE_TYPE.getKey(CraftParticle.bukkitToMinecraft(particle)).toString();
 		// return particle.getKey().toString();
 		
-		Map<org.bukkit.Particle, String> particleMap = Map.ofEntries(
+		Map<Particle, String> particleMap = Map.ofEntries(
 			Map.entry(Particle.valueOf("EXPLOSION_NORMAL"), "poof"), 
 			Map.entry(Particle.valueOf("EXPLOSION_LARGE"), "explosion"), 
 			Map.entry(Particle.valueOf("EXPLOSION_HUGE"), "explosion_emitter"), 
@@ -772,7 +772,7 @@ public class MockNMS extends Enums {
 
 
 		// getName and getDisplayName are used when CommandSourceStack#withEntity is called
-		net.minecraft.network.chat.Component nameComponent = net.minecraft.network.chat.Component.literal(name);
+		Component nameComponent = Component.literal(name);
 		Mockito.when(handle.getName()).thenReturn(nameComponent);
 		Mockito.when(handle.getDisplayName()).thenReturn(nameComponent);
 
