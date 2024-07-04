@@ -108,7 +108,6 @@ import dev.jorel.commandapi.wrappers.FloatRange;
 import dev.jorel.commandapi.wrappers.FunctionWrapper;
 import dev.jorel.commandapi.wrappers.IntegerRange;
 import dev.jorel.commandapi.wrappers.Location2D;
-import dev.jorel.commandapi.wrappers.NativeProxyCommandSender;
 import dev.jorel.commandapi.wrappers.ParticleData;
 import dev.jorel.commandapi.wrappers.ScoreboardSlot;
 import dev.jorel.commandapi.wrappers.SimpleFunctionWrapper;
@@ -811,8 +810,7 @@ public class NMS_1_21_R2 extends NMS_Common {
 	}
 
 	@Override
-	public BukkitCommandSender<? extends CommandSender> getSenderForCommand(CommandContext<CommandSourceStack> cmdCtx,
-			boolean isNative) {
+	public BukkitCommandSender<? extends CommandSender> getSenderForCommand(CommandContext<CommandSourceStack> cmdCtx, boolean isNative) {
 		CommandSourceStack css = cmdCtx.getSource();
 
 		CommandSender sender = css.getBukkitSender();
@@ -824,10 +822,6 @@ public class NMS_1_21_R2 extends NMS_Common {
 			// sender.
 			sender = Bukkit.getConsoleSender();
 		}
-		Vec3 pos = css.getPosition();
-		Vec2 rot = css.getRotation();
-		World world = getWorldForCSS(css);
-		Location location = new Location(world, pos.x(), pos.y(), pos.z(), rot.y, rot.x);
 
 		Entity proxyEntity = css.getEntity();
 		CommandSender proxy = proxyEntity == null ? null : proxyEntity.getBukkitEntity();
@@ -836,7 +830,7 @@ public class NMS_1_21_R2 extends NMS_Common {
 				proxy = sender;
 			}
 
-			return new BukkitNativeProxyCommandSender(new NativeProxyCommandSender(sender, proxy, location, world));
+			return new BukkitNativeProxyCommandSender(new NativeProxyCommandSender_1_21_R2(css, sender, proxy));
 		} else {
 			return wrapCommandSender(sender);
 		}

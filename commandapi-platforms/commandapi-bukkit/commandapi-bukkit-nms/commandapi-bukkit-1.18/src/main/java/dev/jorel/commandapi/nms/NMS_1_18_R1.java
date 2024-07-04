@@ -603,10 +603,6 @@ public class NMS_1_18_R1 extends NMS_Common {
 			// however this may also be null, so delegate to the next most-meaningful sender.
 			sender = Bukkit.getConsoleSender();
 		}
-		Vec3 pos = css.getPosition();
-		Vec2 rot = css.getRotation();
-		World world = getWorldForCSS(css);
-		Location location = new Location(world, pos.x(), pos.y(), pos.z(), rot.y, rot.x);
 
 		Entity proxyEntity = css.getEntity();
 		CommandSender proxy = proxyEntity == null ? null : proxyEntity.getBukkitEntity();
@@ -614,7 +610,7 @@ public class NMS_1_18_R1 extends NMS_Common {
 			if (proxy == null) {
 				proxy = sender;
 			}
-			return new BukkitNativeProxyCommandSender(new NativeProxyCommandSender(sender, proxy, location, world));
+			return new BukkitNativeProxyCommandSender(new NativeProxyCommandSender_1_18_R1(css, sender, proxy));
 		} else {
 			return wrapCommandSender(sender);
 		}

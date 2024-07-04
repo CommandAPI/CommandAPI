@@ -836,10 +836,6 @@ public class NMS_1_16_R3 extends CommandAPIBukkit<CommandListenerWrapper> {
 			// however this may also be null, so delegate to the next most-meaningful sender.
 			sender = Bukkit.getConsoleSender();
 		}
-		Vec3D pos = clw.getPosition();
-		Vec2F rot = clw.i();
-		World world = getWorldForCSS(clw);
-		Location location = new Location(world, pos.getX(), pos.getY(), pos.getZ(), rot.j, rot.i);
 
 		Entity proxyEntity = clw.getEntity();
 		CommandSender proxy = proxyEntity == null ? null : proxyEntity.getBukkitEntity();
@@ -847,7 +843,7 @@ public class NMS_1_16_R3 extends CommandAPIBukkit<CommandListenerWrapper> {
 			if (proxy == null) {
 				proxy = sender;
 			}
-			return new BukkitNativeProxyCommandSender(new NativeProxyCommandSender(sender, proxy, location, world));
+			return new BukkitNativeProxyCommandSender(new NativeProxyCommandSender_1_16_R3(clw, sender, proxy));
 		} else {
 			return wrapCommandSender(sender);
 		}
