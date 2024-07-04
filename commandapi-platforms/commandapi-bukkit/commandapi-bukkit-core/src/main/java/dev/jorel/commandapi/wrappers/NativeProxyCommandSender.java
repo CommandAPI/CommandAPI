@@ -20,8 +20,10 @@
  *******************************************************************************/
 package dev.jorel.commandapi.wrappers;
 
+import dev.jorel.commandapi.CommandAPIBukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.command.CommandSender;
 import org.bukkit.command.ProxiedCommandSender;
 
 /**
@@ -30,13 +32,27 @@ import org.bukkit.command.ProxiedCommandSender;
  */
 public interface NativeProxyCommandSender extends ProxiedCommandSender {
 	/**
+	 * Constructs a NativeProxyCommandSender, which is basically Minecraft's CommandListenerWrapper
+	 *
+	 * @param caller   the command sender that actually sent the command
+	 * @param callee   the command sender that will be executing the command
+	 * @param location the proxied location that the command will be run at
+	 * @param world    the proxied world that the command will be run in
+	 */
+	static NativeProxyCommandSender from(CommandSender caller, CommandSender callee, Location location, World world) {
+		return CommandAPIBukkit.get().createNativeProxyCommandSender(caller, callee, location, world);
+	}
+
+	/**
 	 * Returns the location that this native command sender represents
+	 *
 	 * @return the location that this native command sender represents
 	 */
 	Location getLocation();
 
 	/**
 	 * Returns the world that this native command sender represents
+	 *
 	 * @return the world that this native command sender represents
 	 */
 	World getWorld();

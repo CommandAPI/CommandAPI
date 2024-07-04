@@ -61,6 +61,7 @@ import org.bukkit.craftbukkit.v1_16_R3.CraftLootTable;
 import org.bukkit.craftbukkit.v1_16_R3.CraftParticle;
 import org.bukkit.craftbukkit.v1_16_R3.CraftServer;
 import org.bukkit.craftbukkit.v1_16_R3.CraftSound;
+import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_16_R3.block.data.CraftBlockData;
 import org.bukkit.craftbukkit.v1_16_R3.command.BukkitCommandWrapper;
 import org.bukkit.craftbukkit.v1_16_R3.command.VanillaCommandWrapper;
@@ -847,6 +848,36 @@ public class NMS_1_16_R3 extends CommandAPIBukkit<CommandListenerWrapper> {
 		} else {
 			return wrapCommandSender(sender);
 		}
+	}
+
+	@Override
+	public NativeProxyCommandSender createNativeProxyCommandSender(CommandSender caller, CommandSender callee, Location location, World world) {
+		if (callee == null) callee = caller;
+
+		// Most parameters default to what is defined by the caller
+		CommandListenerWrapper clw = getBrigadierSourceFromCommandSender(wrapCommandSender(caller));
+
+		// Position and rotation may be overridden by the Location
+		if (location != null) {
+			clw = clw
+				.a(new Vec3D(location.getX(), location.getY(), location.getZ()))
+				.a(new Vec2F(location.getPitch(), location.getYaw()));
+		}
+
+		// WorldServer may be overridden by the World
+		if (world == null && location != null) {
+			world = location.getWorld();
+		}
+		if (world != null) {
+			clw = clw.a(((CraftWorld) world).getHandle());
+		}
+
+		// The proxied sender can only be an Entity
+		if (callee instanceof org.bukkit.entity.Entity e) {
+			clw = clw.a(((CraftEntity) e).getHandle());
+		}
+
+		return new NativeProxyCommandSender_1_16_R3(clw, caller, callee);
 	}
 
 	@Override

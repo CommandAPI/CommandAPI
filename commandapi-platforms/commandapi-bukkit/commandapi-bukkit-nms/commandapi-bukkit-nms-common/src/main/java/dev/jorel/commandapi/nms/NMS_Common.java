@@ -544,6 +544,10 @@ public abstract class NMS_Common extends CommandAPIBukkit<CommandSourceStack> {
 	public abstract BukkitCommandSender<? extends CommandSender> getSenderForCommand(CommandContext<CommandSourceStack> cmdCtx, boolean isNative);
 
 	@Override
+	@Unimplemented(because = REQUIRES_CRAFTBUKKIT, classNamed = "ProxiedNativeCommandSender")
+	public abstract NativeProxyCommandSender createNativeProxyCommandSender(CommandSender caller, CommandSender callee, Location location, World world);
+
+	@Override
 	@Unimplemented(because = REQUIRES_CRAFTBUKKIT, classNamed = "CraftServer")
 	public abstract SimpleCommandMap getSimpleCommandMap();
 

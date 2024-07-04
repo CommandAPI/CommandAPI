@@ -112,6 +112,7 @@ import org.bukkit.craftbukkit.v1_19_R1.CraftLootTable;
 import org.bukkit.craftbukkit.v1_19_R1.CraftParticle;
 import org.bukkit.craftbukkit.v1_19_R1.CraftServer;
 import org.bukkit.craftbukkit.v1_19_R1.CraftSound;
+import org.bukkit.craftbukkit.v1_19_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_19_R1.block.data.CraftBlockData;
 import org.bukkit.craftbukkit.v1_19_R1.command.BukkitCommandWrapper;
 import org.bukkit.craftbukkit.v1_19_R1.command.VanillaCommandWrapper;
@@ -719,6 +720,36 @@ public abstract class NMS_1_19_Common extends NMS_CommonWithFunctions {
 		} else {
 			return wrapCommandSender(sender);
 		}
+	}
+
+	@Override
+	public NativeProxyCommandSender createNativeProxyCommandSender(CommandSender caller, CommandSender callee, Location location, World world) {
+		if (callee == null) callee = caller;
+
+		// Most parameters default to what is defined by the caller
+		CommandSourceStack css = getBrigadierSourceFromCommandSender(wrapCommandSender(caller));
+
+		// Position and rotation may be overridden by the Location
+		if (location != null) {
+			css = css
+				.withPosition(new Vec3(location.getX(), location.getY(), location.getZ()))
+				.withRotation(new Vec2(location.getPitch(), location.getYaw()));
+		}
+
+		// ServerLevel may be overridden by the World
+		if (world == null && location != null) {
+			world = location.getWorld();
+		}
+		if (world != null) {
+			css = css.withLevel(((CraftWorld) world).getHandle());
+		}
+
+		// The proxied sender can only be an Entity in the CommandSourceStack
+		if (callee instanceof org.bukkit.entity.Entity e) {
+			css = css.withEntity(((CraftEntity) e).getHandle());
+		}
+
+		return new NativeProxyCommandSender_1_19_Common(css, caller, callee);
 	}
 
 	@Override
