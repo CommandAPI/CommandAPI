@@ -1,10 +1,12 @@
 package dev.jorel.commandapi.examples.kotlin
 
+import de.tr7zw.changeme.nbtapi.NBTContainer
 import dev.jorel.commandapi.kotlindsl.anyExecutor
 import dev.jorel.commandapi.kotlindsl.chatArgument
 import dev.jorel.commandapi.kotlindsl.chatColorArgument
 import dev.jorel.commandapi.kotlindsl.chatComponentArgument
 import dev.jorel.commandapi.kotlindsl.commandAPICommand
+import dev.jorel.commandapi.kotlindsl.nbtCompoundArgument
 import dev.jorel.commandapi.kotlindsl.playerArgument
 import dev.jorel.commandapi.kotlindsl.playerExecutor
 import dev.jorel.commandapi.kotlindsl.stringArgument
@@ -60,6 +62,19 @@ commandAPICommand("pbroadcast") {
     }
 }
 /* ANCHOR_END: argumentChatAdventure3 */
+}
+
+fun argument_nbt() {
+/* ANCHOR: argumentNBT1 */
+commandAPICommand("award") {
+    nbtCompoundArgument<NBTContainer>("nbt")
+    anyExecutor { _, args ->
+        val nbt = args["nbt"] as NBTContainer
+
+        // Do something with "nbt" here...
+    }
+}
+/* ANCHOR_END: argumentNBT1 */
 }
 
 }

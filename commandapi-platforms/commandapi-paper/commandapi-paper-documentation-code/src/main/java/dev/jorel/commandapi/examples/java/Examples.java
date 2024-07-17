@@ -76,19 +76,6 @@ public void onLoad() {
     );
 }
 /* ANCHOR_END: argumentNBT1 */
-
-void argument_nbt2() {
-/* ANCHOR: argumentNBT2 */
-new CommandAPICommand("award")
-    .withArguments(new NBTCompoundArgument<NBTContainer>("nbt"))
-    .executes((sender, args) -> {
-        NBTContainer nbt = (NBTContainer) args.get("nbt");
-
-        // Do something with "nbt" here...
-    })
-    .register();
-/* ANCHOR_END: argumentNBT2 */
-}
 }
 
 class setupShading {
@@ -123,8 +110,8 @@ class MyPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-                CommandAPI.onDisable();
-            }
+        CommandAPI.onDisable();
+    }
 
 }
 /* ANCHOR_END: setupShading2 */
