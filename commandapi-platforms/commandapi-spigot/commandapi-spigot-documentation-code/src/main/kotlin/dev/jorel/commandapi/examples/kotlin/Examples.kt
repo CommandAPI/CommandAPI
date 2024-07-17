@@ -76,29 +76,15 @@ override fun onLoad() {
     )
 }
 /* ANCHOR_END: argumentNBT1 */
-
-fun argument_nbt2() {
-    /* ANCHOR: argumentNBT2 */
-    CommandAPICommand("award")
-        .withArguments(NBTCompoundArgument<NBTContainer>("nbt"))
-        .executes(CommandExecutor { _, args ->
-            val nbt = args["nbt"] as NBTContainer
-
-            // Do something with "nbt" here...
-        })
-        .register()
-    /* ANCHOR_END: argumentNBT2 */
-}
-
 }
 
 class setupShading {
 val plugin: JavaPlugin = object : JavaPlugin() {}
 
 fun setupShading1() {
-    /* ANCHOR: setupShading1 */
-    CommandAPI.onLoad(CommandAPISpigotConfig(plugin).silentLogs(true))
-    /* ANCHOR_END: setupShading1 */
+/* ANCHOR: setupShading1 */
+CommandAPI.onLoad(CommandAPISpigotConfig(plugin).silentLogs(true))
+/* ANCHOR_END: setupShading1 */
 }
 
 /* ANCHOR: setupShading2 */

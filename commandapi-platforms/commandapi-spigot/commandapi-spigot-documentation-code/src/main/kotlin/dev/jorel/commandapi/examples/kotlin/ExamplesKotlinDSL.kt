@@ -1,5 +1,6 @@
 package dev.jorel.commandapi.examples.kotlin
 
+import de.tr7zw.changeme.nbtapi.NBTContainer
 import dev.jorel.commandapi.executors.CommandArguments
 import dev.jorel.commandapi.kotlindsl.*
 import net.md_5.bungee.api.chat.BaseComponent
