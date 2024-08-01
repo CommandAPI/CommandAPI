@@ -47,7 +47,7 @@ public class ChatColorArgument extends SafeOverrideableArgument<NamedTextColor, 
 	 * @param nodeName the name of the node for argument
 	 */
 	public ChatColorArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get()._ArgumentChatFormat(), Object::toString);
+		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentChatFormat(), Object::toString);
 
 		try {
 			Class.forName("net.kyori.adventure.text.format.NamedTextColor");

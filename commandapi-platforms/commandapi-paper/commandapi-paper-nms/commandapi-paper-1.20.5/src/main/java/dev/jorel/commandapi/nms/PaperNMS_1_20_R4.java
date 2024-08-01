@@ -2,6 +2,7 @@ package dev.jorel.commandapi.nms;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
+import dev.jorel.commandapi.CommandAPIBukkit;
 import dev.jorel.commandapi.CommandRegistrationStrategy;
 import dev.jorel.commandapi.PaperCommandRegistration;
 import dev.jorel.commandapi.SpigotCommandRegistration;
@@ -44,7 +45,7 @@ public class PaperNMS_1_20_R4 extends PaperNMS_Common {
 		Commands commandDispatcher;
 		try {
 			Field vanillaCommandDispatcherField = MinecraftServer.class.getDeclaredField("vanillaCommandDispatcher");
-			commandDispatcher = (Commands) vanillaCommandDispatcherField.get(getBukkit().getMinecraftServer());
+			commandDispatcher = (Commands) vanillaCommandDispatcherField.get(getPaper().bukkitNMS().getMinecraftServer());
 			fieldExists = true;
 		} catch (NoSuchFieldException | SecurityException | IllegalAccessException e) {
 			// Expected on Paper-1.20.6-65 or later due to https://github.com/PaperMC/Paper/pull/8235

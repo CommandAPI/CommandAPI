@@ -50,7 +50,7 @@ public class ScoreHolderArgument {
 		 * @param nodeName the name of the node for this argument
 		 */
 		public Single(String nodeName) {
-			super(nodeName, CommandAPIBukkit.get()._ArgumentScoreholder(ArgumentSubType.SCOREHOLDER_SINGLE));
+			super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentScoreholder(ArgumentSubType.SCOREHOLDER_SINGLE));
 		}
 
 		@Override
@@ -65,7 +65,7 @@ public class ScoreHolderArgument {
 
 		@Override
 		public <CommandSourceStack> String parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-			return CommandAPIBukkit.<CommandSourceStack>get().getScoreHolderSingle(cmdCtx, key);
+			return CommandAPIBukkit.<CommandSourceStack>get().getNMS().getScoreHolderSingle(cmdCtx, key);
 		}
 
 	}
@@ -83,7 +83,7 @@ public class ScoreHolderArgument {
 		 * @param nodeName the name of the node for this argument
 		 */
 		public Multiple(String nodeName) {
-			super(nodeName, CommandAPIBukkit.get()._ArgumentScoreholder(ArgumentSubType.SCOREHOLDER_MULTIPLE));
+			super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentScoreholder(ArgumentSubType.SCOREHOLDER_MULTIPLE));
 		}
 
 		@Override
@@ -98,7 +98,7 @@ public class ScoreHolderArgument {
 
 		@Override
 		public <CommandSourceStack> Collection<String> parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-			return CommandAPIBukkit.<CommandSourceStack>get().getScoreHolderMultiple(cmdCtx, key);
+			return CommandAPIBukkit.<CommandSourceStack>get().getNMS().getScoreHolderMultiple(cmdCtx, key);
 		}
 
 	}
