@@ -39,7 +39,7 @@ public class UUIDArgument extends SafeOverrideableArgument<UUID, UUID> {
 	 * @param nodeName the name of the node for this argument 
 	 */
 	public UUIDArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get()._ArgumentUUID(), UUID::toString);
+		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentUUID(), UUID::toString);
 	}
 
 	@Override
@@ -54,6 +54,6 @@ public class UUIDArgument extends SafeOverrideableArgument<UUID, UUID> {
 	
 	@Override
 	public <CommandSourceStack> UUID parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-		return CommandAPIBukkit.<CommandSourceStack>get().getUUID(cmdCtx, key);
+		return CommandAPIBukkit.<CommandSourceStack>get().getNMS().getUUID(cmdCtx, key);
 	}
 }

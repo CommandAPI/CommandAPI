@@ -46,7 +46,7 @@ public class ChatComponentArgument extends Argument<BaseComponent[]> {
 	 * @param nodeName the name of the node for argument
 	 */
 	public ChatComponentArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get()._ArgumentChatComponent());
+		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentChatComponent());
 
 		try {
 			Class.forName("org.spigotmc.SpigotConfig");

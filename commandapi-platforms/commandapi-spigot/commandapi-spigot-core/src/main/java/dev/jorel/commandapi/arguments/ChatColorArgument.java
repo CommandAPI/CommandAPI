@@ -45,7 +45,7 @@ public class ChatColorArgument extends SafeOverrideableArgument<ChatColor, ChatC
 	 * @param nodeName the name of the node for argument
 	 */
 	public ChatColorArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get()._ArgumentChatFormat(), ((Function<ChatColor, String>) ChatColor::name).andThen(String::toLowerCase));
+		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentChatFormat(), ((Function<ChatColor, String>) ChatColor::name).andThen(String::toLowerCase));
 	}
 	
 	@Override

@@ -88,7 +88,7 @@ import static dev.jorel.commandapi.preprocessor.Unimplemented.REASON.*;
  * Any of these that do not work should be removed or implemented otherwise
  * (introducing another NMS_Common module perhaps?
  */
-public abstract class NMS_Common extends CommandAPIBukkit<CommandSourceStack> {
+public abstract class NMS_Common extends NMS<CommandSourceStack> {
 	private static NamespacedKey fromResourceLocation(ResourceLocation key) {
 		return NamespacedKey.fromString(key.getNamespace() + ":" + key.getPath());
 	}
@@ -350,7 +350,7 @@ public abstract class NMS_Common extends CommandAPIBukkit<CommandSourceStack> {
 	@Override
 	public final BukkitCommandSender<? extends CommandSender> getCommandSenderFromCommandSource(CommandSourceStack css) {
 		try {
-			return wrapCommandSender(css.getBukkitSender());
+			return CommandAPIBukkit.get().wrapCommandSender(css.getBukkitSender());
 		} catch (UnsupportedOperationException e) {
 			return null;
 		}

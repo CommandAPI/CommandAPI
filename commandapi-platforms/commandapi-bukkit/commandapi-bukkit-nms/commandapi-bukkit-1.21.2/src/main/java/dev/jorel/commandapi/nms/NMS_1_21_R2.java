@@ -39,6 +39,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 
+import dev.jorel.commandapi.CommandAPIBukkit;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -63,7 +64,6 @@ import org.bukkit.craftbukkit.v1_21_R2.CraftServer;
 import org.bukkit.craftbukkit.v1_21_R2.CraftSound;
 import org.bukkit.craftbukkit.v1_21_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_21_R2.block.data.CraftBlockData;
-import org.bukkit.craftbukkit.v1_21_R2.command.BukkitCommandWrapper;
 import org.bukkit.craftbukkit.v1_21_R2.command.VanillaCommandWrapper;
 import org.bukkit.craftbukkit.v1_21_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_21_R2.help.CustomHelpTopic;
@@ -110,11 +110,6 @@ import dev.jorel.commandapi.wrappers.NativeProxyCommandSender;
 import dev.jorel.commandapi.wrappers.ParticleData;
 import dev.jorel.commandapi.wrappers.ScoreboardSlot;
 import dev.jorel.commandapi.wrappers.SimpleFunctionWrapper;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.chat.ComponentSerializer;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.commands.CommandBuildContext;
@@ -122,11 +117,9 @@ import net.minecraft.commands.CommandResultCallback;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.FunctionInstantiationException;
 import net.minecraft.commands.SharedSuggestionProvider;
-import net.minecraft.commands.arguments.ColorArgument;
 import net.minecraft.commands.arguments.ComponentArgument;
 import net.minecraft.commands.arguments.DimensionArgument;
 import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.commands.arguments.MessageArgument;
 import net.minecraft.commands.arguments.ParticleArgument;
 import net.minecraft.commands.arguments.RangeArgument;
 import net.minecraft.commands.arguments.ResourceArgument;
@@ -370,7 +363,8 @@ public class NMS_1_21_R2 extends NMS_Common {
 		CommandResultCallback onCommandResult = (succeeded, resultValue) -> result.set(resultValue);
 
 		try {
-			final InstantiatedFunction<CommandSourceStack> instantiatedFunction = commandFunction.instantiate((CompoundTag) null, this.getBrigadierDispatcher());
+			final InstantiatedFunction<CommandSourceStack> instantiatedFunction = commandFunction.instantiate((CompoundTag) null,
+				CommandAPIBukkit.<CommandSourceStack>get().getBrigadierDispatcher());
 			net.minecraft.commands.Commands.executeCommandInContext(css, (executioncontext) -> {
 				ExecutionContext.queueInitialFunctionCall(executioncontext, instantiatedFunction, css, onCommandResult);
 			});
@@ -393,7 +387,8 @@ public class NMS_1_21_R2 extends NMS_Common {
 		// Unpack the commands by instantiating the function with no CSS, then retrieving its entries
 		String[] commands = new String[0];
 		try {
-			final InstantiatedFunction<CommandSourceStack> instantiatedFunction = commandFunction.instantiate((CompoundTag) null, this.getBrigadierDispatcher());
+			final InstantiatedFunction<CommandSourceStack> instantiatedFunction = commandFunction.instantiate((CompoundTag) null,
+				CommandAPIBukkit.<CommandSourceStack>get().getBrigadierDispatcher());
 
 			List<?> cArr = instantiatedFunction.entries();
 			commands = new String[cArr.size()];
@@ -809,7 +804,7 @@ public class NMS_1_21_R2 extends NMS_Common {
 
 			return new BukkitNativeProxyCommandSender(new NativeProxyCommandSender_1_21_R2(css, sender, proxy));
 		} else {
-			return wrapCommandSender(sender);
+			return CommandAPIBukkit.get().wrapCommandSender(sender);
 		}
 	}
 
@@ -818,7 +813,7 @@ public class NMS_1_21_R2 extends NMS_Common {
 		if (callee == null) callee = caller;
 
 		// Most parameters default to what is defined by the caller
-		CommandSourceStack css = getBrigadierSourceFromCommandSender(wrapCommandSender(caller));
+		CommandSourceStack css = getBrigadierSourceFromCommandSender(CommandAPIBukkit.get().wrapCommandSender(caller));
 
 		// Position and rotation may be overridden by the Location
 		if (location != null) {
@@ -935,7 +930,7 @@ public class NMS_1_21_R2 extends NMS_Common {
 		// Update the ServerFunctionLibrary's command dispatcher with the new one
 		try {
 			serverFunctionLibraryDispatcher.set(serverResources.managers().getFunctionLibrary(),
-					getBrigadierDispatcher());
+					CommandAPIBukkit.<CommandSourceStack>get().getBrigadierDispatcher());
 		} catch (IllegalAccessException ignored) {
 			// Shouldn't happen, CommandAPIHandler#getField makes it accessible
 		}
@@ -1046,7 +1041,7 @@ public class NMS_1_21_R2 extends NMS_Common {
 
 			// Register recipes again because reloading datapacks
 			// removes all non-vanilla recipes
-			registerBukkitRecipesSafely(recipes);
+			CommandAPIBukkit.get().registerBukkitRecipesSafely(recipes);
 
 			CommandAPI.logNormal("Finished reloading datapacks");
 		} catch (Exception e) {

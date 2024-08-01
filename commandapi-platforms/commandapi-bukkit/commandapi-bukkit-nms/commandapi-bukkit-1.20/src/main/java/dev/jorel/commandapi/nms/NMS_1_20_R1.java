@@ -580,7 +580,7 @@ public class NMS_1_20_R1 extends NMS_CommonWithFunctions {
 			}
 			return new BukkitNativeProxyCommandSender(new NativeProxyCommandSender_1_20_R1(css, sender, proxy));
 		} else {
-			return wrapCommandSender(sender);
+			return CommandAPIBukkit.get().wrapCommandSender(sender);
 		}
 	}
 
@@ -589,7 +589,7 @@ public class NMS_1_20_R1 extends NMS_CommonWithFunctions {
 		if (callee == null) callee = caller;
 
 		// Most parameters default to what is defined by the caller
-		CommandSourceStack css = getBrigadierSourceFromCommandSender(wrapCommandSender(caller));
+		CommandSourceStack css = getBrigadierSourceFromCommandSender(CommandAPIBukkit.get().wrapCommandSender(caller));
 
 		// Position and rotation may be overridden by the Location
 		if (location != null) {
@@ -701,7 +701,8 @@ public class NMS_1_20_R1 extends NMS_CommonWithFunctions {
 
 		// Update the ServerFunctionLibrary's command dispatcher with the new one
 		try {
-			serverFunctionLibraryDispatcher.set(serverResources.managers().getFunctionLibrary(), getBrigadierDispatcher());
+			serverFunctionLibraryDispatcher.set(serverResources.managers().getFunctionLibrary(),
+				CommandAPIBukkit.<CommandSourceStack>get().getBrigadierDispatcher());
 		} catch (IllegalAccessException ignored) {
 			// Shouldn't happen, CommandAPIHandler#getField makes it accessible
 		}
@@ -792,7 +793,7 @@ public class NMS_1_20_R1 extends NMS_CommonWithFunctions {
 
 			// Register recipes again because reloading datapacks
 			// removes all non-vanilla recipes
-			registerBukkitRecipesSafely(recipes);
+			CommandAPIBukkit.get().registerBukkitRecipesSafely(recipes);
 
 			CommandAPI.logNormal("Finished reloading datapacks");
 		} catch (Exception e) {
