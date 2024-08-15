@@ -46,7 +46,7 @@ public class SpigotNMS_1_20_R4 extends SpigotNMS_Common {
 	@Override
 	public NMS<?> bukkitNMS() {
 		if (bukkitNMS == null) {
-			this.bukkitNMS = new NMS_1_20_R4();
+			this.bukkitNMS = new NMS_1_20_R4(COMMAND_BUILD_CONTEXT);
 		}
 		return bukkitNMS;
 	}

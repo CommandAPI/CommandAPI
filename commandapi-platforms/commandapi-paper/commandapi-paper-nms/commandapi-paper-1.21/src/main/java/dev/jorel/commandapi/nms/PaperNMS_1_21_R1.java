@@ -46,7 +46,7 @@ public class PaperNMS_1_21_R1 extends PaperNMS_Common {
 	@Override
 	public NMS<?> bukkitNMS() {
 		if (bukkitNMS == null) {
-			this.bukkitNMS = new NMS_1_21_R1();
+			this.bukkitNMS = new NMS_1_21_R1(COMMAND_BUILD_CONTEXT);
 		}
 		return bukkitNMS;
 	}
