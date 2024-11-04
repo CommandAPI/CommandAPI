@@ -9,6 +9,7 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
 import dev.jorel.commandapi.arguments.*;
 import dev.jorel.commandapi.commandsenders.AbstractCommandSender;
 import dev.jorel.commandapi.commandsenders.BukkitCommandSender;
+import dev.jorel.commandapi.nms.NMS;
 import dev.jorel.commandapi.spying.CommandAPIHandlerSpy;
 import dev.jorel.commandapi.wrappers.Rotation;
 import dev.jorel.commandapi.wrappers.*;
@@ -21,6 +22,7 @@ import org.bukkit.*;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.enchantments.Enchantment;
@@ -45,7 +47,7 @@ import java.util.function.Predicate;
  * An implementation of {@link CommandAPIBukkit} that is compatible with a MockBukkit testing environment.
  * Does not rely on any version-specific Minecraft code to (ideally) support testing in any version.
  */
-public class MockCommandAPIBukkit extends CommandAPIBukkit<MockCommandSource> {
+public class MockCommandAPIBukkit extends CommandAPIBukkit<MockCommandSource> implements MockNMS<MockCommandSource> {
 	// Static instance
 	private static MockCommandAPIBukkit instance;
 
@@ -88,6 +90,11 @@ public class MockCommandAPIBukkit extends CommandAPIBukkit<MockCommandSource> {
 	private MockCommandRegistrationStrategy commandRegistrationStrategy;
 
 	@Override
+	public <T extends CommandAPIBukkitConfig<T>> void onLoad(CommandAPIBukkitConfig<T> config) {
+		this.onLoad((CommandAPIConfig<?>) config);
+	}
+
+	@Override
 	public void onLoad(CommandAPIConfig<?> config) {
 		// Intercept calls to CommandAPIHandler
 		commandAPIHandlerSpy = new CommandAPIHandlerSpy(CommandAPIHandler.getInstance());
@@ -101,11 +108,26 @@ public class MockCommandAPIBukkit extends CommandAPIBukkit<MockCommandSource> {
 		super.onLoad(config);
 	}
 
+	@Override
+	public void onEnable() {
+
+	}
+
 	/**
 	 * @return The {@link CommandAPIHandlerSpy} object intercepting calls to {@link CommandAPIHandler} methods.
 	 */
 	public CommandAPIHandlerSpy getCommandAPIHandlerSpy() {
 		return commandAPIHandlerSpy;
+	}
+
+	@Override
+	public CommandMap getCommandMap() {
+		return Bukkit.getCommandMap();
+	}
+
+	@Override
+	public Platform activePlatform() {
+		return Platform.PAPER;
 	}
 
 	@Override

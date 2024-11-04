@@ -45,7 +45,7 @@
 		<!-- Compatibility with CommandAPI Bukkit API -->
 		<dependency>
 			<groupId>dev.jorel</groupId>
-			<artifactId>commandapi-bukkit-core</artifactId>
+			<artifactId>commandapi-paper-core</artifactId>
 			<version>${project.version}</version>
 			<scope>provided</scope>
 		</dependency>
