@@ -130,6 +130,11 @@ public class MockCommandAPIBukkit extends CommandAPIBukkit<MockCommandSource> {
 		return new MockCommandSource(sender.getSource());
 	}
 
+	@Override
+	public NativeProxyCommandSender createNativeProxyCommandSender(CommandSender caller, CommandSender callee, Location location, World world) {
+		return new MockNativeProxyCommandSender(caller, callee, location, world);
+	}
+
 	// Miscellaneous methods
 	/**
 	 * A global toggle for whether the default logger returned by {@link #getLogger()} should print messages to the
