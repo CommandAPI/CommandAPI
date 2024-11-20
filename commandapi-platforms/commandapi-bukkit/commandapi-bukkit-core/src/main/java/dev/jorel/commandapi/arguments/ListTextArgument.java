@@ -36,7 +36,7 @@ import dev.jorel.commandapi.SuggestionInfo;
  * @param <T> the type that this list argument generates a list of.
  */
 public class ListTextArgument<T> extends ListArgumentCommon<T> {
-	ListTextArgument(String nodeName, String delimiter, boolean allowDuplicates, Function<SuggestionInfo<CommandSender>, Collection<T>> supplier, Function<T, IStringTooltip> suggestionsMapper) {
-		super(nodeName, delimiter, allowDuplicates, supplier, suggestionsMapper, true);
+	ListTextArgument(String nodeName, String delimiter, boolean allowDuplicates, Function<SuggestionInfo<CommandSender>, Collection<T>> supplier, Function<T, IStringTooltip> suggestionsMapper, boolean allowAnyValue) {
+		super(nodeName, delimiter, allowDuplicates, supplier, suggestionsMapper, true, allowAnyValue);
 	}
 }
