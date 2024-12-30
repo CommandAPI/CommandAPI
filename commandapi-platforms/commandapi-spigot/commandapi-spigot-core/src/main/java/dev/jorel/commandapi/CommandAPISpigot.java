@@ -40,7 +40,10 @@ public abstract class CommandAPISpigot<Source> extends CommandAPIBukkit<Source> 
 
 	@SuppressWarnings("unchecked")
 	public static <Source> CommandAPISpigot<Source> getSpigot() {
-		return (CommandAPISpigot<Source>) spigot;
+		if (spigot != null) {
+			return (CommandAPISpigot<Source>) spigot;
+		}
+		throw new IllegalStateException("Tried to access CommandAPIBukkit instance, but it was null! Are you using CommandAPI features before calling CommandAPI#onLoad?");
 	}
 
 	public static InternalSpigotConfig getConfiguration() {
@@ -52,14 +55,14 @@ public abstract class CommandAPISpigot<Source> extends CommandAPIBukkit<Source> 
 	}
 
 	@Override
-	public <T extends CommandAPIBukkitConfig<T>> void onLoad(CommandAPIBukkitConfig<T> config) {
+	public void onLoad(CommandAPIConfig<?> config) {
 		if (config instanceof CommandAPISpigotConfig spigotConfig) {
 			CommandAPISpigot.setInternalConfig(new InternalSpigotConfig(spigotConfig));
 		} else {
 			CommandAPI.logError("CommandAPIBukkit was loaded with non-Bukkit config!");
 			CommandAPI.logError("Attempts to access Bukkit-specific config variables will fail!");
 		}
-		onLoad();
+		super.onLoad();
 	}
 
 	@Override
@@ -75,16 +78,7 @@ public abstract class CommandAPISpigot<Source> extends CommandAPIBukkit<Source> 
 			updateHelpForCommands(CommandAPI.getRegisteredCommands());
 		}, 0L);
 
-		// Prevent command registration after server has loaded
-		Bukkit.getServer().getPluginManager().registerEvents(new Listener() {
-			// We want the lowest priority so that we always get to this first, in case a dependent plugin is using
-			//  CommandAPI features in their own ServerLoadEvent listener for some reason
-			@EventHandler(priority = EventPriority.LOWEST)
-			public void onServerLoad(ServerLoadEvent event) {
-				CommandAPI.stopCommandRegistration();
-			}
-		}, getConfiguration().getPlugin());
-
+		super.stopCommandRegistrations();
 	}
 
 	@Override
