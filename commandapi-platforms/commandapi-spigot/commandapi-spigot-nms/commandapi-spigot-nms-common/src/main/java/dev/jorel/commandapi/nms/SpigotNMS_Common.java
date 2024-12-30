@@ -19,4 +19,5 @@ public abstract class SpigotNMS_Common extends CommandAPISpigot<CommandSourceSta
 	public NMS<?> bukkitNMS() {
 		return null;
 	}
+
 }

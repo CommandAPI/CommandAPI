@@ -2,7 +2,7 @@ package dev.jorel.commandapi.nms;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
-import dev.jorel.commandapi.CommandAPIBukkit;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.jorel.commandapi.CommandRegistrationStrategy;
 import dev.jorel.commandapi.PaperCommandRegistration;
 import dev.jorel.commandapi.SpigotCommandRegistration;
@@ -15,6 +15,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.ColorArgument;
 import net.minecraft.commands.arguments.ComponentArgument;
+import net.minecraft.commands.arguments.MessageArgument;
 import net.minecraft.server.MinecraftServer;
 import org.bukkit.Bukkit;
 import org.bukkit.command.SimpleCommandMap;
@@ -65,6 +66,11 @@ public class PaperNMS_1_20_R4 extends PaperNMS_Common {
 	@Override
 	public Component getChatComponent(CommandContext<CommandSourceStack> cmdCtx, String key) {
 		return GsonComponentSerializer.gson().deserialize(net.minecraft.network.chat.Component.Serializer.toJson(ComponentArgument.getComponent(cmdCtx, key), COMMAND_BUILD_CONTEXT));
+	}
+
+	@Override
+	public Component getChat(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
+		return GsonComponentSerializer.gson().deserialize(net.minecraft.network.chat.Component.Serializer.toJson(MessageArgument.getMessage(cmdCtx, key), COMMAND_BUILD_CONTEXT));
 	}
 
 	@Override

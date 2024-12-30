@@ -1,6 +1,7 @@
 package dev.jorel.commandapi.nms;
 
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.jorel.commandapi.CommandRegistrationStrategy;
 import dev.jorel.commandapi.SpigotCommandRegistration;
 import net.kyori.adventure.text.Component;
@@ -25,7 +26,7 @@ public class PaperNMS_1_20_R3 extends PaperNMS_Common {
 	}
 
 	@Override
-	public final Component getChatComponent(CommandContext<CommandSourceStack> cmdCtx, String key) {
+	public final Component getChatComponent(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
 		return GsonComponentSerializer.gson().deserialize(net.minecraft.network.chat.Component.Serializer.toJson(ComponentArgument.getComponent(cmdCtx, key)));
 	}
 

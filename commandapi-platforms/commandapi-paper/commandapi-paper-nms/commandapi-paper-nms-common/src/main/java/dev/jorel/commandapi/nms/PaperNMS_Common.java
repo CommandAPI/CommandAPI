@@ -15,7 +15,7 @@ import static dev.jorel.commandapi.preprocessor.Unimplemented.REASON.VERSION_SPE
 public abstract class PaperNMS_Common extends CommandAPIPaper<CommandSourceStack> {
 
 	@Override
-	public final Component getChat(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
+	public Component getChat(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
 		return GsonComponentSerializer.gson().deserialize(net.minecraft.network.chat.Component.Serializer.toJson(MessageArgument.getMessage(cmdCtx, key)));
 	}
 
@@ -24,7 +24,8 @@ public abstract class PaperNMS_Common extends CommandAPIPaper<CommandSourceStack
 	public abstract NamedTextColor getChatColor(CommandContext<CommandSourceStack> cmdCtx, String key);
 
 	@Override
-	public NMS<?> bukkitNMS() {
-		return null;
+	public Component getChatComponent(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
+		return GsonComponentSerializer.gson().deserialize(net.minecraft.network.chat.Component.Serializer.toJson(MessageArgument.getMessage(cmdCtx, key)));
 	}
+
 }

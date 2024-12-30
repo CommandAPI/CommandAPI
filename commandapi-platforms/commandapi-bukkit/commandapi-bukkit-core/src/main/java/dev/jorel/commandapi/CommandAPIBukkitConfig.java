@@ -1,6 +1,5 @@
 package dev.jorel.commandapi;
 
-import io.papermc.paper.event.server.ServerResourcesReloadedEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
