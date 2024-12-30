@@ -90,11 +90,6 @@ public class MockCommandAPIBukkit extends CommandAPIBukkit<MockCommandSource> im
 	private MockCommandRegistrationStrategy commandRegistrationStrategy;
 
 	@Override
-	public <T extends CommandAPIBukkitConfig<T>> void onLoad(CommandAPIBukkitConfig<T> config) {
-		this.onLoad((CommandAPIConfig<?>) config);
-	}
-
-	@Override
 	public void onLoad(CommandAPIConfig<?> config) {
 		// Intercept calls to CommandAPIHandler
 		commandAPIHandlerSpy = new CommandAPIHandlerSpy(CommandAPIHandler.getInstance());

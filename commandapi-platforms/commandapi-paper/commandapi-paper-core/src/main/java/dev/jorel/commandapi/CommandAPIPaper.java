@@ -47,6 +47,10 @@ public abstract class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> i
 		Class<? extends CommandSender> tempNullCommandSender = null;
 		try {
 			tempFeedbackForwardingCommandSender = (Class<? extends CommandSender>) Class.forName("io.papermc.paper.commands.FeedbackForwardingSender");
+		} catch (ClassNotFoundException e) {
+			// uhh...
+		}
+		try {
 			tempNullCommandSender = (Class<? extends CommandSender>) Class.forName("io.papermc.paper.brigadier.NullCommandSender");
 		} catch (ClassNotFoundException e) {
 			// Uhh..
@@ -60,7 +64,10 @@ public abstract class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> i
 
 	@SuppressWarnings("unchecked")
 	public static <Source> CommandAPIPaper<Source> getPaper() {
-		return (CommandAPIPaper<Source>) paper;
+		if (paper != null) {
+			return (CommandAPIPaper<Source>) paper;
+		}
+		throw new IllegalStateException("Tried to access CommandAPIBukkit instance, but it was null! Are you using CommandAPI features before calling CommandAPI#onLoad?");
 	}
 
 	public static InternalPaperConfig getConfiguration() {
@@ -72,14 +79,14 @@ public abstract class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> i
 	}
 
 	@Override
-	public <T extends CommandAPIBukkitConfig<T>> void onLoad(CommandAPIBukkitConfig<T> config) {
+	public void onLoad(CommandAPIConfig<?> config) {
 		if (config instanceof CommandAPIPaperConfig paperConfig) {
 			CommandAPIPaper.setInternalConfig(new InternalPaperConfig(paperConfig));
 		} else {
 			CommandAPI.logError("CommandAPIBukkit was loaded with non-Bukkit config!");
 			CommandAPI.logError("Attempts to access Bukkit-specific config variables will fail!");
 		}
-		onLoad();
+		super.onLoad();
 		checkPaperDependencies();
 	}
 
@@ -99,15 +106,7 @@ public abstract class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> i
 			updateHelpForCommands(CommandAPI.getRegisteredCommands());
 		}, 0L);
 
-		// Prevent command registration after server has loaded
-		Bukkit.getServer().getPluginManager().registerEvents(new Listener() {
-			// We want the lowest priority so that we always get to this first, in case a dependent plugin is using
-			//  CommandAPI features in their own ServerLoadEvent listener for some reason
-			@EventHandler(priority = EventPriority.LOWEST)
-			public void onServerLoad(ServerLoadEvent event) {
-				CommandAPI.stopCommandRegistration();
-			}
-		}, getConfiguration().getPlugin());
+		super.stopCommandRegistrations();
 
 		// Basically just a check to ensure we're actually running Paper
 		if (isPaperPresent) {
@@ -205,13 +204,11 @@ public abstract class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> i
 		if (sender instanceof RemoteConsoleCommandSender remote) {
 			return new BukkitRemoteConsoleCommandSender(remote);
 		}
-		final Class<? extends CommandSender> FeedbackForwardingSender = feedbackForwardingCommandSender;
-		if (FeedbackForwardingSender.isInstance(sender)) {
+		if (this.feedbackForwardingCommandSender.isInstance(sender)) {
 			// We literally cannot type this at compile-time, so let's use a placeholder CommandSender instance
-			return new BukkitFeedbackForwardingCommandSender<CommandSender>(FeedbackForwardingSender.cast(sender));
+			return new BukkitFeedbackForwardingCommandSender<CommandSender>(this.feedbackForwardingCommandSender.cast(sender));
 		}
-		final Class<? extends CommandSender> NullCommandSender = nullCommandSender;
-		if (NullCommandSender != null && NullCommandSender.isInstance(sender)) {
+		if (this.nullCommandSender != null && this.nullCommandSender.isInstance(sender)) {
 			// Since this should only be during a function load or setting up
 			//  help topics, this is just a placeholder to evade the exception.
 			return null;

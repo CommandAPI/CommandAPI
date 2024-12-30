@@ -21,6 +21,10 @@ import org.bukkit.Keyed;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.server.ServerLoadEvent;
 import org.bukkit.help.HelpTopic;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.permissions.Permission;
@@ -107,6 +111,18 @@ public abstract class CommandAPIBukkit<Source> implements BukkitPlatform<Source>
 
 	public void onLoad() {
 		checkDependencies();
+	}
+
+	protected void stopCommandRegistrations() {
+		// Prevent command registration after server has loaded
+		Bukkit.getServer().getPluginManager().registerEvents(new Listener() {
+			// We want the lowest priority so that we always get to this first, in case a dependent plugin is using
+			//  CommandAPI features in their own ServerLoadEvent listener for some reason
+			@EventHandler(priority = EventPriority.LOWEST)
+			public void onServerLoad(ServerLoadEvent event) {
+				CommandAPI.stopCommandRegistration();
+			}
+		}, getConfiguration().getPlugin());
 	}
 
 	private void checkDependencies() {
@@ -273,14 +289,17 @@ public abstract class CommandAPIBukkit<Source> implements BukkitPlatform<Source>
 		nms.getHelpMap().putAll(helpTopicsToAdd);
 	}
 
+	@Override
 	public void onDisable() {
 		// Nothing to do
 	}
 
+	@Override
 	public BukkitCommandSender<? extends CommandSender> wrapCommandSender(CommandSender sender) {
 		return instance.wrapCommandSender(sender);
 	}
 
+	@Override
 	public void registerPermission(String string) {
 		try {
 			Bukkit.getPluginManager().addPermission(new Permission(string));
@@ -289,6 +308,7 @@ public abstract class CommandAPIBukkit<Source> implements BukkitPlatform<Source>
 		}
 	}
 
+	@Override
 	public void preCommandRegistration(String commandName) {
 		// Warn if the command we're registering already exists in this plugin's
 		// plugin.yml file
@@ -308,6 +328,7 @@ public abstract class CommandAPIBukkit<Source> implements BukkitPlatform<Source>
 		}
 	}
 
+	@Override
 	public void postCommandRegistration(RegisteredCommand registeredCommand, LiteralCommandNode<Source> resultantNode, List<LiteralCommandNode<Source>> aliasNodes) {
 		commandRegistrationStrategy.postCommandRegistration(registeredCommand, resultantNode, aliasNodes);
 
@@ -322,10 +343,12 @@ public abstract class CommandAPIBukkit<Source> implements BukkitPlatform<Source>
 		}
 	}
 
+	@Override
 	public LiteralCommandNode<Source> registerCommandNode(LiteralArgumentBuilder<Source> node, String namespace) {
 		return commandRegistrationStrategy.registerCommandNode(node, namespace);
 	}
 
+	@Override
 	public void unregister(String commandName, boolean unregisterNamespaces) {
 		unregisterInternal(commandName, unregisterNamespaces, false);
 	}
@@ -376,6 +399,11 @@ public abstract class CommandAPIBukkit<Source> implements BukkitPlatform<Source>
 		return messenger;
 	}
 
+	@Override
+	public final CommandDispatcher<Source> getBrigadierDispatcher() {
+		return commandRegistrationStrategy.getBrigadierDispatcher();
+	}
+
 	public CommandAPILogger getLogger() {
 		return new DefaultLogger();
 	}
@@ -393,18 +421,22 @@ public abstract class CommandAPIBukkit<Source> implements BukkitPlatform<Source>
 		}
 	}
 
+	@Override
 	public void updateRequirements(AbstractPlayer<?> player) {
 		((Player) player.getSource()).updateCommands();
 	}
 
+	@Override
 	public Argument<String> newConcreteMultiLiteralArgument(String nodeName, String[] literals) {
 		return new MultiLiteralArgument(nodeName, literals);
 	}
 
+	@Override
 	public Argument<String> newConcreteLiteralArgument(String nodeName, String literal) {
 		return new LiteralArgument(nodeName, literal);
 	}
 
+	@Override
 	public CommandAPICommand newConcreteCommandAPICommand(CommandMetaData<CommandSender> meta) {
 		return new CommandAPICommand(meta);
 	}
