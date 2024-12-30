@@ -1,6 +1,7 @@
 package dev.jorel.commandapi.nms;
 
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.jorel.commandapi.CommandRegistrationStrategy;
 import dev.jorel.commandapi.SpigotCommandRegistration;
 import net.kyori.adventure.text.Component;
@@ -14,7 +15,7 @@ import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.craftbukkit.v1_20_R2.command.BukkitCommandWrapper;
 import org.bukkit.craftbukkit.v1_20_R2.command.VanillaCommandWrapper;
 
-public class PaperNMS_1_20_R2 extends PaperNMS_CommonWithFunctions {
+public class PaperNMS_1_20_R2 extends PaperNMS_Common {
 
 	private NMS_1_20_R2 bukkitNMS;
 
@@ -25,7 +26,7 @@ public class PaperNMS_1_20_R2 extends PaperNMS_CommonWithFunctions {
 	}
 
 	@Override
-	public final Component getChatComponent(CommandContext<CommandSourceStack> cmdCtx, String key) {
+	public final Component getChatComponent(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
 		return GsonComponentSerializer.gson().deserialize(net.minecraft.network.chat.Component.Serializer.toJson(ComponentArgument.getComponent(cmdCtx, key)));
 	}
 

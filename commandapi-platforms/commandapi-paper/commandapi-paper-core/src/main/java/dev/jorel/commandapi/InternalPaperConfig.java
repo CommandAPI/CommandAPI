@@ -4,12 +4,10 @@ public class InternalPaperConfig extends InternalBukkitConfig {
 
 	// Whether to hook into paper's reload event to reload datapacks when /minecraft:reload is run
 	private final boolean shouldHookPaperReload;
-	private final boolean skipReloadDatapacks;
 
 	public InternalPaperConfig(CommandAPIPaperConfig config) {
 		super(config);
 		this.shouldHookPaperReload = config.shouldHookPaperReload;
-		this.skipReloadDatapacks = config.skipReloadDatapacks;
 	}
 
 	/**
@@ -19,13 +17,6 @@ public class InternalPaperConfig extends InternalBukkitConfig {
 	 */
 	public boolean shouldHookPaperReload() {
 		return shouldHookPaperReload;
-	}
-
-	/**
-	 * @return Whether the CommandAPI should skip reloading datapacks when the server has finished loading
-	 */
-	public boolean skipReloadDatapacks() {
-		return skipReloadDatapacks;
 	}
 
 }
