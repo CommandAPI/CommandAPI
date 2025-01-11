@@ -74,6 +74,7 @@ inline fun CommandTree.entitySelectorArgumentOnePlayer(nodeName: String, optiona
 inline fun CommandTree.entitySelectorArgumentManyPlayers(nodeName: String, allowEmpty: Boolean = true, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): CommandTree = then(EntitySelectorArgument.ManyPlayers(nodeName, allowEmpty).setOptional(optional).apply(block))
 inline fun CommandTree.playerArgument(nodeName: String, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): CommandTree = then(PlayerArgument(nodeName).setOptional(optional).apply(block))
 inline fun CommandTree.offlinePlayerArgument(nodeName: String, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): CommandTree = then(OfflinePlayerArgument(nodeName).setOptional(optional).apply(block))
+inline fun Argument<*>.asyncOfflinePlayerArgument(nodeName: String, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): Argument<*> = then(AsyncOfflinePlayerArgument(nodeName).setOptional(optional).apply(block))
 inline fun CommandTree.entityTypeArgument(nodeName: String, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): CommandTree = then(EntityTypeArgument(nodeName).setOptional(optional).apply(block))
 
 // Scoreboard arguments

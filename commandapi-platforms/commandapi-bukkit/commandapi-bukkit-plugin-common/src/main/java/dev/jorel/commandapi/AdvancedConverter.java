@@ -234,6 +234,7 @@ class AdvancedConverter {
 			case ADVENTURE_CHAT -> new AdventureChatArgument(nodeName);
 			case ADVENTURE_CHAT_COMPONENT -> new AdventureChatComponentArgument(nodeName);
 			case ANGLE -> new AngleArgument(nodeName);
+			case ASYNC_OFFLINE_PLAYER -> new OfflinePlayerArgument(nodeName);
 			case AXIS -> new AxisArgument(nodeName);
 			case BIOME -> new BiomeArgument(nodeName);
 			case BLOCKSTATE -> new BlockStateArgument(nodeName);

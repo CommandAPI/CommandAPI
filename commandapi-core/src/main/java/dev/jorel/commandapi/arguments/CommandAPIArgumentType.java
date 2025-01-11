@@ -53,6 +53,11 @@ public enum CommandAPIArgumentType {
 	ANGLE("minecraft:angle"),
 
 	/**
+	 * The AsyncOfflinePlayerArgument
+	 */
+	ASYNC_OFFLINE_PLAYER("api:offline_player"),
+
+	/**
 	 * The AxisArgument
 	 */
 	AXIS("minecraft:swizzle"),
