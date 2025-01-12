@@ -45,57 +45,7 @@ import com.google.auto.service.AutoService;
 
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.CommandPermission;
-import dev.jorel.commandapi.annotations.arguments.AAdvancementArgument;
-import dev.jorel.commandapi.annotations.arguments.AAdventureChatArgument;
-import dev.jorel.commandapi.annotations.arguments.AAdventureChatComponentArgument;
-import dev.jorel.commandapi.annotations.arguments.AAngleArgument;
-import dev.jorel.commandapi.annotations.arguments.AAxisArgument;
-import dev.jorel.commandapi.annotations.arguments.ABiomeArgument;
-import dev.jorel.commandapi.annotations.arguments.ABlockPredicateArgument;
-import dev.jorel.commandapi.annotations.arguments.ABlockStateArgument;
-import dev.jorel.commandapi.annotations.arguments.ABooleanArgument;
-import dev.jorel.commandapi.annotations.arguments.AChatArgument;
-import dev.jorel.commandapi.annotations.arguments.AChatColorArgument;
-import dev.jorel.commandapi.annotations.arguments.AChatComponentArgument;
-import dev.jorel.commandapi.annotations.arguments.ADoubleArgument;
-import dev.jorel.commandapi.annotations.arguments.AEnchantmentArgument;
-import dev.jorel.commandapi.annotations.arguments.AEntitySelectorArgument;
-import dev.jorel.commandapi.annotations.arguments.AEntityTypeArgument;
-import dev.jorel.commandapi.annotations.arguments.AFloatArgument;
-import dev.jorel.commandapi.annotations.arguments.AFloatRangeArgument;
-import dev.jorel.commandapi.annotations.arguments.AFunctionArgument;
-import dev.jorel.commandapi.annotations.arguments.AGreedyStringArgument;
-import dev.jorel.commandapi.annotations.arguments.AIntegerArgument;
-import dev.jorel.commandapi.annotations.arguments.AIntegerRangeArgument;
-import dev.jorel.commandapi.annotations.arguments.AItemStackArgument;
-import dev.jorel.commandapi.annotations.arguments.AItemStackPredicateArgument;
-import dev.jorel.commandapi.annotations.arguments.ALiteralArgument;
-import dev.jorel.commandapi.annotations.arguments.ALocation2DArgument;
-import dev.jorel.commandapi.annotations.arguments.ALocationArgument;
-import dev.jorel.commandapi.annotations.arguments.ALongArgument;
-import dev.jorel.commandapi.annotations.arguments.ALootTableArgument;
-import dev.jorel.commandapi.annotations.arguments.AMathOperationArgument;
-import dev.jorel.commandapi.annotations.arguments.AMultiLiteralArgument;
-import dev.jorel.commandapi.annotations.arguments.ANBTCompoundArgument;
-import dev.jorel.commandapi.annotations.arguments.ANamespacedKeyArgument;
-import dev.jorel.commandapi.annotations.arguments.AObjectiveArgument;
-import dev.jorel.commandapi.annotations.arguments.AObjectiveCriteriaArgument;
-import dev.jorel.commandapi.annotations.arguments.AOfflinePlayerArgument;
-import dev.jorel.commandapi.annotations.arguments.AParticleArgument;
-import dev.jorel.commandapi.annotations.arguments.APlayerArgument;
-import dev.jorel.commandapi.annotations.arguments.APotionEffectArgument;
-import dev.jorel.commandapi.annotations.arguments.ARecipeArgument;
-import dev.jorel.commandapi.annotations.arguments.ARotationArgument;
-import dev.jorel.commandapi.annotations.arguments.AScoreHolderArgument;
-import dev.jorel.commandapi.annotations.arguments.AScoreboardSlotArgument;
-import dev.jorel.commandapi.annotations.arguments.ASoundArgument;
-import dev.jorel.commandapi.annotations.arguments.AStringArgument;
-import dev.jorel.commandapi.annotations.arguments.ATeamArgument;
-import dev.jorel.commandapi.annotations.arguments.ATextArgument;
-import dev.jorel.commandapi.annotations.arguments.ATimeArgument;
-import dev.jorel.commandapi.annotations.arguments.AUUIDArgument;
-import dev.jorel.commandapi.annotations.arguments.AWorldArgument;
-import dev.jorel.commandapi.annotations.arguments.Primitive;
+import dev.jorel.commandapi.annotations.arguments.*;
 import dev.jorel.commandapi.arguments.LocationType;
 import dev.jorel.commandapi.arguments.MultiLiteralArgument;
 
@@ -107,7 +57,7 @@ public class Annotations extends AbstractProcessor {
 
 	private static final Class<?>[] ARGUMENT_ANNOTATIONS = new Class<?>[] { AAdvancementArgument.class,
 		AAdventureChatArgument.class, AAdventureChatComponentArgument.class, AAngleArgument.class,
-		AAxisArgument.class, ABiomeArgument.class, ABlockPredicateArgument.class, ABlockStateArgument.class,
+		AAxisArgument.class, AAsyncOfflinePlayerArgument.class, ABiomeArgument.class, ABlockPredicateArgument.class, ABlockStateArgument.class,
 		ABooleanArgument.class, AChatArgument.class, AChatColorArgument.class, AChatComponentArgument.class,
 		ADoubleArgument.class, AEnchantmentArgument.class, AEntitySelectorArgument.ManyEntities.class,
 		AEntitySelectorArgument.ManyPlayers.class, AEntitySelectorArgument.OneEntity.class,
