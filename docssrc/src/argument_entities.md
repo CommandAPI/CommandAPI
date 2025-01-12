@@ -118,7 +118,7 @@ And there we have it! One thing to note is that entity selectors are still a val
 
 ## OfflinePlayer argument
 
-The `OfflinePlayerArgument` class is identical to the `PlayerArgument` class, but instead of returning a `Player` object, it returns an `OfflinePlayer` object. Internally, this argument makes calls to Mojang servers (via Mojang's authlib), meaning it can be significantly slower than alternative methods (such as using a `AsyncOfflinePlayerArgument`, which runs the API call asynchronously and suggesting a list of existing offline players).
+The `OfflinePlayerArgument` class is identical to the `PlayerArgument` class, but instead of returning a `Player` object, it returns an `OfflinePlayer` object. Internally, this argument makes calls to Mojang servers (via Mojang's authlib), meaning it can be significantly slower than alternative methods such as using a `AsyncOfflinePlayerArgument`, which runs the API call asynchronously, or using a `StringArgument` and suggesting a list of existing offline players.
 
 The `OfflinePlayerArgument` _should_ be able to retrieve players that have never joined the server before.
 
