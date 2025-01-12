@@ -67,6 +67,7 @@ inline fun CommandAPICommand.entitySelectorArgumentOnePlayer(nodeName: String, o
 inline fun CommandAPICommand.entitySelectorArgumentManyPlayers(nodeName: String, allowEmpty: Boolean = true, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): CommandAPICommand = withArguments(EntitySelectorArgument.ManyPlayers(nodeName, allowEmpty).setOptional(optional).apply(block))
 inline fun CommandAPICommand.playerArgument(nodeName: String, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): CommandAPICommand = withArguments(PlayerArgument(nodeName).setOptional(optional).apply(block))
 inline fun CommandAPICommand.offlinePlayerArgument(nodeName: String, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): CommandAPICommand = withArguments(OfflinePlayerArgument(nodeName).setOptional(optional).apply(block))
+inline fun CommandAPICommand.asyncOfflinePlayerArgument(nodeName: String, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): CommandAPICommand = withArguments(AsyncOfflinePlayerArgument(nodeName).setOptional(optional).apply(block))
 inline fun CommandAPICommand.entityTypeArgument(nodeName: String, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): CommandAPICommand = withArguments(EntityTypeArgument(nodeName).setOptional(optional).apply(block))
 
 // Scoreboard arguments
