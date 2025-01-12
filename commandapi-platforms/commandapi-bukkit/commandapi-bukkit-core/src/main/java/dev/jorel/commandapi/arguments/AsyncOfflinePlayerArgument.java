@@ -33,7 +33,7 @@ public class AsyncOfflinePlayerArgument extends SafeOverrideableArgument<Complet
 
 	@Override
 	public CommandAPIArgumentType getArgumentType() {
-		return CommandAPIArgumentType.OFFLINE_PLAYER;
+		return CommandAPIArgumentType.ASYNC_OFFLINE_PLAYER;
 	}
 
 	@Override
