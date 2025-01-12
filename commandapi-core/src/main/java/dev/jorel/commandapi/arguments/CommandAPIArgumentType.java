@@ -55,7 +55,7 @@ public enum CommandAPIArgumentType {
 	/**
 	 * The AsyncOfflinePlayerArgument
 	 */
-	ASYNC_OFFLINE_PLAYER("api:offline_player"),
+	ASYNC_OFFLINE_PLAYER("api:async_offline_player"),
 
 	/**
 	 * The AxisArgument
