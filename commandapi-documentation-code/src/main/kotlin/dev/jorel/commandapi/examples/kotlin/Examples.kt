@@ -117,6 +117,35 @@ CommandAPICommand("yaw")
 /* ANCHOR_END: argumentAngle1 */
 }
 
+fun argument_asyncOfflinePlayer() {
+/* ANCHOR: argumentAsyncOfflinePlayer1 */
+CommandAPICommand("playedbefore")
+    .withArguments(AsyncOfflinePlayerArgument("player"))
+    .executes(CommandExecutor { sender, args ->
+        val player = args["player"] as CompletableFuture<OfflinePlayer>
+
+        // Directly sends a message to the sender, indicating that the command is running to prevent confusion
+        sender.sendMessage("Checking if the player has played before...")
+
+        player.thenAccept { offlinePlayer ->
+            if (offlinePlayer.hasPlayedBefore()) {
+                sender.sendMessage("Player has played before")
+            } else {
+                sender.sendMessage("Player has never played before")
+            }
+        }.exceptionally { throwable ->
+            // We have to partly handle exceptions ourselves, since we are using a CompletableFuture
+            val cause = throwable.cause
+            val rootCause = if (cause is RuntimeException) cause.cause else cause
+
+            sender.sendMessage(Component.text(rootCause?.message ?: "An error occurred", NamedTextColor.RED))
+            null
+        }
+    })
+    .register()
+/* ANCHOR_END: argumentAsyncOfflinePlayer1 */
+}
+
 fun argument_biome() {
 /* ANCHOR: argumentBiome1 */
 CommandAPICommand("setbiome")
