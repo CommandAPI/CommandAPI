@@ -118,49 +118,9 @@ And there we have it! One thing to note is that entity selectors are still a val
 
 ## OfflinePlayer argument
 
-The `OfflinePlayerArgument` class is identical to the `PlayerArgument` class, but instead of returning a `Player` object, it returns an `OfflinePlayer` object. Internally, this argument makes calls to Mojang servers (via Mojang's authlib), meaning it can be slightly slower than alternative methods such as using a `AsyncOfflinePlayerArgument`, which runs the API call asynchronously, or using a `StringArgument` and suggesting a list of existing offline players.
+The `OfflinePlayerArgument` class is identical to the `PlayerArgument` class, but instead of returning a `Player` object, it returns an `OfflinePlayer` object. Internally, this argument makes calls to Mojang servers (via Mojang's authlib), meaning it can be slightly slower than alternative methods (such as using a `StringArgument` and suggesting a list of existing offline players).
 
 The `OfflinePlayerArgument` _should_ be able to retrieve players that have never joined the server before.
-
------
-
-## AsyncOfflinePlayer argument
-
-The `AsyncOfflinePlayerArgument` class is identical to the `OfflinePlayerArgument` class, but instead of making the API call synchronously, it makes the API call asynchronously. This means that the command will not block the main thread while waiting for the API call to complete.
-
-The `AsyncOfflinePlayerArgument` returns a `CompletableFuture<OfflinePlayer>` object, which can be used to retrieve the `OfflinePlayer` object when the API call is complete.
-
-<div class="example">
-
-### Example - Checking if a player has joined before
-
-Say we want to create a command that tells us if a player has joined the server before. We can use the `AsyncOfflinePlayerArgument` to fetch the `OfflinePlayer` object asynchronously. That way we simply wait for the request to complete, and once it does, we can check if the player has joined the server before. We want to create a command of the following form:
-
-```mccmd
-/playedbefore <player>
-```
-
-We now want to get the `CompletableFuture<OfflinePlayer>` object from the `AsyncOfflinePlayerArgument` and then use it to get the `OfflinePlayer` object. We can define it like this:
-
-<div class="multi-pre">
-
-```java,Java
-{{#include ../../commandapi-documentation-code/src/main/java/dev/jorel/commandapi/examples/java/Examples.java:argumentAsyncOfflinePlayer1}}
-```
-
-```kotlin,Kotlin
-{{#include ../../commandapi-documentation-code/src/main/kotlin/dev/jorel/commandapi/examples/kotlin/Examples.kt:argumentAsyncOfflinePlayer1}}
-```
-
-```kotlin,Kotlin_DSL
-{{#include ../../commandapi-documentation-code/src/main/kotlin/dev/jorel/commandapi/examples/kotlin/ExamplesKotlinDSL.kt:argumentAsyncOfflinePlayer1}}
-```
-
-</div>
-
-We now successfully ran a command that asynchronously checks if a player has joined the server before without blocking the main thread despite making an API call.
-
-</div>
 
 -----
 

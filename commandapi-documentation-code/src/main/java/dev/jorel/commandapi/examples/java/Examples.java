@@ -165,35 +165,6 @@ new CommandAPICommand("yaw")
 /* ANCHOR_END: argumentAngle2 */
 }
 
-void argument_asyncOfflinePlayer() {
-/* ANCHOR: argumentAsyncOfflinePlayer1 */
-new CommandAPICommand("playedbefore")
-    .withArguments(new AsyncOfflinePlayerArgument("player"))
-    .executes((sender, args) -> {
-        CompletableFuture<OfflinePlayer> player = (CompletableFuture<OfflinePlayer>) args.get("player");
-
-        // Directly sends a message to the sender, indicating that the command is running to prevent confusion
-        sender.sendMessage("Checking if the player has played before...");
-
-        player.thenAccept(offlinePlayer -> {
-            if (offlinePlayer.hasPlayedBefore()) {
-                sender.sendMessage("Player has played before");
-            } else {
-                sender.sendMessage("Player has never played before");
-            }
-        }).exceptionally(throwable -> {
-            // We have to partly handle exceptions ourselves, since we are using a CompletableFuture
-            Throwable cause = throwable.getCause();
-            Throwable rootCause = cause instanceof RuntimeException ? cause.getCause() : cause;
-
-            sender.sendMessage(Component.text(rootCause.getMessage(), NamedTextColor.RED));
-            return null;
-        });
-    })
-    .register();
-/* ANCHOR_END: argumentAsyncOfflinePlayer1 */
-}
-
 void argument_biome() {
 /* ANCHOR: argumentBiome1 */
 new CommandAPICommand("setbiome")
