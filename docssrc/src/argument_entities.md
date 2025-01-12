@@ -152,6 +152,10 @@ We now want to get the `CompletableFuture<OfflinePlayer>` object from the `Async
 {{#include ../../commandapi-documentation-code/src/main/kotlin/dev/jorel/commandapi/examples/kotlin/Examples.kt:argumentAsyncOfflinePlayer1}}
 ```
 
+```kotlin,Kotlin_DSL
+{{#include ../../commandapi-documentation-code/src/main/kotlin/dev/jorel/commandapi/examples/kotlin/ExamplesKotlinDSL.kt:argumentAsyncOfflinePlayer1}}
+```
+
 </div>
 
 We now successfully ran a command that asynchronously checks if a player has joined the server before without blocking the main thread despite making an API call.
