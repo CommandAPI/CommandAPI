@@ -69,7 +69,7 @@ The `PlayerArgument` class is very similar _(almost identical)_ to `EntitySelect
 
 > **Developer's Note:**
 >
-> The `PlayerArgument` internally uses the `GameProfile` class from Mojang's authlib, which means that this argument has a significant performance overhead compared to using `EntitySelectorArgument.OnePlayer`, especially since the API call is made synchronously.
+> The `PlayerArgument` internally uses the `GameProfile` class from Mojang's authlib, which means that this argument has a slight performance overhead compared to using `EntitySelectorArgument.OnePlayer`
 
 <div class="example">
 
