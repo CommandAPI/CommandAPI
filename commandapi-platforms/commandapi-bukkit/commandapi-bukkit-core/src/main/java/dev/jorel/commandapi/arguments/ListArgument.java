@@ -37,7 +37,7 @@ import dev.jorel.commandapi.SuggestionInfo;
  */
 public class ListArgument<T> extends ListArgumentCommon<T> implements GreedyArgument {
 
-	ListArgument(String nodeName, String delimiter, boolean allowDuplicates, Function<SuggestionInfo<CommandSender>, Collection<T>> supplier, Function<T, IStringTooltip> suggestionsMapper) {
-		super(nodeName, delimiter, allowDuplicates, supplier, suggestionsMapper, false);
+	ListArgument(String nodeName, String delimiter, boolean allowDuplicates, Function<SuggestionInfo<CommandSender>, Collection<T>> supplier, Function<T, IStringTooltip> suggestionsMapper, boolean allowAnyValue) {
+		super(nodeName, delimiter, allowDuplicates, supplier, suggestionsMapper, false, allowAnyValue);
 	}
 }

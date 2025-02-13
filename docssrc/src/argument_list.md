@@ -57,6 +57,20 @@ $$\downarrow$$
 
 $$\downarrow$$
 
+> ### Allowing any value (Optional)
+>
+> If you want to disable list validation you can enable the `allowAnyValue` method to set whether any value is allowed. By default, this is disabled.
+>
+> When `allowAnyValue` is set to `true`, any value a player enters will be allowed in the list regardless of the list provided for the argument. Note that duplicate values are still only permitted when `allowDuplicates` is set to `true` too:
+>
+> ```java
+> ListArgumentBuilder.allowAnyValue(true);
+> ```
+>
+> ![List arguments with allowAnyValue set to true](./images/arguments/listargument_allow_any_values.gif)
+
+$$\downarrow$$
+
 ### Providing the list
 
 The `ListArgument` requires a list that the list argument can pull suggestions and validation from. The `ListArgument` does not support values which are not present in the provided list. There are three methods that can be used to provide a list for the `ListArgument`:
