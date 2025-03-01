@@ -1,10 +1,15 @@
 package dev.jorel.commandapi.nms;
 
 import com.mojang.brigadier.Command;
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.tree.LiteralCommandNode;
+import dev.jorel.commandapi.CommandAPIBukkit;
 import dev.jorel.commandapi.CommandRegistrationStrategy;
 import dev.jorel.commandapi.PaperCommandRegistration;
+import io.papermc.paper.command.brigadier.PaperCommands;
+import io.papermc.paper.command.brigadier.PluginCommandNode;
 import io.papermc.paper.command.brigadier.bukkit.BukkitCommandNode;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -18,6 +23,8 @@ import net.minecraft.server.MinecraftServer;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.help.SimpleHelpMap;
+
+import java.util.List;
 
 public class PaperNMS_1_21_R2 extends PaperNMS_Common {
 
@@ -75,4 +82,20 @@ public class PaperNMS_1_21_R2 extends PaperNMS_Common {
 		);
 	}
 
+	@SuppressWarnings({"unchecked", "UnstableApiUsage"})
+	@Override
+	public <Source> LiteralCommandNode<Source> asPluginCommand(LiteralCommandNode<Source> commandNode, String description, List<String> aliases) {
+		return (LiteralCommandNode<Source>) new PluginCommandNode(
+			commandNode.getLiteral(),
+			CommandAPIBukkit.getConfiguration().getPlugin().getPluginMeta(),
+			(LiteralCommandNode<io.papermc.paper.command.brigadier.CommandSourceStack>) commandNode,
+			description
+		);
+	}
+
+	@SuppressWarnings({"unchecked", "UnstableApiUsage"})
+	@Override
+	public <Source> CommandDispatcher<Source> getPaperCommandDispatcher() {
+		return (CommandDispatcher<Source>) PaperCommands.INSTANCE.getDispatcherInternal();
+	}
 }
