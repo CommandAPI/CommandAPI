@@ -32,62 +32,6 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 	// Store registered commands nodes for eventual reloads
 	private final RootCommandNode<Source> registeredNodes = new RootCommandNode<>();
 
-	private static final Object paperCommandsInstance;
-	private static final Field dispatcherField;
-
-	private static final Constructor<?> pluginCommandNodeConstructor;
-	private static final SafeVarHandle<CommandNode<?>, Object> metaField;
-
-	static {
-		// Deal with retrieving the dispatcher in the PaperCommands class
-		Object paperCommandsInstanceObject = null;
-		Field dispatcherFieldObject = null;
-
-		try {
-			Class<?> paperCommands = Class.forName("io.papermc.paper.command.brigadier.PaperCommands");
-			paperCommandsInstanceObject = paperCommands.getField("INSTANCE").get(null);
-			dispatcherFieldObject = paperCommands.getDeclaredField("dispatcher");
-		} catch (ReflectiveOperationException e) {
-			// Doesn't happen, or rather, shouldn't happen
-		}
-
-		paperCommandsInstance = paperCommandsInstanceObject;
-		dispatcherField = dispatcherFieldObject;
-		dispatcherField.setAccessible(true);
-
-		// Deal with retrieving a constructor to mark a command as a plugin command
-		Constructor<?> commandNode;
-		SafeVarHandle<CommandNode<?>, ?> metaFieldHandle = null;
-		try {
-			commandNode = Class.forName("io.papermc.paper.command.brigadier.PluginCommandNode").getDeclaredConstructor(String.class, PluginMeta.class, LiteralCommandNode.class, String.class);
-		} catch (ClassNotFoundException | NoSuchMethodException e) {
-			try {
-				// If this happens, plugin commands on Paper are not identified with the PluginCommandNode anymore
-				Class<?> pluginCommandMeta = Class.forName("io.papermc.paper.command.brigadier.PluginCommandMeta");
-				commandNode = pluginCommandMeta.getDeclaredConstructor(PluginMeta.class, String.class, List.class);
-				metaFieldHandle = SafeVarHandle.ofOrNull(CommandNode.class, "pluginCommandMeta", "pluginCommandMeta", pluginCommandMeta);
-			} catch (ClassNotFoundException | NoSuchMethodException e1) {
-				try {
-					// If this happens, the PluginCommandMeta as been renamed to APICommandMeta
-					Class<?> apiCommandMeta = Class.forName("io.papermc.paper.command.brigadier.APICommandMeta");
-					commandNode = apiCommandMeta.getDeclaredConstructor(PluginMeta.class, String.class, List.class, String.class, boolean.class);
-					metaFieldHandle = SafeVarHandle.ofOrNull(CommandNode.class, "apiCommandMeta", "apiCommandMeta", apiCommandMeta);
-				} catch (ClassNotFoundException | NoSuchMethodException e2) {
-					try {
-						// If this happens, the boolean parameter was removed from APICommandMeta
-						Class<?> apiCommandMeta = Class.forName("io.papermc.paper.command.brigadier.APICommandMeta");
-						commandNode = apiCommandMeta.getDeclaredConstructor(PluginMeta.class, String. class, List.class, String.class);
-						metaFieldHandle = SafeVarHandle.ofOrNull(CommandNode.class, "apiCommandMeta", "apiCommandMeta", apiCommandMeta);
-					} catch (ClassNotFoundException |NoSuchMethodException e3) {
-						commandNode = null;
-					}
-				}
-			}
-		}
-		pluginCommandNodeConstructor = commandNode;
-		metaField = (SafeVarHandle<CommandNode<?>, Object>) metaFieldHandle;
-	}
-
 	public PaperCommandRegistration(Supplier<CommandDispatcher<Source>> getBrigadierDispatcher, Runnable reloadHelpTopics, Predicate<CommandNode<Source>> isBukkitCommand) {
 		this.getBrigadierDispatcher = getBrigadierDispatcher;
 		this.reloadHelpTopics = reloadHelpTopics;
@@ -106,14 +50,8 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 		return isBukkitCommand.test(node);
 	}
 
-	@SuppressWarnings("unchecked")
 	public CommandDispatcher<Source> getPaperDispatcher() {
-		try {
-			return (CommandDispatcher<Source>) dispatcherField.get(paperCommandsInstance);
-		} catch (IllegalAccessException e) {
-			// This doesn't happen
-			return null;
-		}
+		return CommandAPIPaper.getPaper().getPaperCommandDispatcher();
 	}
 
 	// Implement CommandRegistrationStrategy methods
@@ -177,54 +115,8 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 		CommandAPIBukkit.get().updateHelpForCommands(CommandAPI.getRegisteredCommands());
 	}
 
-	@SuppressWarnings("unchecked")
 	private LiteralCommandNode<Source> asPluginCommand(LiteralCommandNode<Source> commandNode) {
-		try {
-			if (metaField == null) {
-				return (LiteralCommandNode<Source>) pluginCommandNodeConstructor.newInstance(
-					commandNode.getLiteral(),
-					CommandAPIBukkit.getConfiguration().getPlugin().getPluginMeta(),
-					commandNode,
-					getDescription(commandNode.getLiteral())
-				);
-			} else {
-				setPluginCommandMeta(commandNode);
-				return commandNode;
-			}
-		} catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	private void setPluginCommandMeta(LiteralCommandNode<Source> node) {
-		try {
-			metaField.set(node, pluginCommandNodeConstructor.newInstance(
-				CommandAPIBukkit.getConfiguration().getPlugin().getPluginMeta(),
-				getDescription(node.getLiteral()),
-				getAliasesForCommand(node.getLiteral())
-			));
-		} catch (ReflectiveOperationException | IllegalArgumentException e) {
-			try {
-				metaField.set(node, pluginCommandNodeConstructor.newInstance(
-					CommandAPIBukkit.getConfiguration().getPlugin().getPluginMeta(),
-					getDescription(node.getLiteral()),
-					getAliasesForCommand(node.getLiteral()),
-					CommandAPIBukkit.getConfiguration().getNamespace(), // Don't think this matters actually
-					false // Indicates a server side only command
-				));
-			} catch (ReflectiveOperationException | IllegalArgumentException e1) {
-				try {
-					metaField.set(node, pluginCommandNodeConstructor.newInstance(
-						CommandAPIBukkit.getConfiguration().getPlugin().getPluginMeta(),
-						getDescription(node.getLiteral()),
-						getAliasesForCommand(node.getLiteral()),
-						CommandAPIBukkit.getConfiguration().getNamespace() // Probably still doesn't matter
-					));
-				} catch (ReflectiveOperationException e2) {
-					// This doesn't happen
-				}
-			}
-		}
+		return CommandAPIPaper.getPaper().asPluginCommand(commandNode, getDescription(commandNode.getLiteral()), getAliasesForCommand(commandNode.getLiteral()));
 	}
 
 	private String getDescription(String commandName) {

@@ -1,11 +1,19 @@
 package dev.jorel.commandapi.nms;
 
 import com.mojang.brigadier.Command;
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.tree.CommandNode;
+import com.mojang.brigadier.tree.LiteralCommandNode;
+import dev.jorel.commandapi.CommandAPIBukkit;
 import dev.jorel.commandapi.CommandRegistrationStrategy;
 import dev.jorel.commandapi.PaperCommandRegistration;
+import dev.jorel.commandapi.SafeVarHandle;
+import io.papermc.paper.command.brigadier.APICommandMeta;
+import io.papermc.paper.command.brigadier.PaperCommands;
 import io.papermc.paper.command.brigadier.bukkit.BukkitCommandNode;
+import io.papermc.paper.plugin.configuration.PluginMeta;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
@@ -18,9 +26,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.help.SimpleHelpMap;
 
+import java.lang.reflect.Constructor;
+import java.util.List;
+
 public class PaperNMS_1_21_R4 extends PaperNMS_Common {
 
 	private static final CommandBuildContext COMMAND_BUILD_CONTEXT;
+	private static final Constructor<?> pluginCommandNodeConstructor;
+	private static final SafeVarHandle<CommandNode<?>, Object> metaField;
 
 	private NMS_1_21_R4 bukkitNMS;
 
@@ -31,6 +44,18 @@ public class PaperNMS_1_21_R4 extends PaperNMS_Common {
 		} else {
 			COMMAND_BUILD_CONTEXT = null;
 		}
+
+		Constructor<?> pluginCommandNode;
+		SafeVarHandle<CommandNode<?>, ?> metaFieldHandle = null;
+		try {
+			Class<?> pluginCommandMeta = Class.forName("io.papermc.paper.command.brigadier.PluginCommandMeta");
+			pluginCommandNode = pluginCommandMeta.getDeclaredConstructor(PluginMeta.class, String.class, List.class);
+			metaFieldHandle = SafeVarHandle.ofOrNull(CommandNode.class, "pluginCommandNode", "pluginCommandNode", pluginCommandMeta);
+		} catch (ReflectiveOperationException e) {
+			pluginCommandNode = null;
+		}
+		pluginCommandNodeConstructor = pluginCommandNode;
+		metaField = (SafeVarHandle<CommandNode<?>, Object>) metaFieldHandle;
 	}
 
 	@Override
@@ -67,6 +92,37 @@ public class PaperNMS_1_21_R4 extends PaperNMS_Common {
 				return command instanceof BukkitCommandNode.BukkitBrigCommand;
 			}
 		);
+	}
+
+	@SuppressWarnings({"UnstableApiUsage"})
+	@Override
+	public <Source> LiteralCommandNode<Source> asPluginCommand(LiteralCommandNode<Source> commandNode, String description, List<String> aliases) {
+		try {
+			if (pluginCommandNodeConstructor != null) {
+				metaField.set(commandNode, pluginCommandNodeConstructor.newInstance(
+					CommandAPIBukkit.getConfiguration().getPlugin().getPluginMeta(),
+					description,
+					aliases
+				));
+			} else {
+				commandNode.apiCommandMeta = new APICommandMeta(
+					CommandAPIBukkit.getConfiguration().getPlugin().getPluginMeta(),
+					description,
+					aliases,
+					CommandAPIBukkit.getConfiguration().getNamespace(),
+					false
+				);
+			}
+			return commandNode;
+		} catch (ReflectiveOperationException e) {
+			return commandNode;
+		}
+	}
+
+	@SuppressWarnings({"unchecked", "UnstableApiUsage"})
+	@Override
+	public <Source> CommandDispatcher<Source> getPaperCommandDispatcher() {
+		return (CommandDispatcher<Source>) PaperCommands.INSTANCE.getDispatcherInternal();
 	}
 
 }

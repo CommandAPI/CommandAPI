@@ -1,7 +1,10 @@
 package dev.jorel.commandapi.nms;
 
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.tree.LiteralCommandNode;
+import dev.jorel.commandapi.CommandAPIBukkit;
 import dev.jorel.commandapi.CommandRegistrationStrategy;
 import dev.jorel.commandapi.SpigotCommandRegistration;
 import net.kyori.adventure.text.Component;
@@ -14,6 +17,8 @@ import net.minecraft.server.MinecraftServer;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.craftbukkit.v1_20_R3.command.BukkitCommandWrapper;
 import org.bukkit.craftbukkit.v1_20_R3.command.VanillaCommandWrapper;
+
+import java.util.List;
 
 public class PaperNMS_1_20_R3 extends PaperNMS_Common {
 
@@ -48,6 +53,16 @@ public class PaperNMS_1_20_R3 extends PaperNMS_Common {
 			node -> new VanillaCommandWrapper(bukkitNMS.<MinecraftServer>getMinecraftServer().vanillaCommandDispatcher, node),
 			node -> node.getCommand() instanceof BukkitCommandWrapper
 		);
+	}
+
+	@Override
+	public <Source> LiteralCommandNode<Source> asPluginCommand(LiteralCommandNode<Source> commandNode, String description, List<String> aliases) {
+		return null; // This is fine, it isn't used
+	}
+
+	@Override
+	public <Source> CommandDispatcher<Source> getPaperCommandDispatcher() {
+		return null; // This is fine, it isn't used
 	}
 
 }
