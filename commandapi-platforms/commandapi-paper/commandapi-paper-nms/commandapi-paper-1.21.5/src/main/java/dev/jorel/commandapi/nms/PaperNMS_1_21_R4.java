@@ -1,11 +1,17 @@
 package dev.jorel.commandapi.nms;
 
 import com.mojang.brigadier.Command;
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.tree.LiteralCommandNode;
+import dev.jorel.commandapi.CommandAPIBukkit;
 import dev.jorel.commandapi.CommandRegistrationStrategy;
 import dev.jorel.commandapi.PaperCommandRegistration;
+import io.papermc.paper.command.brigadier.PaperCommands;
+import io.papermc.paper.command.brigadier.PluginCommandMeta;
 import io.papermc.paper.command.brigadier.bukkit.BukkitCommandNode;
+import io.papermc.paper.plugin.configuration.PluginMeta;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
@@ -18,9 +24,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.help.SimpleHelpMap;
 
+import java.lang.reflect.Constructor;
+import java.util.List;
+
 public class PaperNMS_1_21_R4 extends PaperNMS_Common {
 
 	private static final CommandBuildContext COMMAND_BUILD_CONTEXT;
+	private static final Constructor<?> pluginCommandNodeConstructor;
 
 	private NMS_1_21_R4 bukkitNMS;
 
@@ -31,6 +41,14 @@ public class PaperNMS_1_21_R4 extends PaperNMS_Common {
 		} else {
 			COMMAND_BUILD_CONTEXT = null;
 		}
+
+		Constructor<?> pluginCommandNode;
+		try {
+			pluginCommandNode = Class.forName("io.papermc.paper.command.brigadier.PluginCommandNode").getDeclaredConstructor(String.class, PluginMeta.class, LiteralCommandNode.class, String.class);
+		} catch (ReflectiveOperationException e) {
+			pluginCommandNode = null;
+		}
+		pluginCommandNodeConstructor = pluginCommandNode;
 	}
 
 	@Override
@@ -67,6 +85,36 @@ public class PaperNMS_1_21_R4 extends PaperNMS_Common {
 				return command instanceof BukkitCommandNode.BukkitBrigCommand;
 			}
 		);
+	}
+
+	@SuppressWarnings({"unchecked", "UnstableApiUsage"})
+	@Override
+	public <Source> LiteralCommandNode<Source> asPluginCommand(LiteralCommandNode<Source> commandNode, String description, List<String> aliases) {
+		try {
+			if (pluginCommandNodeConstructor != null) {
+				return (LiteralCommandNode<Source>) pluginCommandNodeConstructor.newInstance(
+					commandNode.getLiteral(),
+					CommandAPIBukkit.getConfiguration().getPlugin().getPluginMeta(),
+					commandNode,
+					description
+				);
+			} else {
+				commandNode.pluginCommandMeta = new PluginCommandMeta(
+					CommandAPIBukkit.getConfiguration().getPlugin().getPluginMeta(),
+					description,
+					aliases
+				);
+				return commandNode;
+			}
+		} catch (ReflectiveOperationException e) {
+			return commandNode;
+		}
+	}
+
+	@SuppressWarnings({"unchecked", "UnstableApiUsage"})
+	@Override
+	public <Source> CommandDispatcher<Source> getPaperCommandDispatcher() {
+		return (CommandDispatcher<Source>) PaperCommands.INSTANCE.getDispatcherInternal();
 	}
 
 }
