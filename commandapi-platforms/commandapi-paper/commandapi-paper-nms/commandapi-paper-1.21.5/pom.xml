@@ -41,12 +41,6 @@
 	<dependencies>
 		<!-- Libraries -->
 		<dependency>
-			<groupId>io.papermc.paper</groupId>
-			<artifactId>paper-api</artifactId>
-			<version>${paper.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
 			<groupId>ca.bkaw.nms</groupId>
 			<artifactId>paper-nms-no-moonrise</artifactId>
 			<version>1.21.5-SNAPSHOT</version>
