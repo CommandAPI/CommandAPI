@@ -20,18 +20,46 @@
  *******************************************************************************/
 package dev.jorel.commandapi.exceptions;
 
-/**
- * An exception caused when a command does not declare any executors
- */
-@SuppressWarnings("serial")
-public class MissingCommandExecutorException extends RuntimeException {
+import dev.jorel.commandapi.CommandAPIHandler;
+import dev.jorel.commandapi.arguments.AbstractArgument;
 
+import java.util.List;
+
+/**
+ * An exception caused when a command does not declare any executors.
+ */
+public class MissingCommandExecutorException extends CommandRegistrationException {
 	/**
-	 * Creates a MissingCommandExecutorException
-	 * 
-	 * @param commandName the name of the command that was being registered
+	 * Creates a MissingCommandExecutorException.
+	 *
+	 * @param commandName The name of the command that could not be executed.
 	 */
 	public MissingCommandExecutorException(String commandName) {
-		super("/" + commandName + " does not declare any executors or executable subcommands!");
+		this(List.of(), CommandAPIHandler.getInstance().getPlatform().newConcreteLiteralArgument(commandName, commandName));
+	}
+
+	/**
+	 * Creates a MissingCommandExecutorException.
+	 *
+	 * @param previousArguments The arguments that led up to the un-executable argument.
+	 * @param argument          The argument that is missing an executor.
+	 */
+	public <Argument extends AbstractArgument<?, ?, ?, ?>> MissingCommandExecutorException(
+		List<Argument> previousArguments, Argument argument) {
+		super(buildMessage(previousArguments, argument));
+	}
+
+	private static <Argument extends AbstractArgument<?, ?, ?, ?>> String buildMessage(List<Argument> previousArguments, Argument argument) {
+		StringBuilder builder = new StringBuilder();
+
+		builder.append("The command path ");
+		if (!previousArguments.isEmpty()) {
+			addArgumentList(builder, previousArguments);
+			builder.append(" ending with ");
+		}
+		addArgument(builder, argument);
+		builder.append(" is not executable!");
+
+		return builder.toString();
 	}
 }

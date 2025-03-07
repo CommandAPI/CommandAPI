@@ -21,8 +21,7 @@
 package dev.jorel.commandapi.nms;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.io.Files;
-import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.Message;
 import com.mojang.brigadier.arguments.ArgumentType;
@@ -35,9 +34,6 @@ import com.mojang.logging.LogUtils;
 import dev.jorel.commandapi.*;
 import dev.jorel.commandapi.arguments.ArgumentSubType;
 import dev.jorel.commandapi.arguments.SuggestionProviders;
-import dev.jorel.commandapi.commandsenders.AbstractCommandSender;
-import dev.jorel.commandapi.commandsenders.BukkitCommandSender;
-import dev.jorel.commandapi.commandsenders.BukkitNativeProxyCommandSender;
 import dev.jorel.commandapi.preprocessor.Differs;
 import dev.jorel.commandapi.preprocessor.RequireField;
 import dev.jorel.commandapi.preprocessor.Unimplemented;
@@ -117,7 +113,6 @@ import org.bukkit.craftbukkit.v1_19_R1.command.BukkitCommandWrapper;
 import org.bukkit.craftbukkit.v1_19_R1.command.VanillaCommandWrapper;
 import org.bukkit.craftbukkit.v1_19_R1.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_19_R1.help.CustomHelpTopic;
 import org.bukkit.craftbukkit.v1_19_R1.help.SimpleHelpMap;
 import org.bukkit.craftbukkit.v1_19_R1.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.v1_19_R1.potion.CraftPotionEffectType;
@@ -133,12 +128,9 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
@@ -161,6 +153,7 @@ public abstract class NMS_1_19_Common extends NMS_CommonWithFunctions {
 	private static final Field entitySelectorUsesSelector;
 	private static final SafeVarHandle<ItemInput, CompoundTag> itemInput;
 	private static final Field serverFunctionLibraryDispatcher;
+	private static final SafeStaticMethodHandle<Void> argumentUtilsSerializeArgumentToJson;
 
 	// From net.minecraft.server.commands.LocateCommand
 	private static final DynamicCommandExceptionType ERROR_BIOME_INVALID;
@@ -191,6 +184,8 @@ public abstract class NMS_1_19_Common extends NMS_CommonWithFunctions {
 		itemInput = SafeVarHandle.ofOrNull(ItemInput.class, "c", "tag", CompoundTag.class);
 		// For some reason, MethodHandles fails for this field, but Field works okay
 		serverFunctionLibraryDispatcher = CommandAPIHandler.getField(ServerFunctionLibrary.class, "i", "dispatcher");
+
+		argumentUtilsSerializeArgumentToJson = SafeStaticMethodHandle.ofOrNull(ArgumentUtils.class, "a", "serializeArgumentToJson", void.class, JsonObject.class, ArgumentType.class);
 
 		ERROR_BIOME_INVALID = new DynamicCommandExceptionType(
 			arg -> net.minecraft.network.chat.Component.translatable("commands.locatebiome.invalid", arg));
@@ -346,15 +341,10 @@ public abstract class NMS_1_19_Common extends NMS_CommonWithFunctions {
 	}
 
 	@Override
-	public final void createDispatcherFile(File file, CommandDispatcher<CommandSourceStack> dispatcher)
-            throws IOException {
-		Files.asCharSink(file, StandardCharsets.UTF_8).write(new GsonBuilder().setPrettyPrinting().create()
-			.toJson(ArgumentUtils.serializeNodeToJson(dispatcher, dispatcher.getRoot())));
-	}
-
-	@Override
-	public final HelpTopic generateHelpTopic(String commandName, String shortDescription, String fullDescription, String permission) {
-		return new CustomHelpTopic(commandName, shortDescription, fullDescription, permission);
+	public Optional<JsonObject> getArgumentTypeProperties(ArgumentType<?> type) {
+		JsonObject result = new JsonObject();
+		argumentUtilsSerializeArgumentToJson.invokeOrNull(result, type);
+		return Optional.ofNullable((JsonObject) result.get("properties"));
 	}
 
 	@Override
@@ -440,8 +430,14 @@ public abstract class NMS_1_19_Common extends NMS_CommonWithFunctions {
 	}
 
 	@Override
-	public final CommandSourceStack getBrigadierSourceFromCommandSender(AbstractCommandSender<? extends CommandSender> senderWrapper) {
-		return VanillaCommandWrapper.getListener(senderWrapper.getSource());
+	public final CommandSourceStack getBrigadierSourceFromCommandSender(CommandSender sender) {
+		return VanillaCommandWrapper.getListener(sender);
+	}
+
+	@Override
+	protected boolean isProxyEntity(CommandSender sender, CommandSourceStack css) {
+		Entity proxyEntity = css.getEntity();
+		return proxyEntity != null && !sender.equals(proxyEntity.getBukkitEntity());
 	}
 
 	@Override
@@ -698,22 +694,18 @@ public abstract class NMS_1_19_Common extends NMS_CommonWithFunctions {
 	}
 
 	@Override
-	public BukkitCommandSender<? extends CommandSender> getSenderForCommand(CommandContext<CommandSourceStack> cmdCtx, boolean isNative) {
-		CommandSourceStack css = cmdCtx.getSource();
-
-		CommandSender sender = css.getBukkitSender();
+	public NativeProxyCommandSender getNativeProxyCommandSender(CommandSender sender, CommandSourceStack css) {
+		// Get position
 		Vec3 pos = css.getPosition();
 		Vec2 rot = css.getRotation();
 		World world = getWorldForCSS(css);
 		Location location = new Location(world, pos.x(), pos.y(), pos.z(), rot.y, rot.x);
-		Entity proxyEntity = css.getEntity();
-		CommandSender proxy = proxyEntity == null ? null : proxyEntity.getBukkitEntity();
 
-		if (isNative || (proxy != null && !sender.equals(proxy))) {
-			return new BukkitNativeProxyCommandSender(new NativeProxyCommandSender(sender, proxy, location, world));
-		} else {
-			return wrapCommandSender(sender);
-		}
+		// Get proxy sender (default to sender if null)
+		Entity proxyEntity = css.getEntity();
+		CommandSender proxy = proxyEntity == null ? sender : proxyEntity.getBukkitEntity();
+
+		return new NativeProxyCommandSender(sender, proxy, location, world);
 	}
 
 	@Override

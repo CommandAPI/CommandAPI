@@ -204,14 +204,36 @@ public class CommandAPIServerMock extends ServerMock {
 //		return MockPlatform.getInstance().getItemFactory();
 //	}
 
+	@Override
+	public @NotNull PlayerMock addPlayer() {
+		PlayerMock player = super.addPlayer();
+		MockPlatform.getInstance().wrapPlayerMockIntoCraftPlayer(player);
+		return player;
+	}
+
+	@Override
+	public @NotNull PlayerMock addPlayer(@NotNull String name) {
+		PlayerMock player = super.addPlayer(name);
+		MockPlatform.getInstance().wrapPlayerMockIntoCraftPlayer(player);
+		return player;
+	}
+
+	@Override
+	public void addPlayer(@NotNull PlayerMock player) {
+		// Interrupt normal calls to updateCommands, because PlayerMock throws an UnimplementedOperationException
+		PlayerMock spy = Mockito.mockingDetails(player).isMock() ? player : Mockito.spy(player);
+		Mockito.doNothing().when(spy).updateCommands();
+		super.addPlayer(spy);
+	}
+
 	/**
 	 * Creates a new Bukkit {@link Player}. Unlike {@link PlayerMock}, this uses Mockito to mock the CraftPlayer class,
 	 * which allows the returned object to pass through VanillaCommandWrapper#getListener without error.
 	 *
-	 * @return A new {@link Player}.
+	 * @return A new {@link Player} with a randome name.
 	 */
-	public Player setupMockedCraftPlayer() {
-		return setupMockedCraftPlayer("defaultName");
+	public Player addCraftPlayer() {
+		return MockPlatform.getInstance().wrapPlayerMockIntoCraftPlayer(super.addPlayer());
 	}
 
 	/**
@@ -221,8 +243,8 @@ public class CommandAPIServerMock extends ServerMock {
 	 * @param name The name for the player
 	 * @return A new {@link Player}.
 	 */
-	public Player setupMockedCraftPlayer(String name) {
-		return MockPlatform.getInstance().setupMockedCraftPlayer(name);
+	public Player addCraftPlayer(String name) {
+		return MockPlatform.getInstance().wrapPlayerMockIntoCraftPlayer(super.addPlayer(name));
 	}
 
 	// Advancements

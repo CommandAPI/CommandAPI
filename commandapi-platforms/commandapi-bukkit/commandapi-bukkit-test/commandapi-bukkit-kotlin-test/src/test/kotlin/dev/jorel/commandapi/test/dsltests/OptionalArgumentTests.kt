@@ -72,35 +72,6 @@ class OptionalArgumentTests: TestBase() {
 	}
 
 	@Test
-	fun executionTestWithCommandTreeAndOptionalArgumentMethod() {
-		val results: Mut<String> = Mut.of()
-
-		// TODO: Come up with a more complicated test for optional arguments in a CommandTree
-		// I was unsure about the optionalArgument() method for the CommandTree DSL anyway
-		// because everything can be achieved by using the normal CommandTree DSL syntax and
-		// the argument() method
-		commandTree("test") {
-			stringArgument("value", optional = true) {
-				playerExecutor { player, args ->
-					results.set(args.getOptional("value").orElse("DefaultValue") as String)
-				}
-			}
-		}
-
-		val player: PlayerMock = server.addPlayer()
-
-		// /test
-		server.dispatchCommand(player, "test")
-		assertEquals("DefaultValue", results.get())
-
-		// /test hello
-		server.dispatchCommand(player, "test hello")
-		assertEquals("hello", results.get())
-
-		assertNoMoreResults(results)
-	}
-
-	@Test
 	fun executionTestWithOptionalValue() {
 		val results: Mut<String> = Mut.of()
 

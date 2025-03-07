@@ -9,11 +9,11 @@ import java.util.Optional;
  * Minecraft's chat preview feature. To use this, the server must have
  * {@code previews-chat=true} set in its {@code server.properties} file
  */
-public interface Previewable<T
+public interface Previewable<Impl
 /// @cond DOX
 extends AbstractArgument<?, ?, ?, ?>
 /// @endcond
-, A> {
+, T, Player> {
 
 	/**
 	 * Sets the {@link PreviewableFunction} for this argument. This function will
@@ -24,13 +24,13 @@ extends AbstractArgument<?, ?, ?, ?>
 	 * @param preview the function to use for chat preview generation
 	 * @return the current argument
 	 */
-	public T withPreview(PreviewableFunction<A> preview);
+	public Impl withPreview(PreviewableFunction<T, Player> preview);
 
 	/**
 	 * @return the {@link PreviewableFunction} for this argument, as an
 	 *         {@link Optional}.
 	 */
-	public Optional<PreviewableFunction<A>> getPreview();
+	public Optional<PreviewableFunction<T, Player>> getPreview();
 
 	/**
 	 * Whether this argument should use the preview result as the argument value for
@@ -41,7 +41,7 @@ extends AbstractArgument<?, ?, ?, ?>
 	 * @param usePreview whether to use the preview as the value for this argument
 	 * @return the current argument
 	 */
-	public T usePreview(boolean usePreview);
+	public Impl usePreview(boolean usePreview);
 
 	/**
 	 * @return whether this argument uses legacy chat component APIs

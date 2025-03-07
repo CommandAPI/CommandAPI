@@ -53,18 +53,17 @@ class CommandExecutionTests extends TestBase {
 	{
 		// Not using Map.of here because I want the values to be in insertion order,
 		//  rather than in whatever order the hash code feels like, which makes debugging easier
-		executorTypeToMockSender.put(ExecutorType.PLAYER, () -> server.setupMockedCraftPlayer());
+		executorTypeToMockSender.put(ExecutorType.PLAYER, () -> server.addCraftPlayer());
 		executorTypeToMockSender.put(ExecutorType.ENTITY, () -> new SimpleEntityMock(server));
 		executorTypeToMockSender.put(ExecutorType.CONSOLE, ConsoleCommandSenderMock::new);
 		executorTypeToMockSender.put(ExecutorType.BLOCK, () -> Mockito.mock(BlockCommandSender.class));
 		// This is a little odd, but `ProxiedCommandSender`s will always be CommandAPI `NativeProxyCommandSender`s.
 		//  It is possible that a different plugin could implement the `ProxiedCommandSender`, which would cause
-		//  a class cast exception if that sender tried to run a `ProxyCommandExecutor`. However, the Spigot/Paper
+		//  a class cast exception if that sender tried to run an `executesProxy` executor. However, the Spigot/Paper
 		//  server itself will never use its own `org.bukkit.craftbukkit.command.ProxiedNativeCommandSender` class.
 		//  So, if you can make a class cast exception happen on a server, change this mock to `ProxiedCommandSender`
-		//  and fix `ProxiedCommandExecutor`, but otherwise we can provide the more specific `NativeProxyCommandSender`
-		//  class when using `executesProxy`.
-//        executorTypeToMockSender.put(ExecutorType.PROXY, () -> Mockito.mock(ProxiedCommandSender.class));
+		//  and fix `executesProxy`, but otherwise we can provide the more specific `NativeProxyCommandSender` class.
+//		executorTypeToMockSender.put(ExecutorType.PROXY, () -> Mockito.mock(ProxiedCommandSender.class));
 		executorTypeToMockSender.put(ExecutorType.PROXY, () -> Mockito.mock(NativeProxyCommandSender.class));
 		executorTypeToMockSender.put(ExecutorType.REMOTE, () -> Mockito.mock(RemoteConsoleCommandSender.class));
 	}
@@ -179,11 +178,8 @@ class CommandExecutionTests extends TestBase {
 			name -> sender -> assertCommandFailsWith(sender, name,
 				"This command has no implementations for " + sender.getClass().getSimpleName().toLowerCase()),
 			List.of("normal", "normalinfo", "resultinginfo", "resulting"),
-			// TODO: Players should be able to run these commands
-			//  Currently they cannot, since even though `Player extends Entity`,
-			//  `AbstractPlayer` does not extend `AbstractEntity`
-			//  See https://github.com/JorelAli/CommandAPI/issues/559
-			ExecutorType.ENTITY/*, ExecutorType.PLAYER */
+			// Players count as Entities
+			ExecutorType.ENTITY, ExecutorType.PLAYER
 		);
 
 		assertNoMoreResults(results);

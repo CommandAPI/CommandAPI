@@ -1,10 +1,13 @@
 package dev.jorel.commandapi.test.arguments;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Collection;
 import java.util.List;
 
+import dev.jorel.commandapi.Converter;
+import dev.jorel.commandapi.test.CommandConvertedTestsPlugin;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.AfterEach;
@@ -151,13 +154,13 @@ class ArgumentEntitySelectorTests extends TestBase {
 		// Fails because @e can allow more than one entity, but we've specified only one entity
 		assertCommandFailsWith(player, "test @e", "Only one entity is allowed, but the provided selector allows more than one at position 0: <--[HERE]");
 		
-		// /test @a[limit=1]
+		// /test @e[limit=1]
 		// Should NOT fail with "Only one entity is allowed" because we've added a single entity limiter to it.
-		// Dev note: This fails because no entities are found, most likely due to entity lookups not working in the test environment.
-		assertNotCommandFailsWith(player, "test @e[limit=1]", "Only one entity is allowed, but the provided selector allows more than one at position 0: <--[HERE]");
+		server.dispatchCommand(player, "test @e[limit=1]");
+		assertEquals("APlayer", results.get().getName());
 		
 		// /test @a
-		// Dev note: This command fails because no entities are found, most likely due to entity lookups not working in the test environment.
+		// Fails because @a can allow more than one entity (player), but we've specified only one entity
 		assertCommandFailsWith(player, "test @a", "Only one entity is allowed, but the provided selector allows more than one at position 0: <--[HERE]");
 
 		assertNoMoreResults(results);
@@ -216,4 +219,98 @@ class ArgumentEntitySelectorTests extends TestBase {
 		assertNoMoreResults(results);
 	}
 
+	// Converted tests
+	@Test
+	void convertedTestWithOnePlayerSelector() {
+		CommandConvertedTestsPlugin plugin = CommandConvertedTestsPlugin.load();
+		Mut<String[]> results = plugin.getCaptureArgsResults();
+
+		Converter.convert(plugin, "captureargs", new EntitySelectorArgument.OnePlayer("player"));
+
+		// Enable server so `minecraft` namespace is accessible by assertStoresArrayResult
+		//  This does mean we have to use CraftPlayer mocks to run the command
+		enableServer();
+		Player playerA = server.addCraftPlayer("PlayerA");
+		Player playerB = server.addCraftPlayer("PlayerB");
+
+		// Selected player should unpack to the player's name
+		assertStoresArrayResult(playerA, "minecraft:captureargs @s", results, "PlayerA");
+		assertStoresArrayResult(playerB, "minecraft:captureargs @s", results, "PlayerB");
+
+		assertNoMoreResults(results);
+	}
+
+	@Test
+	void convertedTestWithOneEntitySelector() {
+		CommandConvertedTestsPlugin plugin = CommandConvertedTestsPlugin.load();
+		Mut<String[]> results = plugin.getCaptureArgsResults();
+
+		Converter.convert(plugin, "captureargs", new EntitySelectorArgument.OneEntity("entity"));
+
+		// Enable server so `minecraft` namespace is accessible by assertStoresArrayResult
+		//  This does mean we have to use CraftPlayer mocks to run the command
+		enableServer();
+		Player playerA = server.addCraftPlayer("PlayerA");
+		Player playerB = server.addCraftPlayer("PlayerB");
+
+		// Selected entity should unpack to the player's name
+		assertStoresArrayResult(playerA, "minecraft:captureargs @s", results, "PlayerA");
+		assertStoresArrayResult(playerB, "minecraft:captureargs @s", results, "PlayerB");
+
+		assertNoMoreResults(results);
+	}
+
+	@Test
+	void convertedTestWithManyPlayerSelector() {
+		CommandConvertedTestsPlugin plugin = CommandConvertedTestsPlugin.load();
+		Mut<String[]> results = plugin.getCaptureArgsResults();
+
+		Converter.convert(plugin, "captureargs", new EntitySelectorArgument.ManyPlayers("entities"));
+
+		// Enable server so `minecraft` namespace exists
+		//  This does mean we have to use CraftPlayer mocks to run the command
+		enableServer();
+		Player player = server.addCraftPlayer("Player1");
+		server.addPlayer("Player2");
+		server.addPlayer("Player3");
+		server.addPlayer("Player4");
+		server.addPlayer("Player5");
+
+		// Command runs once for each selected entity
+		server.dispatchCommand(player, "minecraft:captureargs @a");
+		assertArrayEquals(new String[]{"Player1"}, results.get());
+		assertArrayEquals(new String[]{"Player2"}, results.get());
+		assertArrayEquals(new String[]{"Player3"}, results.get());
+		assertArrayEquals(new String[]{"Player4"}, results.get());
+		assertArrayEquals(new String[]{"Player5"}, results.get());
+
+		assertNoMoreResults(results);
+	}
+
+	@Test
+	void convertedTestWithManyEntitySelector() {
+		CommandConvertedTestsPlugin plugin = CommandConvertedTestsPlugin.load();
+		Mut<String[]> results = plugin.getCaptureArgsResults();
+
+		Converter.convert(plugin, "captureargs", new EntitySelectorArgument.ManyEntities("entities"));
+
+		// Enable server so `minecraft` namespace exists
+		//  This does mean we have to use CraftPlayer mocks to run the command
+		enableServer();
+		Player player = server.addCraftPlayer("Player1");
+		server.addPlayer("Player2");
+		server.addPlayer("Player3");
+		server.addPlayer("Player4");
+		server.addPlayer("Player5");
+
+		// Command runs once for each selected entity
+		server.dispatchCommand(player, "minecraft:captureargs @e");
+		assertArrayEquals(new String[]{"Player1"}, results.get());
+		assertArrayEquals(new String[]{"Player2"}, results.get());
+		assertArrayEquals(new String[]{"Player3"}, results.get());
+		assertArrayEquals(new String[]{"Player4"}, results.get());
+		assertArrayEquals(new String[]{"Player5"}, results.get());
+
+		assertNoMoreResults(results);
+	}
 }

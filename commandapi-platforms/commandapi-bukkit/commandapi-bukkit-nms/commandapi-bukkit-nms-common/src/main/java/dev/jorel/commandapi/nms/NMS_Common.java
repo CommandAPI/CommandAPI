@@ -20,7 +20,7 @@
  *******************************************************************************/
 package dev.jorel.commandapi.nms;
 
-import com.mojang.brigadier.CommandDispatcher;
+import com.google.gson.JsonObject;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -30,8 +30,6 @@ import dev.jorel.commandapi.CommandAPIHandler;
 import dev.jorel.commandapi.CommandRegistrationStrategy;
 import dev.jorel.commandapi.arguments.ArgumentSubType;
 import dev.jorel.commandapi.arguments.SuggestionProviders;
-import dev.jorel.commandapi.commandsenders.AbstractCommandSender;
-import dev.jorel.commandapi.commandsenders.BukkitCommandSender;
 import dev.jorel.commandapi.preprocessor.Differs;
 import dev.jorel.commandapi.preprocessor.Overridden;
 import dev.jorel.commandapi.preprocessor.Unimplemented;
@@ -65,8 +63,6 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Team;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -304,13 +300,9 @@ public abstract class NMS_Common extends CommandAPIBukkit<CommandSourceStack> {
 	}
 
 	@Override
-	@Unimplemented(because = VERSION_SPECIFIC_IMPLEMENTATION, introducedIn = "1.19")
-	public abstract void createDispatcherFile(File file, CommandDispatcher<CommandSourceStack> dispatcher) throws IOException;
-
-	@Override
-	@Unimplemented(because = REQUIRES_CRAFTBUKKIT, classNamed = "CustomHelpTopic")
-	public abstract HelpTopic generateHelpTopic(String commandName, String shortDescription, String fullDescription,
-		String permission);
+	@Unimplemented(because = NAME_CHANGED, introducedIn = "1.19",
+		from = "ArgumentTypes#serializeToJson", to = "ArgumentUtils#serializeArgumentToJson")
+	public abstract Optional<JsonObject> getArgumentTypeProperties(ArgumentType<?> type);
 
 	@Override
 	@Unimplemented(because = VERSION_SPECIFIC_IMPLEMENTATION, introducedIn = "1.20.2")
@@ -372,16 +364,37 @@ public abstract class NMS_Common extends CommandAPIBukkit<CommandSourceStack> {
 	}
 
 	@Override
-	public abstract CommandSourceStack getBrigadierSourceFromCommandSender(AbstractCommandSender<? extends CommandSender> sender);
+	@Unimplemented(because = REQUIRES_CRAFTBUKKIT, classNamed = "VanillaCommandWrapper")
+	public abstract CommandSourceStack getBrigadierSourceFromCommandSender(CommandSender sender);
 
 	@Override
-	public final BukkitCommandSender<? extends CommandSender> getCommandSenderFromCommandSource(CommandSourceStack css) {
+	public final CommandSender getCommandSenderFromCommandSource(CommandSourceStack css) {
+		CommandSender sender;
 		try {
-			return wrapCommandSender(css.getBukkitSender());
+			sender = css.getBukkitSender();
 		} catch (UnsupportedOperationException e) {
+			// We expect this to happen when the source is `CommandSource.NULL`,
+			//  which is used when parsing data pack functions
 			return null;
 		}
+
+		// Sender CANNOT be null. This can occur when using a remote console
+		// sender. You can access it directly using this.<MinecraftServer>getMinecraftServer().remoteConsole
+		// however this may also be null, so delegate to the next most-meaningful sender.
+		if (sender == null) {
+			sender = Bukkit.getConsoleSender();
+		}
+
+		// Check for a proxy entity
+		if (isProxyEntity(sender, css)) {
+			return getNativeProxyCommandSender(sender, css);
+		}
+
+		return sender;
 	}
+
+	@Unimplemented(because = REQUIRES_CRAFTBUKKIT, classNamed = "CraftEntity")
+	protected abstract boolean isProxyEntity(CommandSender sender, CommandSourceStack css);
 
 	@Override
 	@Unimplemented(because = REQUIRES_CRAFTBUKKIT, classNamed = "CraftWorld", info = "CraftWorld is implicitly referenced by ServerLevel#getWorld, due to package renaming, it can't resolve at runtime")
@@ -541,7 +554,7 @@ public abstract class NMS_Common extends CommandAPIBukkit<CommandSourceStack> {
 	@Unimplemented(because = NAME_CHANGED, info = "i (1.17)            -> getRotation (1.18) -> l (1.19)")
 	@Unimplemented(because = NAME_CHANGED, info = "getEntity (1.17)    -> getEntity (1.18)   -> g (1.19)")
 	@Unimplemented(because = NAME_CHANGED, info = "getWorld (1.17)     -> getLevel (1.18)    -> f (1.19)")
-	public abstract BukkitCommandSender<? extends CommandSender> getSenderForCommand(CommandContext<CommandSourceStack> cmdCtx, boolean isNative);
+	public abstract NativeProxyCommandSender getNativeProxyCommandSender(CommandSender sender, CommandSourceStack css);
 
 	@Override
 	@Unimplemented(because = REQUIRES_CRAFTBUKKIT, classNamed = "CraftServer")

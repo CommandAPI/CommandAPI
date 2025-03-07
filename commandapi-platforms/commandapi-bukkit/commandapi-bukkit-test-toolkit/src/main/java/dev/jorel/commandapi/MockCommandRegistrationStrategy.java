@@ -1,7 +1,6 @@
 package dev.jorel.commandapi;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 import dev.jorel.commandapi.arguments.Argument;
@@ -26,18 +25,15 @@ public class MockCommandRegistrationStrategy extends CommandRegistrationStrategy
 	}
 
 	@Override
-	public LiteralCommandNode<MockCommandSource> registerCommandNode(LiteralArgumentBuilder<MockCommandSource> builder, String namespace) {
+	public void registerCommandNode(LiteralCommandNode<MockCommandSource> node, String namespace) {
 		RootCommandNode<MockCommandSource> root = dispatcher.getRoot();
-		LiteralCommandNode<MockCommandSource> node = builder.build();
 
 		root.addChild(node);
 		root.addChild(commandAPIHandler.namespaceNode(node, namespace));
-
-		return node;
 	}
 
 	@Override
-	public void postCommandRegistration(RegisteredCommand registeredCommand, LiteralCommandNode<MockCommandSource> resultantNode, List<LiteralCommandNode<MockCommandSource>> aliasNodes) {
+	public void postCommandRegistration(RegisteredCommand<CommandSender> registeredCommand, LiteralCommandNode<MockCommandSource> resultantNode, List<LiteralCommandNode<MockCommandSource>> aliasNodes) {
 		// Nothing to do
 	}
 

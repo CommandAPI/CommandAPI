@@ -1,14 +1,12 @@
 package dev.jorel.commandapi;
 
-import com.mojang.brigadier.CommandDispatcher;
+import com.google.gson.JsonObject;
 import com.mojang.brigadier.Message;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import dev.jorel.commandapi.arguments.*;
-import dev.jorel.commandapi.commandsenders.AbstractCommandSender;
-import dev.jorel.commandapi.commandsenders.BukkitCommandSender;
 import dev.jorel.commandapi.spying.CommandAPIHandlerSpy;
 import dev.jorel.commandapi.wrappers.Rotation;
 import dev.jorel.commandapi.wrappers.*;
@@ -34,8 +32,6 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Team;
 
-import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.function.Function;
@@ -115,19 +111,13 @@ public class MockCommandAPIBukkit extends CommandAPIBukkit<MockCommandSource> {
 
 	// CommandSender/MockCommandSource methods
 	@Override
-	public BukkitCommandSender<? extends CommandSender> getSenderForCommand(CommandContext<MockCommandSource> cmdCtx, boolean forceNative) {
-		// TODO: Implement `forceNative` if necessary
-		return getCommandSenderFromCommandSource(cmdCtx.getSource());
+	public CommandSender getCommandSenderFromCommandSource(MockCommandSource cs) {
+		return cs.bukkitSender();
 	}
 
 	@Override
-	public BukkitCommandSender<? extends CommandSender> getCommandSenderFromCommandSource(MockCommandSource cs) {
-		return super.wrapCommandSender(cs.bukkitSender());
-	}
-
-	@Override
-	public MockCommandSource getBrigadierSourceFromCommandSender(AbstractCommandSender<? extends CommandSender> sender) {
-		return new MockCommandSource(sender.getSource());
+	public MockCommandSource getBrigadierSourceFromCommandSender(CommandSender sender) {
+		return new MockCommandSource(sender);
 	}
 
 	// Miscellaneous methods
@@ -627,6 +617,11 @@ public class MockCommandAPIBukkit extends CommandAPIBukkit<MockCommandSource> {
 	}
 
 	@Override
+	public NativeProxyCommandSender getNativeProxyCommandSender(CommandSender sender, MockCommandSource css) {
+		throw new UnimplementedMethodException();
+	}
+
+	@Override
 	public SuggestionProvider<MockCommandSource> getSuggestionProvider(SuggestionProviders suggestionProvider) {
 		throw new UnimplementedMethodException();
 	}
@@ -642,22 +637,17 @@ public class MockCommandAPIBukkit extends CommandAPIBukkit<MockCommandSource> {
 	}
 
 	@Override
-	public void createDispatcherFile(File file, CommandDispatcher<MockCommandSource> brigadierDispatcher) throws IOException {
-		throw new UnimplementedMethodException();
-	}
-
-	@Override
 	public <T> T getMinecraftServer() {
 		throw new UnimplementedMethodException();
 	}
 
 	@Override
-	public void reloadDataPacks() {
+	public Optional<JsonObject> getArgumentTypeProperties(ArgumentType<?> type) {
 		throw new UnimplementedMethodException();
 	}
 
 	@Override
-	public HelpTopic generateHelpTopic(String commandName, String shortDescription, String fullDescription, String permission) {
+	public void reloadDataPacks() {
 		throw new UnimplementedMethodException();
 	}
 

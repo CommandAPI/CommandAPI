@@ -3,11 +3,9 @@ package dev.jorel.commandapi;
 import com.mojang.brigadier.Message;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import dev.jorel.commandapi.commandsenders.AbstractPlayer;
 import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -243,14 +241,13 @@ public class CommandAPI {
 	}
 
 	/**
-	 * Updates the requirements required for a given player to execute a command.
+	 * Updates the player's view of the requirements for them to execute a command.
 	 *
 	 * @param player the player whose requirements should be updated
 	 */
 	public static <CommandSender, Player extends CommandSender> void updateRequirements(Player player) {
-		@SuppressWarnings("unchecked")
 		CommandAPIPlatform<?, CommandSender, ?> platform = (CommandAPIPlatform<?, CommandSender, ?>) CommandAPIHandler.getInstance().getPlatform();
-		platform.updateRequirements((AbstractPlayer<?>) platform.wrapCommandSender(player));
+		platform.updateRequirements(player);
 	}
 
 	// Produce WrapperCommandSyntaxException
@@ -278,14 +275,13 @@ public class CommandAPI {
 	}
 
 	// Command registration and unregistration
-
 	/**
 	 * Unregisters a command
 	 *
 	 * @param command the name of the command to unregister
 	 */
 	public static void unregister(String command) {
-		CommandAPIHandler.getInstance().getPlatform().unregister(command, false);
+		CommandAPIHandler.getInstance().unregister(command, false);
 	}
 
 	/**
@@ -298,7 +294,7 @@ public class CommandAPI {
 	 *                                unregistered.
 	 */
 	public static void unregister(String command, boolean unregisterNamespaces) {
-		CommandAPIHandler.getInstance().getPlatform().unregister(command, unregisterNamespaces);
+		CommandAPIHandler.getInstance().unregister(command, unregisterNamespaces);
 	}
 
 	/**
@@ -318,7 +314,8 @@ public class CommandAPI {
 	 * @return A list of all {@link RegisteredCommand}{@code s} that have been
 	 * registered by the CommandAPI so far. The returned list is immutable.
 	 */
-	public static List<RegisteredCommand> getRegisteredCommands() {
-		return Collections.unmodifiableList(CommandAPIHandler.getInstance().registeredCommands);
+	public static <CommandSender> List<RegisteredCommand<CommandSender>> getRegisteredCommands() {
+		CommandAPIHandler<?, CommandSender, ?> handler = CommandAPIHandler.getInstance();
+		return List.copyOf(handler.registeredCommands.values());
 	}
 }

@@ -21,7 +21,7 @@ public class SafeVarHandle<Type, FieldType> {
 		this.handle = handle;
 	}
 
-	private static <Type, FieldType> SafeVarHandle<Type, FieldType> of(Class<? super Type> classType, String fieldName, String mojangMappedFieldName, Class<? super FieldType> fieldType)
+	public static <Type, FieldType> SafeVarHandle<Type, FieldType> of(Class<? super Type> classType, String fieldName, String mojangMappedFieldName, Class<? super FieldType> fieldType)
 		throws ReflectiveOperationException {
 		return new SafeVarHandle<>(
 			MethodHandles.privateLookupIn(classType, MethodHandles.lookup()).findVarHandle(classType, USING_MOJANG_MAPPINGS ? mojangMappedFieldName : fieldName, fieldType));
@@ -34,6 +34,10 @@ public class SafeVarHandle<Type, FieldType> {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	public static <Type, FieldType> SafeVarHandle<Type, FieldType> ofOrNull(Class<? super Type> classType, String fieldName, Class<? super FieldType> fieldType) {
+		return ofOrNull(classType, fieldName, fieldName, fieldType);
 	}
 
 	public FieldType get(Type instance) {

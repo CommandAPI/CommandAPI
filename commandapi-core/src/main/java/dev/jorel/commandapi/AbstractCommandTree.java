@@ -1,6 +1,9 @@
 package dev.jorel.commandapi;
 
+import com.mojang.brigadier.tree.LiteralCommandNode;
 import dev.jorel.commandapi.arguments.AbstractArgument;
+import dev.jorel.commandapi.arguments.AbstractArgument.NodeInformation;
+import dev.jorel.commandapi.exceptions.MissingCommandExecutorException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,7 +25,7 @@ extends AbstractArgument<?, ?, Argument, CommandSender>
 /// @endcond
 , CommandSender> extends ExecutableCommand<Impl, CommandSender> {
 
-	private final List<AbstractArgumentTree<?, Argument, CommandSender>> arguments = new ArrayList<>();
+	private List<AbstractArgumentTree<?, Argument, CommandSender>> arguments = new ArrayList<>();
 
 	/**
 	 * Creates a main root node for a command tree with a given command name
@@ -32,6 +35,10 @@ extends AbstractArgument<?, ?, Argument, CommandSender>
 	protected AbstractCommandTree(final String commandName) {
 		super(commandName);
 	}
+
+	/////////////////////
+	// Builder methods //
+	/////////////////////
 
 	/**
 	 * Create a child branch on the tree
@@ -79,27 +86,69 @@ extends AbstractArgument<?, ?, Argument, CommandSender>
 		return thenNested(Arrays.asList(trees));
 	}
 
+	/////////////////////////
+	// Getters and setters //
+	/////////////////////////
+
 	/**
-	 * Registers the command with a given namespace
-	 *
-	 * @param namespace The namespace of this command. This cannot be null
-	 * @throws NullPointerException if the namespace is null
+	 * @return The child branches added to this tree by {@link #then(AbstractArgumentTree)}.
 	 */
+	public List<AbstractArgumentTree<?, Argument, CommandSender>> getArguments() {
+		return arguments;
+	}
+
+	/**
+	 * Sets the child branches that this command has
+	 *
+	 * @param arguments A new list of branches for this command
+	 */
+	public void setArguments(List<AbstractArgumentTree<?, Argument, CommandSender>> arguments) {
+		this.arguments = arguments;
+	}
+
+	//////////////////
+	// Registration //
+	//////////////////
 	@Override
-	public void register(String namespace) {
-		if (namespace == null) {
-			// Only reachable through Velocity
-			throw new NullPointerException("Parameter 'namespace' was null when registering command /" + this.meta.commandName + "!");
+	protected void checkPreconditions() {
+		if (!executor.hasAnyExecutors() && arguments.isEmpty()) {
+			// If we don't have any executors then no branches is bad because this path can't be run at all
+			throw new MissingCommandExecutorException(name);
 		}
-		List<Execution<CommandSender, Argument>> executions = new ArrayList<>();
-		if (this.executor.hasAnyExecutors()) {
-			executions.add(new Execution<>(List.<Argument>of(), this.executor));
+	}
+
+	@Override
+	protected boolean isRootExecutable() {
+		return executor.hasAnyExecutors();
+	}
+
+	@Override
+	protected <Source> List<RegisteredCommand.Node<CommandSender>> createArgumentNodes(LiteralCommandNode<Source> rootNode) {
+		CommandAPIHandler<Argument, CommandSender, Source> handler = CommandAPIHandler.getInstance();
+
+		List<RegisteredCommand.Node<CommandSender>> childrenNodes = new ArrayList<>();
+
+		// The previous arguments include an unlisted MultiLiteral representing the command name and aliases
+		//  This doesn't affect how the command acts, but it helps represent the command path in exceptions
+		String[] literals = new String[aliases.length + 1];
+		literals[0] = name;
+		System.arraycopy(aliases, 0, literals, 1, aliases.length);
+		Argument commandNames = handler.getPlatform().newConcreteMultiLiteralArgument(name, literals);
+		commandNames.setListed(false);
+
+		// Build branches
+		for (AbstractArgumentTree<?, Argument, CommandSender> argument : arguments) {
+			// We need new previousArguments lists for each branch so they don't interfere
+			NodeInformation<CommandSender, Source> previousNodeInformation = new NodeInformation<>(List.of(rootNode), childrenNodes::addAll);
+			List<Argument> previousArguments = new ArrayList<>();
+			List<String> previousArgumentNames = new ArrayList<>();
+
+			previousArguments.add(commandNames);
+
+			argument.buildBrigadierNode(previousNodeInformation, previousArguments, previousArgumentNames);
 		}
-		for (AbstractArgumentTree<?, Argument, CommandSender> tree : arguments) {
-			executions.addAll(tree.getExecutions());
-		}
-		for (Execution<CommandSender, Argument> execution : executions) {
-			execution.register(this.meta, namespace);
-		}
+
+		// Return children
+		return childrenNodes;
 	}
 }

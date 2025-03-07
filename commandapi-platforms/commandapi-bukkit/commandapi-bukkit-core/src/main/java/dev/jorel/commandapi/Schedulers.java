@@ -4,9 +4,9 @@ import org.bukkit.plugin.Plugin;
 
 public class Schedulers {
 
-	private final PaperImplementations paperImplementations;
+	private final PaperImplementations<?> paperImplementations;
 
-	public Schedulers(PaperImplementations paperImplementations) {
+	public Schedulers(PaperImplementations<?> paperImplementations) {
 		this.paperImplementations = paperImplementations;
 	}
 

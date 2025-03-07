@@ -11,7 +11,7 @@ import com.mojang.brigadier.context.ParsedArgument;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.jorel.commandapi.arguments.parser.Parser;
 import dev.jorel.commandapi.arguments.parser.ParserArgument;
-import dev.jorel.commandapi.executors.CommandExecutionInfo;
+import dev.jorel.commandapi.executors.NormalExecutorInfo;
 import org.bukkit.command.CommandSender;
 import org.junit.jupiter.api.function.Executable;
 import org.opentest4j.AssertionFailedError;
@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public abstract class CommandTestBase extends CommandAPITestUtilities {
 	// Useful objects
-	public static CommandExecutionInfo DEFAULT_EXECUTOR = info -> {};
+	public static NormalExecutorInfo<CommandSender, ?> DEFAULT_EXECUTOR = info -> {};
 
 	// Setup
 	protected ServerMock server;

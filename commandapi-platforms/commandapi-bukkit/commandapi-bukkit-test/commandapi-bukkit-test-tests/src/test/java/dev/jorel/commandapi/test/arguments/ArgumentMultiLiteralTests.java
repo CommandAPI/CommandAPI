@@ -3,13 +3,9 @@ package dev.jorel.commandapi.test.arguments;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.CommandTree;
-import dev.jorel.commandapi.arguments.IntegerArgument;
-import dev.jorel.commandapi.arguments.ItemStackArgument;
 import dev.jorel.commandapi.arguments.MultiLiteralArgument;
 import dev.jorel.commandapi.test.Mut;
 import dev.jorel.commandapi.test.TestBase;
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * Tests for the {@link MultiLiteralArgument}
  */
-public class ArgumentMultiLiteralTests extends TestBase {
+class ArgumentMultiLiteralTests extends TestBase {
 
 	/*********
 	 * Setup *
@@ -90,54 +86,66 @@ public class ArgumentMultiLiteralTests extends TestBase {
 				      "type": "literal",
 				      "children": {
 				        "option1": {
-				          "type": "literal",
+				          "type": "namedLiteral",
+				          "nodeName": "literal1",
 				          "children": {
 				            "option1": {
-				              "type": "literal",
+				              "type": "namedLiteral",
+				              "nodeName": "literal2",
 				              "executable": true
 				            },
 				            "option2": {
-				              "type": "literal",
+				              "type": "namedLiteral",
+				              "nodeName": "literal2",
 				              "executable": true
 				            },
 				            "option3": {
-				              "type": "literal",
+				              "type": "namedLiteral",
+				              "nodeName": "literal2",
 				              "executable": true
 				            }
 				          }
 				        },
 				        "option2": {
-				          "type": "literal",
+				          "type": "namedLiteral",
+				          "nodeName": "literal1",
 				          "children": {
-				            "option1": {
-				              "type": "literal",
-				              "executable": true
-				            },
-				            "option2": {
-				              "type": "literal",
-				              "executable": true
-				            },
-				            "option3": {
-				              "type": "literal",
-				              "executable": true
-				            }
+				            "option1": [
+				              "command1",
+				              "option1",
+				              "option1"
+				            ],
+				            "option2": [
+				              "command1",
+				              "option1",
+				              "option2"
+				            ],
+				            "option3": [
+				              "command1",
+				              "option1",
+				              "option3"
+				            ]
 				          }
 				        },
 				        "option3": {
-				          "type": "literal",
+				          "type": "namedLiteral",
+				          "nodeName": "literal1",
 				          "children": {
-				            "option1": {
-				              "type": "literal",
-				              "executable": true
-				            },
-				            "option2": {
-				              "type": "literal",
-				              "executable": true
-				            },
-				            "option3": {
-				              "type": "literal",
-				              "executable": true
-				            }
+				            "option1": [
+				              "command1",
+				              "option1",
+				              "option1"
+				            ],
+				            "option2": [
+				              "command1",
+				              "option1",
+				              "option2"
+				            ],
+				            "option3": [
+				              "command1",
+				              "option1",
+				              "option3"
+				            ]
 				          }
 				        }
 				      }
@@ -146,54 +154,66 @@ public class ArgumentMultiLiteralTests extends TestBase {
 				      "type": "literal",
 				      "children": {
 				        "option1": {
-				          "type": "literal",
+				          "type": "namedLiteral",
+				          "nodeName": "literal1",
 				          "children": {
 				            "option1": {
-				              "type": "literal",
+				              "type": "namedLiteral",
+				              "nodeName": "literal2",
 				              "executable": true
 				            },
 				            "option2": {
-				              "type": "literal",
+				              "type": "namedLiteral",
+				              "nodeName": "literal2",
 				              "executable": true
 				            },
 				            "option3": {
-				              "type": "literal",
+				              "type": "namedLiteral",
+				              "nodeName": "literal2",
 				              "executable": true
 				            }
 				          }
 				        },
 				        "option2": {
-				          "type": "literal",
+				          "type": "namedLiteral",
+				          "nodeName": "literal1",
 				          "children": {
-				            "option1": {
-				              "type": "literal",
-				              "executable": true
-				            },
-				            "option2": {
-				              "type": "literal",
-				              "executable": true
-				            },
-				            "option3": {
-				              "type": "literal",
-				              "executable": true
-				            }
+				            "option1": [
+				              "command2",
+				              "option1",
+				              "option1"
+				            ],
+				            "option2": [
+				              "command2",
+				              "option1",
+				              "option2"
+				            ],
+				            "option3": [
+				              "command2",
+				              "option1",
+				              "option3"
+				            ]
 				          }
 				        },
 				        "option3": {
-				          "type": "literal",
+				          "type": "namedLiteral",
+				          "nodeName": "literal1",
 				          "children": {
-				            "option1": {
-				              "type": "literal",
-				              "executable": true
-				            },
-				            "option2": {
-				              "type": "literal",
-				              "executable": true
-				            },
-				            "option3": {
-				              "type": "literal",
-				              "executable": true
-				            }
+				            "option1": [
+				              "command2",
+				              "option1",
+				              "option1"
+				            ],
+				            "option2": [
+				              "command2",
+				              "option1",
+				              "option2"
+				            ],
+				            "option3": [
+				              "command2",
+				              "option1",
+				              "option3"
+				            ]
 				          }
 				        }
 				      }
@@ -202,65 +222,59 @@ public class ArgumentMultiLiteralTests extends TestBase {
 				      "type": "literal",
 				      "children": {
 				        "option1": {
-				          "type": "literal",
+				          "type": "namedLiteral",
+				          "nodeName": "literal1",
 				          "children": {
 				            "option1": {
-				              "type": "literal",
+				              "type": "namedLiteral",
+				              "nodeName": "literal2",
 				              "children": {
 				                "option1": {
-				                  "type": "literal",
+				                  "type": "namedLiteral",
+				                  "nodeName": "literal3",
 				                  "executable": true
 				                },
 				                "option2": {
-				                  "type": "literal",
+				                  "type": "namedLiteral",
+				                  "nodeName": "literal3",
 				                  "executable": true
 				                }
 				              }
 				            },
 				            "option2": {
-				              "type": "literal",
+				              "type": "namedLiteral",
+				              "nodeName": "literal2",
 				              "children": {
-				                "option1": {
-				                  "type": "literal",
-				                  "executable": true
-				                },
-				                "option2": {
-				                  "type": "literal",
-				                  "executable": true
-				                }
+				                "option1": [
+				                  "command3",
+				                  "option1",
+				                  "option1",
+				                  "option1"
+				                ],
+				                "option2": [
+				                  "command3",
+				                  "option1",
+				                  "option1",
+				                  "option2"
+				                ]
 				              }
 				            }
 				          }
 				        },
 				        "option2": {
-				          "type": "literal",
+				          "type": "namedLiteral",
+				          "nodeName": "literal1",
 				          "children": {
-				            "option1": {
-				              "type": "literal",
-				              "children": {
-				                "option1": {
-				                  "type": "literal",
-				                  "executable": true
-				                },
-				                "option2": {
-				                  "type": "literal",
-				                  "executable": true
-				                }
-				              }
-				            },
-				            "option2": {
-				              "type": "literal",
-				              "children": {
-				                "option1": {
-				                  "type": "literal",
-				                  "executable": true
-				                },
-				                "option2": {
-				                  "type": "literal",
-				                  "executable": true
-				                }
-				              }
-				            }
+				            "option1": [
+				              "command3",
+				              "option1",
+				              "option1"
+				            ],
+				            "option2": [
+				              "command3",
+				              "option1",
+				              "option2"
+				            ]
 				          }
 				        }
 				      }
@@ -269,65 +283,59 @@ public class ArgumentMultiLiteralTests extends TestBase {
 				      "type": "literal",
 				      "children": {
 				        "option1": {
-				          "type": "literal",
+				          "type": "namedLiteral",
+				          "nodeName": "literal1",
 				          "children": {
 				            "option1": {
-				              "type": "literal",
+				              "type": "namedLiteral",
+				              "nodeName": "literal2",
 				              "children": {
 				                "option1": {
-				                  "type": "literal",
+				                  "type": "namedLiteral",
+				                  "nodeName": "literal3",
 				                  "executable": true
 				                },
 				                "option2": {
-				                  "type": "literal",
+				                  "type": "namedLiteral",
+				                  "nodeName": "literal3",
 				                  "executable": true
 				                }
 				              }
 				            },
 				            "option2": {
-				              "type": "literal",
+				              "type": "namedLiteral",
+				              "nodeName": "literal2",
 				              "children": {
-				                "option1": {
-				                  "type": "literal",
-				                  "executable": true
-				                },
-				                "option2": {
-				                  "type": "literal",
-				                  "executable": true
-				                }
+				                "option1": [
+				                  "command4",
+				                  "option1",
+				                  "option1",
+				                  "option1"
+				                ],
+				                "option2": [
+				                  "command4",
+				                  "option1",
+				                  "option1",
+				                  "option2"
+				                ]
 				              }
 				            }
 				          }
 				        },
 				        "option2": {
-				          "type": "literal",
+				          "type": "namedLiteral",
+				          "nodeName": "literal1",
 				          "children": {
-				            "option1": {
-				              "type": "literal",
-				              "children": {
-				                "option1": {
-				                  "type": "literal",
-				                  "executable": true
-				                },
-				                "option2": {
-				                  "type": "literal",
-				                  "executable": true
-				                }
-				              }
-				            },
-				            "option2": {
-				              "type": "literal",
-				              "children": {
-				                "option1": {
-				                  "type": "literal",
-				                  "executable": true
-				                },
-				                "option2": {
-				                  "type": "literal",
-				                  "executable": true
-				                }
-				              }
-				            }
+				            "option1": [
+				              "command4",
+				              "option1",
+				              "option1"
+				            ],
+				            "option2": [
+				              "command4",
+				              "option1",
+				              "option2"
+				            ]
 				          }
 				        }
 				      }
@@ -422,63 +430,6 @@ public class ArgumentMultiLiteralTests extends TestBase {
 		// /test lit2 lit3
 		server.dispatchCommand(player, "test lit2 lit3");
 		assertEquals("lit2", results.get());
-		assertEquals("lit3", results.get());
-
-		assertNoMoreResults(results);
-	}
-
-	@Test
-	void executionTestWithSubcommands() {
-		// Doing these because subcommands are converted into MultiLiteralArguments
-		Mut<Object> results = Mut.of();
-
-		new CommandAPICommand("test")
-			.withSubcommand(new CommandAPICommand("hello")
-				.withArguments(new ItemStackArgument("hello"))
-				.executesPlayer(info -> {
-					results.set(info.args().get("hello"));
-				})
-			)
-			.withSubcommand(new CommandAPICommand("bye")
-				.withArguments(new IntegerArgument("bye"))
-				.executesPlayer(info -> {
-					results.set(info.args().get("bye"));
-				})
-			)
-			.register();
-
-		PlayerMock player = server.addPlayer();
-
-		// /test hello minecraft:stick
-		ItemStack item = new ItemStack(Material.STICK);
-		server.dispatchCommand(player, "test hello minecraft:stick");
-		assertEquals(item, results.get());
-
-		// /test bye 5
-		server.dispatchCommand(player, "test bye 5");
-		assertEquals(5, results.get());
-	}
-
-	@Test
-	void executionTestWithArrayConstructor() {
-		Mut<String> results = Mut.of();
-
-		new CommandAPICommand("test")
-			.withArguments(new MultiLiteralArgument(new String[]{"lit1", "lit2", "lit3"}))
-			.executesPlayer(info -> {
-				results.set((String) info.args().get(0));
-			})
-			.register();
-
-		PlayerMock player = server.addPlayer();
-
-		server.dispatchCommand(player, "test lit1");
-		assertEquals("lit1", results.get());
-
-		server.dispatchCommand(player, "test lit2");
-		assertEquals("lit2", results.get());
-
-		server.dispatchCommand(player, "test lit3");
 		assertEquals("lit3", results.get());
 
 		assertNoMoreResults(results);

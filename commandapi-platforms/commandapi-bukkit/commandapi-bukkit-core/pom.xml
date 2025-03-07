@@ -57,6 +57,12 @@
 			<version>${paper.version}</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>io.papermc.paper</groupId>
+			<artifactId>paper-mojangapi</artifactId>
+			<version>${paper.version}</version>
+			<scope>provided</scope>
+		</dependency>
 		<!-- CommandAPI core -->
 		<dependency>
 			<groupId>dev.jorel</groupId>

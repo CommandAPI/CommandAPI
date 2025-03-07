@@ -22,10 +22,7 @@ package dev.jorel.commandapi.nms;
 
 import static dev.jorel.commandapi.preprocessor.Unimplemented.REASON.NAME_CHANGED;
 
-import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Field;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -35,6 +32,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 
+import com.google.gson.JsonObject;
 import dev.jorel.commandapi.*;
 import dev.jorel.commandapi.wrappers.*;
 import net.minecraft.advancements.critereon.MinMaxBounds;
@@ -64,7 +62,6 @@ import org.bukkit.craftbukkit.v1_17_R1.block.data.CraftBlockData;
 import org.bukkit.craftbukkit.v1_17_R1.command.BukkitCommandWrapper;
 import org.bukkit.craftbukkit.v1_17_R1.command.VanillaCommandWrapper;
 import org.bukkit.craftbukkit.v1_17_R1.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_17_R1.help.CustomHelpTopic;
 import org.bukkit.craftbukkit.v1_17_R1.help.SimpleHelpMap;
 import org.bukkit.craftbukkit.v1_17_R1.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.v1_17_R1.potion.CraftPotionEffectType;
@@ -76,9 +73,6 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Team;
 
-import com.google.common.io.Files;
-import com.google.gson.GsonBuilder;
-import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.Message;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -88,9 +82,6 @@ import com.mojang.brigadier.suggestion.Suggestions;
 
 import dev.jorel.commandapi.arguments.ArgumentSubType;
 import dev.jorel.commandapi.arguments.SuggestionProviders;
-import dev.jorel.commandapi.commandsenders.AbstractCommandSender;
-import dev.jorel.commandapi.commandsenders.BukkitCommandSender;
-import dev.jorel.commandapi.commandsenders.BukkitNativeProxyCommandSender;
 import dev.jorel.commandapi.preprocessor.RequireField;
 import dev.jorel.commandapi.preprocessor.Unimplemented;
 import net.kyori.adventure.text.Component;
@@ -152,6 +143,7 @@ public abstract class NMS_1_17_Common extends NMS_Common {
 	private static final SafeVarHandle<SimpleHelpMap, Map<String, HelpTopic>> helpMapTopics;
 	private static final Field entitySelectorUsesSelector;
 	private static final SafeVarHandle<ItemInput, CompoundTag> itemInput;
+	private static final SafeStaticMethodHandle<Void> argumentTypesSerializeToJson;
 
 	// Compute all var handles all in one go so we don't do this during main server
 	// runtime
@@ -160,6 +152,8 @@ public abstract class NMS_1_17_Common extends NMS_Common {
 		// For some reason, MethodHandles fails for this field, but Field works okay
 		entitySelectorUsesSelector = CommandAPIHandler.getField(EntitySelector.class, "o", "usesSelector");
 		itemInput = SafeVarHandle.ofOrNull(ItemInput.class, "c", "tag", CompoundTag.class);
+
+		argumentTypesSerializeToJson = SafeStaticMethodHandle.ofOrNull(ArgumentTypes.class, "a", "serializeToJson", void.class, JsonObject.class, ArgumentType.class);
 	}
 
 	private static NamespacedKey fromResourceLocation(ResourceLocation key) {
@@ -254,15 +248,10 @@ public abstract class NMS_1_17_Common extends NMS_Common {
 	}
 
 	@Override
-	public void createDispatcherFile(File file, CommandDispatcher<CommandSourceStack> dispatcher) throws IOException {
-		Files.write(
-				new GsonBuilder().setPrettyPrinting().create()
-					.toJson(ArgumentTypes.serializeNodeToJson(dispatcher, dispatcher.getRoot())), file, StandardCharsets.UTF_8);
-	}
-
-	@Override
-	public HelpTopic generateHelpTopic(String commandName, String shortDescription, String fullDescription, String permission) {
-		return new CustomHelpTopic(commandName, shortDescription, fullDescription, permission);
+	public Optional<JsonObject> getArgumentTypeProperties(ArgumentType<?> type) {
+		JsonObject result = new JsonObject();
+		argumentTypesSerializeToJson.invokeOrNull(result, type);
+		return Optional.ofNullable((JsonObject) result.get("properties"));
 	}
 
 	@Override
@@ -311,8 +300,14 @@ public abstract class NMS_1_17_Common extends NMS_Common {
 	}
 
 	@Override
-	public CommandSourceStack getBrigadierSourceFromCommandSender(AbstractCommandSender<? extends CommandSender> senderWrapper) {
-		return VanillaCommandWrapper.getListener(senderWrapper.getSource());
+	public CommandSourceStack getBrigadierSourceFromCommandSender(CommandSender sender) {
+		return VanillaCommandWrapper.getListener(sender);
+	}
+
+	@Override
+	protected boolean isProxyEntity(CommandSender sender, CommandSourceStack css) {
+		Entity proxyEntity = css.getEntity();
+		return proxyEntity != null && !sender.equals(proxyEntity.getBukkitEntity());
 	}
 
 	@Override
@@ -593,31 +588,18 @@ public abstract class NMS_1_17_Common extends NMS_Common {
 	}
 
 	@Override
-	public BukkitCommandSender<? extends CommandSender> getSenderForCommand(CommandContext<CommandSourceStack> cmdCtx, boolean isNative) {
-		CommandSourceStack css = cmdCtx.getSource();
-
-		CommandSender sender = css.getBukkitSender();
-		if (sender == null) {
-			// Sender CANNOT be null. This can occur when using a remote console
-			// sender. You can access it directly using this.<MinecraftServer>getMinecraftServer().remoteConsole
-			// however this may also be null, so delegate to the next most-meaningful sender.
-			sender = Bukkit.getConsoleSender();
-		}
+	public NativeProxyCommandSender getNativeProxyCommandSender(CommandSender sender, CommandSourceStack css) {
+		// Get position
 		Vec3 pos = css.getPosition();
 		Vec2 rot = css.getRotation();
 		World world = getWorldForCSS(css);
 		Location location = new Location(world, pos.x(), pos.y(), pos.z(), rot.y, rot.x);
 
+		// Get proxy sender (default to sender if null)
 		Entity proxyEntity = css.getEntity();
-		CommandSender proxy = proxyEntity == null ? null : proxyEntity.getBukkitEntity();
-		if (isNative || (proxy != null && !sender.equals(proxy))) {
-			if (proxy == null) {
-				proxy = sender;
-			}
-			return new BukkitNativeProxyCommandSender(new NativeProxyCommandSender(sender, proxy, location, world));
-		} else {
-			return wrapCommandSender(sender);
-		}
+		CommandSender proxy = proxyEntity == null ? sender : proxyEntity.getBukkitEntity();
+
+		return new NativeProxyCommandSender(sender, proxy, location, world);
 	}
 	
 	@Override

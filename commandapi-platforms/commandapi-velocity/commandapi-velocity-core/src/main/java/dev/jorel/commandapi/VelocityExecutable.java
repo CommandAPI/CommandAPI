@@ -1,9 +1,16 @@
 package dev.jorel.commandapi;
 
 import com.velocitypowered.api.command.CommandSource;
-import dev.jorel.commandapi.commandsenders.VelocityCommandSender;
-import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
-import dev.jorel.commandapi.executors.*;
+import com.velocitypowered.api.proxy.ConsoleCommandSource;
+import com.velocitypowered.api.proxy.Player;
+
+import dev.jorel.commandapi.executors.ExecutorType;
+import dev.jorel.commandapi.executors.NormalExecutor;
+import dev.jorel.commandapi.executors.NormalExecutorInfo;
+import dev.jorel.commandapi.executors.ResultingExecutor;
+import dev.jorel.commandapi.executors.ResultingExecutorInfo;
+import dev.jorel.commandapi.executors.VelocityNormalTypedExecutor;
+import dev.jorel.commandapi.executors.VelocityResultingTypedExecutor;
 
 public interface VelocityExecutable<Impl extends VelocityExecutable<Impl>> extends PlatformExecutable<Impl, CommandSource> {
 	// Regular command executor
@@ -11,116 +18,58 @@ public interface VelocityExecutable<Impl extends VelocityExecutable<Impl>> exten
 	/**
 	 * Adds an executor to the current command builder
 	 *
-	 * @param executor A lambda of type <code>(CommandSource, Object[]) -&gt; ()</code> that will be executed when the command is run
+	 * @param executor A lambda of type <code>ExecutionInfo&lt;CommandSource, CommandSource> -&gt; ()</code> that will be executed when the command is run
 	 * @param types    A list of executor types to use this executes method for.
 	 * @return this command builder
 	 */
-	default Impl executes(CommandExecutor executor, ExecutorType... types) {
+	default Impl executes(NormalExecutorInfo<CommandSource, CommandSource> executor, ExecutorType... types) {
 		if (types == null || types.length == 0) {
-			getExecutor().addNormalExecutor(executor);
-		} else {
-			for (ExecutorType type : types) {
-				getExecutor().addNormalExecutor(new CommandExecutor() {
-					@Override
-					public void run(CommandSource sender, CommandArguments args) throws WrapperCommandSyntaxException {
-						executor.executeWith(new VelocityExecutionInfo<>(sender, CommandAPIVelocity.get().wrapCommandSender(sender), args));
-					}
-
-					@Override
-					public ExecutorType getType() {
-						return type;
-					}
-				});
-			}
+			types = new ExecutorType[]{ExecutorType.ALL};
 		}
+
+		getExecutor().addExecutor(new VelocityNormalTypedExecutor<>(executor, types));
 		return instance();
 	}
 
 	/**
 	 * Adds an executor to the current command builder
 	 *
-	 * @param executor A lambda of type <code>(ExecutionInfo&lt;CommandSender, BukkitCommandSender&lt;? extends CommandSender&gt;&gt;) -&gt; ()</code> that will be executed when the command is run
+	 * @param executor A lambda of type <code>(CommandSource, CommandArguments) -&gt; ()</code> that will be executed when the command is run
 	 * @param types    A list of executor types to use this executes method for.
 	 * @return this command builder
 	 */
-	default Impl executes(CommandExecutionInfo executor, ExecutorType... types) {
+	default Impl executes(NormalExecutor<CommandSource, CommandSource> executor, ExecutorType... types) {
+		// While we can cast directly to `NormalExecutorInfo` (because `NormalExecutor` extends it), this method
+		//  is necessary to help Java identify the expression signature of user defined lambdas.
+		//  The same applies for the rest of the executes methods
+		return executes((NormalExecutorInfo<CommandSource, CommandSource>) executor, types);
+	}
+
+	/**
+	 * Adds an executor to the current command builder
+	 *
+	 * @param executor A lambda of type <code>ExecutionInfo&lt;CommandSource, CommandSource> -&gt; int</code> that will be executed when the command is run
+	 * @param types    A list of executor types to use this executes method for.
+	 * @return this command builder
+	 */
+	default Impl executes(ResultingExecutorInfo<CommandSource, CommandSource> executor, ExecutorType... types) {
 		if (types == null || types.length == 0) {
-			getExecutor().addNormalExecutor(executor);
-		} else {
-			for (ExecutorType type : types) {
-				getExecutor().addNormalExecutor(new CommandExecutionInfo() {
-
-					@Override
-					public void run(ExecutionInfo<CommandSource, VelocityCommandSender<? extends CommandSource>> info) throws WrapperCommandSyntaxException {
-						executor.executeWith(info);
-					}
-
-					@Override
-					public ExecutorType getType() {
-						return type;
-					}
-				});
-			}
+			types = new ExecutorType[]{ExecutorType.ALL};
 		}
+
+		getExecutor().addExecutor(new VelocityResultingTypedExecutor<>(executor, types));
 		return instance();
 	}
 
 	/**
 	 * Adds an executor to the current command builder
 	 *
-	 * @param executor A lambda of type <code>(CommandSource, Object[]) -&gt; int</code> that will be executed when the command is run
+	 * @param executor A lambda of type <code>(CommandSource, CommandArguments) -&gt; int</code> that will be executed when the command is run
 	 * @param types    A list of executor types to use this executes method for.
 	 * @return this command builder
 	 */
-	default Impl executes(ResultingCommandExecutor executor, ExecutorType... types) {
-		if (types == null || types.length == 0) {
-			getExecutor().addResultingExecutor(executor);
-		} else {
-			for (ExecutorType type : types) {
-				getExecutor().addResultingExecutor(new ResultingCommandExecutor() {
-
-					@Override
-					public int run(CommandSource sender, CommandArguments args) throws WrapperCommandSyntaxException {
-						return executor.executeWith(new VelocityExecutionInfo<>(sender, CommandAPIVelocity.get().wrapCommandSender(sender), args));
-					}
-
-					@Override
-					public ExecutorType getType() {
-						return type;
-					}
-				});
-			}
-		}
-		return instance();
-	}
-
-	/**
-	 * Adds an executor to the current command builder
-	 *
-	 * @param executor A lambda of type <code>(ExecutionInfo&lt;CommandSender, VelocityCommandSender&lt;? extends CommandSender&gt;&gt;) -&gt; ()</code> that will be executed when the command is run
-	 * @param types    A list of executor types to use this executes method for.
-	 * @return this command builder
-	 */
-	default Impl executes(ResultingCommandExecutionInfo executor, ExecutorType... types) {
-		if (types == null || types.length == 0) {
-			getExecutor().addResultingExecutor(executor);
-		} else {
-			for (ExecutorType type : types) {
-				getExecutor().addResultingExecutor(new ResultingCommandExecutionInfo() {
-
-					@Override
-					public int run(ExecutionInfo<CommandSource, VelocityCommandSender<? extends CommandSource>> info) throws WrapperCommandSyntaxException {
-						return executor.executeWith(info);
-					}
-
-					@Override
-					public ExecutorType getType() {
-						return type;
-					}
-				});
-			}
-		}
-		return instance();
+	default Impl executes(ResultingExecutor<CommandSource, CommandSource> executor, ExecutorType... types) {
+		return executes((ResultingExecutorInfo<CommandSource, CommandSource>) executor, types);
 	}
 
 	// Player command executor
@@ -128,22 +77,32 @@ public interface VelocityExecutable<Impl extends VelocityExecutable<Impl>> exten
 	/**
 	 * Adds an executor to the current command builder
 	 *
-	 * @param executor A lambda of type <code>(Player, CommandArguments) -&gt; ()</code> that will be executed when the command is run
+	 * @param executor A lambda of type <code>ExecutionInfo&lt;Player, CommandSource> -&gt; ()</code> that will be executed when the command is run
 	 * @return this command builder
 	 */
-	default Impl executesPlayer(PlayerCommandExecutor executor) {
-		getExecutor().addNormalExecutor(executor);
+	default Impl executesPlayer(NormalExecutorInfo<Player, CommandSource> executor) {
+		getExecutor().addExecutor(new VelocityNormalTypedExecutor<>(executor, ExecutorType.PLAYER));
 		return instance();
 	}
 
 	/**
 	 * Adds an executor to the current command builder
 	 *
-	 * @param executor A lambda of type <code>(ExecutionInfo) -&gt; ()</code> that will be executed when the command is run
+	 * @param executor A lambda of type <code>(Player, CommandArguments) -&gt; ()</code> that will be executed when the command is run
 	 * @return this command builder
 	 */
-	default Impl executesPlayer(PlayerExecutionInfo executor) {
-		getExecutor().addNormalExecutor(executor);
+	default Impl executesPlayer(NormalExecutor<Player, CommandSource> executor) {
+		return executesPlayer((NormalExecutorInfo<Player, CommandSource>) executor);
+	}
+
+	/**
+	 * Adds an executor to the current command builder
+	 *
+	 * @param executor A lambda of type <code>ExecutionInfo&lt;Player, CommandSource> -&gt; int</code> that will be executed when the command is run
+	 * @return this command builder
+	 */
+	default Impl executesPlayer(ResultingExecutorInfo<Player, CommandSource> executor) {
+		getExecutor().addExecutor(new VelocityResultingTypedExecutor<>(executor, ExecutorType.PLAYER));
 		return instance();
 	}
 
@@ -153,20 +112,8 @@ public interface VelocityExecutable<Impl extends VelocityExecutable<Impl>> exten
 	 * @param executor A lambda of type <code>(Player, CommandArguments) -&gt; int</code> that will be executed when the command is run
 	 * @return this command builder
 	 */
-	default Impl executesPlayer(PlayerResultingCommandExecutor executor) {
-		getExecutor().addResultingExecutor(executor);
-		return instance();
-	}
-
-	/**
-	 * Adds an executor to the current command builder
-	 *
-	 * @param executor A lambda of type <code>(ExecutionInfo) -&gt; int</code> that will be executed when the command is run
-	 * @return this command builder
-	 */
-	default Impl executesPlayer(PlayerResultingExecutionInfo executor) {
-		getExecutor().addResultingExecutor(executor);
-		return instance();
+	default Impl executesPlayer(ResultingExecutor<Player, CommandSource> executor) {
+		return executesPlayer((ResultingExecutorInfo<Player, CommandSource>) executor);
 	}
 
 	// Console command executor
@@ -174,44 +121,44 @@ public interface VelocityExecutable<Impl extends VelocityExecutable<Impl>> exten
 	/**
 	 * Adds an executor to the current command builder
 	 *
+	 * @param executor A lambda of type <code>ExecutionInfo&lt;ConsoleCommandSource, CommandSource> -&gt; ()</code> that will be executed when the command is run
+	 * @return this command builder
+	 */
+	default Impl executesConsole(NormalExecutorInfo<ConsoleCommandSource, CommandSource> executor) {
+		getExecutor().addExecutor(new VelocityNormalTypedExecutor<>(executor, ExecutorType.CONSOLE));
+		return instance();
+	}
+
+	/**
+	 * Adds an executor to the current command builder
+	 *
 	 * @param executor A lambda of type <code>(ConsoleCommandSource, CommandArguments) -&gt; ()</code> that will be executed when the command is run
 	 * @return this command builder
 	 */
-	default Impl executesConsole(ConsoleCommandExecutor executor) {
-		getExecutor().addNormalExecutor(executor);
+	default Impl executesConsole(NormalExecutor<ConsoleCommandSource, CommandSource> executor) {
+		return executesConsole((NormalExecutorInfo<ConsoleCommandSource, CommandSource>) executor);
+	}
+
+	/**
+	 * Adds an executor to the current command builder
+	 *
+	 * @param executor A lambda of type <code>ExecutionInfo&lt;ConsoleCommandSource, CommandSource> -&gt; int</code> or
+	 *                 <code>(ConsoleCommandSource, CommandArguments) -&gt; int</code> that will be executed when the command is run
+	 * @return this command builder
+	 */
+	default Impl executesConsole(ResultingExecutorInfo<ConsoleCommandSource, CommandSource> executor) {
+		getExecutor().addExecutor(new VelocityResultingTypedExecutor<>(executor, ExecutorType.CONSOLE));
 		return instance();
 	}
 
 	/**
 	 * Adds an executor to the current command builder
 	 *
-	 * @param executor A lambda of type <code>(ExecutionInfo) -&gt; ()</code> that will be executed when the command is run
+	 * @param executor A lambda of type <code>ExecutionInfo&lt;ConsoleCommandSource> -&gt; int</code> or
+	 *                 <code>(ConsoleCommandSource, CommandArguments) -&gt; int</code> that will be executed when the command is run
 	 * @return this command builder
 	 */
-	default Impl executesConsole(ConsoleExecutionInfo executor) {
-		getExecutor().addNormalExecutor(executor);
-		return instance();
-	}
-
-	/**
-	 * Adds an executor to the current command builder
-	 *
-	 * @param executor A lambda of type <code>(ConsoleCommandSource, CommandArguments) -&gt; int</code> that will be executed when the command is run
-	 * @return this command builder
-	 */
-	default Impl executesConsole(ConsoleResultingCommandExecutor executor) {
-		getExecutor().addResultingExecutor(executor);
-		return instance();
-	}
-
-	/**
-	 * Adds an executor to the current command builder
-	 *
-	 * @param executor A lambda of type <code>(ExecutionInfo) -&gt; int</code> that will be executed when the command is run
-	 * @return this command builder
-	 */
-	default Impl executesConsole(ConsoleResultingExecutionInfo executor) {
-		getExecutor().addResultingExecutor(executor);
-		return instance();
+	default Impl executesConsole(ResultingExecutor<ConsoleCommandSource, CommandSource> executor) {
+		return executesConsole((ResultingExecutorInfo<ConsoleCommandSource, CommandSource>) executor);
 	}
 }

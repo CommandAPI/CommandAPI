@@ -20,14 +20,10 @@ public class CommandTree extends AbstractCommandTree<CommandTree, Argument<?>, C
 	/**
 	 * Registers the command with a given namespace
 	 *
-	 * @param namespace The namespace of this command. This cannot be null or empty
-	 *
+	 * @param namespace The namespace of this command. This cannot be null and can only contain 0-9, a-z, underscores, periods, and hyphens.
 	 */
+	@Override
 	public void register(String namespace) {
-		if (!namespace.isEmpty() && !CommandAPIHandler.NAMESPACE_PATTERN.matcher(namespace).matches()) {
-			super.register();
-			return;
-		}
 		super.register(namespace);
 	}
 
@@ -38,7 +34,7 @@ public class CommandTree extends AbstractCommandTree<CommandTree, Argument<?>, C
 	 */
 	public void register(Object plugin) {
 		if (plugin == null) {
-			throw new NullPointerException("Parameter 'plugin' was null while trying to register command /" + meta.commandName + "!");
+			throw new NullPointerException("Parameter 'plugin' was null while trying to register command /" + this.getName() + "!");
 		}
 		ProxyServer server = CommandAPIVelocity.getConfiguration().getServer();
 		Optional<PluginContainer> pluginContainerOptional = server.getPluginManager().fromInstance(plugin);

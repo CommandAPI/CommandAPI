@@ -5,31 +5,20 @@ import static dev.jorel.commandapi.preprocessor.Unimplemented.REASON.REQUIRES_CS
 import static dev.jorel.commandapi.preprocessor.Unimplemented.REASON.REQUIRES_MINECRAFT_SERVER;
 import static dev.jorel.commandapi.preprocessor.Unimplemented.REASON.VERSION_SPECIFIC_IMPLEMENTATION;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.kyori.adventure.text.ComponentLike;
+import com.google.gson.JsonObject;
+import com.mojang.brigadier.arguments.ArgumentType;
+import dev.jorel.commandapi.commandnodes.DifferentClientNode;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Keyed;
-import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.PluginCommand;
-import org.bukkit.command.ProxiedCommandSender;
-import org.bukkit.command.RemoteConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -41,32 +30,20 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
-import dev.jorel.commandapi.arguments.AbstractArgument;
 import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.LiteralArgument;
 import dev.jorel.commandapi.arguments.MultiLiteralArgument;
 import dev.jorel.commandapi.arguments.SuggestionProviders;
-import dev.jorel.commandapi.commandsenders.AbstractCommandSender;
-import dev.jorel.commandapi.commandsenders.AbstractPlayer;
-import dev.jorel.commandapi.commandsenders.BukkitBlockCommandSender;
-import dev.jorel.commandapi.commandsenders.BukkitCommandSender;
-import dev.jorel.commandapi.commandsenders.BukkitConsoleCommandSender;
-import dev.jorel.commandapi.commandsenders.BukkitEntity;
-import dev.jorel.commandapi.commandsenders.BukkitFeedbackForwardingCommandSender;
-import dev.jorel.commandapi.commandsenders.BukkitNativeProxyCommandSender;
-import dev.jorel.commandapi.commandsenders.BukkitPlayer;
-import dev.jorel.commandapi.commandsenders.BukkitProxiedCommandSender;
-import dev.jorel.commandapi.commandsenders.BukkitRemoteConsoleCommandSender;
 import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
+import dev.jorel.commandapi.help.BukkitHelpTopicWrapper;
+import dev.jorel.commandapi.help.CommandAPIHelpTopic;
+import dev.jorel.commandapi.help.CustomCommandAPIHelpTopic;
 import dev.jorel.commandapi.nms.NMS;
 import dev.jorel.commandapi.preprocessor.Unimplemented;
-import dev.jorel.commandapi.wrappers.NativeProxyCommandSender;
 import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.chat.BaseComponent;
 
@@ -78,7 +55,7 @@ public abstract class CommandAPIBukkit<Source> implements CommandAPIPlatform<Arg
 	// References to utility classes
 	private static CommandAPIBukkit<?> instance;
 	private static InternalBukkitConfig config;
-	private PaperImplementations paper;
+	private PaperImplementations<Source> paper;
 	private CommandRegistrationStrategy<Source> commandRegistrationStrategy;
 
 	protected CommandAPIBukkit() {
@@ -87,19 +64,19 @@ public abstract class CommandAPIBukkit<Source> implements CommandAPIPlatform<Arg
 
 	@SuppressWarnings("unchecked")
 	public static <Source> CommandAPIBukkit<Source> get() {
-		if(CommandAPIBukkit.instance != null) {
+		if (CommandAPIBukkit.instance != null) {
 			return (CommandAPIBukkit<Source>) instance;
 		} else {
 			throw new IllegalStateException("Tried to access CommandAPIBukkit instance, but it was null! Are you using CommandAPI features before calling CommandAPI#onLoad?");
 		}
 	}
 
-	public PaperImplementations getPaper() {
+	public PaperImplementations<Source> getPaper() {
 		return paper;
 	}
 
 	public static InternalBukkitConfig getConfiguration() {
-		if(config != null) {
+		if (config != null) {
 			return config;
 		} else {
 			throw new IllegalStateException("Tried to access InternalBukkitConfig, but it was null! Did you load the CommandAPI properly with CommandAPI#onLoad?");
@@ -112,7 +89,7 @@ public abstract class CommandAPIBukkit<Source> implements CommandAPIPlatform<Arg
 
 	@Override
 	public void onLoad(CommandAPIConfig<?> config) {
-		if(config instanceof CommandAPIBukkitConfig bukkitConfig) {
+		if (config instanceof CommandAPIBukkitConfig bukkitConfig) {
 			CommandAPIBukkit.setInternalConfig(new InternalBukkitConfig(bukkitConfig));
 		} else {
 			CommandAPI.logError("CommandAPIBukkit was loaded with non-Bukkit config!");
@@ -121,7 +98,7 @@ public abstract class CommandAPIBukkit<Source> implements CommandAPIPlatform<Arg
 
 		checkDependencies();
 	}
-	
+
 	private static void setInternalConfig(InternalBukkitConfig internalBukkitConfig) {
 		CommandAPIBukkit.config = internalBukkitConfig;
 	}
@@ -152,7 +129,7 @@ public abstract class CommandAPIBukkit<Source> implements CommandAPIPlatform<Arg
 			}
 		}
 
-		boolean isPaperPresent = false;
+		boolean isPaperPresent;
 
 		try {
 			Class.forName("io.papermc.paper.event.server.ServerResourcesReloadedEvent");
@@ -165,7 +142,7 @@ public abstract class CommandAPIBukkit<Source> implements CommandAPIPlatform<Arg
 			}
 		}
 
-		boolean isFoliaPresent = false;
+		boolean isFoliaPresent;
 
 		try {
 			Class.forName("io.papermc.paper.threadedregions.RegionizedServerInitEvent");
@@ -176,7 +153,7 @@ public abstract class CommandAPIBukkit<Source> implements CommandAPIPlatform<Arg
 			isFoliaPresent = false;
 		}
 
-		paper = new PaperImplementations(isPaperPresent, isFoliaPresent, this);
+		paper = new PaperImplementations<>(isPaperPresent, isFoliaPresent, this);
 
 		commandRegistrationStrategy = createCommandRegistrationStrategy();
 	}
@@ -206,147 +183,54 @@ public abstract class CommandAPIBukkit<Source> implements CommandAPIPlatform<Arg
 			public void onServerLoad(ServerLoadEvent event) {
 				CommandAPI.stopCommandRegistration();
 			}
-		}, getConfiguration().getPlugin());
+		}, plugin);
 
-		paper.registerReloadHandler(plugin);
+		paper.registerEvents(plugin);
 	}
 
 	/*
 	 * Generate and register help topics
 	 */
-	private String generateCommandHelpPrefix(String command) {
-		return (Bukkit.getPluginCommand(command) == null ? "/" : "/minecraft:") + command;
-	}
-
-	private String generateCommandHelpPrefix(String command, String namespace) {
-		return (Bukkit.getPluginCommand(command) == null ? "/" + namespace + ":" : "/minecraft:") + command;
-	}
-
-	private void generateHelpUsage(StringBuilder sb, RegisteredCommand command) {
-		// Generate usages
-		String[] usages = getUsageList(command);
-
-		if (usages.length == 0) {
-			// Might happen if the developer calls `.withUsage()` with no parameters
-			// They didn't give any usage, so we won't put any there
-			return;
-		}
-
-		sb.append(ChatColor.GOLD).append("Usage: ").append(ChatColor.WHITE);
-		// If 1 usage, put it on the same line, otherwise format like a list
-		if (usages.length == 1) {
-			sb.append(usages[0]);
-		} else {
-			for (String usage : usages) {
-				sb.append("\n- ").append(usage);
-			}
-		}
-	}
-
-	private String[] getUsageList(RegisteredCommand currentCommand) {
-		List<RegisteredCommand> commandsWithIdenticalNames = new ArrayList<>();
-
-		// Collect every command with the same name
-		for (RegisteredCommand registeredCommand : CommandAPIHandler.getInstance().registeredCommands) {
-			if (registeredCommand.commandName().equals(currentCommand.commandName())) {
-				commandsWithIdenticalNames.add(registeredCommand);
-			}
-		}
-
-		// Generate command usage or fill it with a user provided one
-		final String[] usages;
-		final Optional<String[]> usageDescription = currentCommand.usageDescription();
-		if (usageDescription.isPresent()) {
-			usages = usageDescription.get();
-		} else {
-			// TODO: Figure out if default usage generation should be updated
-			final int numCommandsWithIdenticalNames = commandsWithIdenticalNames.size();
-			usages = new String[numCommandsWithIdenticalNames];
-			for (int i = 0; i < numCommandsWithIdenticalNames; i++) {
-				final RegisteredCommand command = commandsWithIdenticalNames.get(i);
-				StringBuilder usageString = new StringBuilder();
-				usageString.append("/").append(command.commandName()).append(" ");
-				for (AbstractArgument<?, ?, ?, ?> arg : command.arguments()) {
-					usageString.append(arg.getHelpString()).append(" ");
-				}
-				usages[i] = usageString.toString().trim();
-			}
-		}
-		return usages;
-	}
-
-	void updateHelpForCommands(List<RegisteredCommand> commands) {
+	void updateHelpForCommands(List<RegisteredCommand<CommandSender>> commands) {
 		Map<String, HelpTopic> helpTopicsToAdd = new HashMap<>();
 
-		for (RegisteredCommand command : commands) {
-			if (getPaper().isPaperBrigAPI() && !command.shouldGenerateHelpTopic()) continue;
+		for (RegisteredCommand<CommandSender> command : commands) {
+			String namespaceAddon = (command.namespace().isEmpty() ? "" : command.namespace() + ":");
+			String commandName = namespaceAddon + command.commandName();
+			CommandAPIHelpTopic<CommandSender> commandAPIHelpTopic = command.helpTopic();
 
-			// Don't override the plugin help topic
-			String commandPrefix = generateCommandHelpPrefix(command.commandName());
-			
-			StringBuilder aliasSb = new StringBuilder();
-			final String shortDescription;
-			
-			// Must be empty string, not null as defined by OBC::CustomHelpTopic
-			final String permission = command.permission().getPermission().orElse("");
-			
-			HelpTopic helpTopic;
-			final Optional<Object> commandHelpTopic = command.helpTopic();
-			if (commandHelpTopic.isPresent()) {
-				helpTopic = (HelpTopic) commandHelpTopic.get();
-				shortDescription = "";
-			} else {
-				// Generate short description
-				final Optional<String> shortDescriptionOptional = command.shortDescription();
-				final Optional<String> fullDescriptionOptional = command.fullDescription();
-				if (shortDescriptionOptional.isPresent()) {
-					shortDescription = shortDescriptionOptional.get();
-				} else if (fullDescriptionOptional.isPresent()) {
-					shortDescription = fullDescriptionOptional.get();
+			// Don't override other plugin's help topics
+			if (Bukkit.getPluginCommand(commandName) == null) {
+				final HelpTopic helpTopic;
+				if (commandAPIHelpTopic instanceof BukkitHelpTopicWrapper bukkitHelpTopic) {
+					helpTopic = bukkitHelpTopic.helpTopic();
 				} else {
-					shortDescription = "A command by the " + config.getPlugin().getName() + " plugin.";
+					helpTopic = new CustomCommandAPIHelpTopic(commandName, command.aliases(), commandAPIHelpTopic, command.rootNode());
 				}
-	
-				// Generate full description
-				StringBuilder sb = new StringBuilder();
-				if (fullDescriptionOptional.isPresent()) {
-					sb.append(ChatColor.GOLD).append("Description: ").append(ChatColor.WHITE).append(fullDescriptionOptional.get()).append("\n");
-				}
-	
-				generateHelpUsage(sb, command);
-				sb.append("\n");
-	
-				// Generate aliases. We make a copy of the StringBuilder because we
-				// want to change the output when we register aliases
-				aliasSb = new StringBuilder(sb.toString());
-				if (command.aliases().length > 0) {
-					sb.append(ChatColor.GOLD).append("Aliases: ").append(ChatColor.WHITE).append(String.join(", ", command.aliases()));
-				}
-
-				helpTopic = generateHelpTopic(commandPrefix, shortDescription, sb.toString().trim(), permission);
+				helpTopicsToAdd.put("/" + commandName, helpTopic);
 			}
-			helpTopicsToAdd.put(commandPrefix, helpTopic);
 
 			for (String alias : command.aliases()) {
-				if (commandHelpTopic.isPresent()) {
-					helpTopic = (HelpTopic) commandHelpTopic.get();
+				String aliasName = namespaceAddon + alias;
+
+				// Don't override other plugin's help topics
+				if (Bukkit.getPluginCommand(aliasName) != null) {
+					continue;
+				}
+
+				final HelpTopic helpTopic;
+				if (commandAPIHelpTopic instanceof BukkitHelpTopicWrapper bukkitHelpTopic) {
+					helpTopic = bukkitHelpTopic.helpTopic();
 				} else {
-					StringBuilder currentAliasSb = new StringBuilder(aliasSb.toString());
-					currentAliasSb.append(ChatColor.GOLD).append("Aliases: ").append(ChatColor.WHITE);
-	
 					// We want to get all aliases (including the original command name),
 					// except for the current alias
 					List<String> aliases = new ArrayList<>(Arrays.asList(command.aliases()));
 					aliases.add(command.commandName());
 					aliases.remove(alias);
-	
-					currentAliasSb.append(String.join(", ", aliases));
-	
-					// Don't override the plugin help topic
-					commandPrefix = generateCommandHelpPrefix(alias);
-					helpTopic = generateHelpTopic(commandPrefix, shortDescription, currentAliasSb.toString().trim(), permission);
+
+					helpTopic = new CustomCommandAPIHelpTopic(aliasName, aliases.toArray(String[]::new), commandAPIHelpTopic, command.rootNode());
 				}
-				helpTopicsToAdd.put(commandPrefix, helpTopic);
+				helpTopicsToAdd.put("/" + aliasName, helpTopic);
 			}
 		}
 
@@ -361,67 +245,43 @@ public abstract class CommandAPIBukkit<Source> implements CommandAPIPlatform<Arg
 
 	@Override
 	@Unimplemented(because = REQUIRES_CSS)
-	public abstract BukkitCommandSender<? extends CommandSender> getSenderForCommand(CommandContext<Source> cmdCtx, boolean forceNative);
-
-	@Override
-	@Unimplemented(because = REQUIRES_CSS)
-	public abstract BukkitCommandSender<? extends CommandSender> getCommandSenderFromCommandSource(Source cs);
+	public abstract CommandSender getCommandSenderFromCommandSource(Source cs);
 
 	@Override
 	@Unimplemented(because = REQUIRES_CRAFTBUKKIT)
-	public abstract Source getBrigadierSourceFromCommandSender(AbstractCommandSender<? extends CommandSender> sender);
+	public abstract Source getBrigadierSourceFromCommandSender(CommandSender sender);
 
-	public BukkitCommandSender<? extends CommandSender> wrapCommandSender(CommandSender sender) {
-		if (sender instanceof BlockCommandSender block) {
-			return new BukkitBlockCommandSender(block);
-		}
-		if (sender instanceof ConsoleCommandSender console) {
-			return new BukkitConsoleCommandSender(console);
-		}
-		if (sender instanceof Player player) {
-			return new BukkitPlayer(player);
-		}
-		if (sender instanceof org.bukkit.entity.Entity entity) {
-			return new BukkitEntity(entity);
-		}
-		if (sender instanceof NativeProxyCommandSender nativeProxy) {
-			return new BukkitNativeProxyCommandSender(nativeProxy);
-		}
-		if (sender instanceof ProxiedCommandSender proxy) {
-			return new BukkitProxiedCommandSender(proxy);	
-		}
-		if (sender instanceof RemoteConsoleCommandSender remote) {
-			return new BukkitRemoteConsoleCommandSender(remote);
-		}
-		if (paper.isPaperPresent()) {
-			final Class<? extends CommandSender> FeedbackForwardingSender = paper.getFeedbackForwardingCommandSender();
-			if (FeedbackForwardingSender.isInstance(sender)) {
-				// We literally cannot type this at compile-time, so let's use a placeholder CommandSender instance
-				return new BukkitFeedbackForwardingCommandSender<CommandSender>(FeedbackForwardingSender.cast(sender));
-			}
-
-			final Class<? extends CommandSender> NullCommandSender = paper.getNullCommandSender();
-			if (NullCommandSender != null && NullCommandSender.isInstance(sender)) {
-				// Since this should only be during a function load, this is just a placeholder to evade the exception.
-				return null;
-			}
-
-		}
-		throw new RuntimeException("Failed to wrap CommandSender " + sender + " to a CommandAPI-compatible BukkitCommandSender");
-	}
-
-	@Override
 	public void registerPermission(String string) {
 		try {
 			Bukkit.getPluginManager().addPermission(new Permission(string));
-		} catch (IllegalArgumentException e) {
-			assert true; // nop, not an error.
+		} catch (IllegalArgumentException ignored) {
+			// Exception is thrown if we attempt to register a permission that already exists
+			//  If it already exists, that's totally fine, so just ignore the exception
 		}
 	}
 
 	@Override
 	@Unimplemented(because = REQUIRES_MINECRAFT_SERVER)
 	public abstract SuggestionProvider<Source> getSuggestionProvider(SuggestionProviders suggestionProvider);
+
+	/**
+	 * {@inheritDoc}
+	 * On Bukkit, namespaces must not be empty, and can only contain 0-9, a-z, underscores, periods, and hyphens.
+	 */
+	@Override
+	public String validateNamespace(ExecutableCommand<?, CommandSender> command, String namespace) {
+		if (namespace.isEmpty()) {
+			CommandAPI.logNormal("Registering command '" + command.getName() + "' using the default namespace because an empty namespace was given!");
+			return config.getNamespace();
+		}
+		if (!CommandAPIHandler.NAMESPACE_PATTERN.matcher(namespace).matches()) {
+			CommandAPI.logNormal("Registering comand '" + command.getName() + "' using the default namespace because an invalid namespace (" + namespace + ") was given. Only 0-9, a-z, underscores, periods and hyphens are allowed!");
+			return config.getNamespace();
+		}
+
+		// Namespace is good, return it
+		return namespace;
+	}
 
 	@Override
 	public void preCommandRegistration(String commandName) {
@@ -444,12 +304,22 @@ public abstract class CommandAPIBukkit<Source> implements CommandAPIPlatform<Arg
 	}
 
 	@Override
-	public void postCommandRegistration(RegisteredCommand registeredCommand, LiteralCommandNode<Source> resultantNode, List<LiteralCommandNode<Source>> aliasNodes) {
+	public void postCommandRegistration(RegisteredCommand<CommandSender> registeredCommand, LiteralCommandNode<Source> resultantNode, List<LiteralCommandNode<Source>> aliasNodes) {
 		commandRegistrationStrategy.postCommandRegistration(registeredCommand, resultantNode, aliasNodes);
+
+		// Register the command's permission string (if it exists) to Bukkit's manager
+		CommandPermission permission = registeredCommand.rootNode().permission();
+		permission.getPermission().ifPresent(this::registerPermission);
 
 		if (!CommandAPI.canRegister()) {
 			// Adding the command to the help map usually happens in `CommandAPIBukkit#onEnable`
-			updateHelpForCommands(List.of(registeredCommand));
+			//  We'll make sure to retrieve the merged versions from CommandAPIHandler
+			CommandAPIHandler<?, CommandSender, ?> handler = CommandAPIHandler.getInstance();
+			Map<String, RegisteredCommand<CommandSender>> registeredCommands = handler.registeredCommands;
+			updateHelpForCommands(List.of(
+				registeredCommands.get(registeredCommand.commandName()),
+				registeredCommands.get(registeredCommand.namespace() + ":" + registeredCommand.commandName())
+			));
 
 			// Sending command dispatcher packets usually happens when Players join the server
 			for (Player p : Bukkit.getOnlinePlayers()) {
@@ -459,8 +329,9 @@ public abstract class CommandAPIBukkit<Source> implements CommandAPIPlatform<Arg
 	}
 
 	@Override
-	public LiteralCommandNode<Source> registerCommandNode(LiteralArgumentBuilder<Source> node, String namespace) {
-		return commandRegistrationStrategy.registerCommandNode(node, namespace);
+	public void registerCommandNode(LiteralCommandNode<Source> node, String namespace) {
+		DifferentClientNode.rewriteAllChildren(null, node, true);
+		commandRegistrationStrategy.registerCommandNode(node, namespace);
 	}
 
 	@Override
@@ -483,6 +354,17 @@ public abstract class CommandAPIBukkit<Source> implements CommandAPIPlatform<Arg
 	 *                             commands, and commands registered by other plugin using Bukkit API are Bukkit commands.
 	 */
 	public static void unregister(String commandName, boolean unregisterNamespaces, boolean unregisterBukkit) {
+		if (!unregisterBukkit) {
+			// If we're unregistering vanilla commands (which includes CommandAPI commands),
+			//  attempt to remove their information from the `registeredCommands` map.
+			//  `CommandAPIHandler#unregister` usually does this, but this method bypasses that.
+			CommandAPIHandler<?, CommandSender, ?> handler = CommandAPIHandler.getInstance();
+			Map<String, RegisteredCommand<CommandSender>> registeredCommands = handler.registeredCommands;
+
+			registeredCommands.remove(commandName);
+			if (unregisterNamespaces) CommandAPIHandler.removeCommandNamespace(registeredCommands, commandName, e -> true);
+		}
+
 		CommandAPIBukkit.get().unregisterInternal(commandName, unregisterNamespaces, unregisterBukkit);
 	}
 
@@ -510,8 +392,8 @@ public abstract class CommandAPIBukkit<Source> implements CommandAPIPlatform<Arg
 
 	@Override
 	@Unimplemented(because = {REQUIRES_MINECRAFT_SERVER, VERSION_SPECIFIC_IMPLEMENTATION})
-	public abstract void createDispatcherFile(File file, CommandDispatcher<Source> brigadierDispatcher) throws IOException;
-	
+	public abstract Optional<JsonObject> getArgumentTypeProperties(ArgumentType<?> type);
+
 	@Unimplemented(because = REQUIRES_MINECRAFT_SERVER) // What are the odds?
 	public abstract <T> T getMinecraftServer();
 
@@ -538,8 +420,8 @@ public abstract class CommandAPIBukkit<Source> implements CommandAPIPlatform<Arg
 	public abstract void reloadDataPacks();
 
 	@Override
-	public void updateRequirements(AbstractPlayer<?> player) {
-		((Player) player.getSource()).updateCommands();
+	public void updateRequirements(CommandSender player) {
+		((Player) player).updateCommands();
 	}
 
 	@Override
@@ -550,11 +432,6 @@ public abstract class CommandAPIBukkit<Source> implements CommandAPIPlatform<Arg
 	@Override
 	public Argument<String> newConcreteLiteralArgument(String nodeName, String literal) {
 		return new LiteralArgument(nodeName, literal);
-	}
-
-	@Override
-	public CommandAPICommand newConcreteCommandAPICommand(CommandMetaData<CommandSender> meta) {
-		return new CommandAPICommand(meta);
 	}
 
 	/**
@@ -589,7 +466,7 @@ public abstract class CommandAPIBukkit<Source> implements CommandAPIPlatform<Arg
 	public static WrapperCommandSyntaxException failWithAdventureComponent(ComponentLike message) {
 		return CommandAPI.failWithMessage(BukkitTooltip.messageFromAdventureComponent(message.asComponent()));
 	}
-	
+
 	/**
 	 * Initializes the CommandAPI's implementation of an NBT API. If you are shading
 	 * the CommandAPI, you should be using
@@ -609,7 +486,7 @@ public abstract class CommandAPIBukkit<Source> implements CommandAPIPlatform<Arg
 	public static <T> void initializeNBTAPI(Class<T> nbtContainerClass, Function<Object, T> nbtContainerConstructor) {
 		getConfiguration().lateInitializeNBT(nbtContainerClass, nbtContainerConstructor);
 	}
-	
+
 	protected void registerBukkitRecipesSafely(Iterator<Recipe> recipes) {
 		Recipe recipe;
 		while (recipes.hasNext()) {
@@ -631,18 +508,28 @@ public abstract class CommandAPIBukkit<Source> implements CommandAPIPlatform<Arg
 		}
 	}
 
-	boolean isInvalidNamespace(String commandName, String namespace) {
-		if (namespace == null) {
-			throw new NullPointerException("Parameter 'namespace' was null when registering command /" + commandName + "!");
+	@Override
+	public Predicate<CommandSender> getPermissionCheck(CommandPermission permission) {
+		final Predicate<CommandSender> senderCheck;
+
+		if (permission.equals(CommandPermission.NONE)) {
+			// No permissions always passes
+			senderCheck = CommandPermission.TRUE();
+		} else if (permission.equals(CommandPermission.OP)) {
+			senderCheck = CommandSender::isOp;
+		} else {
+			Optional<String> permissionStringWrapper = permission.getPermission();
+			if (permissionStringWrapper.isPresent()) {
+				String permissionString = permissionStringWrapper.get();
+				// check permission
+				senderCheck = sender -> sender.hasPermission(permissionString);
+			} else {
+				// No permission always passes
+				senderCheck = CommandPermission.TRUE();
+			}
 		}
-		if (namespace.isEmpty()) {
-			CommandAPI.logNormal("Registering command '" + commandName + "' using the default namespace because an empty namespace was given!");
-			return true;
-		}
-		if (!CommandAPIHandler.NAMESPACE_PATTERN.matcher(namespace).matches()) {
-			CommandAPI.logNormal("Registering comand '" + commandName + "' using the default namespace because an invalid namespace (" + namespace + ") was given. Only 0-9, a-z, underscores, periods and hyphens are allowed!");
-			return true;
-		}
-		return false;
+
+		// Negate if specified
+		return permission.isNegated() ? senderCheck.negate() : senderCheck;
 	}
 }

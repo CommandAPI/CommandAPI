@@ -39,6 +39,7 @@ import org.bukkit.World;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.command.CommandSender;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
@@ -64,6 +65,7 @@ import dev.jorel.commandapi.wrappers.FunctionWrapper;
 import dev.jorel.commandapi.wrappers.IntegerRange;
 import dev.jorel.commandapi.wrappers.Location2D;
 import dev.jorel.commandapi.wrappers.MathOperation;
+import dev.jorel.commandapi.wrappers.NativeProxyCommandSender;
 import dev.jorel.commandapi.wrappers.ParticleData;
 import dev.jorel.commandapi.wrappers.Rotation;
 import dev.jorel.commandapi.wrappers.ScoreboardSlot;
@@ -403,6 +405,8 @@ public interface NMS<CommandListenerWrapper> {
 
 	Object getSound(CommandContext<CommandListenerWrapper> cmdCtx, String key, ArgumentSubType subType);
 
+    NativeProxyCommandSender getNativeProxyCommandSender(CommandSender sender, CommandListenerWrapper css);
+
 	/**
 	 * Retrieve a specific NMS implemented SuggestionProvider
 	 * 
@@ -419,8 +423,6 @@ public interface NMS<CommandListenerWrapper> {
 	 * Reloads the datapacks by using the updated the commandDispatcher tree
 	 */
 	void reloadDataPacks();
-
-	HelpTopic generateHelpTopic(String commandName, String shortDescription, String fullDescription, String permission);
 
 	Map<String, HelpTopic> getHelpMap();
 

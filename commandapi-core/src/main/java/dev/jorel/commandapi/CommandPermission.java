@@ -22,6 +22,7 @@ package dev.jorel.commandapi;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 /**
  * A representation of permission nodes for commands. Represents permission
@@ -50,6 +51,77 @@ public class CommandPermission {
 	 * A player that has to be an operator to run a command
 	 */
 	public static final CommandPermission OP = new CommandPermission(PermissionNode.OP);
+
+	// Always true and always false Predicates allow us to short-circuit when combining predicates
+	//  Unfortunately Java dosen't seem to have something like this built-in 
+	//  See https://bugs.openjdk.org/browse/JDK-8067971
+	/**
+	 * Returns a singleton {@link Predicate} that always returns true. When modifying this predicate
+	 * using {@link Predicate#and(Predicate)}, {@link Predicate#negate()}, or {@link Predicate#or(Predicate)},
+	 * the result is short-circuited to avoid unecessarily creating and nesting predicate objects.
+	 * 
+	 * @return A {@link Predicate} that always returns true.
+	 */
+	public static final <T> Predicate<T> TRUE() {
+		return (Predicate<T>) TRUE;
+	}
+
+	private static final Predicate<Object> TRUE = new Predicate<>() {
+		@Override
+		public boolean test(Object t) {
+			return true;
+		}
+		
+		@Override
+		public Predicate<Object> and(Predicate<? super Object> other) {
+			return Objects.requireNonNull(other);
+		}
+
+		@Override
+		public Predicate<Object> negate() {
+			return FALSE;
+		}
+
+		@Override
+		public Predicate<Object> or(Predicate<? super Object> other) {
+			Objects.requireNonNull(other);
+			return TRUE;
+		}
+	};
+
+	/**
+	 * Returns a singleton {@link Predicate} that always returns false. When modifying this predicate
+	 * using {@link Predicate#and(Predicate)}, {@link Predicate#negate()}, or {@link Predicate#or(Predicate)},
+	 * the result is short-circuited to avoid unecessarily creating and nesting predicate objects.
+	 * 
+	 * @return A {@link Predicate} that always returns false
+	 */
+	public static final <T> Predicate<T> FALSE() {
+		return (Predicate<T>) FALSE;
+	}
+
+	private static final Predicate<Object> FALSE = new Predicate<Object>() {
+		@Override
+		public boolean test(Object t) {
+			return false;
+		}
+		
+		@Override
+		public Predicate<Object> and(Predicate<? super Object> other) {
+			Objects.requireNonNull(other);
+			return FALSE;
+		}
+
+		@Override
+		public Predicate<Object> negate() {
+			return TRUE;
+		}
+		
+		@Override
+		public Predicate<Object> or(Predicate<? super Object> other) {
+			return Objects.requireNonNull(other);
+		}
+	};
 
 	/**
 	 * Generates a new CommandPermission from a permission node
@@ -147,9 +219,14 @@ public class CommandPermission {
 		return this.permissionNode;
 	}
 
-	CommandPermission negate() {
+	/**
+	 * Sets this permission to be negated.
+	 * You can also achieve this using {@link ExecutableCommand#withoutPermission(CommandPermission)}.
+	 * 
+	 * @return This permission object
+	 */
+	public CommandPermission negate() {
 		this.negated = true;
 		return this;
 	}
-
 }

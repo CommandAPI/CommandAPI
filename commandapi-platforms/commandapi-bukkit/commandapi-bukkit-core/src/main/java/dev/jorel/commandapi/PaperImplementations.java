@@ -1,8 +1,10 @@
 package dev.jorel.commandapi;
 
+import com.destroystokyo.paper.event.brigadier.AsyncPlayerSendCommandsEvent;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import com.mojang.brigadier.tree.RootCommandNode;
+import dev.jorel.commandapi.commandnodes.DifferentClientNode;
 import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
-import dev.jorel.commandapi.nms.NMS;
 import io.papermc.paper.event.server.ServerResourcesReloadedEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -16,14 +18,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 
-public class PaperImplementations {
+public class PaperImplementations<Source> implements Listener {
 
 	private final boolean isPaperPresent;
 	private final boolean isFoliaPresent;
 	private final boolean isPaperBrigAPI;
-	private final NMS<?> nmsInstance;
+	private final CommandAPIBukkit<Source> nmsInstance;
 	private final Class<? extends CommandSender> feedbackForwardingCommandSender;
-	private final Class<? extends CommandSender> nullCommandSender;
 
 	/**
 	 * Constructs a PaperImplementations object
@@ -33,7 +34,7 @@ public class PaperImplementations {
 	 * @param nmsInstance    The instance of NMS
 	 */
 	@SuppressWarnings("unchecked")
-	public PaperImplementations(boolean isPaperPresent, boolean isFoliaPresent, NMS<?> nmsInstance) {
+	public PaperImplementations(boolean isPaperPresent, boolean isFoliaPresent, CommandAPIBukkit<Source> nmsInstance) {
 		this.isPaperPresent = isPaperPresent;
 		this.isFoliaPresent = isFoliaPresent;
 		this.nmsInstance = nmsInstance;
@@ -47,15 +48,6 @@ public class PaperImplementations {
 		
 		this.feedbackForwardingCommandSender = tempFeedbackForwardingCommandSender;
 
-		Class<? extends CommandSender> tempNullCommandSender = null;
-		try {
-			tempNullCommandSender = (Class<? extends CommandSender>) Class.forName("io.papermc.paper.brigadier.NullCommandSender");
-		} catch (ClassNotFoundException e) {
-			// uhh...
-		}
-
-		this.nullCommandSender = tempNullCommandSender;
-
 		boolean paperCommandSourceStackPresent;
 		try {
 			Class.forName("io.papermc.paper.command.brigadier.CommandSourceStack");
@@ -67,40 +59,57 @@ public class PaperImplementations {
 	}
 
 	/**
-	 * Hooks into Paper's {@link ServerResourcesReloadedEvent} to detect if
-	 * {@code /minecraft:reload} is called, and registers a reload handler that
-	 * automatically calls the CommandAPI's internal datapack reloading function
-	 * 
+	 * Registers paper-specific events (if paper is present), including:
+	 * <ul>
+	 *     <li>{@link #onServerReloadResources(ServerResourcesReloadedEvent)}</li>
+	 *     <li>{@link #onCommandsSentToPlayer(AsyncPlayerSendCommandsEvent)}</li>
+	 * </ul>
+	 *
 	 * @param plugin the plugin that the CommandAPI is being used from
 	 */
-	public void registerReloadHandler(Plugin plugin) {
-		if (isPaperPresent) {
-			Bukkit.getServer().getPluginManager().registerEvents(new Listener() {
-				@EventHandler
-				public void onServerReloadResources(ServerResourcesReloadedEvent event) {
-					// This event is called after Paper is done with everything command related
-					// which means we can put commands back
-					CommandAPIBukkit.get().getCommandRegistrationStrategy().preReloadDataPacks();
-
-					// Normally, the reloadDataPacks() method is responsible for updating commands for
-					// online players. If, however, datapacks aren't supposed to be reloaded upon /minecraft:reload
-					// we have to do this manually here. This won't have any effect on Spigot and Paper version prior to
-					// paper-1.20.6-65
-					if (!CommandAPIBukkit.getConfiguration().shouldHookPaperReload()) {
-						for (Player player : Bukkit.getOnlinePlayers()) {
-							player.updateCommands();
-						}
-						return;
-					}
-					CommandAPI.logNormal("/minecraft:reload detected. Reloading CommandAPI commands!");
-					nmsInstance.reloadDataPacks();
-				}
-
-			}, plugin);
-			CommandAPI.logNormal("Hooked into Paper ServerResourcesReloadedEvent");
-		} else {
-			CommandAPI.logNormal("Did not hook into Paper ServerResourcesReloadedEvent");
+	public void registerEvents(Plugin plugin) {
+		if (!isPaperPresent) {
+			CommandAPI.logNormal("Did not hook into Paper events");
+			return;
 		}
+		CommandAPI.logNormal("Hooking into Paper events");
+		Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
+	}
+
+	/**
+	 * Automatically calls the CommandAPI's internal datapack
+	 * reloading function when {@code /minecraft:reload} is called.
+	 */
+	@EventHandler
+	public void onServerReloadResources(ServerResourcesReloadedEvent event) {
+		// This event is called after Paper is done with everything command related
+		// which means we can put commands back
+		nmsInstance.getCommandRegistrationStrategy().preReloadDataPacks();
+
+		// Normally, the reloadDataPacks() method is responsible for updating commands for
+		// online players. If, however, datapacks aren't supposed to be reloaded upon /minecraft:reload
+		// we have to do this manually here. This won't have any effect on Spigot and Paper version prior to
+		// paper-1.20.6-65
+		if (!CommandAPIBukkit.getConfiguration().shouldHookPaperReload()) {
+			for (Player player : Bukkit.getOnlinePlayers()) {
+				player.updateCommands();
+			}
+			return;
+		}
+		CommandAPI.logNormal("/minecraft:reload detected. Reloading CommandAPI commands!");
+		nmsInstance.reloadDataPacks();
+	}
+
+	@EventHandler
+	@SuppressWarnings("UnstableApiUsage") // This event is marked @Experimental, but it's been here since 1.15-ish
+	public void onCommandsSentToPlayer(AsyncPlayerSendCommandsEvent<?> event) {
+		// This event fires twice, once async then sync
+		//  We only want to do this once, and it is safe to run async
+		if (!event.isAsynchronous()) return;
+
+		// Rewrite nodes to their client-side version when commands are sent to a client
+		Source source = nmsInstance.getBrigadierSourceFromCommandSender(event.getPlayer());
+		DifferentClientNode.rewriteAllChildren(source, (RootCommandNode<Source>) event.getCommandNode(), false);
 	}
 
 	/**
@@ -140,13 +149,6 @@ public class PaperImplementations {
 	 */
 	public Class<? extends CommandSender> getFeedbackForwardingCommandSender() {
 		return this.feedbackForwardingCommandSender;
-	}
-
-	/**
-	 * @return a class reference pointing to {@code io.papermc.paper.brigadier.NullCommandSender}
-	 */
-	public Class<? extends CommandSender> getNullCommandSender() {
-		return this.nullCommandSender;
 	}
 
 	/**

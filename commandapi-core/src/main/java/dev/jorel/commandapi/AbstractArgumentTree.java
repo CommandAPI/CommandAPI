@@ -1,6 +1,10 @@
 package dev.jorel.commandapi;
 
+import com.mojang.brigadier.tree.CommandNode;
 import dev.jorel.commandapi.arguments.AbstractArgument;
+import dev.jorel.commandapi.arguments.AbstractArgument.NodeInformation;
+import dev.jorel.commandapi.arguments.AbstractArgument.TerminalNodeModifier;
+import dev.jorel.commandapi.exceptions.MissingCommandExecutorException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,8 +26,8 @@ extends AbstractArgument<?, ?, Argument, CommandSender>
 /// @endcond
 , CommandSender> extends Executable<Impl, CommandSender> {
 
-	final List<AbstractArgumentTree<?, Argument, CommandSender>> arguments = new ArrayList<>();
-	final Argument argument;
+	private final Argument argument;
+	private List<AbstractArgumentTree<?, Argument, CommandSender>> arguments = new ArrayList<>();
 
 	/**
 	 * Instantiates an {@link AbstractArgumentTree}. This can only be called if the class
@@ -31,10 +35,10 @@ extends AbstractArgument<?, ?, Argument, CommandSender>
 	 */
 	@SuppressWarnings("unchecked")
 	protected AbstractArgumentTree() {
-		if (this instanceof AbstractArgument<?, ?, Argument, CommandSender>) {
+		if (this instanceof AbstractArgument<?, ?, ?, ?>) {
 			this.argument = (Argument) this;
 		} else {
-			throw new IllegalArgumentException("Implicit inherited constructor must be from Argument");
+			throw new IllegalArgumentException("Implicit inherited constructor must be from AbstractArgument");
 		}
 	}
 
@@ -49,6 +53,10 @@ extends AbstractArgument<?, ?, Argument, CommandSender>
 		// Copy the executor in case any executions were defined on the argument
 		this.executor = argument.executor;
 	}
+
+	/////////////////////
+	// Builder methods //
+	/////////////////////
 
 	/**
 	 * Create a child branch on this node
@@ -96,19 +104,84 @@ extends AbstractArgument<?, ?, Argument, CommandSender>
 		return thenNested(Arrays.asList(trees));
 	}
 
-	List<Execution<CommandSender, Argument>> getExecutions() {
-		List<Execution<CommandSender, Argument>> executions = new ArrayList<>();
-		// If this is executable, add its execution
-		if (this.executor.hasAnyExecutors()) {
-			executions.add(new Execution<>(List.of(this.argument), this.executor));
+	/////////////////////////
+	// Getters and setters //
+	/////////////////////////
+
+	/**
+	 * @return The child branches added to this tree by {@link #then(AbstractArgumentTree)}.
+	 */
+	public List<AbstractArgumentTree<?, Argument, CommandSender>> getArguments() {
+		return arguments;
+	}
+
+	/**
+	 * Sets the child branches that this node has
+	 *
+	 * @param arguments A new list of branches for this node
+	 */
+	public void setArguments(List<AbstractArgumentTree<?, Argument, CommandSender>> arguments) {
+		this.arguments = arguments;
+	}
+
+	//////////////////
+	// Registration //
+	//////////////////
+	/**
+	 * Builds the Brigadier {@link CommandNode} structure for this argument tree.
+	 *
+	 * @param previousNodeInformation The {@link NodeInformation} of the argument this argument is being added to.
+	 * @param previousArguments       A List of CommandAPI arguments that came before this argument tree.
+	 * @param previousArgumentNames   A List of Strings containing the node names that came before this argument.
+	 * @param <Source>                The Brigadier Source object for running commands.
+	 */
+	public <Source> void buildBrigadierNode(
+		NodeInformation<CommandSender, Source> previousNodeInformation,
+		List<Argument> previousArguments, List<String> previousArgumentNames
+	) {
+		CommandAPIHandler<Argument, CommandSender, Source> handler = CommandAPIHandler.getInstance();
+
+		// Check preconditions
+		if (!executor.hasAnyExecutors() && arguments.isEmpty()) {
+			// If we don't have any executors then no branches is bad because this path can't be run at all
+			throw new MissingCommandExecutorException(previousArguments, argument);
 		}
-		// Add all executions from all arguments
-		for (AbstractArgumentTree<?, Argument, CommandSender> tree : arguments) {
-			for (Execution<CommandSender, Argument> execution : tree.getExecutions()) {
-				// Prepend this argument to the arguments of the executions
-				executions.add(execution.prependedBy(this.argument));
+
+		// Create executor, if it exists
+		TerminalNodeModifier<Argument, CommandSender, Source> terminalNodeModifier = (builder, args) -> {
+			if (executor.hasAnyExecutors()) {
+				builder.executes(handler.generateBrigadierCommand(args, executor));
 			}
+
+			return builder.build();
+		};
+
+		// Create node for this argument
+		previousNodeInformation = argument.addArgumentNodes(
+			previousNodeInformation,
+			previousArguments, previousArgumentNames,
+			terminalNodeModifier
+		);
+
+		// Collect children into our own list
+		List<RegisteredCommand.Node<CommandSender>> childrenNodeInformation = new ArrayList<>();
+
+		// Add our branches as children to the node
+		for (AbstractArgumentTree<?, Argument, CommandSender> child : arguments) {
+			// Collect children into our own list
+			NodeInformation<CommandSender, Source> newPreviousNodeInformation = new NodeInformation<>(
+				previousNodeInformation.lastCommandNodes(), 
+				childrenNodeInformation::addAll
+			);
+
+			// We need a new list so each branch acts independently
+			List<Argument> newPreviousArguments = new ArrayList<>(previousArguments);
+			List<String> newPreviousArgumentNames = new ArrayList<>(previousArgumentNames);
+
+			child.buildBrigadierNode(newPreviousNodeInformation, newPreviousArguments, newPreviousArgumentNames);
 		}
-		return executions;
+
+		// Create registered nodes now that all children are generated
+		previousNodeInformation.childrenConsumer().createNodeWithChildren(childrenNodeInformation);
 	}
 }

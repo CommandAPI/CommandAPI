@@ -45,7 +45,7 @@ class DSLCommandExecutionTests : TestBase() {
 	// Using a linked map here to keep the values in insertion order, rather
 	//  than in whatever order the hash code feels like, which makes debugging easier
 	private val executorTypeToMockSender: Map<ExecutorType, () -> CommandSender> = linkedMapOf(
-		ExecutorType.PLAYER to { server.setupMockedCraftPlayer() },
+		ExecutorType.PLAYER to { server.addCraftPlayer() },
 		ExecutorType.ENTITY to { SimpleEntityMock(server) },
 		ExecutorType.CONSOLE to { ConsoleCommandSenderMock() },
 		// Apparently `Mockito.mock(BlockCommandSender::class) as CommandSender` is not correct here ¯\_(ツ)_/¯
@@ -53,11 +53,10 @@ class DSLCommandExecutionTests : TestBase() {
 		ExecutorType.BLOCK to { val block : BlockCommandSender = Mockito.mock(); block},
 		// This is a little odd, but `ProxiedCommandSender`s will always be CommandAPI `NativeProxyCommandSender`s.
 		//  It is possible that a different plugin could implement the `ProxiedCommandSender`, which would cause
-		//  a class cast exception if that sender tried to run a `ProxyCommandExecutor`. However, the Spigot/Paper
+		//  a class cast exception if that sender tried to run an `executesProxy` executor. However, the Spigot/Paper
 		//  server itself will never use its own `org.bukkit.craftbukkit.command.ProxiedNativeCommandSender` class.
 		//  So, if you can make a class cast exception happen on a server, change this mock to `ProxiedCommandSender`
-		//  and fix `ProxiedCommandExecutor`, but otherwise we can provide the more specific `NativeProxyCommandSender`
-		//  class when using `executesProxy`.
+		//  and fix `executesProxy`, but otherwise we can provide the more specific `NativeProxyCommandSender` class.
 //		ExecutorType.PROXY to { val proxy : ProxiedCommandSender = Mockito.mock(); proxy },
 		ExecutorType.PROXY to { val proxy : NativeProxyCommandSender = Mockito.mock(); proxy },
 		ExecutorType.REMOTE to { val remoteConsole : RemoteConsoleCommandSender = Mockito.mock(); remoteConsole }
@@ -174,11 +173,8 @@ class DSLCommandExecutionTests : TestBase() {
 			{ name -> { sender -> assertCommandFailsWith(sender, name,
 						"This command has no implementations for " + sender.javaClass.getSimpleName().lowercase()) } },
 			listOf("normal", "normalinfo", "resultinginfo", "resulting"),
-			// TODO: Players should be able to run these commands
-			//  Currently they cannot, since even though `Player extends Entity`,
-			//  `AbstractPlayer` does not extend `AbstractEntity`
-			//  See https://github.com/JorelAli/CommandAPI/issues/559
-			ExecutorType.ENTITY/*, ExecutorType.PLAYER */
+			// Players count as Entities
+			ExecutorType.ENTITY, ExecutorType.PLAYER
 		)
 
 		assertNoMoreResults(results)
@@ -276,11 +272,7 @@ class DSLCommandExecutionTests : TestBase() {
 
 		commandAPICommand("normal") {
 			proxyExecutor { proxy, _ ->
-				// TODO: For some reason proxy here is just ProxiedCommandSender.
-				//  This seems wrong considering the `ExecutionInfo` methods are
-				//  parameterized with NativeProxyCommandSender, as is non-DSL.
-				//  Dunno if changing this is breaking though, so I'll just leave it for now.
-				results.set(proxy as NativeProxyCommandSender)
+				results.set(proxy)
 			}
 		}
 
@@ -293,7 +285,7 @@ class DSLCommandExecutionTests : TestBase() {
 
 		commandAPICommand("resulting") {
 			proxyResultingExecutor { proxy, _ ->
-				results.set(proxy as NativeProxyCommandSender)
+				results.set(proxy)
 				2
 			}
 		}

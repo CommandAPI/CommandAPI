@@ -1,72 +1,71 @@
 package dev.jorel.commandapi;
 
-import dev.jorel.commandapi.commandsenders.BukkitCommandSender;
-import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
-import dev.jorel.commandapi.executors.*;
+import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.command.RemoteConsoleCommandSender;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+
+import dev.jorel.commandapi.executors.BukkitNormalTypedExecutor;
+import dev.jorel.commandapi.executors.BukkitResultingTypedExecutor;
+import dev.jorel.commandapi.executors.ExecutorType;
+import dev.jorel.commandapi.executors.NormalExecutor;
+import dev.jorel.commandapi.executors.NormalExecutorInfo;
+import dev.jorel.commandapi.executors.ResultingExecutor;
+import dev.jorel.commandapi.executors.ResultingExecutorInfo;
+import dev.jorel.commandapi.wrappers.NativeProxyCommandSender;
 
 public interface BukkitExecutable<Impl
 /// @cond DOX
 extends BukkitExecutable<Impl>
 /// @endcond
 > extends PlatformExecutable<Impl, CommandSender> {
-
 	// Regular command executor
 
 	/**
 	 * Adds an executor to the current command builder
 	 *
-	 * @param executor A lambda of type <code>(CommandSender, Object[]) -&gt; ()</code> that will be executed when the command is run
+	 * @param executor A lambda of type <code>ExecutionInfo&lt;CommandSender, ?> -&gt; ()</code> that will be executed when the command is run
 	 * @param types    A list of executor types to use this executes method for.
 	 * @return this command builder
 	 */
-	default Impl executes(CommandExecutor executor, ExecutorType... types) {
+	default Impl executes(NormalExecutorInfo<CommandSender, ?> executor, ExecutorType... types) {
 		if (types == null || types.length == 0) {
-			getExecutor().addNormalExecutor(executor);
-		} else {
-			for (ExecutorType type : types) {
-				getExecutor().addNormalExecutor(new CommandExecutor() {
-					@Override
-					public void run(CommandSender sender, CommandArguments args) throws WrapperCommandSyntaxException {
-						executor.executeWith(new BukkitExecutionInfo<>(sender, CommandAPIBukkit.get().wrapCommandSender(sender), args));
-					}
-
-					@Override
-					public ExecutorType getType() {
-						return type;
-					}
-				});
-			}
+			types = new ExecutorType[]{ExecutorType.ALL};
 		}
+
+		getExecutor().addExecutor(new BukkitNormalTypedExecutor<>(executor, types));
 		return instance();
 	}
 
 	/**
 	 * Adds an executor to the current command builder
 	 *
-	 * @param executor A lambda of type <code>(BukkitCommandExecutionInfo) -&gt; ()</code> that will be executed when the command is run
+	 * @param executor A lambda of type <code>(CommandSender, CommandArguments) -&gt; ()</code> that will be executed when the command is run
 	 * @param types    A list of executor types to use this executes method for.
 	 * @return this command builder
 	 */
-	default Impl executes(CommandExecutionInfo executor, ExecutorType... types) {
+	default Impl executes(NormalExecutor<CommandSender, ?> executor, ExecutorType... types) {
+		// While we can cast directly to `NormalExecutorInfo` (because `NormalExecutor` extends it), this method
+		//  is necessary to help Java identify the expression signature of user defined lambdas.
+		//  The same applies for the rest of the executes methods.
+		return executes((NormalExecutorInfo<CommandSender, ?>) executor, types);
+	}
+
+	/**
+	 * Adds an executor to the current command builder
+	 *
+	 * @param executor A lambda of type <code>ExecutionInfo&lt;CommandSender, ?> -&gt; int</code> that will be executed when the command is run
+	 * @param types    A list of executor types to use this executes method for.
+	 * @return this command builder
+	 */
+	default Impl executes(ResultingExecutorInfo<CommandSender, ?> executor, ExecutorType... types) {
 		if (types == null || types.length == 0) {
-			getExecutor().addNormalExecutor(executor);
-		} else {
-			for (ExecutorType type : types) {
-				getExecutor().addNormalExecutor(new CommandExecutionInfo() {
-
-					@Override
-					public void run(ExecutionInfo<CommandSender, BukkitCommandSender<? extends CommandSender>> info) throws WrapperCommandSyntaxException {
-						executor.executeWith(info);
-					}
-
-					@Override
-					public ExecutorType getType() {
-						return type;
-					}
-				});
-			}
+			types = new ExecutorType[]{ExecutorType.ALL};
 		}
+
+		getExecutor().addExecutor(new BukkitResultingTypedExecutor<>(executor, types));
 		return instance();
 	}
 
@@ -77,61 +76,22 @@ extends BukkitExecutable<Impl>
 	 * @param types    A list of executor types to use this executes method for.
 	 * @return this command builder
 	 */
-	default Impl executes(ResultingCommandExecutor executor, ExecutorType... types) {
-		if (types == null || types.length == 0) {
-			getExecutor().addResultingExecutor(executor);
-		} else {
-			for (ExecutorType type : types) {
-				getExecutor().addResultingExecutor(new ResultingCommandExecutor() {
-
-					@Override
-					public int run(CommandSender sender, CommandArguments args) throws WrapperCommandSyntaxException {
-						executor.executeWith(new BukkitExecutionInfo<>(sender, CommandAPIBukkit.get().wrapCommandSender(sender), args));
-						return 1;
-					}
-
-					@Override
-					public ExecutorType getType() {
-						return type;
-					}
-				});
-			}
-		}
-		return instance();
+	default Impl executes(ResultingExecutor<CommandSender, ?> executor, ExecutorType... types) {
+		return executes((ResultingExecutorInfo<CommandSender, ?>) executor, types);
 	}
+
+	// Player command executor
 
 	/**
 	 * Adds an executor to the current command builder
 	 *
-	 * @param executor A lambda of type <code>(BukkitCommandExecutionInfo) -&gt; int</code> that will be executed when the command is run
-	 * @param types    A list of executor types to use this executes method for.
+	 * @param executor A lambda of type <code>ExecutionInfo&lt;Player, ?> -&gt; ()</code> that will be executed when the command is run
 	 * @return this command builder
 	 */
-	default Impl executes(ResultingCommandExecutionInfo executor, ExecutorType... types) {
-		if (types == null || types.length == 0) {
-			getExecutor().addResultingExecutor(executor);
-		} else {
-			for (ExecutorType type : types) {
-				getExecutor().addResultingExecutor(new ResultingCommandExecutionInfo() {
-
-					@Override
-					public int run(ExecutionInfo<CommandSender, BukkitCommandSender<? extends CommandSender>> info) throws WrapperCommandSyntaxException {
-						executor.executeWith(info);
-						return 1;
-					}
-
-					@Override
-					public ExecutorType getType() {
-						return type;
-					}
-				});
-			}
-		}
+	default Impl executesPlayer(NormalExecutorInfo<Player, ?> executor) {
+		getExecutor().addExecutor(new BukkitNormalTypedExecutor<>(executor, ExecutorType.PLAYER));
 		return instance();
 	}
-
-
-	// Player command executor
 
 	/**
 	 * Adds an executor to the current command builder
@@ -139,19 +99,18 @@ extends BukkitExecutable<Impl>
 	 * @param executor A lambda of type <code>(Player, CommandArguments) -&gt; ()</code> that will be executed when the command is run
 	 * @return this command builder
 	 */
-	default Impl executesPlayer(PlayerCommandExecutor executor) {
-		getExecutor().addNormalExecutor(executor);
-		return instance();
+	default Impl executesPlayer(NormalExecutor<Player, ?> executor) {
+		return executesPlayer((NormalExecutorInfo<Player, ?>) executor);
 	}
 
 	/**
 	 * Adds an executor to the current command builder
 	 *
-	 * @param info A lambda of type <code>(ExecutionInfo) -&gt; ()</code> that will be executed when the command is run
+	 * @param executor A lambda of type <code>ExecutionInfo&lt;Player, ?> -&gt; int</code> that will be executed when the command is run
 	 * @return this command builder
 	 */
-	default Impl executesPlayer(PlayerExecutionInfo info) {
-		getExecutor().addNormalExecutor(info);
+	default Impl executesPlayer(ResultingExecutorInfo<Player, ?> executor) {
+		getExecutor().addExecutor(new BukkitResultingTypedExecutor<>(executor, ExecutorType.PLAYER));
 		return instance();
 	}
 
@@ -161,20 +120,8 @@ extends BukkitExecutable<Impl>
 	 * @param executor A lambda of type <code>(Player, CommandArguments) -&gt; int</code> that will be executed when the command is run
 	 * @return this command builder
 	 */
-	default Impl executesPlayer(PlayerResultingCommandExecutor executor) {
-		getExecutor().addResultingExecutor(executor);
-		return instance();
-	}
-
-	/**
-	 * Adds an executor to the current command builder
-	 *
-	 * @param info A lambda of type <code>(ExecutionInfo) -&gt; int</code> that will be executed when the command is run
-	 * @return this command builder
-	 */
-	default Impl executesPlayer(PlayerResultingExecutionInfo info) {
-		getExecutor().addResultingExecutor(info);
-		return instance();
+	default Impl executesPlayer(ResultingExecutor<Player, ?> executor) {
+		return executesPlayer((ResultingExecutorInfo<Player, ?>) executor);
 	}
 
 	// Entity command executor
@@ -182,22 +129,32 @@ extends BukkitExecutable<Impl>
 	/**
 	 * Adds an executor to the current command builder
 	 *
-	 * @param executor A lambda of type <code>(Entity, CommandArguments) -&gt; ()</code> that will be executed when the command is run
+	 * @param executor A lambda of type <code>ExecutionInfo&lt;Entity, ?> -&gt; ()</code> that will be executed when the command is run
 	 * @return this command builder
 	 */
-	default Impl executesEntity(EntityCommandExecutor executor) {
-		getExecutor().addNormalExecutor(executor);
+	default Impl executesEntity(NormalExecutorInfo<Entity, ?> executor) {
+		getExecutor().addExecutor(new BukkitNormalTypedExecutor<>(executor, ExecutorType.ENTITY));
 		return instance();
 	}
 
 	/**
 	 * Adds an executor to the current command builder
 	 *
-	 * @param info A lambda of type <code>(ExecutionInfo) -&gt; ()</code> that will be executed when the command is run
+	 * @param executor A lambda of type <code>(Entity, CommandArguments) -&gt; ()</code> that will be executed when the command is run
 	 * @return this command builder
 	 */
-	default Impl executesEntity(EntityExecutionInfo info) {
-		getExecutor().addNormalExecutor(info);
+	default Impl executesEntity(NormalExecutor<Entity, ?> executor) {
+		return executesEntity((NormalExecutorInfo<Entity, ?>) executor);
+	}
+
+	/**
+	 * Adds an executor to the current command builder
+	 *
+	 * @param executor A lambda of type <code>ExecutionInfo&lt;Entity, ?> -&gt; int</code> that will be executed when the command is run
+	 * @return this command builder
+	 */
+	default Impl executesEntity(ResultingExecutorInfo<Entity, ?> executor) {
+		getExecutor().addExecutor(new BukkitResultingTypedExecutor<>(executor, ExecutorType.ENTITY));
 		return instance();
 	}
 
@@ -207,20 +164,8 @@ extends BukkitExecutable<Impl>
 	 * @param executor A lambda of type <code>(Entity, CommandArguments) -&gt; int</code> that will be executed when the command is run
 	 * @return this command builder
 	 */
-	default Impl executesEntity(EntityResultingCommandExecutor executor) {
-		getExecutor().addResultingExecutor(executor);
-		return instance();
-	}
-
-	/**
-	 * Adds an executor to the current command builder
-	 *
-	 * @param info A lambda of type <code>(ExecutionInfo) -&gt; int</code> that will be executed when the command is run
-	 * @return this command builder
-	 */
-	default Impl executesEntity(EntityResultingExecutionInfo info) {
-		getExecutor().addResultingExecutor(info);
-		return instance();
+	default Impl executesEntity(ResultingExecutor<Entity, ?> executor) {
+		return executesEntity((ResultingExecutorInfo<Entity, ?>) executor);
 	}
 
 	// Proxy command executor
@@ -228,45 +173,43 @@ extends BukkitExecutable<Impl>
 	/**
 	 * Adds an executor to the current command builder
 	 *
-	 * @param executor A lambda of type <code>(Entity, CommandArguments) -&gt; ()</code> that will be executed when the command is run
+	 * @param executor A lambda of type <code>ExecutionInfo&lt;NativeProxyCommandSender, ?> -&gt; ()</code> that will be executed when the command is run
 	 * @return this command builder
 	 */
-	default Impl executesProxy(ProxyCommandExecutor executor) {
-		getExecutor().addNormalExecutor(executor);
+	default Impl executesProxy(NormalExecutorInfo<NativeProxyCommandSender, ?> executor) {
+		getExecutor().addExecutor(new BukkitNormalTypedExecutor<>(executor, ExecutorType.PROXY));
 		return instance();
 	}
 
 	/**
 	 * Adds an executor to the current command builder
 	 *
-	 * @param info A lambda of type <code>(ExecutionInfo) -&gt; ()</code> that will be executed when the command is run
+	 * @param executor A lambda of type <code>(NativeProxyCommandSender, CommandArguments) -&gt; ()</code> that will be executed when the command is run
 	 * @return this command builder
 	 */
-	default Impl executesProxy(ProxyExecutionInfo info) {
-		getExecutor().addNormalExecutor(info);
+	default Impl executesProxy(NormalExecutor<NativeProxyCommandSender, ?> executor) {
+		return executesProxy((NormalExecutorInfo<NativeProxyCommandSender, ?>) executor);
+	}
+
+	/**
+	 * Adds an executor to the current command builder
+	 *
+	 * @param executor A lambda of type <code>ExecutionInfo&lt;ProxiedCommandSender, ?> -&gt; int</code> that will be executed when the command is run
+	 * @return this command builder
+	 */
+	default Impl executesProxy(ResultingExecutorInfo<NativeProxyCommandSender, ?> executor) {
+		getExecutor().addExecutor(new BukkitResultingTypedExecutor<>(executor, ExecutorType.PROXY));
 		return instance();
 	}
 
 	/**
 	 * Adds an executor to the current command builder
 	 *
-	 * @param executor A lambda of type <code>(Entity, CommandArguments) -&gt; int</code> that will be executed when the command is run
+	 * @param executor A lambda of type <code>(NativeProxyCommandSender, CommandArguments) -&gt; int</code> that will be executed when the command is run
 	 * @return this command builder
 	 */
-	default Impl executesProxy(ProxyResultingCommandExecutor executor) {
-		getExecutor().addResultingExecutor(executor);
-		return instance();
-	}
-
-	/**
-	 * Adds an executor to the current command builder
-	 *
-	 * @param info A lambda of type <code>(ExecutionInfo) -&gt; int</code> that will be executed when the command is run
-	 * @return this command builder
-	 */
-	default Impl executesProxy(ProxyResultingExecutionInfo info) {
-		getExecutor().addResultingExecutor(info);
-		return instance();
+	default Impl executesProxy(ResultingExecutor<NativeProxyCommandSender, ?> executor) {
+		return executesProxy((ResultingExecutorInfo<NativeProxyCommandSender, ?>) executor);
 	}
 
 	// Command block command executor
@@ -274,45 +217,43 @@ extends BukkitExecutable<Impl>
 	/**
 	 * Adds an executor to the current command builder
 	 *
+	 * @param executor A lambda of type <code>ExecutionInfo&lt;BlockCommandSender, ?> -&gt; ()</code> that will be executed when the command is run
+	 * @return this command builder
+	 */
+	default Impl executesCommandBlock(NormalExecutorInfo<BlockCommandSender, ?> executor) {
+		getExecutor().addExecutor(new BukkitNormalTypedExecutor<>(executor, ExecutorType.BLOCK));
+		return instance();
+	}
+
+	/**
+	 * Adds an executor to the current command builder
+	 *
 	 * @param executor A lambda of type <code>(BlockCommandSender, CommandArguments) -&gt; ()</code> that will be executed when the command is run
 	 * @return this command builder
 	 */
-	default Impl executesCommandBlock(CommandBlockCommandExecutor executor) {
-		getExecutor().addNormalExecutor(executor);
+	default Impl executesCommandBlock(NormalExecutor<BlockCommandSender, ?> executor) {
+		return executesCommandBlock((NormalExecutorInfo<BlockCommandSender, ?>) executor);
+	}
+
+	/**
+	 * Adds an executor to the current command builder
+	 *
+	 * @param executor A lambda of type <code>ExecutionInfo&lt;BlockCommandSender, ?> -&gt; int</code> that will be executed when the command is run
+	 * @return this command builder
+	 */
+	default Impl executesCommandBlock(ResultingExecutorInfo<BlockCommandSender, ?> executor) {
+		getExecutor().addExecutor(new BukkitResultingTypedExecutor<>(executor, ExecutorType.BLOCK));
 		return instance();
 	}
 
 	/**
 	 * Adds an executor to the current command builder
 	 *
-	 * @param info A lambda of type <code>(ExecutionInfo) -&gt; ()</code> that will be executed when the command is run
+	 * @param executor A lambda of type  <code>(BlockCommandSender, CommandArguments) -&gt; int</code> that will be executed when the command is run
 	 * @return this command builder
 	 */
-	default Impl executesCommandBlock(CommandBlockExecutionInfo info) {
-		getExecutor().addNormalExecutor(info);
-		return instance();
-	}
-
-	/**
-	 * Adds an executor to the current command builder
-	 *
-	 * @param executor A lambda of type <code>(BlockCommandSender, CommandArguments) -&gt; int</code> that will be executed when the command is run
-	 * @return this command builder
-	 */
-	default Impl executesCommandBlock(CommandBlockResultingCommandExecutor executor) {
-		getExecutor().addResultingExecutor(executor);
-		return instance();
-	}
-
-	/**
-	 * Adds an executor to the current command builder
-	 *
-	 * @param info A lambda of type <code>(ExecutionInfo) -&gt; int</code> that will be executed when the command is run
-	 * @return this command builder
-	 */
-	default Impl executesCommandBlock(CommandBlockResultingExecutionInfo info) {
-		getExecutor().addResultingExecutor(info);
-		return instance();
+	default Impl executesCommandBlock(ResultingExecutor<BlockCommandSender, ?> executor) {
+		return executesCommandBlock((ResultingExecutorInfo<BlockCommandSender, ?>) executor);
 	}
 
 	// Console command executor
@@ -320,22 +261,32 @@ extends BukkitExecutable<Impl>
 	/**
 	 * Adds an executor to the current command builder
 	 *
-	 * @param executor A lambda of type <code>(ConsoleCommandSender, CommandArguments) -&gt; ()</code> that will be executed when the command is run
+	 * @param executor A lambda of type <code>ExecutionInfo&lt;ConsoleCommandSender, ?> -&gt; ()</code> that will be executed when the command is run
 	 * @return this command builder
 	 */
-	default Impl executesConsole(ConsoleCommandExecutor executor) {
-		getExecutor().addNormalExecutor(executor);
+	default Impl executesConsole(NormalExecutorInfo<ConsoleCommandSender, ?> executor) {
+		getExecutor().addExecutor(new BukkitNormalTypedExecutor<>(executor, ExecutorType.CONSOLE));
 		return instance();
 	}
 
 	/**
 	 * Adds an executor to the current command builder
 	 *
-	 * @param info A lambda of type <code>(ExecutionInfo) -&gt; ()</code> that will be executed when the command is run
+	 * @param executor A lambda of type <code>(ConsoleCommandSender, CommandArguments) -&gt; ()</code> that will be executed when the command is run
 	 * @return this command builder
 	 */
-	default Impl executesConsole(ConsoleExecutionInfo info) {
-		getExecutor().addNormalExecutor(info);
+	default Impl executesConsole(NormalExecutor<ConsoleCommandSender, ?> executor) {
+		return executesConsole((NormalExecutorInfo<ConsoleCommandSender, ?>) executor);
+	}
+
+	/**
+	 * Adds an executor to the current command builder
+	 *
+	 * @param executor A lambda of type <code>ExecutionInfo&lt;ConsoleCommandSender, ?> -&gt; int</code> that will be executed when the command is run
+	 * @return this command builder
+	 */
+	default Impl executesConsole(ResultingExecutorInfo<ConsoleCommandSender, ?> executor) {
+		getExecutor().addExecutor(new BukkitResultingTypedExecutor<>(executor, ExecutorType.CONSOLE));
 		return instance();
 	}
 
@@ -345,20 +296,8 @@ extends BukkitExecutable<Impl>
 	 * @param executor A lambda of type <code>(ConsoleCommandSender, CommandArguments) -&gt; int</code> that will be executed when the command is run
 	 * @return this command builder
 	 */
-	default Impl executesConsole(ConsoleResultingCommandExecutor executor) {
-		getExecutor().addResultingExecutor(executor);
-		return instance();
-	}
-
-	/**
-	 * Adds an executor to the current command builder
-	 *
-	 * @param info A lambda of type <code>(ExecutionInfo) -&gt; int</code> that will be executed when the command is run
-	 * @return this command builder
-	 */
-	default Impl executesConsole(ConsoleResultingExecutionInfo info) {
-		getExecutor().addResultingExecutor(info);
-		return instance();
+	default Impl executesConsole(ResultingExecutor<ConsoleCommandSender, ?> executor) {
+		return executesConsole((ResultingExecutorInfo<ConsoleCommandSender, ?>) executor);
 	}
 
 	// Native command executor
@@ -366,45 +305,43 @@ extends BukkitExecutable<Impl>
 	/**
 	 * Adds an executor to the current command builder
 	 *
-	 * @param executor A lambda of type <code>(NativeCommandExecutor, CommandArguments) -&gt; ()</code> that will be executed when the command is run
+	 * @param executor A lambda of type <code>ExecutionInfo&lt;NativeProxyCommandSender, ?> -&gt; ()</code> that will be executed when the command is run
 	 * @return this command builder
 	 */
-	default Impl executesNative(NativeCommandExecutor executor) {
-		getExecutor().addNormalExecutor(executor);
+	default Impl executesNative(NormalExecutorInfo<NativeProxyCommandSender, ?> executor) {
+		getExecutor().addExecutor(new BukkitNormalTypedExecutor<>(executor, ExecutorType.NATIVE));
 		return instance();
 	}
 
 	/**
 	 * Adds an executor to the current command builder
 	 *
-	 * @param info A lambda of type <code>(ExecutionInfo) -&gt; ()</code> that will be executed when the command is run
+	 * @param executor A lambda of type <code>(NativeProxyCommandSender, CommandArguments) -&gt; ()</code> that will be executed when the command is run
 	 * @return this command builder
 	 */
-	default Impl executesNative(NativeExecutionInfo info) {
-		getExecutor().addNormalExecutor(info);
+	default Impl executesNative(NormalExecutor<NativeProxyCommandSender, ?> executor) {
+		return executesNative((NormalExecutorInfo<NativeProxyCommandSender, ?>) executor);
+	}
+
+	/**
+	 * Adds an executor to the current command builder
+	 *
+	 * @param executor A lambda of type <code>ExecutionInfo&lt;NativeProxyCommandSender, ?> -&gt; int</code> that will be executed when the command is run
+	 * @return this command builder
+	 */
+	default Impl executesNative(ResultingExecutorInfo<NativeProxyCommandSender, ?> executor) {
+		getExecutor().addExecutor(new BukkitResultingTypedExecutor<>(executor, ExecutorType.NATIVE));
 		return instance();
 	}
 
 	/**
 	 * Adds an executor to the current command builder
 	 *
-	 * @param executor A lambda of type <code>(NativeCommandExecutor, CommandArguments) -&gt; int</code> that will be executed when the command is run
+	 * @param executor A lambda of type <code>(NativeProxyCommandSender, CommandArguments) -&gt; int</code> that will be executed when the command is run
 	 * @return this command builder
 	 */
-	default Impl executesNative(NativeResultingCommandExecutor executor) {
-		getExecutor().addResultingExecutor(executor);
-		return instance();
-	}
-
-	/**
-	 * Adds an executor to the current command builder
-	 *
-	 * @param info A lambda of type <code>(ExecutionInfo) -&gt; int</code> that will be executed when the command is run
-	 * @return this command builder
-	 */
-	default Impl executesNative(NativeResultingExecutionInfo info) {
-		getExecutor().addResultingExecutor(info);
-		return instance();
+	default Impl executesNative(ResultingExecutor<NativeProxyCommandSender, ?> executor) {
+		return executesNative((ResultingExecutorInfo<NativeProxyCommandSender, ?>) executor);
 	}
 
 	// RemoteConsole command executor
@@ -412,68 +349,76 @@ extends BukkitExecutable<Impl>
 	/**
 	 * Adds an executor to the current command builder
 	 *
-	 * @param executor A lambda of type <code>(RemoteConsoleCommandExecutor, CommandArguments) -&gt; ()</code> that will be executed when the command is run
+	 * @param executor A lambda of type <code>ExecutionInfo&lt;RemoteConsoleCommandSender, ?> -&gt; ()</code> that will be executed when the command is run
 	 * @return this command builder
 	 */
-	default Impl executesRemoteConsole(RemoteConsoleCommandExecutor executor) {
-		getExecutor().addNormalExecutor(executor);
+	default Impl executesRemoteConsole(NormalExecutorInfo<RemoteConsoleCommandSender, ?> executor) {
+		getExecutor().addExecutor(new BukkitNormalTypedExecutor<>(executor, ExecutorType.REMOTE));
 		return instance();
 	}
 
 	/**
 	 * Adds an executor to the current command builder
 	 *
-	 * @param info A lambda of type <code>(ExecutionInfo) -&gt; ()</code> that will be executed when the command is run
+	 * @param executor A lambda of type <code>(RemoteConsoleCommandSender, CommandArguments) -&gt; ()</code> that will be executed when the command is run
 	 * @return this command builder
 	 */
-	default Impl executesRemoteConsole(RemoteConsoleExecutionInfo info) {
-		getExecutor().addNormalExecutor(info);
+	default Impl executesRemoteConsole(NormalExecutor<RemoteConsoleCommandSender, ?> executor) {
+		return executesRemoteConsole((NormalExecutorInfo<RemoteConsoleCommandSender, ?>) executor);
+	}
+
+	/**
+	 * Adds an executor to the current command builder
+	 *
+	 * @param executor A lambda of type <code>ExecutionInfo&lt;RemoteConsoleCommandSender, ?> -&gt; int</code> that will be executed when the command is run
+	 * @return this command builder
+	 */
+	default Impl executesRemoteConsole(ResultingExecutorInfo<RemoteConsoleCommandSender, ?> executor) {
+		getExecutor().addExecutor(new BukkitResultingTypedExecutor<>(executor, ExecutorType.REMOTE));
 		return instance();
 	}
 
 	/**
 	 * Adds an executor to the current command builder
 	 *
-	 * @param executor A lambda of type <code>(RemoteConsoleResultingCommandExecutor, CommandArguments) -&gt; int</code> that will be executed when the command is run
+	 * @param executor A lambda of type <code>(RemoteConsoleCommandSender, CommandArguments) -&gt; int</code> that will be executed when the command is run
 	 * @return this command builder
 	 */
-	default Impl executesRemoteConsole(RemoteConsoleResultingCommandExecutor executor) {
-		getExecutor().addResultingExecutor(executor);
-		return instance();
-	}
-
-	/**
-	 * Adds an executor to the current command builder
-	 *
-	 * @param info A lambda of type <code>(ExecutionInfo) -&gt; int</code> that will be executed when the command is run
-	 * @return this command builder
-	 */
-	default Impl executesRemoteConsole(RemoteConsoleResultingExecutionInfo info) {
-		getExecutor().addResultingExecutor(info);
-		return instance();
+	default Impl executesRemoteConsole(ResultingExecutor<RemoteConsoleCommandSender, ?> executor) {
+		return executesRemoteConsole((ResultingExecutorInfo<RemoteConsoleCommandSender, ?>) executor);
 	}
 
 	// Feedback-forwarding command executor
-	
+
+	/**
+	 * Adds an executor to the current command builder
+	 *
+	 * @param executor A lambda of type <code>ExecutionInfo&lt;FeedbackForwardingCommandExecutor, ?> -&gt; ()</code> that will be executed when the command is run
+	 * @return this command builder
+	 */
+	default Impl executesFeedbackForwarding(NormalExecutorInfo<CommandSender, ?> executor) {
+		getExecutor().addExecutor(new BukkitNormalTypedExecutor<>(executor, ExecutorType.FEEDBACK_FORWARDING));
+		return instance();
+	}
+
 	/**
 	 * Adds an executor to the current command builder
 	 *
 	 * @param executor A lambda of type <code>(FeedbackForwardingCommandExecutor, CommandArguments) -&gt; ()</code> that will be executed when the command is run
 	 * @return this command builder
 	 */
-	default Impl executesFeedbackForwarding(FeedbackForwardingCommandExecutor executor) {
-		getExecutor().addNormalExecutor(executor);
-		return instance();
+	default Impl executesFeedbackForwarding(NormalExecutor<CommandSender, ?> executor) {
+		return executesFeedbackForwarding((NormalExecutorInfo<CommandSender, ?>) executor);
 	}
 
 	/**
 	 * Adds an executor to the current command builder
 	 *
-	 * @param info A lambda of type <code>(ExecutionInfo) -&gt; ()</code> that will be executed when the command is run
+	 * @param executor A lambda of type <code>ExecutionInfo&lt;FeedbackForwardingCommandExecutor, ?> -&gt; int</code> that will be executed when the command is run
 	 * @return this command builder
 	 */
-	default Impl executesFeedbackForwarding(FeedbackForwardingExecutionInfo info) {
-		getExecutor().addNormalExecutor(info);
+	default Impl executesFeedbackForwarding(ResultingExecutorInfo<CommandSender, ?> executor) {
+		getExecutor().addExecutor(new BukkitResultingTypedExecutor<>(executor, ExecutorType.FEEDBACK_FORWARDING));
 		return instance();
 	}
 
@@ -483,19 +428,7 @@ extends BukkitExecutable<Impl>
 	 * @param executor A lambda of type <code>(FeedbackForwardingCommandExecutor, CommandArguments) -&gt; int</code> that will be executed when the command is run
 	 * @return this command builder
 	 */
-	default Impl executesFeedbackForwarding(FeedbackForwardingResultingCommandExecutor executor) {
-		getExecutor().addResultingExecutor(executor);
-		return instance();
-	}
-
-	/**
-	 * Adds an executor to the current command builder
-	 *
-	 * @param info A lambda of type <code>(ExecutionInfo) -&gt; int</code> that will be executed when the command is run
-	 * @return this command builder
-	 */
-	default Impl executesFeedbackForwarding(FeedbackForwardingResultingExecutionInfo info) {
-		getExecutor().addResultingExecutor(info);
-		return instance();
+	default Impl executesFeedbackForwarding(ResultingExecutor<CommandSender, ?> executor) {
+		return executesFeedbackForwarding((ResultingExecutorInfo<CommandSender, ?>) executor);
 	}
 }

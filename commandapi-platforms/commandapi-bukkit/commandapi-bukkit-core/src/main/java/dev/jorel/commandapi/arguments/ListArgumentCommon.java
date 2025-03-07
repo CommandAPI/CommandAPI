@@ -121,7 +121,7 @@ public class ListArgumentCommon<T> extends Argument<List> {
 
 	@Override
 	public <CommandSourceStack> List<T> parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-		final CommandSender sender = CommandAPIBukkit.<CommandSourceStack>get().getCommandSenderFromCommandSource(cmdCtx.getSource()).getSource();
+		final CommandSender sender = CommandAPIBukkit.<CommandSourceStack>get().getCommandSenderFromCommandSource(cmdCtx.getSource());
 		final SuggestionInfo<CommandSender> currentInfo = new SuggestionInfo<>(sender, previousArgs, cmdCtx.getInput(), cmdCtx.getArgument(key, String.class));
 		
 		// Get the list of values which this can take

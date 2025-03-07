@@ -51,14 +51,12 @@ class OnEnableTests extends TestBase {
 	void testOnEnableRegisterAndUnregisterCommand() {
 		enableServer();
 
-		// Add a PlayerMock to the server to listen for calls to `updateCommands()`
-		PlayerMock updateCommandsPlayer = Mockito.spy(new PlayerMock(server, "updateCommandsPlayer"));
-		// Interrupt normal calls to updateCommands, because MockPlayer throws an UnimplementedOperationException
-		Mockito.doNothing().when(updateCommandsPlayer).updateCommands();
+		// Spy a PlayerMock to listen for calls to `updateCommands()`
+		PlayerMock updateCommandsPlayer = Mockito.spy(new PlayerMock(server, "player"));
 		server.addPlayer(updateCommandsPlayer);
 
 		// Get a CraftPlayer for running VanillaCommandWrapper commands
-		Player runCommandsPlayer = server.setupMockedCraftPlayer();
+		Player runCommandsPlayer = MockPlatform.getInstance().wrapPlayerMockIntoCraftPlayer(updateCommandsPlayer);
 		// Give player permission to run command
 		Mockito.when(runCommandsPlayer.hasPermission("permission")).thenReturn(true);
 
@@ -87,7 +85,7 @@ class OnEnableTests extends TestBase {
 			      "children": {
 			        "argument": {
 			          "type": "argument",
-			          "parser": "brigadier:string",
+			          "argumentType": "com.mojang.brigadier.arguments.StringArgumentType",
 			          "properties": {
 			            "type": "word"
 			          },
@@ -97,29 +95,15 @@ class OnEnableTests extends TestBase {
 			    },
 			    "alias1": {
 			      "type": "literal",
-			      "children": {
-			        "argument": {
-			          "type": "argument",
-			          "parser": "brigadier:string",
-			          "properties": {
-			            "type": "word"
-			          },
-			          "executable": true
-			        }
-			      }
+			      "redirect": [
+			        "command"
+			      ]
 			    },
 			    "alias2": {
 			      "type": "literal",
-			      "children": {
-			        "argument": {
-			          "type": "argument",
-			          "parser": "brigadier:string",
-			          "properties": {
-			            "type": "word"
-			          },
-			          "executable": true
-			        }
-			      }
+			      "redirect": [
+			        "command"
+			      ]
 			    }
 			  }
 			}""", getDispatcherString());
@@ -176,7 +160,7 @@ class OnEnableTests extends TestBase {
 			short description
 			&6Description: &ffull description
 			&6Usage: &f/command <argument>
-			&6Aliases: &falias1, alias2"""), topic.getFullText(null));
+			&6Aliases: &falias1, alias2"""), topic.getFullText(runCommandsPlayer));
 
 
 		// Make sure commands run correctly
@@ -195,35 +179,34 @@ class OnEnableTests extends TestBase {
 		Mockito.verify(updateCommandsPlayer, Mockito.times(2)).updateCommands();
 
 		// Make sure main command was removed from tree
+		//  While the "command" node is no longer in the tree, the alias nodes still have a reference to it
+		//  as their redirect, so they still function perfectly fine as commands.
 		assertEquals("""
 			{
 			  "type": "root",
 			  "children": {
 			    "alias1": {
 			      "type": "literal",
-			      "children": {
-			        "argument": {
-			          "type": "argument",
-			          "parser": "brigadier:string",
-			          "properties": {
-			            "type": "word"
-			          },
-			          "executable": true
+			      "redirect": {
+			        "type": "literal",
+			        "children": {
+			          "argument": {
+			            "type": "argument",
+			            "argumentType": "com.mojang.brigadier.arguments.StringArgumentType",
+			            "properties": {
+			              "type": "word"
+			            },
+			            "executable": true
+			          }
 			        }
 			      }
 			    },
 			    "alias2": {
 			      "type": "literal",
-			      "children": {
-			        "argument": {
-			          "type": "argument",
-			          "parser": "brigadier:string",
-			          "properties": {
-			            "type": "word"
-			          },
-			          "executable": true
-			        }
-			      }
+			      "redirect": [
+			        "alias1",
+			        "redirect command"
+			      ]
 			    }
 			  }
 			}""", getDispatcherString());

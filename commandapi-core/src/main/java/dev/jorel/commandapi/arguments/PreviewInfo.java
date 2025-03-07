@@ -1,10 +1,8 @@
 package dev.jorel.commandapi.arguments;
 
-import dev.jorel.commandapi.commandsenders.AbstractPlayer;
-
-public record PreviewInfo<T> (
+public record PreviewInfo<T, Player> (
 	/** @param player the Player typing this command */
-	AbstractPlayer<?> player,
+	Player player,
 
 	/**
 	 * @param input the current partially typed argument. For example "/mycmd tes"

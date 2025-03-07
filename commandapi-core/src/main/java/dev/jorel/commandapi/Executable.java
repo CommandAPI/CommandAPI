@@ -1,7 +1,6 @@
 package dev.jorel.commandapi;
 
 import dev.jorel.commandapi.arguments.AbstractArgument;
-import dev.jorel.commandapi.commandsenders.AbstractCommandSender;
 
 import java.util.ArrayList;
 
@@ -20,13 +19,13 @@ extends Executable<Impl, CommandSender>
 	/**
 	 * The CommandAPIExecutor for this executable implementation
 	 */
-	protected CommandAPIExecutor<CommandSender, AbstractCommandSender<? extends CommandSender>> executor = new CommandAPIExecutor<>();
+	protected CommandAPIExecutor<CommandSender> executor = new CommandAPIExecutor<>();
 
 	/**
 	 * Returns the executors that this command has
 	 * @return the executors that this command has
 	 */
-	public CommandAPIExecutor<CommandSender, AbstractCommandSender<? extends CommandSender>> getExecutor() {
+	public CommandAPIExecutor<CommandSender> getExecutor() {
 		return executor;
 	}
 
@@ -34,7 +33,7 @@ extends Executable<Impl, CommandSender>
 	 * Sets the executors for this command
 	 * @param executor the executors for this command
 	 */
-	public void setExecutor(CommandAPIExecutor<CommandSender, AbstractCommandSender<? extends CommandSender>> executor) {
+	public void setExecutor(CommandAPIExecutor<CommandSender> executor) {
 		this.executor = executor;
 	}
 
@@ -43,8 +42,7 @@ extends Executable<Impl, CommandSender>
 	 * @return this command builder
 	 */
 	public Impl clearExecutors() {
-		this.executor.setNormalExecutors(new ArrayList<>());
-		this.executor.setResultingExecutors(new ArrayList<>());
+		this.executor.setExecutors(new ArrayList<>());
 		return instance();
 	}
 

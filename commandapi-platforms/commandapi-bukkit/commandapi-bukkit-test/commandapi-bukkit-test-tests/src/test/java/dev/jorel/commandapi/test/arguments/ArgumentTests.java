@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.bukkit.Location;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +27,7 @@ import dev.jorel.commandapi.arguments.LocationArgument;
 import dev.jorel.commandapi.arguments.LocationType;
 import dev.jorel.commandapi.arguments.PlayerArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
-import dev.jorel.commandapi.executors.CommandExecutor;
+import dev.jorel.commandapi.executors.NormalExecutor;
 import dev.jorel.commandapi.test.Mut;
 import dev.jorel.commandapi.test.TestBase;
 import dev.jorel.commandapi.wrappers.Location2D;
@@ -91,7 +92,7 @@ class ArgumentTests extends TestBase {
 				      "children": {
 				        "value": {
 				          "type": "argument",
-				          "parser": "brigadier:string",
+				          "argumentType": "com.mojang.brigadier.arguments.StringArgumentType",
 				          "properties": {
 				            "type": "word"
 				          },
@@ -262,7 +263,7 @@ class ArgumentTests extends TestBase {
 		assertEquals("222", result.get());
 	}
 
-	private CommandExecutor givePosition(String pos, Mut<String> result) {
+	private NormalExecutor<CommandSender, ?> givePosition(String pos, Mut<String> result) {
 		return (sender, args) -> result.set(pos);
 	}
 	

@@ -1,36 +1,30 @@
 package dev.jorel.commandapi;
 
-import com.google.common.io.Files;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.ArgumentType;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.suggestion.Suggestions;
-import com.mojang.brigadier.tree.ArgumentCommandNode;
-import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 import com.velocitypowered.api.command.CommandManager;
 import com.velocitypowered.api.command.CommandSource;
+import com.velocitypowered.api.event.Subscribe;
+import com.velocitypowered.api.event.command.PlayerAvailableCommandsEvent;
 import com.velocitypowered.api.proxy.ConsoleCommandSource;
 import com.velocitypowered.api.proxy.Player;
 import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.LiteralArgument;
 import dev.jorel.commandapi.arguments.MultiLiteralArgument;
 import dev.jorel.commandapi.arguments.SuggestionProviders;
-import dev.jorel.commandapi.commandsenders.*;
+import dev.jorel.commandapi.arguments.serializer.ArgumentTypeSerializer;
+import dev.jorel.commandapi.commandnodes.DifferentClientNode;
 import org.apache.logging.log4j.LogManager;
 
-import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Field;
-import java.nio.charset.StandardCharsets;
-import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
 
 public class CommandAPIVelocity implements CommandAPIPlatform<Argument<?>, CommandSource, CommandSource> {
 
@@ -38,7 +32,6 @@ public class CommandAPIVelocity implements CommandAPIPlatform<Argument<?>, Comma
 	private static CommandAPIVelocity instance;
 	private static InternalVelocityConfig config;
 
-	private CommandManager commandManager;
 	private CommandDispatcher<CommandSource> dispatcher;
 
 	public CommandAPIVelocity() {
@@ -70,11 +63,11 @@ public class CommandAPIVelocity implements CommandAPIPlatform<Argument<?>, Comma
 			CommandAPI.logError("Attempts to access Velocity-specific config variables will fail!");
 		}
 
-		commandManager = getConfiguration().getServer().getCommandManager();
+		CommandManager commandManager = getConfiguration().getServer().getCommandManager();
 
 		// We can't use a SafeVarHandle here because we don't have direct access to the
 		//  `com.velocitypowered.proxy.command.VelocityCommandManager` class that holds the field.
-		//  That only exists in the proxy dependency, but we are using velocity-api.
+		//  That only exists in the proxy dependency (which is hard to get), and we are using velocity-api.
 		//  However, we can get the class here through `commandManager.getClass()`.
 		Field dispatcherField = CommandAPIHandler.getField(commandManager.getClass(), "dispatcher");
 		try {
@@ -90,7 +83,24 @@ public class CommandAPIVelocity implements CommandAPIPlatform<Argument<?>, Comma
 
 	@Override
 	public void onEnable() {
-		// Nothing to do
+		// Register events
+		config.getServer().getEventManager().register(config.getPlugin(), this);
+	}
+
+	@Subscribe
+	@SuppressWarnings("UnstableApiUsage") // This event is marked @Beta
+	public void onCommandsSentToPlayer(PlayerAvailableCommandsEvent event) {
+		// Rewrite nodes to their client-side version when commands are sent to a client
+		RootCommandNode<CommandSource> root = (RootCommandNode<CommandSource>) event.getRootNode();
+		Player client = event.getPlayer();
+
+		// Velocity's command copying code supports loops, so we don't have to run `onRegister = true`
+		//  during node registration to remove those potential loops. We actually can't do that anyway,
+		//  since Velocity removed the `CommandNode#literals` map, so literal nodes would not keep their
+		//  server-side parsing behavior. I think technically current arguments would work if we only ran
+		//  `onRegister = false`, but it's nice to keep this fact consistent.
+		DifferentClientNode.rewriteAllChildren(client, root, true);
+		DifferentClientNode.rewriteAllChildren(client, root, false);
 	}
 
 	@Override
@@ -99,13 +109,10 @@ public class CommandAPIVelocity implements CommandAPIPlatform<Argument<?>, Comma
 	}
 
 	@Override
-	public void registerPermission(String string) {
-		// Unsurprisingly, Velocity doesn't have a dumb permission system!
-	}
-
-	@Override
 	public void unregister(String commandName, boolean unregisterNamespaces) {
-		commandManager.unregister(commandName);
+		CommandAPIHandler<?, ?, CommandSource> handler = CommandAPIHandler.getInstance();
+
+		handler.removeBrigadierCommands(getBrigadierDispatcher().getRoot(), commandName, unregisterNamespaces, c -> true);
 	}
 
 	@Override
@@ -114,55 +121,8 @@ public class CommandAPIVelocity implements CommandAPIPlatform<Argument<?>, Comma
 	}
 
 	@Override
-	public void createDispatcherFile(File file, CommandDispatcher<CommandSource> brigadierDispatcher) throws IOException {
-		Files.asCharSink(file, StandardCharsets.UTF_8).write(new GsonBuilder().setPrettyPrinting().create()
-			.toJson(serializeNodeToJson(dispatcher, dispatcher.getRoot())));
-	}
-
-	private static JsonObject serializeNodeToJson(CommandDispatcher<CommandSource> dispatcher, CommandNode<CommandSource> node) {
-		JsonObject output = new JsonObject();
-		if (node instanceof RootCommandNode) {
-			output.addProperty("type", "root");
-		} else if (node instanceof LiteralCommandNode) {
-			output.addProperty("type", "literal");
-		} else if (node instanceof ArgumentCommandNode) {
-			ArgumentType<?> type = ((ArgumentCommandNode<?, ?>) node).getType();
-			output.addProperty("type", "argument");
-			output.addProperty("argumentType", type.getClass().getName());
-			// In Bukkit, serializing to json is handled internally
-			// They have an internal registry that connects ArgumentTypes to serializers that can
-			//  include the specific properties of each argument as well (eg. min/max for an Integer)
-			// Velocity doesn't seem to have an internal map like this, but we could create our own
-			// In the meantime, I think it's okay to leave out properties here
-		} else {
-			CommandAPI.logError("Could not serialize node %s (%s)!".formatted(node, node.getClass()));
-			output.addProperty("type", "unknown");
-		}
-
-		JsonObject children = new JsonObject();
-
-		for (CommandNode<CommandSource> child : node.getChildren()) {
-			children.add(child.getName(), serializeNodeToJson(dispatcher, child));
-		}
-
-		if (children.size() > 0) {
-			output.add("children", children);
-		}
-
-		if (node.getCommand() != null) {
-			output.addProperty("executable", true);
-		}
-
-		if (node.getRedirect() != null) {
-			Collection<String> redirectPath = dispatcher.getPath(node.getRedirect());
-			if (!redirectPath.isEmpty()) {
-				JsonArray redirectInfo = new JsonArray();
-				redirectPath.forEach(redirectInfo::add);
-				output.add("redirect", redirectInfo);
-			}
-		}
-
-		return output;
+	public Optional<JsonObject> getArgumentTypeProperties(ArgumentType<?> type) {
+		return ArgumentTypeSerializer.getProperties(type);
 	}
 
 	@Override
@@ -170,31 +130,15 @@ public class CommandAPIVelocity implements CommandAPIPlatform<Argument<?>, Comma
 		return CommandAPILogger.fromApacheLog4jLogger(LogManager.getLogger("CommandAPI"));
 	}
 
+	// Velocity's CommandSender and Source are the same, so these two methods are easy
 	@Override
-	public VelocityCommandSender<? extends CommandSource> getSenderForCommand(CommandContext<CommandSource> cmdCtx, boolean forceNative) {
-		// Velocity doesn't have proxy senders, so nothing needs to be done with forceNative
-		return getCommandSenderFromCommandSource(cmdCtx.getSource());
+	public CommandSource getCommandSenderFromCommandSource(CommandSource commandSource) {
+		return commandSource;
 	}
 
 	@Override
-	public VelocityCommandSender<? extends CommandSource> getCommandSenderFromCommandSource(CommandSource cs) {
-		// Given a Brigadier CommandContext source (result of CommandContext.getSource),
-		// we need to convert that to an AbstractCommandSender.
-		if (cs instanceof ConsoleCommandSource ccs)
-			return new VelocityConsoleCommandSender(ccs);
-		if (cs instanceof Player p)
-			return new VelocityPlayer(p);
-		throw new IllegalArgumentException("Unknown CommandSource: " + cs);
-	}
-
-	@Override
-	public VelocityCommandSender<? extends CommandSource> wrapCommandSender(CommandSource commandSource) {
-		return getCommandSenderFromCommandSource(commandSource);
-	}
-
-	@Override
-	public CommandSource getBrigadierSourceFromCommandSender(AbstractCommandSender<? extends CommandSource> sender) {
-		return sender.getSource();
+	public CommandSource getBrigadierSourceFromCommandSender(CommandSource sender) {
+		return sender;
 	}
 
 	@Override
@@ -204,24 +148,47 @@ public class CommandAPIVelocity implements CommandAPIPlatform<Argument<?>, Comma
 		return (context, builder) -> Suggestions.empty();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * On Velocity, namespaces may be empty, but can only contain 0-9, a-z, underscores, periods, and hyphens.
+	 */
+	@Override
+	public String validateNamespace(ExecutableCommand<?, CommandSource> command, String namespace) {
+		if (namespace.isEmpty()) {
+			// Empty is fine (in fact it's the default), but it won't be matched by the pattern, so we pass it here
+			return namespace;
+		}
+		if (!CommandAPIHandler.NAMESPACE_PATTERN.matcher(namespace).matches()) {
+			CommandAPI.logNormal("Registering comand '" + command.getName() + "' using the default namespace because an invalid namespace (" + namespace + ") was given. Only 0-9, a-z, underscores, periods and hyphens are allowed!");
+			return config.getNamespace();
+		}
+
+		// Namespace is good, return it
+		return namespace;
+	}
+
 	@Override
 	public void preCommandRegistration(String commandName) {
 		// Nothing to do
 	}
 
 	@Override
-	public void postCommandRegistration(RegisteredCommand registeredCommand, LiteralCommandNode<CommandSource> resultantNode, List<LiteralCommandNode<CommandSource>> aliasNodes) {
+	public void postCommandRegistration(RegisteredCommand<CommandSource> registeredCommand, LiteralCommandNode<CommandSource> resultantNode, List<LiteralCommandNode<CommandSource>> aliasNodes) {
 		// Nothing to do
 	}
 
 	@Override
-	public LiteralCommandNode<CommandSource> registerCommandNode(LiteralArgumentBuilder<CommandSource> node, String namespace) {
-		LiteralCommandNode<CommandSource> builtNode = getBrigadierDispatcher().register(node);
+	public void registerCommandNode(LiteralCommandNode<CommandSource> node, String namespace) {
+		RootCommandNode<CommandSource> root = getBrigadierDispatcher().getRoot();
+
+		// Register the main node
+		root.addChild(node);
+
+		// Register the namespaced node if it is not empty
 		if (!namespace.isEmpty()) {
-			getBrigadierDispatcher().getRoot().addChild(CommandAPIHandler.getInstance().namespaceNode(builtNode, namespace));
+			CommandAPIHandler<?, ?, CommandSource> handler = CommandAPIHandler.getInstance();
+			root.addChild(handler.namespaceNode(node, namespace));
 		}
-		// We're done. The command already is registered
-		return builtNode;
 	}
 
 	@Override
@@ -230,7 +197,7 @@ public class CommandAPIVelocity implements CommandAPIPlatform<Argument<?>, Comma
 	}
 
 	@Override
-	public void updateRequirements(AbstractPlayer<?> player) {
+	public void updateRequirements(CommandSource player) {
 		// TODO Auto-generated method stub
 	}
 
@@ -245,7 +212,28 @@ public class CommandAPIVelocity implements CommandAPIPlatform<Argument<?>, Comma
 	}
 
 	@Override
-	public AbstractCommandAPICommand<?, Argument<?>, CommandSource> newConcreteCommandAPICommand(CommandMetaData<CommandSource> meta) {
-		return new CommandAPICommand(meta);
+	public Predicate<CommandSource> getPermissionCheck(CommandPermission permission) {
+		final Predicate<CommandSource> senderCheck;
+
+		if (permission.equals(CommandPermission.NONE)) {
+			// No permissions always passes
+			senderCheck = CommandPermission.TRUE();
+		} else if (permission.equals(CommandPermission.OP)) {
+			// Console is op, and other senders (Players) are not
+			senderCheck = ConsoleCommandSource.class::isInstance;
+		} else {
+			Optional<String> permissionStringWrapper = permission.getPermission();
+			if (permissionStringWrapper.isPresent()) {
+				String permissionString = permissionStringWrapper.get();
+				// check permission
+				senderCheck = sender -> sender.hasPermission(permissionString);
+			} else {
+				// No permission always passes
+				senderCheck = CommandPermission.TRUE();
+			}
+		}
+
+		// Negate if specified
+		return permission.isNegated() ? senderCheck.negate() : senderCheck;
 	}
 }

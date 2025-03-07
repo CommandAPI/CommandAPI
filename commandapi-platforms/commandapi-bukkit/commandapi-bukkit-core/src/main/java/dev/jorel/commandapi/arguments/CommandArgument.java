@@ -17,7 +17,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -195,7 +194,7 @@ public class CommandArgument extends Argument<CommandResult> implements GreedyAr
 		// Extract information
 		String command = cmdCtx.getArgument(key, String.class);
 		CommandMap commandMap = CommandAPIBukkit.get().getSimpleCommandMap();
-		CommandSender sender = CommandAPIBukkit.<CommandSourceStack>get().getSenderForCommand(cmdCtx, false).getSource();
+		CommandSender sender = CommandAPIBukkit.<CommandSourceStack>get().getCommandSenderFromCommandSource(cmdCtx.getSource());
 
 		StringReader context = new StringReader(command);
 

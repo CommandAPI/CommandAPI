@@ -27,12 +27,6 @@
 		<!-- Minecraft dependencies -->
 		<dependency>
 			<groupId>com.mojang</groupId>
-			<artifactId>brigadier</artifactId>
-			<version>1.0.17</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.mojang</groupId>
 			<artifactId>authlib</artifactId>
 			<version>3.3.39</version>
 			<scope>provided</scope>
@@ -40,6 +34,7 @@
 
 		<!-- Velocity dependencies -->
 		<dependency>
+			<!-- Includes Velocity's special Brigadier fork https://github.com/PaperMC/velocity-brigadier -->
 			<groupId>com.velocitypowered</groupId>
 			<artifactId>velocity-api</artifactId>
 			<version>3.3.0-SNAPSHOT</version>

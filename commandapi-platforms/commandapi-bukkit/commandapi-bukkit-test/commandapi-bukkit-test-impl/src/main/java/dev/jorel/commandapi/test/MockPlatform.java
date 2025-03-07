@@ -52,7 +52,7 @@ public abstract class MockPlatform<CLW> extends CommandAPIBukkit<CLW> {
 		if (MockPlatform.instance == null) {
 			MockPlatform.instance = this;
 		} else {
-			// wtf why was this called twice?
+			throw new IllegalStateException("MockPlatform was loaded twice in a row!");
 		}
 	}
 	
@@ -163,7 +163,14 @@ public abstract class MockPlatform<CLW> extends CommandAPIBukkit<CLW> {
 	public abstract void addFunction(NamespacedKey key, List<String> commands);
 	public abstract void addTag(NamespacedKey key, List<List<String>> commands);
 
-	public abstract Player setupMockedCraftPlayer(String name);
+	/**
+	 * Converts a {@code PlayerMock} into a {@code CraftPlayer} which can pass through
+	 * {@code VanillaCommandWrapper#getListener} without error.
+	 *
+	 * @param playerMock The {@code PlayerMock} to wrap.
+	 * @return The resulting {@code CraftPlayer}
+	 */
+	public abstract Player wrapPlayerMockIntoCraftPlayer(Player playerMock);
 
 	/**
 	 * Converts 1.16.5 and below potion effect names to NamespacedKey names. For

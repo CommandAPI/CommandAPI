@@ -20,8 +20,11 @@
  *******************************************************************************/
 package dev.jorel.commandapi.arguments;
 
+import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.tree.CommandNode;
+import com.velocitypowered.api.command.CommandSource;
 import dev.jorel.commandapi.exceptions.BadLiteralException;
 import dev.jorel.commandapi.executors.CommandArguments;
 
@@ -30,7 +33,7 @@ import java.util.List;
 /**
  * An argument that represents multiple LiteralArguments
  */
-public class MultiLiteralArgument extends Argument<String> implements MultiLiteral<Argument<String>> {
+public class MultiLiteralArgument extends Argument<String> implements MultiLiteral<Argument<?>, CommandSource> {
 
 	private final String[] literals;
 
@@ -53,16 +56,6 @@ public class MultiLiteralArgument extends Argument<String> implements MultiLiter
 
 	/**
 	 * A multiliteral argument. Takes in string literals which cannot be modified
-	 * @param literals the literals that this argument represents
-	 * @deprecated Use {@link MultiLiteralArgument#MultiLiteralArgument(String, String...)} instead
-	 */
-	@Deprecated(since = "9.0.2", forRemoval = true)
-	public MultiLiteralArgument(final String[] literals) {
-		this(null, literals);
-	}
-
-	/**
-	 * A multiliteral argument. Takes in string literals which cannot be modified
 	 *
 	 * @param nodeName the node name for this argument
 	 * @param literals the literals that this argument represents
@@ -78,10 +71,6 @@ public class MultiLiteralArgument extends Argument<String> implements MultiLiter
 		return String.class;
 	}
 
-	/**
-	 * Returns the literals that are present in this argument
-	 * @return the literals that are present in this argument
-	 */
 	@Override
 	public String[] getLiterals() {
 		return literals;
@@ -94,7 +83,22 @@ public class MultiLiteralArgument extends Argument<String> implements MultiLiter
 
 	@Override
 	public <Source> String parseArgument(CommandContext<Source> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-		throw new IllegalStateException("Cannot parse MultiLiteralArgument");
+		return cmdCtx.getArgument(key, String.class);
 	}
 
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// MultiLiteral interface overrides                                                                               //
+	// When a method in a parent class and interface have the same signature, Java will call the class version of the //
+	//  method by default. However, we want to use the implementations found in the MultiLiteral interface.           //
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	@Override
+	public <Source> ArgumentBuilder<Source, ?> createArgumentBuilder(List<Argument<?>> previousArguments, List<String> previousArgumentNames) {
+		return MultiLiteral.super.createArgumentBuilder(previousArguments, previousArgumentNames);
+	}
+
+	@Override
+	public <Source> NodeInformation<CommandSource, Source> linkNode(NodeInformation<CommandSource, Source> previousNodeInformation, CommandNode<Source> rootNode, List<Argument<?>> previousArguments, List<String> previousArgumentNames, TerminalNodeModifier<Argument<?>, CommandSource, Source> terminalNodeModifier) {
+		return MultiLiteral.super.linkNode(previousNodeInformation, rootNode, previousArguments, previousArgumentNames, terminalNodeModifier);
+	}
 }

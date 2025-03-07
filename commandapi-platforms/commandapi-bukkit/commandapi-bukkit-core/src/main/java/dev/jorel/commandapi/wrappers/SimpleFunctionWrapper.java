@@ -98,7 +98,7 @@ public class SimpleFunctionWrapper implements Keyed {
 	 */
 	public int run(CommandSender sender) {
 		CommandAPIBukkit<?> platform = CommandAPIBukkit.get();
-		return runInternal(platform.getBrigadierSourceFromCommandSender(platform.wrapCommandSender(sender)));
+		return runInternal(platform.getBrigadierSourceFromCommandSender(sender));
 	}
 	
 	/**

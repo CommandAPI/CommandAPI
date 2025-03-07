@@ -1,12 +1,5 @@
 package dev.jorel.commandapi.test;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -20,10 +13,14 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.mojang.brigadier.tree.CommandNode;
+import dev.jorel.commandapi.*;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.SimpleCommandMap;
+import org.bukkit.entity.Player;
 import org.bukkit.event.server.ServerLoadEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffectType;
@@ -37,12 +34,9 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestion;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
-import dev.jorel.commandapi.CommandAPI;
-import dev.jorel.commandapi.CommandAPIVersionHandler;
-import dev.jorel.commandapi.MCVersion;
-import dev.jorel.commandapi.PaperImplementations;
-import dev.jorel.commandapi.SafeVarHandle;
-import dev.jorel.commandapi.executors.PlayerCommandExecutor;
+import dev.jorel.commandapi.executors.NormalExecutor;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public abstract class TestBase {
 
@@ -88,15 +82,25 @@ public abstract class TestBase {
 	}
 
 	public void enableServer() {
-		// Run the CommandAPI's enable tasks
 		assertTrue(CommandAPI.canRegister(), "Server was already enabled! Cannot enable twice!");
+
+		// Register minecraft: namespace. MockBukkit doesn't seem to do this on their own
+		// Simulate `CraftServer#setVanillaCommands`
+		MockPlatform<Object> mockPlatform = MockPlatform.getInstance();
+		SimpleCommandMap commandMap = mockPlatform.getSimpleCommandMap();
+		SpigotCommandRegistration<Object> spigotCommandRegistration = (SpigotCommandRegistration<Object>) mockPlatform.getCommandRegistrationStrategy();
+		for (CommandNode<Object> node : mockPlatform.getBrigadierDispatcher().getRoot().getChildren()) {
+			commandMap.register("minecraft", spigotCommandRegistration.wrapToVanillaCommandWrapper(node));
+		}
+
+		// Run the CommandAPI's enable tasks
 		disablePaperImplementations();
 		Bukkit.getPluginManager().callEvent(new ServerLoadEvent(ServerLoadEvent.LoadType.STARTUP));
 		assertDoesNotThrow(() -> server.getScheduler().performOneTick());
 		assertFalse(CommandAPI.canRegister());
 	}
 
-	public static final PlayerCommandExecutor P_EXEC = (player, args) -> {};
+	public static final NormalExecutor<Player, ?> P_EXEC = (player, args) -> {};
 	
 	private void resetAllPotions() {
 		PotionEffectType[] arr = MockPlatform.getFieldAs(PotionEffectType.class, "byId", null, PotionEffectType[].class);
@@ -121,6 +125,16 @@ public abstract class TestBase {
 			"Expected command dispatch to return true, but it gave false"));
 		assertEquals(expected,
 			assertDoesNotThrow(queue::get, "Expected to find <" + expected + "> in queue, but nothing was present")
+		);
+	}
+
+	@SafeVarargs
+	public final <T> void assertStoresArrayResult(CommandSender sender, String command, Mut<T[]> queue, T... expected) {
+		assertDoesNotThrow(() -> assertTrue(
+			server.dispatchThrowableCommand(sender, command),
+			"Expected command dispatch to return true, but it gave false"));
+		assertArrayEquals(expected,
+			assertDoesNotThrow(queue::get, "Expected to find <" + Arrays.toString(expected) + "> in queue, but nothing was present")
 		);
 	}
 

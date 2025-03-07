@@ -31,7 +31,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import dev.jorel.commandapi.CommandAPIBukkit;
 import dev.jorel.commandapi.CommandAPIHandler;
-import dev.jorel.commandapi.commandsenders.BukkitPlayer;
 import dev.jorel.commandapi.exceptions.SpigotNotFoundException;
 import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
 import dev.jorel.commandapi.wrappers.PreviewableFunction;
@@ -44,9 +43,9 @@ import net.md_5.bungee.api.chat.BaseComponent;
  * 
  * @apiNote Returns a {@link BaseComponent}{@code []} object
  */
-public class ChatArgument extends Argument<BaseComponent[]> implements GreedyArgument, Previewable<ChatArgument, BaseComponent[]> {
+public class ChatArgument extends Argument<BaseComponent[]> implements GreedyArgument, Previewable<ChatArgument, BaseComponent[], Player> {
 
-	private PreviewableFunction<BaseComponent[]> preview;
+	private PreviewableFunction<BaseComponent[], Player> preview;
 	private boolean usePreview;
 
 	/**
@@ -77,14 +76,14 @@ public class ChatArgument extends Argument<BaseComponent[]> implements GreedyArg
 
 	@Override
 	public <CommandSourceStack> BaseComponent[] parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-		final CommandSender sender = CommandAPIBukkit.<CommandSourceStack>get().getCommandSenderFromCommandSource(cmdCtx.getSource()).getSource();
+		final CommandSender sender = CommandAPIBukkit.<CommandSourceStack>get().getCommandSenderFromCommandSource(cmdCtx.getSource());
 		BaseComponent[] component = CommandAPIBukkit.<CommandSourceStack>get().getChat(cmdCtx, key);
 
-		Optional<PreviewableFunction<BaseComponent[]>> previewOptional = getPreview();
+		Optional<PreviewableFunction<BaseComponent[], Player>> previewOptional = getPreview();
 		if (this.usePreview && previewOptional.isPresent() && sender instanceof Player player) {
 			try {
 				BaseComponent[] previewComponent = previewOptional.get()
-					.generatePreview(new PreviewInfo<>(new BukkitPlayer(player), CommandAPIHandler.getRawArgumentInput(cmdCtx, key), cmdCtx.getInput(), component));
+					.generatePreview(new PreviewInfo<>(player, CommandAPIHandler.getRawArgumentInput(cmdCtx, key), cmdCtx.getInput(), component));
 
 				component = previewComponent;
 			} catch (WrapperCommandSyntaxException e) {
@@ -95,13 +94,13 @@ public class ChatArgument extends Argument<BaseComponent[]> implements GreedyArg
 	}
 
 	@Override
-	public ChatArgument withPreview(PreviewableFunction<BaseComponent[]> preview) {
+	public ChatArgument withPreview(PreviewableFunction<BaseComponent[], Player> preview) {
 		this.preview = preview;
 		return this;
 	}
 
 	@Override
-	public Optional<PreviewableFunction<BaseComponent[]>> getPreview() {
+	public Optional<PreviewableFunction<BaseComponent[], Player>> getPreview() {
 		return Optional.ofNullable(preview);
 	}
 

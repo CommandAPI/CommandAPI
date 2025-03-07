@@ -8,7 +8,6 @@ import com.mojang.brigadier.context.StringRange;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
-import dev.jorel.commandapi.commandsenders.AbstractCommandSender;
 import dev.jorel.commandapi.executors.CommandArguments;
 import dev.jorel.commandapi.executors.ExecutionInfo;
 import dev.jorel.commandapi.spying.ExecutionQueue;
@@ -110,14 +109,13 @@ public class CommandAPITestUtilities {
 	/////////////////////////
 	// Verifying arguments //
 	/////////////////////////
-	private static ExecutionInfo<CommandSender, AbstractCommandSender<? extends CommandSender>>
-	getExecutionInfo(Runnable executeCommand) {
+	private static ExecutionInfo<CommandSender, MockCommandSource> getExecutionInfo(Runnable executeCommand) {
 		ExecutionQueue executions = getCommandAPIPlatform().getCommandAPIHandlerSpy().getExecutionQueue();
 		executions.clear();
 
 		executeCommand.run();
 
-		ExecutionInfo<CommandSender, AbstractCommandSender<? extends CommandSender>> execution = executions.poll();
+		ExecutionInfo<CommandSender, MockCommandSource> execution = executions.poll();
 		assertNotNull(execution, () -> "No CommandAPI executor was invoked");
 		executions.assertNoMoreCommandsWereRun();
 
@@ -136,8 +134,7 @@ public class CommandAPITestUtilities {
 	 * @see #assertCommandSucceeds(CommandSender, String)
 	 * @see #getExecutionInfoOfFailingCommand(CommandSender, String, String)
 	 */
-	public static ExecutionInfo<CommandSender, AbstractCommandSender<? extends CommandSender>>
-	getExecutionInfoOfSuccessfulCommand(CommandSender sender, String command) {
+	public static ExecutionInfo<CommandSender, MockCommandSource> getExecutionInfoOfSuccessfulCommand(CommandSender sender, String command) {
 		return getExecutionInfo(() -> assertCommandSucceeds(sender, command));
 	}
 
@@ -191,8 +188,7 @@ public class CommandAPITestUtilities {
 	 * @see #assertCommandFails(CommandSender, String, String)
 	 * @see #getExecutionInfoOfSuccessfulCommand(CommandSender, String)
 	 */
-	public static ExecutionInfo<CommandSender, AbstractCommandSender<? extends CommandSender>>
-	getExecutionInfoOfFailingCommand(CommandSender sender, String command, String expectedFailureMessage) {
+	public static ExecutionInfo<CommandSender, MockCommandSource> getExecutionInfoOfFailingCommand(CommandSender sender, String command, String expectedFailureMessage) {
 		return getExecutionInfo(() -> assertCommandFails(sender, command, expectedFailureMessage));
 	}
 

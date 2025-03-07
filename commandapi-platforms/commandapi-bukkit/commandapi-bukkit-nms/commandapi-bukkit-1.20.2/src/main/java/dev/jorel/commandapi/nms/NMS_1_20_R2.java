@@ -20,23 +20,15 @@
  *******************************************************************************/
 package dev.jorel.commandapi.nms;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 
+import com.google.gson.JsonObject;
 import dev.jorel.commandapi.*;
 import dev.jorel.commandapi.wrappers.*;
 import net.minecraft.advancements.critereon.MinMaxBounds;
@@ -66,7 +58,6 @@ import org.bukkit.craftbukkit.v1_20_R2.block.data.CraftBlockData;
 import org.bukkit.craftbukkit.v1_20_R2.command.BukkitCommandWrapper;
 import org.bukkit.craftbukkit.v1_20_R2.command.VanillaCommandWrapper;
 import org.bukkit.craftbukkit.v1_20_R2.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_20_R2.help.CustomHelpTopic;
 import org.bukkit.craftbukkit.v1_20_R2.help.SimpleHelpMap;
 import org.bukkit.craftbukkit.v1_20_R2.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.v1_20_R2.potion.CraftPotionEffectType;
@@ -77,8 +68,6 @@ import org.bukkit.help.HelpTopic;
 import org.bukkit.inventory.Recipe;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.io.Files;
-import com.google.gson.GsonBuilder;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.Message;
 import com.mojang.brigadier.arguments.ArgumentType;
@@ -90,9 +79,6 @@ import com.mojang.logging.LogUtils;
 
 import dev.jorel.commandapi.arguments.ArgumentSubType;
 import dev.jorel.commandapi.arguments.SuggestionProviders;
-import dev.jorel.commandapi.commandsenders.AbstractCommandSender;
-import dev.jorel.commandapi.commandsenders.BukkitCommandSender;
-import dev.jorel.commandapi.commandsenders.BukkitNativeProxyCommandSender;
 import dev.jorel.commandapi.preprocessor.Differs;
 import dev.jorel.commandapi.preprocessor.NMSMeta;
 import dev.jorel.commandapi.preprocessor.RequireField;
@@ -174,6 +160,7 @@ public class NMS_1_20_R2 extends NMS_CommonWithFunctions {
 	private static final Field entitySelectorUsesSelector;
 	private static final SafeVarHandle<ItemInput, CompoundTag> itemInput;
 	private static final Field serverFunctionLibraryDispatcher;
+	private static final SafeStaticMethodHandle<Void> argumentUtilsSerializeArgumentToJson;
 
 	// Derived from net.minecraft.commands.Commands;
 	private static final CommandBuildContext COMMAND_BUILD_CONTEXT;
@@ -193,6 +180,8 @@ public class NMS_1_20_R2 extends NMS_CommonWithFunctions {
 		itemInput = SafeVarHandle.ofOrNull(ItemInput.class, "c", "tag", CompoundTag.class);
 		// For some reason, MethodHandles fails for this field, but Field works okay
 		serverFunctionLibraryDispatcher = CommandAPIHandler.getField(ServerFunctionLibrary.class, "g", "dispatcher");
+
+		argumentUtilsSerializeArgumentToJson = SafeStaticMethodHandle.ofOrNull(ArgumentUtils.class, "a", "serializeArgumentToJson", void.class, JsonObject.class, ArgumentType.class);
 	}
 
 	private static NamespacedKey fromResourceLocation(ResourceLocation key) {
@@ -278,14 +267,10 @@ public class NMS_1_20_R2 extends NMS_CommonWithFunctions {
 	}
 
 	@Override
-	public final void createDispatcherFile(File file, CommandDispatcher<CommandSourceStack> dispatcher) throws IOException {
-		Files.asCharSink(file, StandardCharsets.UTF_8).write(new GsonBuilder().setPrettyPrinting().create()
-			.toJson(ArgumentUtils.serializeNodeToJson(dispatcher, dispatcher.getRoot())));
-	}
-
-	@Override
-	public final HelpTopic generateHelpTopic(String commandName, String shortDescription, String fullDescription, String permission) {
-		return new CustomHelpTopic(commandName, shortDescription, fullDescription, permission);
+	public Optional<JsonObject> getArgumentTypeProperties(ArgumentType<?> type) {
+		JsonObject result = new JsonObject();
+		argumentUtilsSerializeArgumentToJson.invokeOrNull(result, type);
+		return Optional.ofNullable((JsonObject) result.get("properties"));
 	}
 
 	@Override
@@ -335,8 +320,14 @@ public class NMS_1_20_R2 extends NMS_CommonWithFunctions {
 	}
 
 	@Override
-	public CommandSourceStack getBrigadierSourceFromCommandSender(AbstractCommandSender<? extends CommandSender> sender) {
-		return VanillaCommandWrapper.getListener(sender.getSource());
+	public CommandSourceStack getBrigadierSourceFromCommandSender(CommandSender sender) {
+		return VanillaCommandWrapper.getListener(sender);
+	}
+
+	@Override
+	protected boolean isProxyEntity(CommandSender sender, CommandSourceStack css) {
+		Entity proxyEntity = css.getEntity();
+		return proxyEntity != null && !sender.equals(proxyEntity.getBukkitEntity());
 	}
 
 	@Override
@@ -591,32 +582,18 @@ public class NMS_1_20_R2 extends NMS_CommonWithFunctions {
 	}
 
 	@Override
-	public BukkitCommandSender<? extends CommandSender> getSenderForCommand(CommandContext<CommandSourceStack> cmdCtx, boolean isNative) {
-		CommandSourceStack css = cmdCtx.getSource();
-
-		CommandSender sender = css.getBukkitSender();
-		if (sender == null) {
-			// Sender CANNOT be null. This can occur when using a remote console
-			// sender. You can access it directly using this.<MinecraftServer>getMinecraftServer().remoteConsole
-			// however this may also be null, so delegate to the next most-meaningful sender.
-			sender = Bukkit.getConsoleSender();
-		}
+	public NativeProxyCommandSender getNativeProxyCommandSender(CommandSender sender, CommandSourceStack css) {
+		// Get position
 		Vec3 pos = css.getPosition();
 		Vec2 rot = css.getRotation();
 		World world = getWorldForCSS(css);
 		Location location = new Location(world, pos.x(), pos.y(), pos.z(), rot.y, rot.x);
 
+		// Get proxy sender (default to sender if null)
 		Entity proxyEntity = css.getEntity();
-		CommandSender proxy = proxyEntity == null ? null : proxyEntity.getBukkitEntity();
-		if (isNative || (proxy != null && !sender.equals(proxy))) {
-			if (proxy == null) {
-				proxy = sender;
-			}
-			
-			return new BukkitNativeProxyCommandSender(new NativeProxyCommandSender(sender, proxy, location, world));
-		} else {
-			return wrapCommandSender(sender);
-		}
+		CommandSender proxy = proxyEntity == null ? sender : proxyEntity.getBukkitEntity();
+
+		return new NativeProxyCommandSender(sender, proxy, location, world);
 	}
 
 	@Override

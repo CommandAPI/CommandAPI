@@ -3,7 +3,10 @@ package dev.jorel.commandapi.test;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.util.HashSet;
+import java.util.List;
 
+import be.seeseemelk.mockbukkit.MockBukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -11,6 +14,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
 
 public class CommandConvertedTestsPlugin extends JavaPlugin {
+	public static CommandConvertedTestsPlugin load() {
+		return MockBukkit.loadWith(CommandConvertedTestsPlugin.class, CommandConvertedTestsPlugin.pluginYaml());
+	}
 
 	@Override
 	public void onEnable() {
@@ -25,13 +31,36 @@ public class CommandConvertedTestsPlugin extends JavaPlugin {
 		super(loader, description, dataFolder, file);
 	}
 
+	private final Mut<String[]> captureArgsResults = Mut.of();
+	private int allDifferentRunCount = 0;
+
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		if (label.equalsIgnoreCase("mycommand")) {
-			sender.sendMessage("hello");
-			return true;
-		}
-		return false;
+		return switch (label) {
+			case "mycommand" -> {
+				sender.sendMessage("hello");
+				yield true;
+			}
+			case "captureargs" -> {
+				captureArgsResults.set(args);
+				yield true;
+			}
+			case "alldifferent" -> {
+				allDifferentRunCount++;
+				yield new HashSet<>(List.of(args)).size() == args.length;
+			}
+			default -> false;
+		};
+	}
+
+	public Mut<String[]> getCaptureArgsResults() {
+		return captureArgsResults;
+	}
+
+	public int resetAllDifferentRunCount() {
+		int count = allDifferentRunCount;
+		allDifferentRunCount = 0;
+		return count;
 	}
 
 	public static InputStream pluginYaml() {
@@ -45,6 +74,8 @@ public class CommandConvertedTestsPlugin extends JavaPlugin {
 			api-version: 1.13
 			commands:
 			  mycommand:
+			  captureargs:
+			  alldifferent:
 			""".getBytes());
 	}
 }

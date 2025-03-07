@@ -83,7 +83,7 @@ class ArgumentLiteralTests extends TestBase {
 	}
 
 	@Test
-	public void executionTestWithLiteralArgumentListedAndNodeName() {
+	void executionTestWithLiteralArgumentListedAndNodeName() {
 		Mut<String> results = Mut.of();
 
 		new CommandAPICommand("test")

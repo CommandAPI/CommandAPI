@@ -70,14 +70,26 @@ class CommandAPIServerMock : ServerMock() {
 		return suggestionsAsStrings
 	}
 
+	override fun addPlayer(): PlayerMock {
+		val player = super.addPlayer()
+		MockPlatform.getInstance<Any>().wrapPlayerMockIntoCraftPlayer(player)
+		return player
+	}
+
+	override fun addPlayer(name: String): PlayerMock {
+		val player = super.addPlayer(name)
+		MockPlatform.getInstance<Any>().wrapPlayerMockIntoCraftPlayer(player)
+		return player
+	}
+
 	/**
 	 * Creates a new Bukkit [Player]. Unlike [PlayerMock], this uses Mockito to mock the CraftPlayer class,
 	 * which allows the returned object to pass through VanillaCommandWrapper#getListener without error.
 	 *
-	 * @return A new [Player].
+	 * @return A new [Player] with a randome name.
 	 */
-	fun setupMockedCraftPlayer(): Player {
-		return setupMockedCraftPlayer("defaultName")
+	fun addCraftPlayer(): Player {
+		return MockPlatform.getInstance<Any>().wrapPlayerMockIntoCraftPlayer(super.addPlayer())
 	}
 
 	/**
@@ -87,8 +99,8 @@ class CommandAPIServerMock : ServerMock() {
 	 * @param name The name for the player
 	 * @return A new [Player].
 	 */
-	fun setupMockedCraftPlayer(name: String?): Player {
-		return MockPlatform.getInstance<Any>().setupMockedCraftPlayer(name)
+	fun addCraftPlayer(name: String?): Player {
+		return MockPlatform.getInstance<Any>().wrapPlayerMockIntoCraftPlayer(super.addPlayer(name))
 	}
 
 	override fun isTickingWorlds(): Boolean {

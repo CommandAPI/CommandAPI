@@ -1,12 +1,13 @@
 package dev.jorel.commandapi;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
+import dev.jorel.commandapi.commandnodes.DifferentClientNode;
 import dev.jorel.commandapi.preprocessor.RequireField;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.command.SimpleCommandMap;
 
 import java.util.*;
@@ -29,9 +30,12 @@ public class SpigotCommandRegistration<Source> extends CommandRegistrationStrate
 	private final Function<CommandNode<Source>, Command> wrapToVanillaCommandWrapper;
 	private final Predicate<CommandNode<Source>> isBukkitCommandWrapper;
 
-	// Namespaces
+	// We need to fix permissions and namespaces on Bukkit
+	//  Bukkit does a bunch of mucking about moving nodes between Brigadier CommandDispatchers and its own CommandMap,
+	//  and these variables help us set that all straight
 	private final Set<String> namespacesToFix = new HashSet<>();
 	private RootCommandNode<Source> minecraftCommandNamespaces = new RootCommandNode<>();
+	private final TreeMap<String, CommandPermission> permissionsToFix = new TreeMap<>();
 
 	// Reflection
 	private final SafeVarHandle<SimpleCommandMap, Map<String, Command>> commandMapKnownCommands;
@@ -102,7 +106,7 @@ public class SpigotCommandRegistration<Source> extends CommandRegistrationStrate
 			return optionalPerm.get();
 		} else {
 			throw new IllegalStateException("Invalid permission detected: " + perm +
-				"! This should never happen - if you're seeing this message, please" +
+				"! This should never happen - if you're seeing this message, please " +
 				"contact the developers of the CommandAPI, we'd love to know how you managed to get this error!");
 		}
 	}
@@ -122,13 +126,14 @@ public class SpigotCommandRegistration<Source> extends CommandRegistrationStrate
 	}
 
 	private void fixNamespaces() {
+		CommandAPIHandler<?, ?, Source> handler = CommandAPIHandler.getInstance();
 		Map<String, Command> knownCommands = commandMapKnownCommands.get(commandMap);
 		RootCommandNode<Source> resourcesRootNode = getResourcesDispatcher.get().getRoot();
 
 		// Remove namespaces
 		for (String command : namespacesToFix) {
 			knownCommands.remove(command);
-			removeBrigadierCommands(resourcesRootNode, command, false, c -> true);
+			handler.removeBrigadierCommands(resourcesRootNode, command, false, c -> true);
 		}
 
 		// Add back certain minecraft: namespace commands
@@ -152,9 +157,6 @@ public class SpigotCommandRegistration<Source> extends CommandRegistrationStrate
 	 * Makes permission checks more "Bukkit" like and less "Vanilla Minecraft" like
 	 */
 	private void fixPermissions() {
-		// Get the command map to find registered commands
-		final Map<String, CommandPermission> permissionsToFix = CommandAPIHandler.getInstance().registeredPermissions;
-
 		if (!permissionsToFix.isEmpty()) {
 			CommandAPI.logInfo("Linking permissions to commands:");
 
@@ -184,7 +186,7 @@ public class SpigotCommandRegistration<Source> extends CommandRegistrationStrate
 	}
 
 	@Override
-	public void postCommandRegistration(RegisteredCommand registeredCommand, LiteralCommandNode<Source> resultantNode, List<LiteralCommandNode<Source>> aliasNodes) {
+	public void postCommandRegistration(RegisteredCommand<CommandSender> registeredCommand, LiteralCommandNode<Source> resultantNode, List<LiteralCommandNode<Source>> aliasNodes) {
 		if (!CommandAPI.canRegister()) {
 			// Usually, when registering commands during server startup, we can just put our commands into the
 			// `net.minecraft.server.MinecraftServer#vanillaCommandDispatcher` and leave it. As the server finishes setup,
@@ -199,7 +201,7 @@ public class SpigotCommandRegistration<Source> extends CommandRegistrationStrate
 
 			String name = resultantNode.getLiteral();
 			String namespace = registeredCommand.namespace();
-			String permNode = unpackInternalPermissionNodeString(registeredCommand.permission());
+			String permNode = unpackInternalPermissionNodeString(registeredCommand.rootNode().permission());
 
 			registerCommand(knownCommands, root, name, permNode, namespace, resultantNode);
 
@@ -224,10 +226,31 @@ public class SpigotCommandRegistration<Source> extends CommandRegistrationStrate
 				}
 				minecraftCommandNamespaces = new RootCommandNode<>();
 			}
+		} else {
+			CommandPermission permission = registeredCommand.rootNode().permission();
+
+			// Since the VanillaCommandWrappers aren't created yet, we need to remember to
+			//  fix those permissions once the server is enabled. Using `putIfAbsent` to
+			//  default to the first permission associated with this command.
+			String commandName = registeredCommand.commandName().toLowerCase();
+			permissionsToFix.putIfAbsent(commandName, permission);
+
+			// Do the same for the namespaced version of the command (which is never empty on Bukkit forks)
+			String namespace = registeredCommand.namespace().toLowerCase();
+			permissionsToFix.putIfAbsent(namespace + ":" + commandName, permission);
+
+			// Do the same for the aliases
+			for (String alias : registeredCommand.aliases()) {
+				alias = alias.toLowerCase();
+				permissionsToFix.putIfAbsent(alias, permission);
+				permissionsToFix.putIfAbsent(namespace + ":" + alias, permission);
+			}
 		}
 	}
 
 	private void registerCommand(Map<String, Command> knownCommands, RootCommandNode<Source> root, String name, String permNode, String namespace, LiteralCommandNode<Source> resultantNode) {
+		CommandAPIHandler<?, ?, Source> commandAPIHandler = CommandAPIHandler.getInstance();
+
 		// Wrapping Brigadier nodes into VanillaCommandWrappers and putting them in the CommandMap usually happens
 		// in `CraftServer#setVanillaCommands`
 		Command command = wrapToVanillaCommandWrapper.apply(resultantNode);
@@ -240,7 +263,7 @@ public class SpigotCommandRegistration<Source> extends CommandRegistrationStrate
 		root.addChild(resultantNode);
 
 		// Handle namespace
-		LiteralCommandNode<Source> namespacedNode = CommandAPIHandler.getInstance().namespaceNode(resultantNode, namespace);
+		LiteralCommandNode<Source> namespacedNode = commandAPIHandler.namespaceNode(resultantNode, namespace);
 		if (namespace.equals("minecraft")) {
 			// The minecraft namespace version should be registered as a straight alias of the original command, since
 			//  the `minecraft:name` node does not exist in the Brigadier dispatcher, which is referenced by
@@ -259,10 +282,18 @@ public class SpigotCommandRegistration<Source> extends CommandRegistrationStrate
 	}
 
 	@Override
-	public LiteralCommandNode<Source> registerCommandNode(LiteralArgumentBuilder<Source> node, String namespace) {
+	public void registerCommandNode(LiteralCommandNode<Source> node, String namespace) {
+		CommandAPIHandler<?, ?, Source> commandAPIHandler = CommandAPIHandler.getInstance();
 		RootCommandNode<Source> rootNode = brigadierDispatcher.getRoot();
 
-		LiteralCommandNode<Source> builtNode = node.build();
+
+		if (!CommandAPIBukkit.get().getPaper().isPaperPresent()) {
+			// If Paper is not present, then we don't have the AsyncPlayerSendCommandsEvent,
+			//  which allows us to rewrite nodes for a specific client. Best we can do on Spigot
+			//  is rewrite the nodes now and indicate we don't have a specific client with null.
+			DifferentClientNode.rewriteAllChildren(null, node, false);
+		}
+
 		String name = node.getLiteral();
 		if (namespace.equals("minecraft")) {
 			if (namespacesToFix.contains("minecraft:" + name)) {
@@ -270,7 +301,7 @@ public class SpigotCommandRegistration<Source> extends CommandRegistrationStrate
 				// However, another command has requested that `minecraft:name` be removed
 				// We'll keep track of everything that should be `minecraft:name` in
 				//  `minecraftCommandNamespaces` and fix this later in `#fixNamespaces`
-				minecraftCommandNamespaces.addChild(CommandAPIHandler.getInstance().namespaceNode(builtNode, "minecraft"));
+				minecraftCommandNamespaces.addChild(commandAPIHandler.namespaceNode(node, "minecraft"));
 			}
 		} else {
 			// Make sure to remove the `minecraft:name` and
@@ -278,18 +309,17 @@ public class SpigotCommandRegistration<Source> extends CommandRegistrationStrate
 			fillNamespacesToFix(name, namespace + ":" + name);
 
 			// Create the namespaced node
-			rootNode.addChild(CommandAPIHandler.getInstance().namespaceNode(builtNode, namespace));
+			rootNode.addChild(commandAPIHandler.namespaceNode(node, namespace));
 		}
 
 		// Add the main node to dispatcher
 		//  We needed to wait until after `fillNamespacesToFix` was called to do this, in case a previous
 		//  `minecraft:name` version of the command needed to be saved separately before this node was added
-		rootNode.addChild(builtNode);
-
-		return builtNode;
+		rootNode.addChild(node);
 	}
 
 	private void fillNamespacesToFix(String... namespacedCommands) {
+		CommandAPIHandler<?, ?, Source> commandAPIHandler = CommandAPIHandler.getInstance();
 		for (String namespacedCommand : namespacedCommands) {
 			// We'll remove these commands later when fixNamespaces is called
 			if (!namespacesToFix.add("minecraft:" + namespacedCommand)) {
@@ -304,21 +334,20 @@ public class SpigotCommandRegistration<Source> extends CommandRegistrationStrate
 				// We'll keep track of everything that should be `minecraft:command` in
 				//  `minecraftCommandNamespaces` and fix this later in `#fixNamespaces`
 				// TODO: Ideally, we should be working without this cast to LiteralCommandNode. I don't know if this can fail
-				minecraftCommandNamespaces.addChild(CommandAPIHandler.getInstance().namespaceNode((LiteralCommandNode<Source>) currentNode, "minecraft"));
+				minecraftCommandNamespaces.addChild(commandAPIHandler.namespaceNode((LiteralCommandNode<Source>) currentNode, "minecraft"));
 			}
 		}
 	}
 
 	@Override
 	public void unregister(String commandName, boolean unregisterNamespaces, boolean unregisterBukkit) {
+		CommandAPIHandler<?, ?, Source> handler = CommandAPIHandler.getInstance();
+
 		if (!unregisterBukkit) {
 			// Remove nodes from the Vanilla dispatcher
 			// This dispatcher doesn't usually have namespaced version of commands (those are created when commands
 			//  are transferred to Bukkit's CommandMap), but if they ask, we'll do it
-			removeBrigadierCommands(brigadierDispatcher.getRoot(), commandName, unregisterNamespaces, c -> true);
-
-			// Update the dispatcher file
-			CommandAPIHandler.getInstance().writeDispatcherToFile();
+			handler.removeBrigadierCommands(brigadierDispatcher.getRoot(), commandName, unregisterNamespaces, c -> true);
 		}
 
 		if (unregisterBukkit || !CommandAPI.canRegister()) {
@@ -333,7 +362,7 @@ public class SpigotCommandRegistration<Source> extends CommandRegistrationStrate
 			if (unregisterBukkit ^ isMainVanilla) knownCommands.remove(commandName);
 
 			if (unregisterNamespaces) {
-				removeCommandNamespace(knownCommands, commandName, c -> unregisterBukkit ^ isVanillaCommandWrapper.test(c));
+				CommandAPIHandler.removeCommandNamespace(knownCommands, commandName, c -> unregisterBukkit ^ isVanillaCommandWrapper.test(c));
 			}
 		}
 
@@ -341,9 +370,9 @@ public class SpigotCommandRegistration<Source> extends CommandRegistrationStrate
 			// If the server is enabled, we have extra cleanup to do
 
 			// Remove commands from the resources dispatcher
-			// If we are unregistering a Bukkit command, ONLY unregister BukkitCommandWrappers
-			// If we are unregistering a Vanilla command, DO NOT unregister BukkitCommandWrappers
-			removeBrigadierCommands(getResourcesDispatcher.get().getRoot(), commandName, unregisterNamespaces,
+			handler.removeBrigadierCommands(getResourcesDispatcher.get().getRoot(), commandName, unregisterNamespaces,
+				// If we are unregistering a Bukkit command, ONLY unregister BukkitCommandWrappers
+				// If we are unregistering a Vanilla command, DO NOT unregister BukkitCommandWrappers
 				c -> !unregisterBukkit ^ isBukkitCommandWrapper.test(c));
 		}
 	}

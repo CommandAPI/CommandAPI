@@ -4,8 +4,8 @@ import be.seeseemelk.mockbukkit.entity.PlayerMock;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.CommandTestBase;
+import dev.jorel.commandapi.MockCommandSource;
 import dev.jorel.commandapi.arguments.BooleanArgument;
-import dev.jorel.commandapi.commandsenders.AbstractCommandSender;
 import dev.jorel.commandapi.executors.ExecutionInfo;
 import org.bukkit.command.CommandSender;
 import org.junit.jupiter.api.AfterEach;
@@ -55,8 +55,8 @@ class ExecutionQueueTests extends CommandTestBase {
 
 	@Test
 	void testQueueAddPoll() {
-		ExecutionInfo<CommandSender, AbstractCommandSender<? extends CommandSender>> info1 = Mockito.mock();
-		ExecutionInfo<CommandSender, AbstractCommandSender<? extends CommandSender>> info2 = Mockito.mock();
+		ExecutionInfo<CommandSender, MockCommandSource> info1 = Mockito.mock();
+		ExecutionInfo<CommandSender, MockCommandSource> info2 = Mockito.mock();
 
 		queue.add(info1);
 		queue.add(info2);

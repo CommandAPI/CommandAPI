@@ -30,8 +30,8 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.tree.RootCommandNode;
 import dev.jorel.commandapi.arguments.AbstractArgument;
+import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.jorel.commandapi.arguments.Literal;
-import dev.jorel.commandapi.commandsenders.AbstractCommandSender;
 
 import java.util.Collections;
 import java.util.List;
@@ -80,10 +80,13 @@ public final class Brigadier {
 	 * @param literalArgument the LiteralArgument to convert from
 	 * @return a LiteralArgumentBuilder that represents the literal
 	 */
-	public static <CommandSender, Argument extends AbstractArgument<String, ?, ?, CommandSender>>
-	LiteralArgumentBuilder fromLiteralArgument(Literal<Argument> literalArgument) {
-		CommandAPIHandler<?, CommandSender, ?> handler = (CommandAPIHandler<?, CommandSender, ?>) CommandAPIHandler.getInstance();
-		return handler.getLiteralArgumentBuilderArgument(literalArgument.getLiteral(), literalArgument.instance().getArgumentPermission(), literalArgument.instance().getRequirements());
+	public static <CommandSender, Argument extends AbstractArgument<?, ?, Argument, CommandSender>>
+	LiteralArgumentBuilder fromLiteralArgument(Literal<Argument, CommandSender> literalArgument) {
+		Argument argument = (Argument) literalArgument;
+		LiteralArgumentBuilder rootBuilder = (LiteralArgumentBuilder) argument.createArgumentBuilder(List.of(), List.of());
+		argument.finishBuildingNode(rootBuilder, List.of(), null);
+
+		return rootBuilder;
 	}
 
 	/**
@@ -122,8 +125,8 @@ public final class Brigadier {
 	public static <Argument extends AbstractArgument<?, ?, Argument, CommandSender>, CommandSender>
 	Command fromCommand(AbstractCommandAPICommand<?, Argument, CommandSender> command) {
 		// Need to cast base handler to make it realize we're using the same CommandSender class
-		CommandAPIHandler<Argument, CommandSender, ?> handler = (CommandAPIHandler<Argument, CommandSender, ?>) CommandAPIHandler.getInstance();
-		return handler.generateCommand((Argument[]) command.getArguments().toArray(AbstractArgument[]::new), command.getExecutor(), command.isConverted());
+		CommandAPIHandler<Argument, CommandSender, ?> handler = CommandAPIHandler.getInstance();
+		return handler.generateBrigadierCommand(command.getArguments(), command.getExecutor());
 	}
 
 	/**
@@ -136,15 +139,17 @@ public final class Brigadier {
 	 * 
 	 * RequiredArgumentBuilder argBuilder = Brigadier.fromArguments(arguments, "hello");
 	 * </pre>
-	 * 
-	 * @param args     the List of arguments which you typically declare for
-	 *                 commands
-	 * @param argument the argument you want to specify
+	 *
+	 * @param previousArguments the List of arguments which you typically declare for
+	 *                          commands
+	 * @param argument          the argument you want to specify
 	 * @return a RequiredArgumentBuilder that represents the provided argument
 	 */
-	public static <Argument extends AbstractArgument<?, ?, Argument, ?>> RequiredArgumentBuilder fromArgument(List<Argument> args, Argument argument) {
-		CommandAPIHandler<Argument, ?, ?> handler = (CommandAPIHandler<Argument, ?, ?>) CommandAPIHandler.getInstance();
-		return handler.getRequiredArgumentBuilderDynamic((Argument[]) args.toArray(AbstractArgument[]::new), argument);
+	public static <Argument extends AbstractArgument<?, ?, Argument, ?>> RequiredArgumentBuilder fromArgument(List<Argument> previousArguments, Argument argument) {
+		RequiredArgumentBuilder rootBuilder = (RequiredArgumentBuilder) argument.createArgumentBuilder(previousArguments, List.of());
+		argument.finishBuildingNode(rootBuilder, previousArguments, null);
+
+		return rootBuilder;
 	}
 
 	/**
@@ -154,22 +159,21 @@ public final class Brigadier {
 	 * @return a RequiredArgumentBuilder that represents the provided argument
 	 */
 	public static <Argument extends AbstractArgument<?, ?, Argument, ?>> RequiredArgumentBuilder fromArgument(Argument argument) {
-		CommandAPIHandler<Argument, ?, ?> handler = (CommandAPIHandler<Argument, ?, ?>) CommandAPIHandler.getInstance();
-		return handler.getRequiredArgumentBuilderDynamic((Argument[]) new AbstractArgument[] { argument }, argument);
+		return fromArgument(List.of(), argument);
 	}
 
 	/**
 	 * Converts an argument and a list of arguments to a Brigadier
 	 * SuggestionProvider
-	 * 
-	 * @param argument the argument to convert to suggestions
-	 * @param args     the list of arguments
+	 *
+	 * @param argument          the argument to convert to suggestions
+	 * @param previousArguments the list of arguments that came before the given argument
 	 * @return a SuggestionProvider that suggests the overridden suggestions for the
-	 *         specified argument
+	 * specified argument
 	 */
-	public static <Argument extends AbstractArgument<?, ?, Argument, ?>> SuggestionProvider toSuggestions(Argument argument, List<Argument> args) {
-		CommandAPIHandler<Argument, ?, ?> handler = (CommandAPIHandler<Argument, ?, ?>) CommandAPIHandler.getInstance();
-		return handler.toSuggestions(argument, (Argument[]) args.toArray(AbstractArgument[]::new), true);
+	public static <Argument extends AbstractArgument<?, ?, Argument, CommandSender>, CommandSender> SuggestionProvider toSuggestions(Argument argument, List<Argument> previousArguments) {
+		CommandAPIHandler<Argument, CommandSender, ?> handler = CommandAPIHandler.getInstance();
+		return handler.generateBrigadierSuggestions(previousArguments, argument.getOverriddenSuggestions().orElse(ArgumentSuggestions.empty()));
 	}
 
 	/**
@@ -181,12 +185,12 @@ public final class Brigadier {
 	 * @param cmdCtx the command context used to parse the command arguments
 	 * @param args   the list of arguments to parse
 	 * @return an array of Objects which hold the results of the argument parsing
-	 *         step
+	 * step
 	 * @throws CommandSyntaxException if there was an error during parsing
 	 */
 	public static <Argument extends AbstractArgument<?, ?, Argument, ?>> Object[] parseArguments(CommandContext cmdCtx, List<Argument> args) throws CommandSyntaxException {
 		CommandAPIHandler<Argument, ?, ?> handler = (CommandAPIHandler<Argument, ?, ?>) CommandAPIHandler.getInstance();
-		return handler.argsToCommandArgs(cmdCtx, (Argument[]) args.toArray(AbstractArgument[]::new)).args();
+		return handler.argsToCommandArgs(cmdCtx, args).args();
 	}
 
 	/**
@@ -197,24 +201,21 @@ public final class Brigadier {
 	 * @param sender the Bukkit CommandSender to convert into a Brigadier source
 	 *               object
 	 * @return a Brigadier source object representing the provided Bukkit
-	 *         CommandSender
+	 * CommandSender
 	 */
 	public static <CommandSender> Object getBrigadierSourceFromCommandSender(CommandSender sender) {
 		CommandAPIPlatform<?, CommandSender, ?> platform = (CommandAPIPlatform<?, CommandSender, ?>) CommandAPIHandler.getInstance().getPlatform();
-		return platform.getBrigadierSourceFromCommandSender(platform.wrapCommandSender(sender));
+		return platform.getBrigadierSourceFromCommandSender(sender);
 	}
 
-	
 	/**
-	 * Returns a Bukkit CommandSender from a Brigadier CommandContext
+	 * Returns the current platform's command sender from a Brigadier CommandContext
 	 * 
 	 * @param cmdCtx the command context to get the CommandSender from
-	 * @return a Bukkit CommandSender from the provided Brigadier CommandContext
+	 * @return a command sender from the provided Brigadier CommandContext
 	 */
-	public static <CommandSender> CommandSender getCommandSenderFromContext(CommandContext cmdCtx) {
-		CommandAPIPlatform<?, CommandSender, ?> platform = (CommandAPIPlatform<?, CommandSender, ?>) CommandAPIHandler.getInstance().getPlatform();
-		// For some reason putting this on one line doesn't work - very weird
-		AbstractCommandSender<CommandSender> abstractSender = platform.getSenderForCommand(cmdCtx, false);
-		return abstractSender.getSource();
+	public static <CommandSender, Source> CommandSender getCommandSenderFromContext(CommandContext cmdCtx) {
+		CommandAPIPlatform<?, CommandSender, Source> platform = (CommandAPIPlatform<?, CommandSender, Source>) CommandAPIHandler.getInstance().getPlatform();
+		return platform.getCommandSenderFromCommandSource((Source) cmdCtx.getSource());
 	}
 }

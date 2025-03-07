@@ -32,7 +32,7 @@ class CommandUnregisterTests extends TestBase {
 			      "children": {
 			        "string": {
 			          "type": "argument",
-			          "parser": "brigadier:string",
+			          "argumentType": "com.mojang.brigadier.arguments.StringArgumentType",
 			          "properties": {
 			            "type": "word"
 			          },
@@ -45,7 +45,7 @@ class CommandUnregisterTests extends TestBase {
 			      "children": {
 			        "string": {
 			          "type": "argument",
-			          "parser": "brigadier:string",
+			          "argumentType": "com.mojang.brigadier.arguments.StringArgumentType",
 			          "properties": {
 			            "type": "word"
 			          },
@@ -65,7 +65,7 @@ class CommandUnregisterTests extends TestBase {
 			      "children": {
 			        "string": {
 			          "type": "argument",
-			          "parser": "brigadier:string",
+			          "argumentType": "com.mojang.brigadier.arguments.StringArgumentType",
 			          "properties": {
 			            "type": "word"
 			          },
@@ -85,7 +85,7 @@ class CommandUnregisterTests extends TestBase {
 			      "children": {
 			        "string": {
 			          "type": "argument",
-			          "parser": "brigadier:string",
+			          "argumentType": "com.mojang.brigadier.arguments.StringArgumentType",
 			          "properties": {
 			            "type": "word"
 			          },
@@ -118,7 +118,15 @@ class CommandUnregisterTests extends TestBase {
 		// Set up a Vanilla command
 		vanillaResults = Mut.of();
 		new CommandAPICommand("test")
-			.withAliases("minecraft:test")
+			.withArguments(new StringArgument("string"))
+			.executes((sender, args) -> {
+				vanillaResults.set(args.getUnchecked(0));
+			})
+			.register();
+		// Pretend the command exists in a namespace version
+		//  Namespaces usually only exist in the Bukkit CommandMap, but CommandAPIBukkit can
+		//  check for and remove namespaces, so we'll test it
+		new CommandAPICommand("minecraft:test")
 			.withArguments(new StringArgument("string"))
 			.executes((sender, args) -> {
 				vanillaResults.set(args.getUnchecked(0));

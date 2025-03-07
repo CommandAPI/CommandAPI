@@ -1,7 +1,6 @@
 package dev.jorel.commandapi.test;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 import dev.jorel.commandapi.*;
 import dev.jorel.commandapi.arguments.IntegerArgument;
@@ -10,7 +9,6 @@ import dev.jorel.commandapi.arguments.StringArgument;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissibleBase;
 import org.bukkit.permissions.PermissionAttachment;
@@ -45,20 +43,11 @@ public class CommandNamespaceTests extends TestBase {
 	}
 
 	Player enableWithNamespaces() {
-		// Register minecraft: namespace. MockBukkit doesn't do this on their own
-		// Simulate `CraftServer#setVanillaCommands`
-		MockPlatform<Object> mockPlatform = MockPlatform.getInstance();
-		SimpleCommandMap commandMap = mockPlatform.getSimpleCommandMap();
-		SpigotCommandRegistration<Object> spigotCommandRegistration = (SpigotCommandRegistration<Object>) mockPlatform.getCommandRegistrationStrategy();
-		for (CommandNode<Object> node : mockPlatform.getBrigadierDispatcher().getRoot().getChildren()) {
-			commandMap.register("minecraft", spigotCommandRegistration.wrapToVanillaCommandWrapper(node));
-		}
-
 		// Run the CommandAPI's enable tasks, especially `fixNamespaces`
 		enableServer();
 
 		// Get a CraftPlayer for running VanillaCommandWrapper commands
-		Player runCommandsPlayer = server.setupMockedCraftPlayer();
+		Player runCommandsPlayer = server.addCraftPlayer();
 
 		// Ensure player can have permissions modified
 		PermissibleBase perm = new PermissibleBase(runCommandsPlayer);
