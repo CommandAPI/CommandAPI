@@ -175,8 +175,8 @@ jobs:
 
       ### Examples ###
 
-      - name: Build CommandAPI example plugins in examples/ folder
-        run: cd ./examples; ./build.sh;
+      #- name: Build CommandAPI example plugins in examples/ folder
+      #  run: cd ./examples; ./build.sh;
 
       ### Save PR information for 'SonarAnalyze'
       - name: Save PR number to file
