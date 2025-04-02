@@ -12,3 +12,9 @@ indent_style = space
 
 [commandapi-documentation-velocity-code/**{.java,.kt}]
 indent_style = space
+
+[commandapi-platforms/commandapi-paper/commandapi-paper-documentation-code/**{.java,.kt}]
+indent_style = space
+
+[commandapi-platforms/commandapi-spigot/commandapi-spigot-documentation-code/**{.java,.kt}]
+indent_style = space

@@ -38,7 +38,7 @@ public class IntegerRangeArgument extends SafeOverrideableArgument<IntegerRange,
 	 * @param nodeName the name of the node for this argument 
 	 */
 	public IntegerRangeArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get()._ArgumentIntRange(), IntegerRange::toString);
+		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentIntRange(), IntegerRange::toString);
 	}
 	
 	@Override
@@ -53,6 +53,6 @@ public class IntegerRangeArgument extends SafeOverrideableArgument<IntegerRange,
 	
 	@Override
 	public <CommandSourceStack> IntegerRange parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-		return CommandAPIBukkit.<CommandSourceStack>get().getIntRange(cmdCtx, key);
+		return CommandAPIBukkit.<CommandSourceStack>get().getNMS().getIntRange(cmdCtx, key);
 	}
 }

@@ -38,7 +38,7 @@ public class ScoreboardSlotArgument extends SafeOverrideableArgument<ScoreboardS
 	 * @param nodeName the name of the node for this argument
 	 */
 	public ScoreboardSlotArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get()._ArgumentScoreboardSlot(), ScoreboardSlot::toString);
+		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentScoreboardSlot(), ScoreboardSlot::toString);
 	}
 
 	@Override
@@ -53,6 +53,6 @@ public class ScoreboardSlotArgument extends SafeOverrideableArgument<ScoreboardS
 	
 	@Override
 	public <CommandSourceStack> ScoreboardSlot parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-		return CommandAPIBukkit.<CommandSourceStack>get().getScoreboardSlot(cmdCtx, key);
+		return CommandAPIBukkit.<CommandSourceStack>get().getNMS().getScoreboardSlot(cmdCtx, key);
 	}
 }

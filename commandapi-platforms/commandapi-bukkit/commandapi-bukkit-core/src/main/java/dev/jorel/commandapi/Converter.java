@@ -196,7 +196,7 @@ public final class Converter {
 			org.bukkit.command.Command command = plugin.getCommand(commandName);
 			
 			if (command == null) {
-				command = CommandAPIBukkit.get().getSimpleCommandMap()
+				command = CommandAPIBukkit.get().getNMS().getSimpleCommandMap()
 						.getCommand(commandName);
 			}
 

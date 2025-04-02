@@ -72,17 +72,12 @@ public record VelocityConfigurationAdapter(YamlConfigurationLoader loader, Comme
 
 	@Override
 	public ConfigurationAdapter<ConfigurationNode> createNew() {
-		return new VelocityConfigurationAdapter(loader, loader.createNode(), createDefaultConfig());
-	}
-
-	@Override
-	public DefaultVelocityConfig createDefaultConfig() {
-		return DefaultVelocityConfig.createDefault();
+		return new VelocityConfigurationAdapter(loader, loader.createNode(), DefaultVelocityConfig.createDefault());
 	}
 
 	@Override
 	public ConfigurationAdapter<ConfigurationNode> loadFromFile() throws IOException {
-		return new VelocityConfigurationAdapter(loader, loader.load(), createDefaultConfig());
+		return new VelocityConfigurationAdapter(loader, loader.load(), DefaultVelocityConfig.createDefault());
 	}
 
 	@Override

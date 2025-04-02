@@ -54,7 +54,7 @@ public class EntitySelectorArgument {
 		 * @param nodeName the name of the node for this argument
 		 */
 		public OneEntity(String nodeName) {
-			super(nodeName, CommandAPIBukkit.get()._ArgumentEntity(ArgumentSubType.ENTITYSELECTOR_ONE_ENTITY));
+			super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentEntity(ArgumentSubType.ENTITYSELECTOR_ONE_ENTITY));
 		}
 
 		@Override
@@ -69,7 +69,7 @@ public class EntitySelectorArgument {
 
 		@Override
 		public <CommandSourceStack> Entity parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-			return (Entity) CommandAPIBukkit.<CommandSourceStack>get().getEntitySelector(cmdCtx, key, ArgumentSubType.ENTITYSELECTOR_ONE_ENTITY, true);
+			return (Entity) CommandAPIBukkit.<CommandSourceStack>get().getNMS().getEntitySelector(cmdCtx, key, ArgumentSubType.ENTITYSELECTOR_ONE_ENTITY, true);
 		}
 
 		@Override
@@ -91,7 +91,7 @@ public class EntitySelectorArgument {
 		 * @param nodeName the name of the node for this argument
 		 */
 		public OnePlayer(String nodeName) {
-			super(nodeName, CommandAPIBukkit.get()._ArgumentEntity(ArgumentSubType.ENTITYSELECTOR_ONE_PLAYER));
+			super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentEntity(ArgumentSubType.ENTITYSELECTOR_ONE_PLAYER));
 		}
 
 		@Override
@@ -106,7 +106,7 @@ public class EntitySelectorArgument {
 
 		@Override
 		public <CommandSourceStack> Player parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-			return (Player) CommandAPIBukkit.<CommandSourceStack>get().getEntitySelector(cmdCtx, key, ArgumentSubType.ENTITYSELECTOR_ONE_PLAYER, true);
+			return (Player) CommandAPIBukkit.<CommandSourceStack>get().getNMS().getEntitySelector(cmdCtx, key, ArgumentSubType.ENTITYSELECTOR_ONE_PLAYER, true);
 		}
 
 		@Override
@@ -140,7 +140,7 @@ public class EntitySelectorArgument {
 		 * @param allowEmpty whether this entity selector should allow no entities found, or should throw an error instead
 		 */
 		public ManyEntities(String nodeName, boolean allowEmpty) {
-			super(nodeName, CommandAPIBukkit.get()._ArgumentEntity(ArgumentSubType.ENTITYSELECTOR_MANY_ENTITIES));
+			super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentEntity(ArgumentSubType.ENTITYSELECTOR_MANY_ENTITIES));
 			this.allowEmpty = allowEmpty;
 		}
 
@@ -157,7 +157,7 @@ public class EntitySelectorArgument {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <CommandSourceStack> Collection<Entity> parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-			return (Collection<Entity>) CommandAPIBukkit.<CommandSourceStack>get().getEntitySelector(cmdCtx, key, ArgumentSubType.ENTITYSELECTOR_MANY_ENTITIES, this.allowEmpty);
+			return (Collection<Entity>) CommandAPIBukkit.<CommandSourceStack>get().getNMS().getEntitySelector(cmdCtx, key, ArgumentSubType.ENTITYSELECTOR_MANY_ENTITIES, this.allowEmpty);
 		}
 
 		@SuppressWarnings("unchecked")
@@ -196,7 +196,7 @@ public class EntitySelectorArgument {
 		 * * @param allowEmpty whether this entity selector should allow no entities found, or should throw an error instead
 		 */
 		public ManyPlayers(String nodeName, boolean allowEmpty) {
-			super(nodeName, CommandAPIBukkit.get()._ArgumentEntity(ArgumentSubType.ENTITYSELECTOR_MANY_PLAYERS));
+			super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentEntity(ArgumentSubType.ENTITYSELECTOR_MANY_PLAYERS));
 			this.allowEmpty = allowEmpty;
 		}
 
@@ -213,7 +213,7 @@ public class EntitySelectorArgument {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <CommandSourceStack> Collection<Player> parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-			return (Collection<Player>) CommandAPIBukkit.<CommandSourceStack>get().getEntitySelector(cmdCtx, key, ArgumentSubType.ENTITYSELECTOR_MANY_PLAYERS, allowEmpty);
+			return (Collection<Player>) CommandAPIBukkit.<CommandSourceStack>get().getNMS().getEntitySelector(cmdCtx, key, ArgumentSubType.ENTITYSELECTOR_MANY_PLAYERS, allowEmpty);
 		}
 
 		@SuppressWarnings("unchecked")

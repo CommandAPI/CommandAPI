@@ -39,6 +39,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 
+import dev.jorel.commandapi.CommandAPIBukkit;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -63,7 +64,6 @@ import org.bukkit.craftbukkit.v1_21_R1.CraftServer;
 import org.bukkit.craftbukkit.v1_21_R1.CraftSound;
 import org.bukkit.craftbukkit.v1_21_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_21_R1.block.data.CraftBlockData;
-import org.bukkit.craftbukkit.v1_21_R1.command.BukkitCommandWrapper;
 import org.bukkit.craftbukkit.v1_21_R1.command.VanillaCommandWrapper;
 import org.bukkit.craftbukkit.v1_21_R1.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_21_R1.help.CustomHelpTopic;
@@ -92,10 +92,7 @@ import com.mojang.serialization.DataResult;
 
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPIHandler;
-import dev.jorel.commandapi.CommandRegistrationStrategy;
-import dev.jorel.commandapi.PaperCommandRegistration;
 import dev.jorel.commandapi.SafeVarHandle;
-import dev.jorel.commandapi.SpigotCommandRegistration;
 import dev.jorel.commandapi.arguments.ArgumentSubType;
 import dev.jorel.commandapi.arguments.SuggestionProviders;
 import dev.jorel.commandapi.commandsenders.AbstractCommandSender;
@@ -113,11 +110,6 @@ import dev.jorel.commandapi.wrappers.NativeProxyCommandSender;
 import dev.jorel.commandapi.wrappers.ParticleData;
 import dev.jorel.commandapi.wrappers.ScoreboardSlot;
 import dev.jorel.commandapi.wrappers.SimpleFunctionWrapper;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.chat.ComponentSerializer;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.commands.CommandBuildContext;
@@ -125,11 +117,9 @@ import net.minecraft.commands.CommandResultCallback;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.FunctionInstantiationException;
 import net.minecraft.commands.SharedSuggestionProvider;
-import net.minecraft.commands.arguments.ColorArgument;
 import net.minecraft.commands.arguments.ComponentArgument;
 import net.minecraft.commands.arguments.DimensionArgument;
 import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.commands.arguments.MessageArgument;
 import net.minecraft.commands.arguments.ParticleArgument;
 import net.minecraft.commands.arguments.RangeArgument;
 import net.minecraft.commands.arguments.ResourceArgument;
@@ -213,18 +203,15 @@ public class NMS_1_21_R1 extends NMS_Common {
 	private static final boolean vanillaCommandDispatcherFieldExists;
 
 	// Derived from net.minecraft.commands.Commands;
-	private static final CommandBuildContext COMMAND_BUILD_CONTEXT;
+	private final CommandBuildContext commandBuildContext;
+
+	public NMS_1_21_R1(CommandBuildContext commandBuildContext) {
+		this.commandBuildContext = commandBuildContext;
+	}
 
 	// Compute all var handles all in one go so we don't do this during main server
 	// runtime
 	static {
-		if (Bukkit.getServer() instanceof CraftServer server) {
-			COMMAND_BUILD_CONTEXT = CommandBuildContext.simple(server.getServer().registryAccess(),
-					server.getServer().getWorldData().getDataConfiguration().enabledFeatures());
-		} else {
-			COMMAND_BUILD_CONTEXT = null;
-		}
-
 		helpMapTopics = SafeVarHandle.ofOrNull(SimpleHelpMap.class, "helpTopics", "helpTopics", Map.class);
 		// For some reason, MethodHandles fails for this field, but Field works okay
 		entitySelectorUsesSelector = CommandAPIHandler.getField(EntitySelector.class, "p", "usesSelector");
@@ -249,22 +236,22 @@ public class NMS_1_21_R1 extends NMS_Common {
 
 	@Override
 	public final ArgumentType<?> _ArgumentBlockPredicate() {
-		return BlockPredicateArgument.blockPredicate(COMMAND_BUILD_CONTEXT);
+		return BlockPredicateArgument.blockPredicate(commandBuildContext);
 	}
 
 	@Override
 	public final ArgumentType<?> _ArgumentBlockState() {
-		return BlockStateArgument.block(COMMAND_BUILD_CONTEXT);
+		return BlockStateArgument.block(commandBuildContext);
 	}
 
 	@Override
 	public ArgumentType<?> _ArgumentChatComponent() {
-		return ComponentArgument.textComponent(COMMAND_BUILD_CONTEXT);
+		return ComponentArgument.textComponent(commandBuildContext);
 	}
 
 	@Override
 	public final ArgumentType<?> _ArgumentEnchantment() {
-		return ResourceArgument.resource(COMMAND_BUILD_CONTEXT, Registries.ENCHANTMENT);
+		return ResourceArgument.resource(commandBuildContext, Registries.ENCHANTMENT);
 	}
 
 	@Override
@@ -280,22 +267,22 @@ public class NMS_1_21_R1 extends NMS_Common {
 
 	@Override
 	public final ArgumentType<?> _ArgumentItemPredicate() {
-		return ItemPredicateArgument.itemPredicate(COMMAND_BUILD_CONTEXT);
+		return ItemPredicateArgument.itemPredicate(commandBuildContext);
 	}
 
 	@Override
 	public final ArgumentType<?> _ArgumentItemStack() {
-		return ItemArgument.item(COMMAND_BUILD_CONTEXT);
+		return ItemArgument.item(commandBuildContext);
 	}
 
 	@Override
 	public final ArgumentType<?> _ArgumentParticle() {
-		return ParticleArgument.particle(COMMAND_BUILD_CONTEXT);
+		return ParticleArgument.particle(commandBuildContext);
 	}
 
 	@Override
 	public final ArgumentType<?> _ArgumentSyntheticBiome() {
-		return ResourceArgument.resource(COMMAND_BUILD_CONTEXT, Registries.BIOME);
+		return ResourceArgument.resource(commandBuildContext, Registries.BIOME);
 	}
 
 	@Override
@@ -309,8 +296,8 @@ public class NMS_1_21_R1 extends NMS_Common {
 	};
 
 	@Differs(from = "1.20.6", by = "ItemInput constructor uses a data components patch, instead of a data components map")
-	private static String serializeNMSItemStack(ItemStack is) {
-		return new ItemInput(is.getItemHolder(), is.getComponentsPatch()).serialize(COMMAND_BUILD_CONTEXT);
+	private String serializeNMSItemStack(ItemStack is) {
+		return new ItemInput(is.getItemHolder(), is.getComponentsPatch()).serialize(commandBuildContext);
 	}
 
 	@Override
@@ -351,7 +338,8 @@ public class NMS_1_21_R1 extends NMS_Common {
 		CommandResultCallback onCommandResult = (succeeded, resultValue) -> result.set(resultValue);
 
 		try {
-			final InstantiatedFunction<CommandSourceStack> instantiatedFunction = commandFunction.instantiate((CompoundTag) null, this.getBrigadierDispatcher());
+			final InstantiatedFunction<CommandSourceStack> instantiatedFunction = commandFunction.instantiate((CompoundTag) null,
+				CommandAPIBukkit.<CommandSourceStack>get().getBrigadierDispatcher());
 			net.minecraft.commands.Commands.executeCommandInContext(css, (executioncontext) -> {
 				ExecutionContext.queueInitialFunctionCall(executioncontext, instantiatedFunction, css, onCommandResult);
 			});
@@ -374,7 +362,8 @@ public class NMS_1_21_R1 extends NMS_Common {
 		// Unpack the commands by instantiating the function with no CSS, then retrieving its entries
 		String[] commands = new String[0];
 		try {
-			final InstantiatedFunction<CommandSourceStack> instantiatedFunction = commandFunction.instantiate((CompoundTag) null, this.getBrigadierDispatcher());
+			final InstantiatedFunction<CommandSourceStack> instantiatedFunction = commandFunction.instantiate((CompoundTag) null,
+				CommandAPIBukkit.<CommandSourceStack>get().getBrigadierDispatcher());
 
 			List<?> cArr = instantiatedFunction.entries();
 			commands = new String[cArr.size()];
@@ -405,24 +394,6 @@ public class NMS_1_21_R1 extends NMS_Common {
 	public Advancement getAdvancement(CommandContext<CommandSourceStack> cmdCtx, String key)
 			throws CommandSyntaxException {
 		return ResourceLocationArgument.getAdvancement(cmdCtx, key).toBukkit();
-	}
-
-	@Override
-	public Component getAdventureChat(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		return GsonComponentSerializer.gson().deserialize(Serializer.toJson(MessageArgument.getMessage(cmdCtx, key), COMMAND_BUILD_CONTEXT));
-	}
-
-	@Override
-	public NamedTextColor getAdventureChatColor(CommandContext<CommandSourceStack> cmdCtx, String key) {
-		final Integer color = ColorArgument.getColor(cmdCtx, key).getColor();
-		return color == null ? NamedTextColor.WHITE : NamedTextColor.namedColor(color);
-	}
-
-	@Override
-	public final Component getAdventureChatComponent(CommandContext<CommandSourceStack> cmdCtx, String key) {
-		// TODO: Figure out if an empty provider is suitable for this context
-		return GsonComponentSerializer.gson()
-				.deserialize(Serializer.toJson(ComponentArgument.getComponent(cmdCtx, key), COMMAND_BUILD_CONTEXT));
 	}
 
 	@Override
@@ -462,11 +433,6 @@ public class NMS_1_21_R1 extends NMS_Common {
 	public CommandSourceStack getBrigadierSourceFromCommandSender(
 			AbstractCommandSender<? extends CommandSender> sender) {
 		return VanillaCommandWrapper.getListener(sender.getSource());
-	}
-
-	@Override
-	public final BaseComponent[] getChat(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		return ComponentSerializer.parse(Serializer.toJson(MessageArgument.getMessage(cmdCtx, key), COMMAND_BUILD_CONTEXT));
 	}
 
 	@Override
@@ -811,7 +777,7 @@ public class NMS_1_21_R1 extends NMS_Common {
 
 			return new BukkitNativeProxyCommandSender(new NativeProxyCommandSender_1_21_R1(css, sender, proxy));
 		} else {
-			return wrapCommandSender(sender);
+			return CommandAPIBukkit.get().wrapCommandSender(sender);
 		}
 	}
 
@@ -820,7 +786,7 @@ public class NMS_1_21_R1 extends NMS_Common {
 		if (callee == null) callee = caller;
 
 		// Most parameters default to what is defined by the caller
-		CommandSourceStack css = getBrigadierSourceFromCommandSender(wrapCommandSender(caller));
+		CommandSourceStack css = getBrigadierSourceFromCommandSender(CommandAPIBukkit.get().wrapCommandSender(caller));
 
 		// Position and rotation may be overridden by the Location
 		if (location != null) {
@@ -933,8 +899,7 @@ public class NMS_1_21_R1 extends NMS_Common {
 
 		// Update the ServerFunctionLibrary's command dispatcher with the new one
 		try {
-			serverFunctionLibraryDispatcher.set(serverResources.managers().getFunctionLibrary(),
-					getBrigadierDispatcher());
+			serverFunctionLibraryDispatcher.set(serverResources.managers().getFunctionLibrary(), CommandAPIBukkit.get().getBrigadierDispatcher());
 		} catch (IllegalAccessException ignored) {
 			// Shouldn't happen, CommandAPIHandler#getField makes it accessible
 		}
@@ -1032,7 +997,7 @@ public class NMS_1_21_R1 extends NMS_Common {
 
 			// Register recipes again because reloading datapacks
 			// removes all non-vanilla recipes
-			registerBukkitRecipesSafely(recipes);
+			CommandAPIBukkit.get().registerBukkitRecipesSafely(recipes);
 
 			CommandAPI.logNormal("Finished reloading datapacks");
 		} catch (Exception e) {
@@ -1049,7 +1014,7 @@ public class NMS_1_21_R1 extends NMS_Common {
 	@Override
 	public Message generateMessageFromJson(String json) {
 		// TODO: Same as #getAdventureChatComponent, figure out if an empty provider is suitable here
-		return Serializer.fromJson(json, COMMAND_BUILD_CONTEXT);
+		return Serializer.fromJson(json, commandBuildContext);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -1064,45 +1029,12 @@ public class NMS_1_21_R1 extends NMS_Common {
 
 	@Override
 	public ArgumentType<?> _ArgumentMobEffect() {
-		return ResourceArgument.resource(COMMAND_BUILD_CONTEXT, Registries.MOB_EFFECT);
+		return ResourceArgument.resource(commandBuildContext, Registries.MOB_EFFECT);
 	}
 
 	@Override
 	public ArgumentType<?> _ArgumentEntitySummon() {
-		return ResourceArgument.resource(COMMAND_BUILD_CONTEXT, Registries.ENTITY_TYPE);
+		return ResourceArgument.resource(commandBuildContext, Registries.ENTITY_TYPE);
 	}
 
-	@Override
-	public CommandRegistrationStrategy<CommandSourceStack> createCommandRegistrationStrategy() {
-		if (vanillaCommandDispatcherFieldExists) {
-			return new SpigotCommandRegistration<>(
-				this.<MinecraftServer>getMinecraftServer().vanillaCommandDispatcher.getDispatcher(),
-				(SimpleCommandMap) getPaper().getCommandMap(),
-				() -> this.<MinecraftServer>getMinecraftServer().getCommands().getDispatcher(),
-				command -> command instanceof VanillaCommandWrapper,
-				node -> new VanillaCommandWrapper(this.<MinecraftServer>getMinecraftServer().vanillaCommandDispatcher, node),
-				node -> node.getCommand() instanceof BukkitCommandWrapper
-			);
-		} else {
-			// This class is Paper-server specific, so we need to use paper's userdev plugin to
-			//  access it directly. That might need gradle, but there might also be a maven version?
-			//  https://discord.com/channels/289587909051416579/1121227200277004398/1246910745761812480
-			Class<?> bukkitCommandNode_bukkitBrigCommand;
-			try {
-				bukkitCommandNode_bukkitBrigCommand = Class.forName("io.papermc.paper.command.brigadier.bukkit.BukkitCommandNode$BukkitBrigCommand");
-			} catch (ClassNotFoundException e) {
-				throw new IllegalStateException("Expected to find class", e);
-			}
-			return new PaperCommandRegistration<>(
-				() -> this.<MinecraftServer>getMinecraftServer().getCommands().getDispatcher(),
-				() -> {
-					SimpleHelpMap helpMap = (SimpleHelpMap) Bukkit.getServer().getHelpMap();
-					helpMap.clear();
-					helpMap.initializeGeneralTopics();
-					helpMap.initializeCommands();
-				},
-				node -> bukkitCommandNode_bukkitBrigCommand.isInstance(node.getCommand())
-			);
-		}
-	}
 }
