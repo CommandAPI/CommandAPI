@@ -65,31 +65,7 @@
 	</repositories>
 
 	<dependencies>
-		<!-- Main dependencies -->
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-engine</artifactId>
-			<version>5.8.2</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
-			<version>5.11.0</version>
-		</dependency>
-		<dependency>
-			<!-- This is literally just for testing, we're not actually packaging this -->
-			<groupId>de.tr7zw</groupId>
-			<artifactId>item-nbt-api</artifactId>
-			<version>2.11.2</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.mojang</groupId>
-			<artifactId>brigadier</artifactId>
-			<version>1.0.17</version>
-			<scope>provided</scope>
-		</dependency>
+		<!-- CommandAPI -->
 		<dependency>
 			<groupId>dev.jorel</groupId>
 			<artifactId>commandapi-bukkit-test-impl</artifactId>
@@ -97,22 +73,34 @@
 		</dependency>
 		<dependency>
 			<groupId>dev.jorel</groupId>
-			<artifactId>commandapi-bukkit-shade</artifactId>
+			<artifactId>commandapi-bukkit-1.20</artifactId>
 			<version>${project.version}</version>
+			<classifier>mojang-mapped</classifier>
+		</dependency>
+		<!-- TODO: We also need to be able to access the NMS-common classes, which we do here just adding the dependency again
+		      Is it possible to have nms-common as a transitive dependency, so it is automatically available when using -1.20?
+		      In general whenever we reference an nms module we tend to need to include its dependencies as well, which is
+		      annoyingly verbose and prone to cause errors when forgotten. -->
+		<dependency>
+			<groupId>dev.jorel</groupId>
+			<artifactId>commandapi-bukkit-nms-common</artifactId>
+			<version>${project.version}</version>
+			<classifier>mojang-mapped</classifier>
 		</dependency>
 
-		<!-- Version-specific dependencies -->
+		<!-- Version-specific Minecraft dependencies -->
+		<dependency>
+			<groupId>com.github.seeseemelk</groupId>
+			<artifactId>MockBukkit-v1.20</artifactId>
+			<!-- This seems to be the latest version that still uses api version 1.20.1-RO.1, which must match our Spigot server version -->
+			<version>3.46.0</version>
+		</dependency>
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot</artifactId>
 			<version>${spigot.version}</version>
 			<classifier>remapped-mojang</classifier>
 			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.github.seeseemelk</groupId>
-			<artifactId>MockBukkit-v1.20</artifactId>
-			<version>3.9.0</version>
 		</dependency>
 		<!-- <dependency>
 			<groupId>io.papermc.paper</groupId>

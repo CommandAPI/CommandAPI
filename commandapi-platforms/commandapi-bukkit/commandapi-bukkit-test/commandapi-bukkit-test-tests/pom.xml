@@ -76,21 +76,6 @@
 			<version>1.2.9</version>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
-			<version>5.11.0</version>
-		</dependency>
-		<dependency>
-			<groupId>dev.jorel</groupId>
-			<artifactId>commandapi-bukkit-test-impl</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>dev.jorel</groupId>
-			<artifactId>commandapi-bukkit-plugin-common</artifactId>
-			<version>${project.version}</version>
-		</dependency>
 
 		<!-- NBT API implementations (in no particular order) -->
 		<dependency>
@@ -106,13 +91,6 @@
 			<artifactId>rtag</artifactId>
 			<version>1.4.4</version>
 			<scope>provided</scope>
-		</dependency>
-
-		<!-- Semantic Versioning to allow only running certain tests on certain versions -->
-		<dependency>
-			<groupId>com.github.zafarkhaja</groupId>
-			<artifactId>java-semver</artifactId>
-			<version>0.9.0</version>
 		</dependency>
 	</dependencies>
 
@@ -170,6 +148,7 @@
 		</plugins>
 	</build>
 
+	<!-- Version specific test dependencies - includes the CommandAPI test implementations -->
 	<profiles>
 
 		<!--
@@ -422,20 +401,6 @@
 			</activation>
 			<dependencies>
 				<dependency>
-					<!-- Needed for 1.19.4 Brigadier logging. This is also present in
-					 commandapi-core, but isn't inherited here automatically, so we add
-					 it here -->
-					<groupId>org.apache.logging.log4j</groupId>
-					<artifactId>log4j-api</artifactId>
-					<version>2.19.0</version>
-					<scope>provided</scope>
-				</dependency>
-				<dependency>
-					<groupId>dev.jorel</groupId>
-					<artifactId>commandapi-bukkit-shade</artifactId>
-					<version>${project.version}</version>
-				</dependency>
-				<dependency>
 					<groupId>dev.jorel</groupId>
 					<artifactId>commandapi-bukkit-test-impl-1.20</artifactId>
 					<version>${project.version}</version>
@@ -444,12 +409,7 @@
 				<dependency>
 					<groupId>org.spigotmc</groupId>
 					<artifactId>spigot</artifactId>
-					<version>1.20-R0.1-SNAPSHOT</version>
-				</dependency>
-				<dependency>
-					<groupId>io.papermc.paper</groupId>
-					<artifactId>paper-api</artifactId>
-					<version>1.20-R0.1-SNAPSHOT</version>
+					<version>1.20.1-R0.1-SNAPSHOT</version>
 				</dependency>
 			</dependencies>
 			<build>
@@ -470,43 +430,20 @@
 			<id>Minecraft_1_20_Mojang</id>
 			<dependencies>
 				<dependency>
-					<!-- Needed for 1.19.4 Brigadier logging. This is also present in
-					 commandapi-core, but isn't inherited here automatically, so we add
-					 it here -->
-					<groupId>org.apache.logging.log4j</groupId>
-					<artifactId>log4j-api</artifactId>
-					<version>2.19.0</version>
-					<scope>provided</scope>
-				</dependency>
-				<dependency>
-					<groupId>dev.jorel</groupId>
-					<artifactId>commandapi-bukkit-nms-dependency-mojang-mapped</artifactId>
-					<version>${project.version}</version>
-					<type>pom</type>
-				</dependency>
-				<dependency>
-					<groupId>dev.jorel</groupId>
-					<artifactId>commandapi-bukkit-shade</artifactId>
-					<version>${project.version}</version>
-				</dependency>
-				<dependency>
 					<groupId>dev.jorel</groupId>
 					<artifactId>commandapi-bukkit-test-impl-1.20</artifactId>
 					<version>${project.version}</version>
 					<classifier>mojang-mapped</classifier>
 					<scope>test</scope>
 				</dependency>
+
+				<!-- TODO: Is it possible to make this a transitive dependency of impl-1.20?
+				      Note that you'd need to make sure the classifier is correct -->
 				<dependency>
 					<groupId>org.spigotmc</groupId>
 					<artifactId>spigot</artifactId>
-					<version>1.20-R0.1-SNAPSHOT</version>
+					<version>1.20.1-R0.1-SNAPSHOT</version>
 					<classifier>remapped-mojang</classifier>
-					<scope>provided</scope>
-				</dependency>
-				<dependency>
-					<groupId>io.papermc.paper</groupId>
-					<artifactId>paper-api</artifactId>
-					<version>1.20-R0.1-SNAPSHOT</version>
 				</dependency>
 			</dependencies>
 			<build>

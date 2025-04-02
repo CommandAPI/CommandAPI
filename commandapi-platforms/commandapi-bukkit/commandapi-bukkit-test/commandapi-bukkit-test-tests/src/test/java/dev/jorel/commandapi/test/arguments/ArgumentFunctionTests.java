@@ -17,7 +17,6 @@ import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.MCVersion;
 import dev.jorel.commandapi.arguments.FunctionArgument;
 import dev.jorel.commandapi.arguments.GreedyStringArgument;
-import dev.jorel.commandapi.test.MockNMS;
 import dev.jorel.commandapi.test.MockPlatform;
 import dev.jorel.commandapi.test.Mut;
 import dev.jorel.commandapi.test.TestBase;
@@ -83,7 +82,7 @@ class ArgumentFunctionTests extends TestBase {
 		int functionResult = result[0].run();
 		
 		if (version.greaterThanOrEqualTo(MCVersion.V1_20_3)) {
-			assertEquals(1, MockNMS.getInstance().popFunctionCallbackResult());
+			assertEquals(1, MockPlatform.getInstance().popFunctionCallbackResult());
 		} else {
 			assertEquals(1, functionResult);
 		}
@@ -143,8 +142,8 @@ class ArgumentFunctionTests extends TestBase {
 			int functionResult = wrapper.run();
 			
 			if (version.greaterThanOrEqualTo(MCVersion.V1_20_3)) {
-				assertEquals(1, MockNMS.getInstance().popFunctionCallbackResult());
-				assertEquals(1, MockNMS.getInstance().popFunctionCallbackResult());
+				assertEquals(1, MockPlatform.getInstance().popFunctionCallbackResult());
+				assertEquals(1, MockPlatform.getInstance().popFunctionCallbackResult());
 			} else {
 				assertEquals(2, functionResult);
 			}

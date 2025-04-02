@@ -57,16 +57,24 @@
 	</repositories>
 
 	<dependencies>
+		<!-- CommandAPI -->
 		<dependency>
-			<groupId>com.mojang</groupId>
-			<artifactId>brigadier</artifactId>
-			<version>1.0.17</version>
-			<scope>provided</scope>
+			<groupId>dev.jorel</groupId>
+			<artifactId>commandapi-bukkit-core</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>dev.jorel</groupId>
-			<artifactId>commandapi-bukkit-shade</artifactId>
+			<artifactId>commandapi-bukkit-plugin-common</artifactId>
 			<version>${project.version}</version>
+		</dependency>
+
+		<!-- Minecraft -->
+		<dependency>
+			<groupId>com.mojang</groupId>
+			<artifactId>brigadier</artifactId>
+			<version>1.2.9</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.papermc.paper</groupId>
@@ -74,11 +82,19 @@
 			<version>${spigot.version}</version>
 			<scope>provided</scope>
 		</dependency>
+
+		<!-- Test helpers -->
 		<dependency>
-			<groupId>org.spigotmc</groupId>
-			<artifactId>spigot</artifactId>
-			<version>${spigot.version}</version>
-			<scope>provided</scope>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>5.11.0</version>
+		</dependency>
+
+		<!-- Semantic Versioning to allow only running certain tests on certain versions -->
+		<dependency>
+			<groupId>com.github.zafarkhaja</groupId>
+			<artifactId>java-semver</artifactId>
+			<version>0.9.0</version>
 		</dependency>
 	</dependencies>
 </project>

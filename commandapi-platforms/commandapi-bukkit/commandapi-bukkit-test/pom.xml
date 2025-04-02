@@ -37,7 +37,7 @@
 		<module>commandapi-bukkit-test-impl-1.20</module>
 
 		<!-- Tests -->
-		<!-- <module>commandapi-bukkit-kotlin-test</module> -->
-		<!-- <module>commandapi-bukkit-test-tests</module> -->
+		 <module>commandapi-bukkit-kotlin-test</module>
+		 <module>commandapi-bukkit-test-tests</module>
 	</modules>
 </project>

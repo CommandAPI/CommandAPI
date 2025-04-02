@@ -3,39 +3,39 @@ package dev.jorel.commandapi.test;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.context.ParsedArgument;
 import dev.jorel.commandapi.CommandAPIBukkit;
 import dev.jorel.commandapi.SafeVarHandle;
-import dev.jorel.commandapi.wrappers.ParticleData;
+import dev.jorel.commandapi.commandsenders.AbstractCommandSender;
+import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
-import org.bukkit.Sound;
+import org.bukkit.Registry;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.entity.Player;
+import org.bukkit.help.HelpTopic;
 import org.bukkit.inventory.ItemFactory;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.mockito.Mockito;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.bukkit.Keyed;
-import org.bukkit.Registry;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import static org.mockito.ArgumentMatchers.any;
 
-public abstract class MockPlatform<CLW> extends CommandAPIBukkit<CLW> {
+/**
+ * Sets up the CommandAPI for running in a mock environment.
+ */
+public abstract class MockPlatform<Source> implements Enums {
 	/*****************
 	 * Instantiation *
 	 *****************/
@@ -52,56 +52,64 @@ public abstract class MockPlatform<CLW> extends CommandAPIBukkit<CLW> {
 			MockPlatform.instance = this;
 		} else {
 			// wtf why was this called twice?
+			throw new IllegalStateException("MockPlatform loaded twice? I don't think this should happen!");
 		}
 	}
-	
+
 	public static void unload() {
 		MockPlatform.instance = null;
 	}
 
-	/************************************
-	 * CommandAPIBukkit implementations *
-	 ************************************/
+	/************************
+	 * CommandAPIBukkit spy *
+	 ************************/
 
-	private final CommandDispatcher<CLW> brigadierDispatcher = new CommandDispatcher<>();
-	private final CommandDispatcher<CLW> resourcesDispatcher = new CommandDispatcher<>();
+	protected CommandAPIBukkit<Source> commandAPIBukkit;
 
-	public CommandDispatcher<CLW> getMockBrigadierDispatcher() {
-		return brigadierDispatcher;
+	public CommandAPIBukkit<Source> setupCommandAPIBukkit() {
+		// Set up a Mockito spy
+		//  We want to forward most methods to the original implementation so we
+		//  can test that code, but we need to override some methods to help them
+		//  play nice with MockBukkit.
+		CommandAPIBukkit<Source> spy = createCommandAPIBukkitSpy();
+
+		// General setup
+		// Ignore, nothing to do here
+		Mockito.doNothing().when(spy).reloadDataPacks();
+
+		// Stub in our getMinecraftServer implementation
+		Mockito.doAnswer(i -> getMinecraftServer()).when(spy).getMinecraftServer();
+		// Stub in our getBrigadierSourceFromCommandSender
+		//  nms expects CommandSenders to be CraftCommandSenders
+		Mockito.doAnswer(i -> getBrigadierSourceFromCommandSender(i.getArgument(0)))
+			.when(spy).getBrigadierSourceFromCommandSender(any());
+		// Stub in our getSimpleCommandMap implementation
+		//  nms throws a class cast exception  (`CraftServer` vs `CommandAPIServerMock`)
+		Mockito.doAnswer(i -> getSimpleCommandMap()).when(spy).getSimpleCommandMap();
+		// Stub in our getHelpMap implementation
+		//  nms throws a class cast exception (`SimpleHelpMap` vs `HelpMapMock`)
+		Mockito.doAnswer(i -> getHelpMap()).when(spy).getHelpMap();
+
+		// Inject spy
+		this.commandAPIBukkit = spy;
+		setField(CommandAPIBukkit.class, "instance", null, spy);
+
+		return spy;
 	}
 
-	public CommandDispatcher<CLW> getMockResourcesDispatcher() {
-		return resourcesDispatcher;
-	}
+	protected abstract CommandAPIBukkit<Source> createCommandAPIBukkitSpy();
 
-	@Override
-	public final String convert(ItemStack is) {
-		throw new UnimplementedError();
-	}
+	public abstract Source getBrigadierSourceFromCommandSender(AbstractCommandSender<? extends CommandSender> senderWrapper);
 
-	@Override
-	public final String convert(ParticleData<?> particle) {
-		throw new UnimplementedError();
-	}
+	public abstract <T> T getMinecraftServer();
 
-	@Override
-	public final String convert(PotionEffectType potion) {
-		throw new UnimplementedError();
-	}
+	public abstract SimpleCommandMap getSimpleCommandMap();
 
-	@Override
-	public final String convert(Sound sound) {
-		throw new UnimplementedError();
-	}
+	public abstract Map<String, HelpTopic> getHelpMap();
 
-	@Override
-	public final void reloadDataPacks() {
-		assert true; // Nothing to do here
-	}
-
-	/******************
-	 * Helper methods *
-	 ******************/
+	/**************
+	 * Reflection *
+	 **************/
 
 	public static Object getField(Class<?> className, String fieldName, Object instance) {
 		return getField(className, fieldName, fieldName, instance);
@@ -145,15 +153,20 @@ public abstract class MockPlatform<CLW> extends CommandAPIBukkit<CLW> {
 		}
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static <T> T forceGetArgument(CommandContext cmdCtx, String key) {
-		Map<String, ParsedArgument> result = getFieldAs(CommandContext.class, "arguments", cmdCtx, Map.class);
-		return result == null ? null : (T) result.get(key).getResult();
+	/******************
+	 * Helper methods *
+	 ******************/
+
+	private final CommandDispatcher<Source> brigadierDispatcher = new CommandDispatcher<>();
+	private final CommandDispatcher<Source> resourcesDispatcher = new CommandDispatcher<>();
+
+	public CommandDispatcher<Source> getMockBrigadierDispatcher() {
+		return brigadierDispatcher;
 	}
 
-	/***************
-	 * Other stuff *
-	 ***************/
+	public CommandDispatcher<Source> getMockResourcesDispatcher() {
+		return resourcesDispatcher;
+	}
 
 	public abstract ItemFactory getItemFactory();
 
@@ -227,29 +240,6 @@ public abstract class MockPlatform<CLW> extends CommandAPIBukkit<CLW> {
 		
 		return list;
 	}
-	
-	@SuppressWarnings("serial")
-	private static class UnimplementedError extends Error {
-		public UnimplementedError() {
-			super("Unimplemented");
-		}
-	}
-
-	/***********************
-	 * Bukkit "enum" lists *
-	 ***********************/
-
-	public abstract org.bukkit.enchantments.Enchantment[] getEnchantments();
-
-	public abstract org.bukkit.entity.EntityType[] getEntityTypes();
-
-	public abstract org.bukkit.loot.LootTables[] getLootTables();
-
-	public abstract org.bukkit.potion.PotionEffectType[] getPotionEffects();
-	
-	public abstract org.bukkit.Sound[] getSounds();
-	
-	public abstract org.bukkit.block.Biome[] getBiomes();
 
 	/**
 	 * @return A list of all item names, sorted in alphabetical order. Each item
@@ -263,14 +253,10 @@ public abstract class MockPlatform<CLW> extends CommandAPIBukkit<CLW> {
 	 * Runtime object registries (enchantments, potions etc.)
 	 ********/
 	
-	public Map<Class<?>, Map<NamespacedKey, Object>> registry = null;
+	public Map<Class<?>, Map<NamespacedKey, Object>> registry = new HashMap<>();
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public <T extends Keyed> void addToRegistry(Class<T> className, NamespacedKey key, T object) {
-		if (registry == null) {
-			registry = new HashMap<>();
-		}
-		
 		if (registry.containsKey(className)) {
 			registry.get(className).put(key, object);
 		} else {
@@ -293,10 +279,10 @@ public abstract class MockPlatform<CLW> extends CommandAPIBukkit<CLW> {
 				return (Stream) registry.get(className).values().stream();
 			}
 
+			@NotNull
 			public Iterator<T> iterator() {
 				return (Iterator) registry.get(className).values().iterator();
 			}
 		};
 	}
-
 }

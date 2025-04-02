@@ -1,25 +1,12 @@
 package dev.jorel.commandapi.test;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
+import be.seeseemelk.mockbukkit.MockBukkit;
+import com.mojang.brigadier.LiteralMessage;
+import com.mojang.brigadier.context.StringRange;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.suggestion.Suggestion;
+import dev.jorel.commandapi.*;
+import dev.jorel.commandapi.executors.PlayerCommandExecutor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
@@ -31,18 +18,14 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.function.Executable;
 import org.opentest4j.AssertionFailedError;
 
-import com.mojang.brigadier.LiteralMessage;
-import com.mojang.brigadier.context.StringRange;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.suggestion.Suggestion;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
-import be.seeseemelk.mockbukkit.MockBukkit;
-import dev.jorel.commandapi.CommandAPI;
-import dev.jorel.commandapi.CommandAPIVersionHandler;
-import dev.jorel.commandapi.MCVersion;
-import dev.jorel.commandapi.PaperImplementations;
-import dev.jorel.commandapi.SafeVarHandle;
-import dev.jorel.commandapi.executors.PlayerCommandExecutor;
+import static org.junit.jupiter.api.Assertions.*;
 
 public abstract class TestBase {
 
@@ -178,7 +161,7 @@ public abstract class TestBase {
 	}
 	
 	public static void disablePaperImplementations() {
-		MockPlatform.setField(PaperImplementations.class, "isPaperPresent", MockPlatform.get().getPaper(), false);
+		MockPlatform.setField(PaperImplementations.class, "isPaperPresent", CommandAPIBukkit.get().getPaper(), false);
 	}
 	
 	/***************

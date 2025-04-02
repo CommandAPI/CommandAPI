@@ -7,7 +7,8 @@ import dev.jorel.commandapi.*;
 import dev.jorel.commandapi.arguments.IntegerArgument;
 import dev.jorel.commandapi.arguments.LiteralArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.SimpleCommandMap;
@@ -44,15 +45,20 @@ public class CommandNamespaceTests extends TestBase {
 		super.tearDown();
 	}
 
-	Player enableWithNamespaces() {
-		// Register minecraft: namespace. MockBukkit doesn't do this on their own
+	<Source> void setVanillaCommands(CommandAPIBukkit<Source> commandAPIBukkit) {
 		// Simulate `CraftServer#setVanillaCommands`
-		MockPlatform<Object> mockPlatform = MockPlatform.getInstance();
-		SimpleCommandMap commandMap = mockPlatform.getSimpleCommandMap();
-		SpigotCommandRegistration<Object> spigotCommandRegistration = (SpigotCommandRegistration<Object>) mockPlatform.getCommandRegistrationStrategy();
-		for (CommandNode<Object> node : mockPlatform.getBrigadierDispatcher().getRoot().getChildren()) {
+		SimpleCommandMap commandMap = commandAPIBukkit.getSimpleCommandMap();
+		SpigotCommandRegistration<Source> spigotCommandRegistration =
+			(SpigotCommandRegistration<Source>) commandAPIBukkit.getCommandRegistrationStrategy();
+
+		for (CommandNode<Source> node : commandAPIBukkit.getBrigadierDispatcher().getRoot().getChildren()) {
 			commandMap.register("minecraft", spigotCommandRegistration.wrapToVanillaCommandWrapper(node));
 		}
+	}
+
+	Player enableWithNamespaces() {
+		// Register minecraft: namespace. MockBukkit doesn't do this on their own
+		setVanillaCommands(CommandAPIBukkit.get());
 
 		// Run the CommandAPI's enable tasks, especially `fixNamespaces`
 		enableServer();
@@ -128,14 +134,14 @@ public class CommandNamespaceTests extends TestBase {
 		}
 
 		// Check contents of Brigadier CommandDispatcher
-		RootCommandNode<Object> rootNode = MockPlatform.getInstance().getBrigadierDispatcher().getRoot();
+		RootCommandNode<?> rootNode = CommandAPIBukkit.get().getBrigadierDispatcher().getRoot();
 		assertNotNull(rootNode.getChild("test"));
 		// Unlike custom namespaces, the minecraft namespace should NOT appear in the Brigadier dispatcher
 		//  `minecraft:test` is only created when moved to Bukkit's CommandMap, or if there is a command conflict
 		assertNull(rootNode.getChild("minecraft:test"));
 
 		// Check contents of Bukkit CommandMap
-		CommandMap commandMap = MockPlatform.getInstance().getSimpleCommandMap();
+		CommandMap commandMap = CommandAPIBukkit.get().getSimpleCommandMap();
 		assertNotNull(commandMap.getCommand("test"));
 		assertNotNull(commandMap.getCommand("minecraft:test"));
 
@@ -170,13 +176,13 @@ public class CommandNamespaceTests extends TestBase {
 		}
 
 		// Check contents of Brigadier CommandDispatcher
-		RootCommandNode<Object> rootNode = MockPlatform.getInstance().getBrigadierDispatcher().getRoot();
+		RootCommandNode<?> rootNode = CommandAPIBukkit.get().getBrigadierDispatcher().getRoot();
 		assertNotNull(rootNode.getChild("test"));
 		assertNotNull(rootNode.getChild("commandtest:test"));
 		assertNull(rootNode.getChild("minecraft:test"));
 
 		// Check contents of Bukkit CommandMap
-		CommandMap commandMap = MockPlatform.getInstance().getSimpleCommandMap();
+		CommandMap commandMap = CommandAPIBukkit.get().getSimpleCommandMap();
 		assertNotNull(commandMap.getCommand("test"));
 		assertNotNull(commandMap.getCommand("commandtest:test"));
 		assertNull(commandMap.getCommand("minecraft:test"));
@@ -212,20 +218,20 @@ public class CommandNamespaceTests extends TestBase {
 			});
 
 		// Test registering the command with a plugin instance
-		command.register(MockPlatform.getConfiguration().getPlugin());
+		command.register(CommandAPIBukkit.getConfiguration().getPlugin());
 
 		if (!enableBeforeRegistering) {
 			player = enableWithNamespaces();
 		}
 
 		// Check contents of Brigadier CommandDispatcher
-		RootCommandNode<Object> rootNode = MockPlatform.getInstance().getBrigadierDispatcher().getRoot();
+		RootCommandNode<Object> rootNode = CommandAPIBukkit.get().getBrigadierDispatcher().getRoot();
 		assertNotNull(rootNode.getChild("test"));
 		assertNotNull(rootNode.getChild("commandapitest:test"));
 		assertNull(rootNode.getChild("minecraft:test"));
 
 		// Check contents of Bukkit CommandMap
-		CommandMap commandMap = MockPlatform.getInstance().getSimpleCommandMap();
+		CommandMap commandMap = CommandAPIBukkit.get().getSimpleCommandMap();
 		assertNotNull(commandMap.getCommand("test"));
 		assertNotNull(commandMap.getCommand("commandapitest:test"));
 		assertNull(commandMap.getCommand("minecraft:test"));
@@ -269,7 +275,7 @@ public class CommandNamespaceTests extends TestBase {
 		}
 
 		// Check contents of Brigadier CommandDispatcher
-		RootCommandNode<Object> rootNode = MockPlatform.getInstance().getBrigadierDispatcher().getRoot();
+		RootCommandNode<Object> rootNode = CommandAPIBukkit.get().getBrigadierDispatcher().getRoot();
 		assertNotNull(rootNode.getChild("test"));
 		// `minecraft` namespace is only created in the CommandMap since there is no command conflict
 		assertNull(rootNode.getChild("minecraft:test"));
@@ -279,7 +285,7 @@ public class CommandNamespaceTests extends TestBase {
 		assertNull(rootNode.getChild("minecraft:beta"));
 
 		// Check contents of Bukkit CommandMap
-		CommandMap commandMap = MockPlatform.getInstance().getSimpleCommandMap();
+		CommandMap commandMap = CommandAPIBukkit.get().getSimpleCommandMap();
 		assertNotNull(commandMap.getCommand("test"));
 		assertNotNull(commandMap.getCommand("minecraft:test"));
 		assertNotNull(commandMap.getCommand("alpha"));
@@ -323,7 +329,7 @@ public class CommandNamespaceTests extends TestBase {
 		}
 
 		// Check contents of Brigadier CommandDispatcher
-		RootCommandNode<Object> rootNode = MockPlatform.getInstance().getBrigadierDispatcher().getRoot();
+		RootCommandNode<Object> rootNode = CommandAPIBukkit.get().getBrigadierDispatcher().getRoot();
 		assertNotNull(rootNode.getChild("test"));
 		assertNotNull(rootNode.getChild("commandtest:test"));
 		assertNull(rootNode.getChild("minecraft:test"));
@@ -337,7 +343,7 @@ public class CommandNamespaceTests extends TestBase {
 		assertNull(rootNode.getChild("minecraft:test"));
 
 		// Check contents of Bukkit CommandMap
-		CommandMap commandMap = MockPlatform.getInstance().getSimpleCommandMap();
+		CommandMap commandMap = CommandAPIBukkit.get().getSimpleCommandMap();
 		assertNotNull(commandMap.getCommand("test"));
 		assertNotNull(commandMap.getCommand("commandtest:test"));
 		assertNull(commandMap.getCommand("minecraft:test"));
@@ -396,14 +402,14 @@ public class CommandNamespaceTests extends TestBase {
 			});
 
 		// Test aliases with a custom namespace
-		command.register(MockPlatform.getConfiguration().getPlugin());
+		command.register(CommandAPIBukkit.getConfiguration().getPlugin());
 
 		if (!enableBeforeRegistering) {
 			player = enableWithNamespaces();
 		}
 
 		// Check contents of Brigadier CommandDispatcher
-		RootCommandNode<Object> rootNode = MockPlatform.getInstance().getBrigadierDispatcher().getRoot();
+		RootCommandNode<Object> rootNode = CommandAPIBukkit.get().getBrigadierDispatcher().getRoot();
 		assertNotNull(rootNode.getChild("test"));
 		assertNotNull(rootNode.getChild("commandapitest:test"));
 		assertNull(rootNode.getChild("minecraft:test"));
@@ -417,7 +423,7 @@ public class CommandNamespaceTests extends TestBase {
 		assertNull(rootNode.getChild("minecraft:test"));
 
 		// Check contents of Bukkit CommandMap
-		CommandMap commandMap = MockPlatform.getInstance().getSimpleCommandMap();
+		CommandMap commandMap = CommandAPIBukkit.get().getSimpleCommandMap();
 		assertNotNull(commandMap.getCommand("test"));
 		assertNotNull(commandMap.getCommand("commandapitest:test"));
 		assertNull(commandMap.getCommand("minecraft:test"));
@@ -543,14 +549,14 @@ public class CommandNamespaceTests extends TestBase {
 		}
 		final Player player = tempPlayer;
 
-		RootCommandNode<Object> root = MockPlatform.getInstance().getBrigadierDispatcher().getRoot();
+		RootCommandNode<Object> root = CommandAPIBukkit.get().getBrigadierDispatcher().getRoot();
 		assertNotNull(root.getChild("test"));
 		assertNotNull(root.getChild("custom:test"));
 		// The `minecraft:test` node should exist in the Brigadier map so the `minecraft:test` VanillaCommandWrapper
 		//  can properly execute the command separately from the `custom:test` b branch
 		assertNotNull(root.getChild("minecraft:test"));
 
-		CommandMap commandMap = MockPlatform.getInstance().getSimpleCommandMap();
+		CommandMap commandMap = CommandAPIBukkit.get().getSimpleCommandMap();
 		assertNotNull(commandMap.getCommand("test"));
 		assertNotNull(commandMap.getCommand("minecraft:test"));
 		assertNotNull(commandMap.getCommand("custom:test"));
@@ -722,7 +728,7 @@ public class CommandNamespaceTests extends TestBase {
 				)
 			);
 
-		command.register(MockPlatform.getConfiguration().getPlugin());
+		command.register(CommandAPIBukkit.getConfiguration().getPlugin());
 
 		if (!enableBeforeRegistering) {
 			player = enableWithNamespaces();
@@ -772,8 +778,11 @@ public class CommandNamespaceTests extends TestBase {
 
 		Mockito.clearInvocations(sender);
 		server.dispatchCommand(sender, commandLine);
-		Mockito.verify(sender).sendMessage(ChatColor.RED + "I'm sorry, but you do not have permission to perform this " +
-			"command. Please contact the server administrators if you believe that this is a mistake.");
+		Mockito.verify(sender).sendMessage(
+			Component.text("I'm sorry, but you do not have permission to perform this " +
+				"command. Please contact the server administrators if you believe that this is in error.")
+				.color(NamedTextColor.RED)
+		);
 	}
 
 	@ParameterizedTest
@@ -928,40 +937,40 @@ public class CommandNamespaceTests extends TestBase {
 
 	@Test
 	public void testConfigNamespace() {
-		CommandAPIBukkitConfig config = new CommandAPIBukkitConfig(MockPlatform.getConfiguration().getPlugin());
+		CommandAPIBukkitConfig config = new CommandAPIBukkitConfig(CommandAPIBukkit.getConfiguration().getPlugin());
 		InternalBukkitConfig internalConfig = new InternalBukkitConfig(config);
 
 		// The namespace wasn't changed so it should default to commandapitest
 		assertEquals("commandapitest", internalConfig.getNamespace());
 
-		config = new CommandAPIBukkitConfig(MockPlatform.getConfiguration().getPlugin());
+		config = new CommandAPIBukkitConfig(CommandAPIBukkit.getConfiguration().getPlugin());
 		CommandAPIBukkitConfig finalConfig = config;
 
 		// The namespace is set to null, this should throw a NPE
 		assertThrows(NullPointerException.class, () -> finalConfig.setNamespace(null));
 
-		config = new CommandAPIBukkitConfig(MockPlatform.getConfiguration().getPlugin())
+		config = new CommandAPIBukkitConfig(CommandAPIBukkit.getConfiguration().getPlugin())
 			.setNamespace("");
 		internalConfig = new InternalBukkitConfig(config);
 
 		// The namespace was set to an empty namespace so this should result in the default comamndapitest namespace
 		assertEquals("commandapitest", internalConfig.getNamespace());
 
-		config = new CommandAPIBukkitConfig(MockPlatform.getConfiguration().getPlugin())
+		config = new CommandAPIBukkitConfig(CommandAPIBukkit.getConfiguration().getPlugin())
 			.setNamespace("custom");
 		internalConfig = new InternalBukkitConfig(config);
 
 		// The namespace was set to a non-empty, non-null custom namespace, this should be valid
 		assertEquals("custom", internalConfig.getNamespace());
 
-		config = new CommandAPIBukkitConfig(MockPlatform.getConfiguration().getPlugin())
+		config = new CommandAPIBukkitConfig(CommandAPIBukkit.getConfiguration().getPlugin())
 			.usePluginNamespace();
 		internalConfig = new InternalBukkitConfig(config);
 
 		// The namespace was set to use the plugin name as the namespace, this should be valid
 		assertEquals("commandapitest", internalConfig.getNamespace());
 
-		config = new CommandAPIBukkitConfig(MockPlatform.getConfiguration().getPlugin())
+		config = new CommandAPIBukkitConfig(CommandAPIBukkit.getConfiguration().getPlugin())
 			.setNamespace("custom")
 			.usePluginNamespace();
 		internalConfig = new InternalBukkitConfig(config);
@@ -969,7 +978,7 @@ public class CommandNamespaceTests extends TestBase {
 		// The namespace was first set to a custom one, then was set to use the plugin name. This should be valid and the plugin name should be the namespace
 		assertEquals("commandapitest", internalConfig.getNamespace());
 
-		config = new CommandAPIBukkitConfig(MockPlatform.getConfiguration().getPlugin())
+		config = new CommandAPIBukkitConfig(CommandAPIBukkit.getConfiguration().getPlugin())
 			.setNamespace("custom")
 			.usePluginNamespace()
 			.setNamespace("custom");
@@ -979,7 +988,7 @@ public class CommandNamespaceTests extends TestBase {
 		// usePluginNamespace() should take priority and the plugin name should be the namespace
 		assertEquals("commandapitest", internalConfig.getNamespace());
 
-		config = new CommandAPIBukkitConfig(MockPlatform.getConfiguration().getPlugin())
+		config = new CommandAPIBukkitConfig(CommandAPIBukkit.getConfiguration().getPlugin())
 			.setNamespace("Custom");
 		internalConfig = new InternalBukkitConfig(config);
 

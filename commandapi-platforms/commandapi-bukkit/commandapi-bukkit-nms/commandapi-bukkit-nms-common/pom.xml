@@ -166,7 +166,7 @@
 				<dependency>
 					<groupId>org.spigotmc</groupId>
 					<artifactId>spigot</artifactId>
-					<version>1.20-R0.1-SNAPSHOT</version>
+					<version>1.20.1-R0.1-SNAPSHOT</version>
 					<classifier>remapped-mojang</classifier>
 					<scope>provided</scope>
 				</dependency>

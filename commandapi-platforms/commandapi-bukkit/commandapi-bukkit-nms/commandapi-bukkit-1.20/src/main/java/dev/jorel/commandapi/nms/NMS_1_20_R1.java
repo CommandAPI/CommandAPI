@@ -154,7 +154,8 @@ public class NMS_1_20_R1 extends NMS_CommonWithFunctions {
 	private static final Field serverFunctionLibraryDispatcher;
 
 	// Derived from net.minecraft.commands.Commands;
-	private static final CommandBuildContext COMMAND_BUILD_CONTEXT;
+	// TODO: Not final so the tests can override the value, is there a better way to do this?
+	private static CommandBuildContext COMMAND_BUILD_CONTEXT;
 
 	// Compute all var handles all in one go so we don't do this during main server
 	// runtime
