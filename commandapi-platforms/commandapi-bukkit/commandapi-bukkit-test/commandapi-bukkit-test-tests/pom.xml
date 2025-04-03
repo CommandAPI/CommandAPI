@@ -400,12 +400,27 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<dependencies>
+				<!-- CommandAPI -->
 				<dependency>
 					<groupId>dev.jorel</groupId>
 					<artifactId>commandapi-bukkit-test-impl-1.20</artifactId>
 					<version>${project.version}</version>
 					<scope>test</scope>
 				</dependency>
+				<dependency>
+					<groupId>dev.jorel</groupId>
+					<artifactId>commandapi-bukkit-1.20</artifactId>
+					<version>${project.version}</version>
+					<scope>provided</scope>
+				</dependency>
+				<dependency>
+					<groupId>dev.jorel</groupId>
+					<artifactId>commandapi-bukkit-nms-common</artifactId>
+					<version>${project.version}</version>
+					<scope>provided</scope>
+				</dependency>
+
+				<!-- Server -->
 				<dependency>
 					<groupId>org.spigotmc</groupId>
 					<artifactId>spigot</artifactId>
@@ -429,6 +444,7 @@
 		<profile>
 			<id>Minecraft_1_20_Mojang</id>
 			<dependencies>
+				<!-- CommandAPI -->
 				<dependency>
 					<groupId>dev.jorel</groupId>
 					<artifactId>commandapi-bukkit-test-impl-1.20</artifactId>
@@ -436,9 +452,24 @@
 					<classifier>mojang-mapped</classifier>
 					<scope>test</scope>
 				</dependency>
-
-				<!-- TODO: Is it possible to make this a transitive dependency of impl-1.20?
+				<!-- TODO: Is it possible to make these transitive dependencies of impl-1.20?
 				      Note that you'd need to make sure the classifier is correct -->
+				<dependency>
+					<groupId>dev.jorel</groupId>
+					<artifactId>commandapi-bukkit-1.20</artifactId>
+					<version>${project.version}</version>
+					<classifier>mojang-mapped</classifier>
+					<scope>provided</scope>
+				</dependency>
+				<dependency>
+					<groupId>dev.jorel</groupId>
+					<artifactId>commandapi-bukkit-nms-common</artifactId>
+					<version>${project.version}</version>
+					<classifier>mojang-mapped</classifier>
+					<scope>provided</scope>
+				</dependency>
+
+				<!-- Server -->
 				<dependency>
 					<groupId>org.spigotmc</groupId>
 					<artifactId>spigot</artifactId>
