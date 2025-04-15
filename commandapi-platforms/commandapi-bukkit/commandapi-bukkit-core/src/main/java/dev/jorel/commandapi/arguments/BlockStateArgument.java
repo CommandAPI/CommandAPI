@@ -42,7 +42,7 @@ public class BlockStateArgument extends Argument<BlockData> {
 	 * @param nodeName the name of the node for argument
 	 */
 	public BlockStateArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get()._ArgumentBlockState());
+		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentBlockState());
 	}
 
 	@Override
@@ -58,6 +58,6 @@ public class BlockStateArgument extends Argument<BlockData> {
 	@Override
 	public <CommandSourceStack> BlockData parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs)
 			throws CommandSyntaxException {
-		return CommandAPIBukkit.<CommandSourceStack>get().getBlockState(cmdCtx, key);
+		return CommandAPIBukkit.<CommandSourceStack>get().getNMS().getBlockState(cmdCtx, key);
 	}
 }

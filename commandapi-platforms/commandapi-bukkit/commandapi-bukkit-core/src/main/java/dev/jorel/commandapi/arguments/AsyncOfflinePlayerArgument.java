@@ -22,7 +22,7 @@ public class AsyncOfflinePlayerArgument extends SafeOverrideableArgument<Complet
 	 * @param nodeName the name of the node for this argument
 	 */
 	public AsyncOfflinePlayerArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get()._ArgumentProfile(), OfflinePlayer::getName);
+		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentProfile(), OfflinePlayer::getName);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -40,7 +40,7 @@ public class AsyncOfflinePlayerArgument extends SafeOverrideableArgument<Complet
 	public <CommandSourceStack> CompletableFuture<OfflinePlayer> parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) {
 		return CompletableFuture.supplyAsync(() -> {
 			try {
-				return CommandAPIBukkit.<CommandSourceStack>get().getOfflinePlayer(cmdCtx, key);
+				return CommandAPIBukkit.<CommandSourceStack>get().getNMS().getOfflinePlayer(cmdCtx, key);
 			} catch (CommandSyntaxException e) {
 				throw new RuntimeException(e);
 			}

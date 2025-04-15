@@ -37,7 +37,7 @@ public class ObjectiveCriteriaArgument extends Argument<String> {
 	 * @param nodeName the name of the node for this argument
 	 */
 	public ObjectiveCriteriaArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get()._ArgumentScoreboardCriteria());
+		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentScoreboardCriteria());
 	}
 	
 	@Override
@@ -52,6 +52,6 @@ public class ObjectiveCriteriaArgument extends Argument<String> {
 	
 	@Override
 	public <CommandSourceStack> String parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-		return CommandAPIBukkit.<CommandSourceStack>get().getObjectiveCriteria(cmdCtx, key);
+		return CommandAPIBukkit.<CommandSourceStack>get().getNMS().getObjectiveCriteria(cmdCtx, key);
 	}
 }

@@ -8,6 +8,7 @@ import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
+import dev.jorel.commandapi.config.DefaultVelocityConfig;
 import dev.jorel.commandapi.config.VelocityConfigurationAdapter;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.yaml.NodeStyle;
@@ -41,7 +42,11 @@ public class CommandAPIMain {
 			.build();
 
 		// Create or update config
-		VelocityConfigurationAdapter.createMinimalInstance(loader).saveDefaultConfig(configFile.getParent().toFile(), logger);
+		VelocityConfigurationAdapter.createMinimalInstance(loader).saveDefaultConfig(
+			DefaultVelocityConfig.createDefault(),
+			configFile.getParent().toFile(),
+			logger
+		);
 
 		// Load the file as a yaml node
 		ConfigurationNode configYAML;

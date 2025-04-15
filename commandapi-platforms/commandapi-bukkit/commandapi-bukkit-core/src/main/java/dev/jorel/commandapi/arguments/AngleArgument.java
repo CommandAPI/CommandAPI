@@ -44,7 +44,7 @@ public class AngleArgument extends SafeOverrideableArgument<Float, Float> {
 	 * @param nodeName the name of the node for argument
 	 */
 	public AngleArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get()._ArgumentAngle(), String::valueOf);
+		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentAngle(), String::valueOf);
 	}
 
 	@Override
@@ -60,6 +60,6 @@ public class AngleArgument extends SafeOverrideableArgument<Float, Float> {
 	@Override
 	public <CommandSourceStack> Float parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs)
 		throws CommandSyntaxException {
-		return CommandAPIBukkit.<CommandSourceStack>get().getAngle(cmdCtx, key);
+		return CommandAPIBukkit.<CommandSourceStack>get().getNMS().getAngle(cmdCtx, key);
 	}
 }
