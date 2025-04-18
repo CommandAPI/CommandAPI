@@ -137,124 +137,95 @@
 			<id>Spigot_1_21_R4</id>
 			<properties>
 				<minecraft.mappings>1.21.5-R0.1-SNAPSHOT</minecraft.mappings>
+				<spigot.version>1.21.5-R0.1-SNAPSHOT</spigot.version>
+				<paper.version>1.21.5-R0.1-SNAPSHOT</paper.version>
 			</properties>
-			<dependencies>
-				<dependency>
-					<groupId>org.spigotmc</groupId>
-					<artifactId>spigot</artifactId>
-					<version>1.21.5-R0.1-SNAPSHOT</version>
-					<classifier>remapped-mojang</classifier>
-					<scope>provided</scope>
-				</dependency>
-			</dependencies>
+			<build>
+				<directory>${project.basedir}/target/1.21.5</directory>
+			</build>
 		</profile>
 		<profile>
 			<id>Spigot_1_21_R3</id>
 			<properties>
 				<minecraft.mappings>1.21.4-R0.1-SNAPSHOT</minecraft.mappings>
+				<spigot.version>1.21.4-R0.1-SNAPSHOT</spigot.version>
+				<paper.version>1.21.4-R0.1-SNAPSHOT</paper.version>
 			</properties>
-			<dependencies>
-				<dependency>
-					<groupId>org.spigotmc</groupId>
-					<artifactId>spigot</artifactId>
-					<version>1.21.4-R0.1-SNAPSHOT</version>
-					<classifier>remapped-mojang</classifier>
-					<scope>provided</scope>
-				</dependency>
-			</dependencies>
+			<build>
+				<directory>${project.basedir}/target/1.21.4</directory>
+			</build>
 		</profile>
 		<profile>
 			<id>Spigot_1_21_R2</id>
 			<properties>
 				<minecraft.mappings>1.21.3-R0.1-SNAPSHOT</minecraft.mappings>
+				<spigot.version>1.21.3-R0.1-SNAPSHOT</spigot.version>
+				<paper.version>1.21.3-R0.1-SNAPSHOT</paper.version>
 			</properties>
-			<dependencies>
-				<dependency>
-					<groupId>org.spigotmc</groupId>
-					<artifactId>spigot</artifactId>
-					<version>1.21.3-R0.1-SNAPSHOT</version>
-					<classifier>remapped-mojang</classifier>
-					<scope>provided</scope>
-				</dependency>
-			</dependencies>
+			<build>
+				<directory>${project.basedir}/target/1.21.3</directory>
+			</build>
 		</profile>
 		<profile>
 			<id>Spigot_1_21_R1</id>
 			<properties>
 				<minecraft.mappings>1.21.1-R0.1-SNAPSHOT</minecraft.mappings>
+				<spigot.version>1.21.1-R0.1-SNAPSHOT</spigot.version>
+				<paper.version>1.21.1-R0.1-SNAPSHOT</paper.version>
 			</properties>
-			<dependencies>
-				<dependency>
-					<groupId>org.spigotmc</groupId>
-					<artifactId>spigot</artifactId>
-					<version>1.21.1-R0.1-SNAPSHOT</version>
-					<classifier>remapped-mojang</classifier>
-					<scope>provided</scope>
-				</dependency>
-			</dependencies>
+			<build>
+				<directory>${project.basedir}/target/1.21.1</directory>
+			</build>
 		</profile>
 		<profile>
 			<id>Spigot_1_20_R4</id>
 			<properties>
 				<minecraft.mappings>1.20.6-R0.1-SNAPSHOT</minecraft.mappings>
+				<spigot.version>1.20.6-R0.1-SNAPSHOT</spigot.version>
+				<paper.version>1.20.6-R0.1-SNAPSHOT</paper.version>
 			</properties>
-			<dependencies>
-				<dependency>
-					<groupId>org.spigotmc</groupId>
-					<artifactId>spigot</artifactId>
-					<version>1.20.6-R0.1-SNAPSHOT</version>
-					<classifier>remapped-mojang</classifier>
-					<scope>provided</scope>
-				</dependency>
-			</dependencies>
+			<build>
+				<directory>${project.basedir}/target/1.20.6</directory>
+			</build>
 		</profile>
 		<profile>
 			<id>Spigot_1_20_R3</id>
 			<properties>
 				<minecraft.mappings>1.20.4-R0.1-SNAPSHOT</minecraft.mappings>
+				<spigot.version>1.20.4-R0.1-SNAPSHOT</spigot.version>
+				<paper.version>1.20.4-R0.1-SNAPSHOT</paper.version>
 			</properties>
-			<dependencies>
-				<dependency>
-					<groupId>org.spigotmc</groupId>
-					<artifactId>spigot</artifactId>
-					<version>1.20.4-R0.1-SNAPSHOT</version>
-					<classifier>remapped-mojang</classifier>
-					<scope>provided</scope>
-				</dependency>
-			</dependencies>
+			<build>
+				<directory>${project.basedir}/target/1.20.4</directory>
+			</build>
 		</profile>
 		<profile>
 			<id>Spigot_1_20_R2</id>
 			<properties>
 				<minecraft.mappings>1.20.2-R0.1-SNAPSHOT</minecraft.mappings>
+				<spigot.version>1.20.2-R0.1-SNAPSHOT</spigot.version>
+				<paper.version>1.20.2-R0.1-SNAPSHOT</paper.version>
 			</properties>
-			<dependencies>
-				<dependency>
-					<groupId>org.spigotmc</groupId>
-					<artifactId>spigot</artifactId>
-					<version>1.20.2-R0.1-SNAPSHOT</version>
-					<classifier>remapped-mojang</classifier>
-					<scope>provided</scope>
-				</dependency>
-			</dependencies>
+			<build>
+				<directory>${project.basedir}/target/1.20.2</directory>
+			</build>
 		</profile>
 		<profile>
 			<id>Spigot_1_20_R1</id>
 			<properties>
 				<minecraft.mappings>1.20.1-R0.1-SNAPSHOT</minecraft.mappings>
+				<spigot.version>1.20.1-R0.1-SNAPSHOT</spigot.version>
+				<paper.version>1.20.1-R0.1-SNAPSHOT</paper.version>
 			</properties>
+			<build>
+				<directory>${project.basedir}/target/1.20.1</directory>
+			</build>
+		</profile>
+		<profile>
+			<id>Spigot_1_20_R1_Release</id>
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
-			<dependencies>
-				<dependency>
-					<groupId>org.spigotmc</groupId>
-					<artifactId>spigot</artifactId>
-					<version>1.20-R0.1-SNAPSHOT</version>
-					<classifier>remapped-mojang</classifier>
-					<scope>provided</scope>
-				</dependency>
-			</dependencies>
 		</profile>
 	</profiles>
 </project>

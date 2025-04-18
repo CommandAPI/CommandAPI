@@ -20,6 +20,9 @@
  *******************************************************************************/
 package dev.jorel.commandapi.nms;
 
+import com.google.common.io.Files;
+import com.google.gson.GsonBuilder;
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -27,25 +30,32 @@ import dev.jorel.commandapi.CommandAPIBukkit;
 import dev.jorel.commandapi.CommandAPIHandler;
 import dev.jorel.commandapi.arguments.ArgumentSubType;
 import dev.jorel.commandapi.commandsenders.BukkitCommandSender;
+import dev.jorel.commandapi.wrappers.Location2D;
 import dev.jorel.commandapi.wrappers.MathOperation;
 import dev.jorel.commandapi.wrappers.Rotation;
+import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.AngleArgument;
 import net.minecraft.commands.arguments.ColorArgument;
 import net.minecraft.commands.arguments.CompoundTagArgument;
 import net.minecraft.commands.arguments.DimensionArgument;
+import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.GameProfileArgument;
 import net.minecraft.commands.arguments.MessageArgument;
 import net.minecraft.commands.arguments.ObjectiveArgument;
 import net.minecraft.commands.arguments.ObjectiveCriteriaArgument;
 import net.minecraft.commands.arguments.OperationArgument;
+import net.minecraft.commands.arguments.ParticleArgument;
 import net.minecraft.commands.arguments.RangeArgument;
+import net.minecraft.commands.arguments.ResourceArgument;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.commands.arguments.ScoreHolderArgument;
 import net.minecraft.commands.arguments.ScoreboardSlotArgument;
 import net.minecraft.commands.arguments.TeamArgument;
 import net.minecraft.commands.arguments.TimeArgument;
 import net.minecraft.commands.arguments.UuidArgument;
+import net.minecraft.commands.arguments.blocks.BlockPredicateArgument;
+import net.minecraft.commands.arguments.blocks.BlockStateArgument;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.commands.arguments.coordinates.ColumnPosArgument;
 import net.minecraft.commands.arguments.coordinates.RotationArgument;
@@ -53,23 +63,39 @@ import net.minecraft.commands.arguments.coordinates.SwizzleArgument;
 import net.minecraft.commands.arguments.coordinates.Vec2Argument;
 import net.minecraft.commands.arguments.coordinates.Vec3Argument;
 import net.minecraft.commands.arguments.item.FunctionArgument;
+import net.minecraft.commands.arguments.item.ItemArgument;
+import net.minecraft.commands.arguments.item.ItemPredicateArgument;
+import net.minecraft.commands.synchronization.ArgumentUtils;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ColumnPos;
+import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.phys.Vec2;
+import net.minecraft.world.phys.Vec3;
 import org.bukkit.Axis;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
+import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Team;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
 import java.util.Locale;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * Common NMS code To ensure that this code actually works across all versions
@@ -84,6 +110,12 @@ import java.util.function.Function;
  */
 public abstract class NMS_Common extends CommandAPIBukkit<CommandSourceStack> {
 
+	protected static NamespacedKey fromResourceLocation(ResourceLocation key) {
+		return NamespacedKey.fromString(key.getNamespace() + ":" + key.getPath());
+	}
+
+	protected abstract CommandBuildContext getCommandBuildContext();
+
 	@Override
 	public final ArgumentType<?> _ArgumentAngle() {
 		return AngleArgument.angle();
@@ -92,6 +124,16 @@ public abstract class NMS_Common extends CommandAPIBukkit<CommandSourceStack> {
 	@Override
 	public final ArgumentType<?> _ArgumentAxis() {
 		return SwizzleArgument.swizzle();
+	}
+
+	@Override
+	public final ArgumentType<?> _ArgumentBlockPredicate() {
+		return BlockPredicateArgument.blockPredicate(getCommandBuildContext());
+	}
+
+	@Override
+	public final ArgumentType<?> _ArgumentBlockState() {
+		return BlockStateArgument.block(getCommandBuildContext());
 	}
 
 	@Override
@@ -105,8 +147,19 @@ public abstract class NMS_Common extends CommandAPIBukkit<CommandSourceStack> {
 	}
 
 	@Override
-	public ArgumentType<?> _ArgumentDimension() {
+	public final ArgumentType<?> _ArgumentDimension() {
 		return DimensionArgument.dimension();
+	}
+
+	@Override
+	public final ArgumentType<?> _ArgumentEntity(ArgumentSubType subType) {
+		return switch (subType) {
+			case ENTITYSELECTOR_MANY_ENTITIES -> EntityArgument.entities();
+			case ENTITYSELECTOR_MANY_PLAYERS -> EntityArgument.players();
+			case ENTITYSELECTOR_ONE_ENTITY -> EntityArgument.entity();
+			case ENTITYSELECTOR_ONE_PLAYER -> EntityArgument.player();
+			default -> throw new IllegalArgumentException("Unexpected value: " + subType);
+		};
 	}
 
 	@Override
@@ -117,6 +170,16 @@ public abstract class NMS_Common extends CommandAPIBukkit<CommandSourceStack> {
 	@Override
 	public final ArgumentType<?> _ArgumentIntRange() {
 		return RangeArgument.intRange();
+	}
+
+	@Override
+	public final ArgumentType<?> _ArgumentItemPredicate() {
+		return ItemPredicateArgument.itemPredicate(getCommandBuildContext());
+	}
+
+	@Override
+	public final ArgumentType<?> _ArgumentItemStack() {
+		return ItemArgument.item(getCommandBuildContext());
 	}
 
 	@Override
@@ -132,6 +195,11 @@ public abstract class NMS_Common extends CommandAPIBukkit<CommandSourceStack> {
 	@Override
 	public final ArgumentType<?> _ArgumentNBTCompound() {
 		return CompoundTagArgument.compoundTag();
+	}
+
+	@Override
+	public final ArgumentType<?> _ArgumentParticle() {
+		return ParticleArgument.particle(getCommandBuildContext());
 	}
 
 	@Override
@@ -219,6 +287,12 @@ public abstract class NMS_Common extends CommandAPIBukkit<CommandSourceStack> {
 	}
 
 	@Override
+	public final void createDispatcherFile(File file, CommandDispatcher<CommandSourceStack> dispatcher) throws IOException {
+		Files.asCharSink(file, StandardCharsets.UTF_8).write(new GsonBuilder().setPrettyPrinting().create()
+			.toJson(ArgumentUtils.serializeNodeToJson(dispatcher, dispatcher.getRoot())));
+	}
+
+	@Override
 	public final float getAngle(CommandContext<CommandSourceStack> cmdCtx, String key) {
 		return AngleArgument.getAngle(cmdCtx, key);
 	}
@@ -238,6 +312,13 @@ public abstract class NMS_Common extends CommandAPIBukkit<CommandSourceStack> {
 	}
 
 	@Override
+	public final Predicate<Block> getBlockPredicate(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
+		Predicate<BlockInWorld> predicate = BlockPredicateArgument.getBlockPredicate(cmdCtx, key);
+		return (Block block) -> predicate.test(new BlockInWorld(cmdCtx.getSource().getLevel(),
+			new BlockPos(block.getX(), block.getY(), block.getZ()), true));
+	}
+
+	@Override
 	public final ChatColor getChatColor(CommandContext<CommandSourceStack> cmdCtx, String key) {
 		return ChatColor.getByChar(ColorArgument.getColor(cmdCtx, key).getChar());
 	}
@@ -251,6 +332,30 @@ public abstract class NMS_Common extends CommandAPIBukkit<CommandSourceStack> {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
+	@Override
+	public final EntityType getEntityType(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
+		return EntityType.fromName(net.minecraft.world.entity.EntityType.getKey(ResourceArgument.getSummonableEntityType(cmdCtx, key).value()).getPath());
+	}
+
+	@Override
+	public final Location2D getLocation2DBlock(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
+		ColumnPos blockPos = ColumnPosArgument.getColumnPos(cmdCtx, key);
+		return new Location2D(getWorldForCSS(cmdCtx.getSource()), blockPos.x(), blockPos.z());
+	}
+
+	@Override
+	public final Location getLocationBlock(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
+		BlockPos blockPos = BlockPosArgument.getSpawnablePos(cmdCtx, key);
+		return new Location(getWorldForCSS(cmdCtx.getSource()), blockPos.getX(), blockPos.getY(), blockPos.getZ());
+	}
+
+	@Override
+	public final Location getLocationPrecise(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
+		Vec3 vecPos = Vec3Argument.getCoordinates(cmdCtx, key).getPosition(cmdCtx.getSource());
+		return new Location(getWorldForCSS(cmdCtx.getSource()), vecPos.x(), vecPos.y(), vecPos.z());
+	}
+
 	@Override
 	public final MathOperation getMathOperation(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
 		// We run this to ensure the argument exists/parses properly
@@ -262,13 +367,6 @@ public abstract class NMS_Common extends CommandAPIBukkit<CommandSourceStack> {
 	public final <NBTContainer> Object getNBTCompound(CommandContext<CommandSourceStack> cmdCtx, String key,
 		Function<Object, NBTContainer> nbtContainerConstructor) {
 		return nbtContainerConstructor.apply(CompoundTagArgument.getCompoundTag(cmdCtx, key));
-	}
-
-	@Override
-	public Objective getObjective(CommandContext<CommandSourceStack> cmdCtx, String key)
-		throws CommandSyntaxException {
-		String objectiveName = ObjectiveArgument.getObjective(cmdCtx, key).getName();
-		return Bukkit.getScoreboardManager().getMainScoreboard().getObjective(objectiveName);
 	}
 
 	@Override
@@ -289,18 +387,6 @@ public abstract class NMS_Common extends CommandAPIBukkit<CommandSourceStack> {
 		} else {
 			return target;
 		}
-	}
-
-	@Override
-	public final Rotation getRotation(CommandContext<CommandSourceStack> cmdCtx, String key) {
-		Vec2 rotation = RotationArgument.getRotation(cmdCtx, key).getRotation(cmdCtx.getSource());
-		return new Rotation(rotation.y, rotation.x);
-	}
-
-	@Override
-	public Team getTeam(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		String teamName = TeamArgument.getTeam(cmdCtx, key).getName();
-		return Bukkit.getScoreboardManager().getMainScoreboard().getTeam(teamName);
 	}
 
 	@Override
