@@ -32,7 +32,6 @@ import dev.jorel.commandapi.arguments.ArgumentSubType;
 import dev.jorel.commandapi.commandsenders.BukkitCommandSender;
 import dev.jorel.commandapi.wrappers.Location2D;
 import dev.jorel.commandapi.wrappers.MathOperation;
-import dev.jorel.commandapi.wrappers.Rotation;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.AngleArgument;
@@ -71,7 +70,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ColumnPos;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
-import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import org.bukkit.Axis;
 import org.bukkit.Bukkit;
@@ -85,8 +83,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Team;
 
 import java.io.File;
 import java.io.IOException;
@@ -110,7 +106,7 @@ import java.util.function.Predicate;
  */
 public abstract class NMS_Common extends CommandAPIBukkit<CommandSourceStack> {
 
-	protected static NamespacedKey fromResourceLocation(ResourceLocation key) {
+	public final NamespacedKey fromResourceLocation(ResourceLocation key) {
 		return NamespacedKey.fromString(key.getNamespace() + ":" + key.getPath());
 	}
 
