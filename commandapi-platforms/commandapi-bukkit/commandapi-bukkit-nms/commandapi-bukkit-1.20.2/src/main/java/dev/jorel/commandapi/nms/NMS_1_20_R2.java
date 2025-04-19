@@ -20,63 +20,6 @@
  *******************************************************************************/
 package dev.jorel.commandapi.nms;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.lang.reflect.Field;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Predicate;
-import java.util.function.ToIntFunction;
-
-import dev.jorel.commandapi.*;
-import dev.jorel.commandapi.wrappers.*;
-import net.minecraft.advancements.critereon.MinMaxBounds;
-import net.minecraft.commands.arguments.*;
-import org.bukkit.Bukkit;
-import org.bukkit.Color;
-import org.bukkit.Location;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Particle;
-import org.bukkit.Particle.DustOptions;
-import org.bukkit.Particle.DustTransition;
-import org.bukkit.Vibration;
-import org.bukkit.Vibration.Destination;
-import org.bukkit.Vibration.Destination.BlockDestination;
-import org.bukkit.World;
-import org.bukkit.advancement.Advancement;
-import org.bukkit.block.Biome;
-import org.bukkit.block.Block;
-import org.bukkit.block.data.BlockData;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.SimpleCommandMap;
-import org.bukkit.craftbukkit.v1_20_R2.CraftLootTable;
-import org.bukkit.craftbukkit.v1_20_R2.CraftParticle;
-import org.bukkit.craftbukkit.v1_20_R2.CraftServer;
-import org.bukkit.craftbukkit.v1_20_R2.CraftSound;
-import org.bukkit.craftbukkit.v1_20_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_20_R2.block.data.CraftBlockData;
-import org.bukkit.craftbukkit.v1_20_R2.command.BukkitCommandWrapper;
-import org.bukkit.craftbukkit.v1_20_R2.command.VanillaCommandWrapper;
-import org.bukkit.craftbukkit.v1_20_R2.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_20_R2.help.CustomHelpTopic;
-import org.bukkit.craftbukkit.v1_20_R2.help.SimpleHelpMap;
-import org.bukkit.craftbukkit.v1_20_R2.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_20_R2.potion.CraftPotionEffectType;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
-import org.bukkit.help.HelpTopic;
-import org.bukkit.inventory.Recipe;
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.Files;
 import com.google.gson.GsonBuilder;
@@ -88,7 +31,11 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.logging.LogUtils;
-
+import dev.jorel.commandapi.CommandAPI;
+import dev.jorel.commandapi.CommandAPIHandler;
+import dev.jorel.commandapi.CommandRegistrationStrategy;
+import dev.jorel.commandapi.SafeVarHandle;
+import dev.jorel.commandapi.SpigotCommandRegistration;
 import dev.jorel.commandapi.arguments.ArgumentSubType;
 import dev.jorel.commandapi.arguments.SuggestionProviders;
 import dev.jorel.commandapi.commandsenders.AbstractCommandSender;
@@ -97,19 +44,45 @@ import dev.jorel.commandapi.commandsenders.BukkitNativeProxyCommandSender;
 import dev.jorel.commandapi.preprocessor.Differs;
 import dev.jorel.commandapi.preprocessor.NMSMeta;
 import dev.jorel.commandapi.preprocessor.RequireField;
+import dev.jorel.commandapi.wrappers.ComplexRecipeImpl;
+import dev.jorel.commandapi.wrappers.FloatRange;
+import dev.jorel.commandapi.wrappers.FunctionWrapper;
+import dev.jorel.commandapi.wrappers.IntegerRange;
+import dev.jorel.commandapi.wrappers.Location2D;
+import dev.jorel.commandapi.wrappers.NativeProxyCommandSender;
+import dev.jorel.commandapi.wrappers.ParticleData;
+import dev.jorel.commandapi.wrappers.Rotation;
+import dev.jorel.commandapi.wrappers.ScoreboardSlot;
+import dev.jorel.commandapi.wrappers.SimpleFunctionWrapper;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.chat.ComponentSerializer;
 import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandFunction;
-import net.minecraft.commands.CommandFunction.Entry;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.commands.arguments.ColorArgument;
+import net.minecraft.commands.arguments.ComponentArgument;
+import net.minecraft.commands.arguments.DimensionArgument;
+import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.arguments.MessageArgument;
+import net.minecraft.commands.arguments.ObjectiveArgument;
+import net.minecraft.commands.arguments.ParticleArgument;
+import net.minecraft.commands.arguments.RangeArgument;
+import net.minecraft.commands.arguments.ResourceArgument;
+import net.minecraft.commands.arguments.ResourceLocationArgument;
+import net.minecraft.commands.arguments.ScoreHolderArgument;
+import net.minecraft.commands.arguments.ScoreboardSlotArgument;
+import net.minecraft.commands.arguments.TeamArgument;
 import net.minecraft.commands.arguments.blocks.BlockPredicateArgument;
 import net.minecraft.commands.arguments.blocks.BlockStateArgument;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.commands.arguments.coordinates.ColumnPosArgument;
+import net.minecraft.commands.arguments.coordinates.RotationArgument;
 import net.minecraft.commands.arguments.coordinates.Vec2Argument;
 import net.minecraft.commands.arguments.coordinates.Vec3Argument;
 import net.minecraft.commands.arguments.item.FunctionArgument;
@@ -159,6 +132,61 @@ import net.minecraft.world.level.gameevent.BlockPositionSource;
 import net.minecraft.world.level.storage.loot.LootDataType;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
+import org.bukkit.Bukkit;
+import org.bukkit.Color;
+import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Particle;
+import org.bukkit.Particle.DustOptions;
+import org.bukkit.Particle.DustTransition;
+import org.bukkit.Vibration;
+import org.bukkit.Vibration.Destination;
+import org.bukkit.Vibration.Destination.BlockDestination;
+import org.bukkit.World;
+import org.bukkit.advancement.Advancement;
+import org.bukkit.block.Biome;
+import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.SimpleCommandMap;
+import org.bukkit.craftbukkit.v1_20_R2.CraftLootTable;
+import org.bukkit.craftbukkit.v1_20_R2.CraftParticle;
+import org.bukkit.craftbukkit.v1_20_R2.CraftServer;
+import org.bukkit.craftbukkit.v1_20_R2.CraftSound;
+import org.bukkit.craftbukkit.v1_20_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_20_R2.block.data.CraftBlockData;
+import org.bukkit.craftbukkit.v1_20_R2.command.BukkitCommandWrapper;
+import org.bukkit.craftbukkit.v1_20_R2.command.VanillaCommandWrapper;
+import org.bukkit.craftbukkit.v1_20_R2.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_20_R2.help.CustomHelpTopic;
+import org.bukkit.craftbukkit.v1_20_R2.help.SimpleHelpMap;
+import org.bukkit.craftbukkit.v1_20_R2.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_20_R2.potion.CraftPotionEffectType;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
+import org.bukkit.help.HelpTopic;
+import org.bukkit.inventory.Recipe;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Team;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Predicate;
+import java.util.function.ToIntFunction;
 
 // Mojang-Mapped reflection
 /**
@@ -169,7 +197,7 @@ import net.minecraft.world.phys.Vec3;
 @RequireField(in = EntitySelector.class, name = "usesSelector", ofType = boolean.class)
 @RequireField(in = ItemInput.class, name = "tag", ofType = CompoundTag.class)
 @RequireField(in = ServerFunctionLibrary.class, name = "dispatcher", ofType = CommandDispatcher.class)
-public class NMS_1_20_R2 extends NMS_CommonWithFunctions {
+public class NMS_1_20_R2 extends NMS_Common {
 
 	private static final SafeVarHandle<SimpleHelpMap, Map<String, HelpTopic>> helpMapTopics;
 	private static final Field entitySelectorUsesSelector;
@@ -196,18 +224,19 @@ public class NMS_1_20_R2 extends NMS_CommonWithFunctions {
 		serverFunctionLibraryDispatcher = CommandAPIHandler.getField(ServerFunctionLibrary.class, "g", "dispatcher");
 	}
 
-	private static NamespacedKey fromResourceLocation(ResourceLocation key) {
-		return NamespacedKey.fromString(key.getNamespace() + ":" + key.getPath());
+	@Override
+	protected CommandBuildContext getCommandBuildContext() {
+		return COMMAND_BUILD_CONTEXT;
 	}
 
 	@Override
-	public final ArgumentType<?> _ArgumentBlockPredicate() {
-		return BlockPredicateArgument.blockPredicate(COMMAND_BUILD_CONTEXT);
+	public ArgumentType<?> _ArgumentAdvancement() {
+		return ResourceLocationArgument.id();
 	}
 
 	@Override
-	public final ArgumentType<?> _ArgumentBlockState() {
-		return BlockStateArgument.block(COMMAND_BUILD_CONTEXT);
+	public ArgumentType<?> _ArgumentChatComponent() {
+		return ComponentArgument.textComponent();
 	}
 
 	@Override
@@ -216,29 +245,8 @@ public class NMS_1_20_R2 extends NMS_CommonWithFunctions {
 	}
 
 	@Override
-	public final ArgumentType<?> _ArgumentEntity(ArgumentSubType subType) {
-		return switch (subType) {
-			case ENTITYSELECTOR_MANY_ENTITIES -> EntityArgument.entities();
-			case ENTITYSELECTOR_MANY_PLAYERS -> EntityArgument.players();
-			case ENTITYSELECTOR_ONE_ENTITY -> EntityArgument.entity();
-			case ENTITYSELECTOR_ONE_PLAYER -> EntityArgument.player();
-			default -> throw new IllegalArgumentException("Unexpected value: " + subType);
-		};
-	}
-
-	@Override
-	public final ArgumentType<?> _ArgumentItemPredicate() {
-		return ItemPredicateArgument.itemPredicate(COMMAND_BUILD_CONTEXT);
-	}
-
-	@Override
-	public final ArgumentType<?> _ArgumentItemStack() {
-		return ItemArgument.item(COMMAND_BUILD_CONTEXT);
-	}
-
-	@Override
-	public final ArgumentType<?> _ArgumentParticle() {
-		return ParticleArgument.particle(COMMAND_BUILD_CONTEXT);
+	public ArgumentType<?> _ArgumentRecipe() {
+		return ResourceLocationArgument.id();
 	}
 
 	@Override
@@ -267,21 +275,15 @@ public class NMS_1_20_R2 extends NMS_CommonWithFunctions {
 	}
 
 	// Converts NMS function to SimpleFunctionWrapper
-	private final SimpleFunctionWrapper convertFunction(CommandFunction commandFunction) {
+	private SimpleFunctionWrapper convertFunction(CommandFunction commandFunction) {
 		ToIntFunction<CommandSourceStack> appliedObj = (CommandSourceStack css) -> this.<MinecraftServer>getMinecraftServer().getFunctions().execute(commandFunction, css);
 
-		Entry[] cArr = commandFunction.getEntries();
+		CommandFunction.Entry[] cArr = commandFunction.getEntries();
 		String[] result = new String[cArr.length];
 		for (int i = 0, size = cArr.length; i < size; i++) {
 			result[i] = cArr[i].toString();
 		}
 		return new SimpleFunctionWrapper(fromResourceLocation(commandFunction.getId()), appliedObj, result);
-	}
-
-	@Override
-	public final void createDispatcherFile(File file, CommandDispatcher<CommandSourceStack> dispatcher) throws IOException {
-		Files.asCharSink(file, StandardCharsets.UTF_8).write(new GsonBuilder().setPrettyPrinting().create()
-			.toJson(ArgumentUtils.serializeNodeToJson(dispatcher, dispatcher.getRoot())));
 	}
 
 	@Override
@@ -292,6 +294,11 @@ public class NMS_1_20_R2 extends NMS_CommonWithFunctions {
 	@Override
 	public Advancement getAdvancement(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
 		return ResourceLocationArgument.getAdvancement(cmdCtx, key).toBukkit();
+	}
+
+	@Override
+	public Component getAdventureChat(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
+		return GsonComponentSerializer.gson().deserialize(Serializer.toJson(MessageArgument.getMessage(cmdCtx, key)));
 	}
 
 	@Override
@@ -324,13 +331,6 @@ public class NMS_1_20_R2 extends NMS_CommonWithFunctions {
 	}
 
 	@Override
-	public final Predicate<Block> getBlockPredicate(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		Predicate<BlockInWorld> predicate = BlockPredicateArgument.getBlockPredicate(cmdCtx, key);
-		return (Block block) -> predicate.test(new BlockInWorld(cmdCtx.getSource().getLevel(),
-			new BlockPos(block.getX(), block.getY(), block.getZ()), true));
-	}
-
-	@Override
 	public final BlockData getBlockState(CommandContext<CommandSourceStack> cmdCtx, String key) {
 		return CraftBlockData.fromData(BlockStateArgument.getBlock(cmdCtx, key).getState());
 	}
@@ -338,6 +338,16 @@ public class NMS_1_20_R2 extends NMS_CommonWithFunctions {
 	@Override
 	public CommandSourceStack getBrigadierSourceFromCommandSender(AbstractCommandSender<? extends CommandSender> sender) {
 		return VanillaCommandWrapper.getListener(sender.getSource());
+	}
+
+	@Override
+	public BaseComponent[] getChat(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
+		return ComponentSerializer.parse(Serializer.toJson(MessageArgument.getMessage(cmdCtx, key)));
+	}
+
+	@Override
+	public BaseComponent[] getChatComponent(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
+		return ComponentSerializer.parse(Serializer.toJson(ComponentArgument.getComponent(cmdCtx, key)));
 	}
 
 	@Override
@@ -406,12 +416,6 @@ public class NMS_1_20_R2 extends NMS_CommonWithFunctions {
 		};
 	}
 
-	@SuppressWarnings("deprecation")
-	@Override
-	public final EntityType getEntityType(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		return EntityType.fromName(net.minecraft.world.entity.EntityType.getKey(ResourceArgument.getSummonableEntityType(cmdCtx, key).value()).getPath());
-	}
-
 	@Override
 	public FloatRange getFloatRange(CommandContext<CommandSourceStack> cmdCtx, String key) {
 		MinMaxBounds.Doubles range = RangeArgument.Floats.getRange(cmdCtx, key);
@@ -432,6 +436,28 @@ public class NMS_1_20_R2 extends NMS_CommonWithFunctions {
 				entity -> cmdCtx.getSource().withEntity(((CraftEntity) entity).getHandle())));
 		}
 		return result.toArray(new FunctionWrapper[0]);
+	}
+
+	@Override
+	public SimpleFunctionWrapper getFunction(NamespacedKey key) {
+		final ResourceLocation resourceLocation = new ResourceLocation(key.getNamespace(), key.getKey());
+		Optional<CommandFunction> commandFunctionOptional = this.<MinecraftServer>getMinecraftServer().getFunctions().get(resourceLocation);
+		if(commandFunctionOptional.isPresent()) {
+			return convertFunction(commandFunctionOptional.get());
+		} else {
+			throw new IllegalStateException("Failed to get defined function " + key
+				+ "! This should never happen - please report this to the CommandAPI"
+				+ "developers, we'd love to know how you got this error message!");
+		}
+	}
+
+	@Override
+	public Set<NamespacedKey> getFunctions() {
+		Set<NamespacedKey> result = new HashSet<>();
+		for (ResourceLocation resourceLocation : this.<MinecraftServer>getMinecraftServer().getFunctions().getFunctionNames()) {
+			result.add(fromResourceLocation(resourceLocation));
+		}
+		return result;
 	}
 
 	@Override
@@ -473,33 +499,26 @@ public class NMS_1_20_R2 extends NMS_CommonWithFunctions {
 	}
 
 	@Override
-	public final Location2D getLocation2DBlock(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		ColumnPos blockPos = ColumnPosArgument.getColumnPos(cmdCtx, key);
-		return new Location2D(getWorldForCSS(cmdCtx.getSource()), blockPos.x(), blockPos.z());
-	}
-
-	@Override
 	public final Location2D getLocation2DPrecise(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
 		Vec2 vecPos = Vec2Argument.getVec2(cmdCtx, key);
 		return new Location2D(getWorldForCSS(cmdCtx.getSource()), vecPos.x, vecPos.y);
 	}
 
 	@Override
-	public final Location getLocationBlock(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		BlockPos blockPos = BlockPosArgument.getSpawnablePos(cmdCtx, key);
-		return new Location(getWorldForCSS(cmdCtx.getSource()), blockPos.getX(), blockPos.getY(), blockPos.getZ());
-	}
-
-	@Override
-	public final Location getLocationPrecise(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		Vec3 vecPos = Vec3Argument.getCoordinates(cmdCtx, key).getPosition(cmdCtx.getSource());
-		return new Location(getWorldForCSS(cmdCtx.getSource()), vecPos.x(), vecPos.y(), vecPos.z());
-	}
-
-	@Override
 	public final org.bukkit.loot.LootTable getLootTable(CommandContext<CommandSourceStack> cmdCtx, String key) {
 		ResourceLocation resourceLocation = ResourceLocationArgument.getId(cmdCtx, key);
 		return new CraftLootTable(fromResourceLocation(resourceLocation), this.<MinecraftServer>getMinecraftServer().getLootData().getLootTable(resourceLocation));
+	}
+
+	@Override
+	public NamespacedKey getMinecraftKey(CommandContext<CommandSourceStack> cmdCtx, String key) {
+		return fromResourceLocation(ResourceLocationArgument.getId(cmdCtx, key));
+	}
+
+	@Override
+	public final Objective getObjective(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
+		String objectiveName = ObjectiveArgument.getObjective(cmdCtx, key).getName();
+		return Bukkit.getScoreboardManager().getMainScoreboard().getObjective(objectiveName);
 	}
 
 	@Differs(from = "1.20.1", by = "Uses CraftParticle#minecraftToBukkit instead of CraftParticle#toBukkit")
@@ -587,8 +606,25 @@ public class NMS_1_20_R2 extends NMS_CommonWithFunctions {
 	}
 
 	@Override
+	public final Rotation getRotation(CommandContext<CommandSourceStack> cmdCtx, String key) {
+		Vec2 rotation = RotationArgument.getRotation(cmdCtx, key).getRotation(cmdCtx.getSource());
+		return new Rotation(rotation.y, rotation.x);
+	}
+
+	@Override
 	public ScoreboardSlot getScoreboardSlot(CommandContext<CommandSourceStack> cmdCtx, String key) {
 		return ScoreboardSlot.ofMinecraft(ScoreboardSlotArgument.getDisplaySlot(cmdCtx, key).id());
+	}
+
+	@Override
+	public Collection<String> getScoreHolderMultiple(CommandContext<CommandSourceStack> cmdCtx, String key)
+		throws CommandSyntaxException {
+		return ScoreHolderArgument.getNames(cmdCtx, key);
+	}
+
+	@Override
+	public String getScoreHolderSingle(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
+		return ScoreHolderArgument.getName(cmdCtx, key);
 	}
 
 	@Override
@@ -713,6 +749,12 @@ public class NMS_1_20_R2 extends NMS_CommonWithFunctions {
 			result.add(fromResourceLocation(resourceLocation));
 		}
 		return result;
+	}
+
+	@Override
+	public final Team getTeam(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
+		String teamName = TeamArgument.getTeam(cmdCtx, key).getName();
+		return Bukkit.getScoreboardManager().getMainScoreboard().getTeam(teamName);
 	}
 
 	@Override

@@ -20,83 +20,97 @@
  *******************************************************************************/
 package dev.jorel.commandapi.nms;
 
+import com.google.common.io.Files;
+import com.google.gson.GsonBuilder;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.suggestion.SuggestionProvider;
 import dev.jorel.commandapi.CommandAPIBukkit;
 import dev.jorel.commandapi.CommandAPIHandler;
-import dev.jorel.commandapi.CommandRegistrationStrategy;
 import dev.jorel.commandapi.arguments.ArgumentSubType;
-import dev.jorel.commandapi.arguments.SuggestionProviders;
-import dev.jorel.commandapi.commandsenders.AbstractCommandSender;
 import dev.jorel.commandapi.commandsenders.BukkitCommandSender;
-import dev.jorel.commandapi.preprocessor.Differs;
-import dev.jorel.commandapi.preprocessor.Overridden;
-import dev.jorel.commandapi.preprocessor.Unimplemented;
-import dev.jorel.commandapi.wrappers.Rotation;
-import dev.jorel.commandapi.wrappers.*;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.chat.ComponentSerializer;
+import dev.jorel.commandapi.wrappers.Location2D;
+import dev.jorel.commandapi.wrappers.MathOperation;
+import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.arguments.*;
-import net.minecraft.commands.arguments.coordinates.*;
+import net.minecraft.commands.arguments.AngleArgument;
+import net.minecraft.commands.arguments.ColorArgument;
+import net.minecraft.commands.arguments.CompoundTagArgument;
+import net.minecraft.commands.arguments.DimensionArgument;
+import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.arguments.GameProfileArgument;
+import net.minecraft.commands.arguments.MessageArgument;
+import net.minecraft.commands.arguments.ObjectiveArgument;
+import net.minecraft.commands.arguments.ObjectiveCriteriaArgument;
+import net.minecraft.commands.arguments.OperationArgument;
+import net.minecraft.commands.arguments.ParticleArgument;
+import net.minecraft.commands.arguments.RangeArgument;
+import net.minecraft.commands.arguments.ResourceArgument;
+import net.minecraft.commands.arguments.ResourceLocationArgument;
+import net.minecraft.commands.arguments.ScoreHolderArgument;
+import net.minecraft.commands.arguments.ScoreboardSlotArgument;
+import net.minecraft.commands.arguments.TeamArgument;
+import net.minecraft.commands.arguments.TimeArgument;
+import net.minecraft.commands.arguments.UuidArgument;
+import net.minecraft.commands.arguments.blocks.BlockPredicateArgument;
+import net.minecraft.commands.arguments.blocks.BlockStateArgument;
+import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
+import net.minecraft.commands.arguments.coordinates.ColumnPosArgument;
+import net.minecraft.commands.arguments.coordinates.RotationArgument;
+import net.minecraft.commands.arguments.coordinates.SwizzleArgument;
+import net.minecraft.commands.arguments.coordinates.Vec2Argument;
+import net.minecraft.commands.arguments.coordinates.Vec3Argument;
 import net.minecraft.commands.arguments.item.FunctionArgument;
-import net.minecraft.network.chat.Component.Serializer;
+import net.minecraft.commands.arguments.item.ItemArgument;
+import net.minecraft.commands.arguments.item.ItemPredicateArgument;
+import net.minecraft.commands.synchronization.ArgumentUtils;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.phys.Vec2;
-import org.bukkit.*;
+import net.minecraft.server.level.ColumnPos;
+import net.minecraft.world.level.block.state.pattern.BlockInWorld;
+import net.minecraft.world.phys.Vec3;
+import org.bukkit.Axis;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.SimpleCommandMap;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.help.HelpTopic;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.Recipe;
-import org.bukkit.loot.LootTable;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Team;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.nio.charset.StandardCharsets;
+import java.util.EnumSet;
+import java.util.Locale;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static dev.jorel.commandapi.preprocessor.Unimplemented.REASON.*;
-
 /**
  * Common NMS code To ensure that this code actually works across all versions
- * of Minecraft that this is supposed to support (1.17+), you should be
+ * of Minecraft that this is supposed to support (1.20+), you should be
  * compiling this code against all of the declared Maven profiles specified in
- * this submodule's pom.xml file, by running the following commands:
- * <ul>
- * <li><code>mvn clean package -pl :commandapi-bukkit-nms-common -P Platform.Bukkit,Spigot_1_19_3_R2</code></li>
- * <li><code>mvn clean package -pl :commandapi-bukkit-nms-common -P Platform.Bukkit,Spigot_1_19_R1</code></li>
- * <li><code>mvn clean package -pl :commandapi-bukkit-nms-common -P Platform.Bukkit,Spigot_1_18_2_R2</code></li>
- * <li><code>mvn clean package -pl :commandapi-bukkit-nms-common -P Platform.Bukkit,Spigot_1_18_R1</code></li>
- * <li><code>mvn clean package -pl :commandapi-bukkit-nms-common -P Platform.Bukkit,Spigot_1_17_R1</code></li>
- * </ul>
- * Any of these that do not work should be removed or implemented otherwise
- * (introducing another NMS_Common module perhaps?
+ * this submodule's pom.xml file, by running the following command:
+ * ./compileNMSCommon
+ * <p>
+ * In case that fails, the method that causes the failure should be implemented in all
+ * NMS classes to maintain an error-free NMS_Common module that is applicable to all
+ * versions.
  */
 public abstract class NMS_Common extends CommandAPIBukkit<CommandSourceStack> {
-	private static NamespacedKey fromResourceLocation(ResourceLocation key) {
+
+	public final NamespacedKey fromResourceLocation(ResourceLocation key) {
 		return NamespacedKey.fromString(key.getNamespace() + ":" + key.getPath());
 	}
 
-	@Override
-	public ArgumentType<?> _ArgumentAdvancement() {
-		return ResourceLocationArgument.id();
-	}
+	protected abstract CommandBuildContext getCommandBuildContext();
 
 	@Override
 	public final ArgumentType<?> _ArgumentAngle() {
@@ -109,22 +123,18 @@ public abstract class NMS_Common extends CommandAPIBukkit<CommandSourceStack> {
 	}
 
 	@Override
-	@Unimplemented(because = VERSION_SPECIFIC_IMPLEMENTATION, introducedIn = "1.19")
-	public abstract ArgumentType<?> _ArgumentBlockPredicate();
+	public final ArgumentType<?> _ArgumentBlockPredicate() {
+		return BlockPredicateArgument.blockPredicate(getCommandBuildContext());
+	}
 
 	@Override
-	@Unimplemented(because = VERSION_SPECIFIC_IMPLEMENTATION, introducedIn = "1.19")
-	public abstract ArgumentType<?> _ArgumentBlockState();
+	public final ArgumentType<?> _ArgumentBlockState() {
+		return BlockStateArgument.block(getCommandBuildContext());
+	}
 
 	@Override
 	public final ArgumentType<?> _ArgumentChat() {
 		return MessageArgument.message();
-	}
-
-	@Override
-	@Overridden(in = "1.20.5", because = "This now takes in a CommandBuildContext")
-	public ArgumentType<?> _ArgumentChatComponent() {
-		return ComponentArgument.textComponent();
 	}
 
 	@Override
@@ -133,25 +143,20 @@ public abstract class NMS_Common extends CommandAPIBukkit<CommandSourceStack> {
 	}
 
 	@Override
-	public ArgumentType<?> _ArgumentDimension() {
+	public final ArgumentType<?> _ArgumentDimension() {
 		return DimensionArgument.dimension();
 	}
 
 	@Override
-	@Unimplemented(because = VERSION_SPECIFIC_IMPLEMENTATION, introducedIn = "1.19.3")
-	public abstract ArgumentType<?> _ArgumentEnchantment();
-
-	@Override
-	// I mean... really? Why?
-	@Unimplemented(because = NAME_CHANGED, info = "a (1.17)                -> entity   (1.18) -> a (1.19)")
-	@Unimplemented(because = NAME_CHANGED, info = "multipleEntities (1.17) -> entities (1.18) -> b (1.19)")
-	@Unimplemented(because = NAME_CHANGED, info = "c (1.17)                -> player   (1.18) -> c (1.19)")
-	@Unimplemented(because = NAME_CHANGED, info = "d (1.17)                -> players  (1.18) -> d (1.19)")
-	public abstract ArgumentType<?> _ArgumentEntity(ArgumentSubType subType);
-
-	@Override
-	@Unimplemented(because = VERSION_SPECIFIC_IMPLEMENTATION, introducedIn = "1.19.3")
-	public abstract ArgumentType<?> _ArgumentEntitySummon();
+	public final ArgumentType<?> _ArgumentEntity(ArgumentSubType subType) {
+		return switch (subType) {
+			case ENTITYSELECTOR_MANY_ENTITIES -> EntityArgument.entities();
+			case ENTITYSELECTOR_MANY_PLAYERS -> EntityArgument.players();
+			case ENTITYSELECTOR_ONE_ENTITY -> EntityArgument.entity();
+			case ENTITYSELECTOR_ONE_PLAYER -> EntityArgument.player();
+			default -> throw new IllegalArgumentException("Unexpected value: " + subType);
+		};
+	}
 
 	@Override
 	public final ArgumentType<?> _ArgumentFloatRange() {
@@ -164,12 +169,14 @@ public abstract class NMS_Common extends CommandAPIBukkit<CommandSourceStack> {
 	}
 
 	@Override
-	@Unimplemented(because = VERSION_SPECIFIC_IMPLEMENTATION, introducedIn = "1.19")
-	public abstract ArgumentType<?> _ArgumentItemPredicate();
+	public final ArgumentType<?> _ArgumentItemPredicate() {
+		return ItemPredicateArgument.itemPredicate(getCommandBuildContext());
+	}
 
 	@Override
-	@Unimplemented(because = VERSION_SPECIFIC_IMPLEMENTATION, introducedIn = "1.19")
-	public abstract ArgumentType<?> _ArgumentItemStack();
+	public final ArgumentType<?> _ArgumentItemStack() {
+		return ItemArgument.item(getCommandBuildContext());
+	}
 
 	@Override
 	public final ArgumentType<?> _ArgumentMathOperation() {
@@ -182,21 +189,13 @@ public abstract class NMS_Common extends CommandAPIBukkit<CommandSourceStack> {
 	}
 
 	@Override
-	@Unimplemented(because = VERSION_SPECIFIC_IMPLEMENTATION, introducedIn = "1.19.3")
-	public abstract ArgumentType<?> _ArgumentMobEffect();
-
-	@Override
 	public final ArgumentType<?> _ArgumentNBTCompound() {
 		return CompoundTagArgument.compoundTag();
 	}
 
 	@Override
-	@Unimplemented(because = VERSION_SPECIFIC_IMPLEMENTATION, introducedIn = "1.19.3")
-	public abstract ArgumentType<?> _ArgumentParticle();
-
-	@Override
-	public ArgumentType<?> _ArgumentRecipe() {
-		return ResourceLocationArgument.id();
+	public final ArgumentType<?> _ArgumentParticle() {
+		return ParticleArgument.particle(getCommandBuildContext());
 	}
 
 	@Override
@@ -249,10 +248,6 @@ public abstract class NMS_Common extends CommandAPIBukkit<CommandSourceStack> {
 	}
 
 	@Override
-	@Unimplemented(because = VERSION_SPECIFIC_IMPLEMENTATION, introducedIn = "1.18.2")
-	public abstract ArgumentType<?> _ArgumentSyntheticBiome();
-
-	@Override
 	public final ArgumentType<?> _ArgumentTag() {
 		return FunctionArgument.functions();
 	}
@@ -278,22 +273,6 @@ public abstract class NMS_Common extends CommandAPIBukkit<CommandSourceStack> {
 	}
 
 	@Override
-	@Unimplemented(because = REQUIRES_CRAFTBUKKIT, classNamed = "SimpleHelpMap")
-	public abstract Map<String, HelpTopic> getHelpMap();
-
-	@Override
-	@Unimplemented(because = VERSION_SPECIFIC_IMPLEMENTATION)
-	public abstract String[] compatibleVersions();
-
-	@Override
-	@Unimplemented(because = REQUIRES_CRAFTBUKKIT, classNamed = "CraftItemStack")
-	public abstract String convert(ItemStack is);
-
-	@Override
-	@Unimplemented(because = VERSION_SPECIFIC_IMPLEMENTATION)
-	public abstract String convert(ParticleData<?> particle);
-
-	@Override
 	public final String convert(PotionEffectType potion) {
 		return potion.getName().toLowerCase(Locale.ENGLISH);
 	}
@@ -304,28 +283,10 @@ public abstract class NMS_Common extends CommandAPIBukkit<CommandSourceStack> {
 	}
 
 	@Override
-	@Unimplemented(because = VERSION_SPECIFIC_IMPLEMENTATION, introducedIn = "1.19")
-	public abstract void createDispatcherFile(File file, CommandDispatcher<CommandSourceStack> dispatcher) throws IOException;
-
-	@Override
-	@Unimplemented(because = REQUIRES_CRAFTBUKKIT, classNamed = "CustomHelpTopic")
-	public abstract HelpTopic generateHelpTopic(String commandName, String shortDescription, String fullDescription,
-		String permission);
-
-	@Override
-	@Unimplemented(because = VERSION_SPECIFIC_IMPLEMENTATION, introducedIn = "1.20.2")
-	public abstract org.bukkit.advancement.Advancement getAdvancement(CommandContext<CommandSourceStack> cmdCtx, String key)
-		throws CommandSyntaxException;
-
-	@Override
-	@Overridden(in = "1.20.5", because = "Serializer.toJson now needs a Provider")
-	public Component getAdventureChat(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		return GsonComponentSerializer.gson().deserialize(Serializer.toJson(MessageArgument.getMessage(cmdCtx, key)));
+	public final void createDispatcherFile(File file, CommandDispatcher<CommandSourceStack> dispatcher) throws IOException {
+		Files.asCharSink(file, StandardCharsets.UTF_8).write(new GsonBuilder().setPrettyPrinting().create()
+			.toJson(ArgumentUtils.serializeNodeToJson(dispatcher, dispatcher.getRoot())));
 	}
-
-	@Override
-	@Unimplemented(because = VERSION_SPECIFIC_IMPLEMENTATION, from = "ofExact", to = "namedColor", in = "NamedTextColor", introducedIn = "Adventure 4.10.0", info = "1.18 uses Adventure 4.9.3. 1.18.2 uses Adventure 4.11.0")
-	public abstract NamedTextColor getAdventureChatColor(CommandContext<CommandSourceStack> cmdCtx, String key);
 
 	@Override
 	public final float getAngle(CommandContext<CommandSourceStack> cmdCtx, String key) {
@@ -335,8 +296,8 @@ public abstract class NMS_Common extends CommandAPIBukkit<CommandSourceStack> {
 	@Override
 	public final EnumSet<Axis> getAxis(CommandContext<CommandSourceStack> cmdCtx, String key) {
 		EnumSet<Axis> set = EnumSet.noneOf(Axis.class);
-		EnumSet<net.minecraft.core.Direction.Axis> parsedEnumSet = SwizzleArgument.getSwizzle(cmdCtx, key);
-		for (net.minecraft.core.Direction.Axis element : parsedEnumSet) {
+		EnumSet<Direction.Axis> parsedEnumSet = SwizzleArgument.getSwizzle(cmdCtx, key);
+		for (Direction.Axis element : parsedEnumSet) {
 			set.add(switch (element) {
 				case X -> Axis.X;
 				case Y -> Axis.Y;
@@ -347,32 +308,16 @@ public abstract class NMS_Common extends CommandAPIBukkit<CommandSourceStack> {
 	}
 
 	@Override
-	@Unimplemented(because = NAME_CHANGED, from = "getWorld()", to = "f()", in = "1.19")
-	public abstract Predicate<Block> getBlockPredicate(CommandContext<CommandSourceStack> cmdCtx, String key)
-		throws CommandSyntaxException;
-
-	@Override
-	@Unimplemented(because = REQUIRES_CRAFTBUKKIT, classNamed = "CraftBlockData")
-	public abstract BlockData getBlockState(CommandContext<CommandSourceStack> cmdCtx, String key);
-
-	@Override
-	@Overridden(in = "1.20.5", because = "Serializer.toJson now needs a Provider")
-	public BaseComponent[] getChat(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		return ComponentSerializer.parse(Serializer.toJson(MessageArgument.getMessage(cmdCtx, key)));
+	public final Predicate<Block> getBlockPredicate(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
+		Predicate<BlockInWorld> predicate = BlockPredicateArgument.getBlockPredicate(cmdCtx, key);
+		return (Block block) -> predicate.test(new BlockInWorld(cmdCtx.getSource().getLevel(),
+			new BlockPos(block.getX(), block.getY(), block.getZ()), true));
 	}
 
 	@Override
 	public final ChatColor getChatColor(CommandContext<CommandSourceStack> cmdCtx, String key) {
 		return ChatColor.getByChar(ColorArgument.getColor(cmdCtx, key).getChar());
 	}
-
-	@Override
-	public BaseComponent[] getChatComponent(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		return ComponentSerializer.parse(Serializer.toJson(ComponentArgument.getComponent(cmdCtx, key)));
-	}
-
-	@Override
-	public abstract CommandSourceStack getBrigadierSourceFromCommandSender(AbstractCommandSender<? extends CommandSender> sender);
 
 	@Override
 	public final BukkitCommandSender<? extends CommandSender> getCommandSenderFromCommandSource(CommandSourceStack css) {
@@ -383,68 +328,29 @@ public abstract class NMS_Common extends CommandAPIBukkit<CommandSourceStack> {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
-	@Unimplemented(because = REQUIRES_CRAFTBUKKIT, classNamed = "CraftWorld", info = "CraftWorld is implicitly referenced by ServerLevel#getWorld, due to package renaming, it can't resolve at runtime")
-	public abstract World getDimension(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException;
-
-	@Override
-	@Unimplemented(because = VERSION_SPECIFIC_IMPLEMENTATION, introducedIn = "1.19.3")
-	public abstract Enchantment getEnchantment(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException;
-
-	@Override
-	@Unimplemented(because = NAME_CHANGED, from = "getKey()", to = "a()", in = "1.19")
-	public abstract EntityType getEntityType(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException;
-
-	@Override
-	@Unimplemented(because = VERSION_SPECIFIC_IMPLEMENTATION, introducedIn = "1.20.2")
-	public abstract FloatRange getFloatRange(CommandContext<CommandSourceStack> cmdCtx, String key);
-
-	@Override
-	@Unimplemented(because = REQUIRES_CRAFTBUKKIT, classNamed = "CraftEntity")
-	public abstract FunctionWrapper[] getFunction(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException;
-
-	@Override
-	@Unimplemented(because = VERSION_SPECIFIC_IMPLEMENTATION, in = "1.17, 1.18 and 1.18.2")
-	public abstract SimpleFunctionWrapper getFunction(NamespacedKey key);
-
-	@Override
-	@Unimplemented(because = VERSION_SPECIFIC_IMPLEMENTATION, in = "1.17, 1.18 and 1.18.2")
-	public abstract Set<NamespacedKey> getFunctions();
-
-	@Override
-	@Unimplemented(because = VERSION_SPECIFIC_IMPLEMENTATION, introducedIn = "1.20.2")
-	public abstract IntegerRange getIntRange(CommandContext<CommandSourceStack> cmdCtx, String key);
-
-	@Override
-	@Unimplemented(because = REQUIRES_CRAFTBUKKIT, classNamed = "CraftItemStack")
-	public abstract ItemStack getItemStack(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException;
-
-	@Override
-	@Unimplemented(because = REQUIRES_CRAFTBUKKIT, classNamed = "CraftItemStack")
-	public abstract Predicate<ItemStack> getItemStackPredicate(CommandContext<CommandSourceStack> cmdCtx, String key)
-		throws CommandSyntaxException;
-
-	@Override
-	@Unimplemented(because = { NAME_CHANGED, REQUIRES_CSS }, from = "a, b", to = "c(), d()")
-	public abstract Location2D getLocation2DBlock(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException;
-
-	@Override
-	public Location2D getLocation2DPrecise(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		Vec2 vecPos = Vec2Argument.getVec2(cmdCtx, key);
-		return new Location2D(getWorldForCSS(cmdCtx.getSource()), vecPos.x, vecPos.y);
+	public final EntityType getEntityType(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
+		return EntityType.fromName(net.minecraft.world.entity.EntityType.getKey(ResourceArgument.getSummonableEntityType(cmdCtx, key).value()).getPath());
 	}
 
 	@Override
-	@Unimplemented(because = { NAME_CHANGED, REQUIRES_CSS }, from = "getX(), getY(), getZ()", to = "u(), v(), w()")
-	public abstract Location getLocationBlock(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException;
+	public final Location2D getLocation2DBlock(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
+		ColumnPos blockPos = ColumnPosArgument.getColumnPos(cmdCtx, key);
+		return new Location2D(getWorldForCSS(cmdCtx.getSource()), blockPos.x(), blockPos.z());
+	}
 
 	@Override
-	@Unimplemented(because = { NAME_CHANGED, REQUIRES_CSS }, from = "getX(), getY(), getZ()", to = "a(), b(), c()")
-	public abstract Location getLocationPrecise(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException;
+	public final Location getLocationBlock(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
+		BlockPos blockPos = BlockPosArgument.getSpawnablePos(cmdCtx, key);
+		return new Location(getWorldForCSS(cmdCtx.getSource()), blockPos.getX(), blockPos.getY(), blockPos.getZ());
+	}
 
 	@Override
-	@Unimplemented(because = REQUIRES_CRAFTBUKKIT, classNamed = "CraftLootTable")
-	public abstract LootTable getLootTable(CommandContext<CommandSourceStack> cmdCtx, String key);
+	public final Location getLocationPrecise(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
+		Vec3 vecPos = Vec3Argument.getCoordinates(cmdCtx, key).getPosition(cmdCtx.getSource());
+		return new Location(getWorldForCSS(cmdCtx.getSource()), vecPos.x(), vecPos.y(), vecPos.z());
+	}
 
 	@Override
 	public final MathOperation getMathOperation(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
@@ -454,24 +360,9 @@ public abstract class NMS_Common extends CommandAPIBukkit<CommandSourceStack> {
 	}
 
 	@Override
-	@Overridden(in = "1.17 common; 1.18", because = "1.17 uses ArgumentMinecraftKeyRegistered.f instead of ArgumentMinecraftKeyRegistered.e")
-	@Overridden(in = "1.20.5, 1.20.6", because = "ArgumentMinecraftKeyRegistered.e -> ArgumentMinecraftKeyRegistered.c")
-	public NamespacedKey getMinecraftKey(CommandContext<CommandSourceStack> cmdCtx, String key) {
-		return fromResourceLocation(ResourceLocationArgument.getId(cmdCtx, key));
-	}
-
-	@Override
 	public final <NBTContainer> Object getNBTCompound(CommandContext<CommandSourceStack> cmdCtx, String key,
 		Function<Object, NBTContainer> nbtContainerConstructor) {
 		return nbtContainerConstructor.apply(CompoundTagArgument.getCompoundTag(cmdCtx, key));
-	}
-
-	@Override
-	@Overridden(in = "1.17 common", because = "The Objective.getName() method mangles itself sometimes and I don't know why. Seems to be looking for Objective.b() or something")
-	public Objective getObjective(CommandContext<CommandSourceStack> cmdCtx, String key)
-		throws CommandSyntaxException {
-		String objectiveName = ObjectiveArgument.getObjective(cmdCtx, key).getName();
-		return Bukkit.getScoreboardManager().getMainScoreboard().getObjective(objectiveName);
 	}
 
 	@Override
@@ -485,10 +376,6 @@ public abstract class NMS_Common extends CommandAPIBukkit<CommandSourceStack> {
 	}
 
 	@Override
-	@Unimplemented(because = VERSION_SPECIFIC_IMPLEMENTATION, introducedIn = "1.18, 1.19")
-	public abstract ParticleData<?> getParticle(CommandContext<CommandSourceStack> cmdCtx, String key);
-
-	@Override
 	public final Player getPlayer(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
 		Player target = Bukkit.getPlayer(GameProfileArgument.getGameProfiles(cmdCtx, key).iterator().next().getId());
 		if (target == null) {
@@ -496,88 +383,6 @@ public abstract class NMS_Common extends CommandAPIBukkit<CommandSourceStack> {
 		} else {
 			return target;
 		}
-	}
-
-	@Override
-	@Unimplemented(because = VERSION_SPECIFIC_IMPLEMENTATION, introducedIn = "1.18")
-	public abstract Object getPotionEffect(CommandContext<CommandSourceStack> cmdCtx, String key, ArgumentSubType subType)
-		throws CommandSyntaxException;
-
-	@Override
-	@Unimplemented(because = VERSION_SPECIFIC_IMPLEMENTATION, info = """
-		1.17 has what appears to be a different obfuscation for recipe.getId().
-		I can't be bothered to figure out what it is, but all I know is it doesn't work,
-		and we need to move it outta here!
-		""")
-	public abstract Recipe getRecipe(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException;
-
-	@Override
-	public final Rotation getRotation(CommandContext<CommandSourceStack> cmdCtx, String key) {
-		Vec2 rotation = RotationArgument.getRotation(cmdCtx, key).getRotation(cmdCtx.getSource());
-		return new Rotation(rotation.y, rotation.x);
-	}
-
-	@Override
-	@Unimplemented(because = VERSION_SPECIFIC_IMPLEMENTATION, introducedIn = "1.20.2")
-	public abstract ScoreboardSlot getScoreboardSlot(CommandContext<CommandSourceStack> cmdCtx, String key);
-
-	@Override
-	// TODO: Overridden in 1.20.3 because this now returns a Collection<ScoreHolder>
-	public Collection<String> getScoreHolderMultiple(CommandContext<CommandSourceStack> cmdCtx, String key)
-		throws CommandSyntaxException {
-		return ScoreHolderArgument.getNames(cmdCtx, key);
-	}
-
-	@Override
-	// TODO: Overridden in 1.20.3 because this now returns a ScoreHolder
-	public String getScoreHolderSingle(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		return ScoreHolderArgument.getName(cmdCtx, key);
-	}
-
-	@Override
-	// Whyyyyyyyyyyyyyyyyyyy
-	@Unimplemented(because = NAME_CHANGED, info = "CommandListenerWrapper changes:")
-	@Unimplemented(because = NAME_CHANGED, info = "getPosition (1.17)  -> getPosition (1.18) -> e (1.19)")
-	@Unimplemented(because = NAME_CHANGED, info = "i (1.17)            -> getRotation (1.18) -> l (1.19)")
-	@Unimplemented(because = NAME_CHANGED, info = "getEntity (1.17)    -> getEntity (1.18)   -> g (1.19)")
-	@Unimplemented(because = NAME_CHANGED, info = "getWorld (1.17)     -> getLevel (1.18)    -> f (1.19)")
-	public abstract BukkitCommandSender<? extends CommandSender> getSenderForCommand(CommandContext<CommandSourceStack> cmdCtx, boolean isNative);
-
-	@Override
-	@Unimplemented(because = REQUIRES_CRAFTBUKKIT, classNamed = "ProxiedNativeCommandSender")
-	public abstract NativeProxyCommandSender createNativeProxyCommandSender(CommandSender caller, CommandSender callee, Location location, World world);
-
-	@Override
-	@Unimplemented(because = REQUIRES_CRAFTBUKKIT, classNamed = "CraftServer")
-	public abstract SimpleCommandMap getSimpleCommandMap();
-
-	@Override
-	@Unimplemented(because = REQUIRES_CRAFTBUKKIT, classNamed = "CraftSound")
-	public abstract Object getSound(CommandContext<CommandSourceStack> cmdCtx, String key, ArgumentSubType subType);
-
-	@Override
-	@Unimplemented(because = VERSION_SPECIFIC_IMPLEMENTATION, info = """
-		The various methods that this uses is obfuscated to different method
-		names for different versions. For example, getMinecraftServer().getLootTables.getIds()
-		is mapped to a different method in 1.18 compared to 1.19.2. This also has various other
-		implications across all sorts of versions, so it's much more reliable to just implement
-		them in every version.
-		""")
-	public abstract SuggestionProvider<CommandSourceStack> getSuggestionProvider(SuggestionProviders provider);
-
-	@Override
-	@Unimplemented(because = VERSION_SPECIFIC_IMPLEMENTATION, from = "1.18.2", to = "1.19")
-	@Differs(from = "1.18.2", by = "getTag() now returns a Collection<> instead of a Tag<>, so don't have to call .getValues()")
-	public abstract SimpleFunctionWrapper[] getTag(NamespacedKey key);
-
-	@Override
-	@Unimplemented(because = NAME_CHANGED, info = "See https://github.com/JorelAli/CommandAPI/issues/524")
-	public abstract Set<NamespacedKey> getTags();
-
-	@Override
-	public Team getTeam(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		String teamName = TeamArgument.getTeam(cmdCtx, key).getName();
-		return Bukkit.getScoreboardManager().getMainScoreboard().getTeam(teamName);
 	}
 
 	@Override
@@ -589,14 +394,4 @@ public abstract class NMS_Common extends CommandAPIBukkit<CommandSourceStack> {
 	public final UUID getUUID(CommandContext<CommandSourceStack> cmdCtx, String key) {
 		return UuidArgument.getUuid(cmdCtx, key);
 	}
-
-	@Override
-	@Unimplemented(because = VERSION_SPECIFIC_IMPLEMENTATION)
-	public abstract void reloadDataPacks();
-
-	@Override
-	@Unimplemented(because = NAME_CHANGED, info = "MinecraftServer#getCommands() obfuscated differently across multiple versions")
-	@Unimplemented(because = REQUIRES_CRAFTBUKKIT, classNamed = "VanillaCommandWrapper")
-	@Unimplemented(because = REQUIRES_CRAFTBUKKIT, classNamed = "BukkitCommandWrapper")
-	public abstract CommandRegistrationStrategy<CommandSourceStack> createCommandRegistrationStrategy();
 }

@@ -40,17 +40,31 @@ jobs:
       - name: Build the CommandAPI (Bukkit+Velocity) using maven
         run: mvn clean install --batch-mode -P Platform.Bukkit,Platform.Velocity
 
-      - name: Check NMS_Common compiles against all compatible Minecraft versions
-        run: |
-            mvn clean package -pl :commandapi-bukkit-nms-common -P Platform.Bukkit,Spigot_1_17_R1
-            mvn clean package -pl :commandapi-bukkit-nms-common -P Platform.Bukkit,Spigot_1_18_R1
-            mvn clean package -pl :commandapi-bukkit-nms-common -P Platform.Bukkit,Spigot_1_18_2_R2
-            mvn clean package -pl :commandapi-bukkit-nms-common -P Platform.Bukkit,Spigot_1_19_R1
-            mvn clean package -pl :commandapi-bukkit-nms-common -P Platform.Bukkit,Spigot_1_19_3_R2
-            mvn clean package -pl :commandapi-bukkit-nms-common -P Platform.Bukkit,Spigot_1_20_R1
-            mvn clean package -pl :commandapi-bukkit-nms-common -P Platform.Bukkit,Spigot_1_20_2_R2;
-      # Not Spigot_1_20_4_R3. This isn't compatible with NMS_CommonWithFunctions
-      # mvn clean package -pl :commandapi-bukkit-nms-common -P Platform.Bukkit,Spigot_1_20_4_R3;
+      ### Check NMS_Common compiles against all compatible Minecraft versions
+
+      - name: Compile NMS_Common for 1.20 and 1.20.1
+        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_20_R1
+
+      - name: Compile NMS_Common for 1.20.2
+        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_20_R2
+
+      - name: Compile NMS_Common for 1.20.3 and 1.20.4
+        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_20_R3
+
+      - name: Compile NMS_Common for 1.20.5 and 1.20.6
+        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_20_R4
+
+      - name: Compile NMS_Common for 1.21 and 1.21.1
+        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_21_R1
+
+      - name: Compile NMS_Common for 1.21.2 and 1.21.3
+        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_21_R2
+
+      - name: Compile NMS_Common for 1.21.4
+        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_21_R3
+
+      - name: Compile NMS_Common for 1.21.5
+        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_21_R4
 
       # - name: validate version-specific dependencies (nms-common)
       #   run: |
