@@ -9,5 +9,7 @@ authors:
 website: https://www.jorel.dev/CommandAPI/
 softdepend:
   - NBTAPI
+provides:
+  - CommandAPINetworking
 api-version: 1.13
 folia-supported: true
