@@ -15,15 +15,19 @@ import java.util.Arrays;
  */
 public abstract class CommandAPIMessenger<InputChannel, OutputChannel> {
 	private final CommandAPIPacketHandlerProvider<InputChannel> packetHandlerProvider;
+	private final boolean reportFailedSends;
 
 	/**
 	 * Creates a new {@link CommandAPIMessenger}.
 	 *
 	 * @param packetHandlerProvider The {@link CommandAPIPacketHandlerProvider} that defines the various implementations
 	 *                              of {@link CommandAPIPacketHandler} that should be used to handle incoming packets.
+	 * @param reportFailedSends     If true, {@link #sendPacket(Object, CommandAPIPacket)} will throw an exception if it
+	 *                              cannot send the requested packet. Otherwise, if false, that method will fail silently.
 	 */
-	protected CommandAPIMessenger(CommandAPIPacketHandlerProvider<InputChannel> packetHandlerProvider) {
+	protected CommandAPIMessenger(CommandAPIPacketHandlerProvider<InputChannel> packetHandlerProvider, boolean reportFailedSends) {
 		this.packetHandlerProvider = packetHandlerProvider;
+		this.reportFailedSends = reportFailedSends;
 	}
 
 	/**
@@ -117,9 +121,14 @@ public abstract class CommandAPIMessenger<InputChannel, OutputChannel> {
 			// Write packet's data
 			packet.write(output, target, this.getConnectionProtocolVersion(target));
 		} catch (ProtocolVersionTooOldException exception) {
-			// Send the exception to the other side too, so they know to update their protocol version
-			this.sendPacket(target, new ProtocolVersionTooOldPacket(CommandAPIProtocol.PROTOCOL_VERSION, exception.getReason()));
-			throw exception;
+			if (reportFailedSends) {
+				// Send the exception to the other side too, so they know to update their protocol version
+				this.sendPacket(target, new ProtocolVersionTooOldPacket(CommandAPIProtocol.PROTOCOL_VERSION, exception.getReason()));
+				throw exception;
+			} else {
+				// Fail silently
+				return;
+			}
 		}
 
 		// Send the bytes

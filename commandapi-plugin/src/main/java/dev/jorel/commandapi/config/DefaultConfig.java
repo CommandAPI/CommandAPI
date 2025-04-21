@@ -41,6 +41,15 @@ public abstract class DefaultConfig {
 		}, false
 	);
 
+	public static final CommentedConfigOption<Boolean> REPORT_FAILED_PACKET_SENDS = new CommentedConfigOption<>(
+		new String[]{
+			"Report failed packet sends (default: true)",
+			"If \"true\", the CommandAPI will throw an exception if it tries to send a packet but cannot",
+			"(likely due to the receiver not having a new enough CommandAPI version to receive it). If",
+			"\"false\", failed attempts to send a packet will be ignored."
+		}, true
+	);
+
 	public static final CommentedSection SECTION_MESSAGE = new CommentedSection(
 		new String[]{
 			"Messages",

@@ -33,11 +33,13 @@ public class VelocityCommandAPIMessenger extends CommandAPIMessenger<ChannelMess
 	/**
 	 * Creates a new {@link VelocityCommandAPIMessenger}.
 	 *
-	 * @param plugin The plugin object (annotated by {@link Plugin}) sending and receiving messages.
-	 * @param proxy  The {@link ProxyServer} the plugin is running on.
+	 * @param plugin            The plugin object (annotated by {@link Plugin}) sending and receiving messages.
+	 * @param proxy             The {@link ProxyServer} the plugin is running on.
+	 * @param reportFailedSends If true, {@link CommandAPIMessenger#sendPacket(Object, CommandAPIPacket)} will throw an exception
+	 *                          if it cannot send the requested packet. Otherwise, if false, that method will fail silently.
 	 */
-	public VelocityCommandAPIMessenger(Object plugin, ProxyServer proxy) {
-		super(new VelocityPacketHandlerProvider());
+	public VelocityCommandAPIMessenger(Object plugin, ProxyServer proxy, boolean reportFailedSends) {
+		super(new VelocityPacketHandlerProvider(), reportFailedSends);
 		this.plugin = plugin;
 		this.proxy = proxy;
 

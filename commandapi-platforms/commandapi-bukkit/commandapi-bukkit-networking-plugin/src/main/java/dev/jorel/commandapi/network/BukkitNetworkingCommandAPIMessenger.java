@@ -30,7 +30,12 @@ public class BukkitNetworkingCommandAPIMessenger extends CommandAPIMessenger<Pla
 	 * @param plugin The plugin sending and receiving messages.
 	 */
 	public BukkitNetworkingCommandAPIMessenger(CommandAPINetworkingMain plugin) {
-		super(new BukkitNetworkingPacketHandlerProvider(plugin));
+		super(
+			new BukkitNetworkingPacketHandlerProvider(plugin),
+			// Always report failed sends. This isn't expected to do anything
+			//  though since we currently don't send any packets from here.
+			true
+		);
 		this.plugin = plugin;
 
 		this.protocolVersionPerPlayer = new HashMap<>();
