@@ -1,5 +1,7 @@
 package dev.jorel.commandapi.network;
 
+import dev.jorel.commandapi.CommandAPI;
+import dev.jorel.commandapi.exceptions.ProtocolVersionTooOldException;
 import dev.jorel.commandapi.network.packets.SetVersionPacket;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -28,12 +30,10 @@ public class BukkitCommandAPIMessenger extends CommandAPIMessenger<Player, Playe
 	/**
 	 * Creates a new {@link BukkitCommandAPIMessenger}.
 	 *
-	 * @param plugin            The plugin sending and receiving messages.
-	 * @param reportFailedSends If true, {@link CommandAPIMessenger#sendPacket(Object, CommandAPIPacket)} will throw an exception
-	 *                          if it cannot send the requested packet. Otherwise, if false, that method will fail silently.
+	 * @param plugin The plugin sending and receiving messages.
 	 */
-	public BukkitCommandAPIMessenger(JavaPlugin plugin, boolean reportFailedSends) {
-		super(new BukkitPacketHandlerProvider(), reportFailedSends);
+	public BukkitCommandAPIMessenger(JavaPlugin plugin) {
+		super(new BukkitPacketHandlerProvider());
 		this.plugin = plugin;
 
 		this.protocolVersionPerPlayer = new HashMap<>();
@@ -100,6 +100,19 @@ public class BukkitCommandAPIMessenger extends CommandAPIMessenger<Player, Playe
 
 		// Handle the message
 		messageReceived(protocol, player, message);
+	}
+
+	@Override
+	public void sendPacket(Player target, CommandAPIPacket packet) {
+		try {
+			super.sendPacket(target, packet);
+		} catch (ProtocolVersionTooOldException exception) {
+			if (CommandAPI.getConfiguration().shouldErrorOnFailedPacketSends()) {
+				throw exception;
+			} else {
+				CommandAPI.logWarning(exception.getMessage());
+			}
+		}
 	}
 
 	@Override
