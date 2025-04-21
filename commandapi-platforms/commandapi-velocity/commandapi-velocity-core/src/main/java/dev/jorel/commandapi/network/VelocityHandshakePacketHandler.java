@@ -3,7 +3,10 @@ package dev.jorel.commandapi.network;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.messages.ChannelMessageSource;
+import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPIVelocity;
+import dev.jorel.commandapi.exceptions.ProtocolVersionTooOldException;
+import dev.jorel.commandapi.network.packets.ProtocolVersionTooOldPacket;
 import dev.jorel.commandapi.network.packets.SetVersionPacket;
 
 /**
@@ -20,9 +23,22 @@ public class VelocityHandshakePacketHandler implements HandshakePacketHandler<Ch
 		VelocityCommandAPIMessenger messenger = CommandAPIVelocity.get().getMessenger();
 
 		// Incoming messages are from ChannelMessageSource, while outgoing messages are ChannelMessageSink
-		//  We actually want to set the version of a ChannelMessageSink. These istanceofs safely down-cast,
+		//  We actually want to set the version of a ChannelMessageSink. These instanceofs safely down-cast,
 		//  then the method call up-casts.
 		if (sender instanceof ServerConnection server) messenger.setServerProtocolVersion(server, protocolVersion);
 		if (sender instanceof Player player) messenger.setPlayerProtocolVersion(player, protocolVersion);
+	}
+
+	@Override
+	public void handleProtocolVersionTooOldPacket(ChannelMessageSource sender, ProtocolVersionTooOldPacket packet) {
+		try {
+			HandshakePacketHandler.super.handleProtocolVersionTooOldPacket(sender, packet);
+		} catch (ProtocolVersionTooOldException exception) {
+			if (CommandAPI.getConfiguration().shouldErrorOnFailedPacketSends()) {
+				throw exception;
+			} else {
+				CommandAPI.logWarning(exception.getMessage());
+			}
+		}
 	}
 }
