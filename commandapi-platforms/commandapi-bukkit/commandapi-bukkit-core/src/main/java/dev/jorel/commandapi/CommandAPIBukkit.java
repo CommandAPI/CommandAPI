@@ -385,7 +385,11 @@ public abstract class CommandAPIBukkit<Source> implements BukkitPlatform<Source>
 
 	@Override
 	public BukkitCommandAPIMessenger setupMessenger() {
-		messenger = new BukkitCommandAPIMessenger(plugin);
+		messenger = new BukkitCommandAPIMessenger(
+			plugin,
+			config.shouldReportFailedPacketSends()
+		);
+
 		return messenger;
 	}
 

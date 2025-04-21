@@ -105,8 +105,9 @@ public class CommandAPIVelocity implements CommandAPIPlatform<Argument<?>, Comma
 	@Override
 	public VelocityCommandAPIMessenger setupMessenger() {
 		messenger = new VelocityCommandAPIMessenger(
-			getConfiguration().getPlugin(),
-			getConfiguration().getServer()
+			config.getPlugin(),
+			config.getServer(),
+			config.shouldReportFailedPacketSends()
 		);
 		return messenger;
 	}
