@@ -94,6 +94,7 @@ jobs:
         run: |
             cd commandapi-platforms/commandapi-bukkit/commandapi-bukkit-nms/commandapi-bukkit-nms-common/target/1.20.1
             echo "Verify that folders were extracted"
+            ls
             if [ -d dev ]; then
               cd dev/jorel/commandapi/nms
               ls
