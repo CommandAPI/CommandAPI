@@ -35,6 +35,13 @@ jobs:
           java-version: ${{ matrix.java }}
           cache: maven
 
+      - name: Checkout the BytecodeAnalyser repository
+        run: git clone https://github.com/CommandAPI/BytecodeAnalyser.git
+
+      - name: Compile BytecodeAnalyser using Gradle
+        run: |
+            cd BytecodeAnalyser
+            ./gradlew jar
 #      ### Compilation ###
 #
 #      - name: Build the CommandAPI (Bukkit+Velocity) using maven
