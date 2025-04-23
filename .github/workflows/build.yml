@@ -99,6 +99,13 @@ jobs:
               cd dev/jorel/commandapi/nms
               ls
             else
+              if ! command -v tar > /dev/null
+              then
+                echo "tar couldn't be found, the file not existing may not be GitHub's fault"
+              else
+                echo "tar exists, the file not existing is most likely GitHub's fault"
+                exit 1
+              fi
               echo "Didn't find the dev/ directory, this is probably an error with GitHub Actions and probably means we can't unzip files."
               exit 1
             fi
