@@ -83,7 +83,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scoreboard.Objective;
 
 import java.io.File;
 import java.io.IOException;
