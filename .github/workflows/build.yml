@@ -95,13 +95,8 @@ jobs:
             cd commandapi-platforms/commandapi-bukkit/commandapi-bukkit-nms/commandapi-bukkit-nms-common/target/1.20.1
             echo "Verify that folders were extracted"
             ls
-            if [ -d dev ]; then
-              cd dev/jorel/commandapi/nms
-              ls
-            else
-              echo "Didn't find the dev/ directory, this is probably an error with GitHub Actions and probably means we can't unzip files."
-              exit 1
-            fi
+            echo "Inspect the NMS_Common.class method bytecode"
+            cat bytecode_1.20.1_NMS_Common.txt
 
       # - name: validate version-specific dependencies (nms-common)
       #   run: |
