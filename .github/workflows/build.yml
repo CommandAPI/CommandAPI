@@ -41,7 +41,6 @@ jobs:
       - name: Compile BytecodeAnalyser using Gradle
         run: |
             cd BytecodeAnalyser
-            chmod +x ./gradlew
             ./gradlew jar
 
       ### Compilation ###
