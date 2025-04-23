@@ -36,7 +36,11 @@ jobs:
           cache: maven
 
       - name: Checkout the BytecodeAnalyser repository
-        run: git clone https://github.com/CommandAPI/BytecodeAnalyser.git -b for-commandapi-actions
+        run: |
+            git clone https://github.com/CommandAPI/BytecodeAnalyser.git
+            cd BytecodeAnalyser
+            commitHash=$(git rev-parse HEAD)
+            echo "$commitHash"
 
       - name: Compile BytecodeAnalyser using Gradle
         run: |

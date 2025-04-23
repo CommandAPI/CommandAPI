@@ -367,12 +367,6 @@ public abstract class NMS_Common extends CommandAPIBukkit<CommandSourceStack> {
 	}
 
 	@Override
-	public Objective getObjective(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		String objectiveName = ObjectiveArgument.getObjective(cmdCtx, key).getName();
-		return Bukkit.getScoreboardManager().getMainScoreboard().getObjective(objectiveName);
-	}
-
-	@Override
 	public final String getObjectiveCriteria(CommandContext<CommandSourceStack> cmdCtx, String key) {
 		return ObjectiveCriteriaArgument.getCriteria(cmdCtx, key).getName();
 	}
