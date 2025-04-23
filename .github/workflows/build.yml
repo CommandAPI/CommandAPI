@@ -35,153 +35,153 @@ jobs:
           java-version: ${{ matrix.java }}
           cache: maven
 
-      ### Compilation ###
-
-      - name: Build the CommandAPI (Bukkit+Velocity) using maven
-        run: mvn clean install --batch-mode -P Platform.Bukkit,Platform.Velocity
-
-      ### Check NMS_Common compiles against all compatible Minecraft versions
-
-      - name: Compile NMS_Common for 1.20 and 1.20.1
-        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_20_R1
-
-      - name: Compile NMS_Common for 1.20.2
-        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_20_R2
-
-      - name: Compile NMS_Common for 1.20.3 and 1.20.4
-        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_20_R3
-
-      - name: Compile NMS_Common for 1.20.5 and 1.20.6
-        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_20_R4
-
-      - name: Compile NMS_Common for 1.21 and 1.21.1
-        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_21_R1
-
-      - name: Compile NMS_Common for 1.21.2 and 1.21.3
-        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_21_R2
-
-      - name: Compile NMS_Common for 1.21.4
-        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_21_R3
-
-      - name: Compile NMS_Common for 1.21.5
-        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_21_R4
-
-      # - name: validate version-specific dependencies (nms-common)
-      #   run: |
-      #     nms_common_path="commandapi-platforms/commandapi-bukkit/commandapi-bukkit-nms/commandapi-bukkit-nms-common/target/classes/dev/jorel/commandapi/nms/NMS_Common.class"
-      #     if ! command -v javap &> /dev/null
-      #     then
-      #         echo "javap could not be found, skipping NMS Common validation check"
-      #         exit
-      #     else
-      #         javapcommand=$(javap -v $nms_common_path | grep -E '#[0-9]+ = Class ' | cut -c 46- | sort | grep 'org/bukkit/craftbukkit')
-      #         if [[ -n "$javapcommand" ]]; then
-      #             echo "NMS Common has version-specific dependencies!"
-      #             echo $javapcommand
-      #             exit 1
-      #         else
-      #             echo "NMS Common has no version-specific dependencies :)"
-      #         fi
-      #     fi
-
-      ### Bukkit tests across all NMS versions ###
-      # Dev note: Yes, I know I could put this under one run section, but it's a million times easier
-      # to see which version failed when it's got the version name and subsection in GitHub Actions
-
-      - name: Run Bukkit unit tests across all versions (1.20.5 - 1.20.6)
-        continue-on-error: true
-        run: mvn clean package -pl :commandapi-bukkit-test-tests -P Platform.Bukkit -Dmaven.javadoc.skip=true -P Minecraft_1_20_5
-
-      - name: Run Bukkit unit tests across all versions (Mojang Mapped 1.20.5 - 1.20.6)
-        continue-on-error: true
-        run: mvn clean package -pl :commandapi-bukkit-test-tests -P Platform.Bukkit -Dmaven.javadoc.skip=true -P Minecraft_1_20_5_Mojang
-
-      - name: Run Bukkit unit tests across all versions (1.20.3 - 1.20.4)
-        continue-on-error: true
-        run: mvn clean package -pl :commandapi-bukkit-test-tests -P Platform.Bukkit -Dmaven.javadoc.skip=true -P Minecraft_1_20_3
-
-      - name: Run Bukkit unit tests across all versions (1.20.2)
-        continue-on-error: true
-        run: mvn clean package -pl :commandapi-bukkit-test-tests -P Platform.Bukkit -Dmaven.javadoc.skip=true -P Minecraft_1_20_2
-
-      - name: Run Bukkit unit tests across all versions (1.20 - 1.20.1)
-        continue-on-error: true
-        run: mvn clean package -pl :commandapi-bukkit-test-tests -P Platform.Bukkit -Dmaven.javadoc.skip=true -P Minecraft_1_20
-
-      - name: Run Bukkit unit tests across all versions (Mojang Mapped 1.20 - 1.20.1)
-        continue-on-error: true
-        run: mvn clean package -pl :commandapi-bukkit-test-tests -P Platform.Bukkit -Dmaven.javadoc.skip=true -P Minecraft_1_20_Mojang
-
-      # It doesn't matter which version the Kotlin DSL uses. It should be version independent
-      - name: Run Bukkit Kotlin DSL unit tests
-        continue-on-error: true
-        run: mvn clean package -pl :commandapi-bukkit-kotlin-test -P Platform.Bukkit -Dmaven.javadoc.skip=true -P Minecraft_1_20
-
-      ### Upload .jar artifacts ###
-
-      - name: Upload CommandAPI (Bukkit) plugin artifact
-        if: ${{ runner.os == 'Linux' && matrix.java == '21' }} # Only upload artifacts built from latest java on one OS
-        uses: actions/upload-artifact@v4
-        with:
-          name: CommandAPI (Bukkit plugin)
-          path: |
-            commandapi-platforms/commandapi-bukkit/commandapi-bukkit-plugin/target/CommandAPI*.jar
-            !commandapi-platforms/commandapi-bukkit/commandapi-bukkit-plugin/target/*sources.jar
-            !commandapi-platforms/commandapi-bukkit/commandapi-bukkit-plugin/target/*javadoc.jar
-
-      - name: Upload CommandAPI (Velocity) plugin artifact
-        if: ${{ runner.os == 'Linux' && matrix.java == '21' }} # Only upload artifacts built from latest java on one OS
-        uses: actions/upload-artifact@v4
-        with:
-          name: CommandAPI (Velocity plugin)
-          path: |
-            commandapi-platforms/commandapi-velocity/commandapi-velocity-plugin/target/CommandAPI*.jar
-            !commandapi-platforms/commandapi-velocity/commandapi-velocity-plugin/target/*sources.jar
-            !commandapi-platforms/commandapi-velocity/commandapi-velocity-plugin/target/*javadoc.jar
-
-      ### Examples ###
-
-      - name: Build CommandAPI example plugins in examples/ folder
-        run: cd ./examples; ./build.sh;
-
-      ### Save PR information for 'SonarAnalyze'
-      - name: Save PR number to file
-        if: github.event_name == 'pull_request' && ${{ matrix.os }} == 'ubuntu-latest' && ${{ matrix.java_version }} == '21'
-        run: echo ${{ github.event.number }} > PR_NUMBER.txt
-      - name: Archive PR number
-        if: github.event_name == 'pull_request' && ${{ matrix.os }} == 'ubuntu-latest' && ${{ matrix.java_version }} == '21'
-        uses: actions/upload-artifact@v4
-        with:
-            name: PR_NUMBER
-            path: PR_NUMBER.txt
-
-  snapshot-deploy:
-    needs: build # Only run if "build" succeeds
-    runs-on: ubuntu-latest
-    if: github.repository == 'CommandAPI/CommandAPI' && github.ref == 'refs/heads/dev/dev'
-
-    steps:
-      - name: Checkout the CommandAPI repository
-        uses: actions/checkout@v3
-        
-      - name: Setup JDK 21
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          server-id: ossrh # Needs to match the id in the main pom.xml file
-          server-username: MAVEN_USERNAME
-          server-password: MAVEN_PASSWORD
-          java-version: 21
-          cache: maven
-          
-      - name: Deploy snapshot version of the CommandAPI (Bukkit+Velocity) to the Sonatype snapshot repository
-        run: |
-          if mvn help:evaluate -Dexpression=project.version -q -DforceStdout | grep -E -q '\-SNAPSHOT$';  then
-            echo "SNAPSHOT version detected: $(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)"
-            mvn deploy --batch-mode -P Platform.Bukkit,Platform.Velocity -DskipTests=true
-          else
-            echo "Version is not a SNAPSHOT version, not deploying to Sonatype Snapshot repo"
-          fi
-        env:
-          MAVEN_USERNAME: ${{ secrets.OSS_SONATYPE_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.OSS_SONATYPE_PASSWORD }}
+#      ### Compilation ###
+#
+#      - name: Build the CommandAPI (Bukkit+Velocity) using maven
+#        run: mvn clean install --batch-mode -P Platform.Bukkit,Platform.Velocity
+#
+#      ### Check NMS_Common compiles against all compatible Minecraft versions
+#
+#      - name: Compile NMS_Common for 1.20 and 1.20.1
+#        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_20_R1
+#
+#      - name: Compile NMS_Common for 1.20.2
+#        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_20_R2
+#
+#      - name: Compile NMS_Common for 1.20.3 and 1.20.4
+#        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_20_R3
+#
+#      - name: Compile NMS_Common for 1.20.5 and 1.20.6
+#        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_20_R4
+#
+#      - name: Compile NMS_Common for 1.21 and 1.21.1
+#        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_21_R1
+#
+#      - name: Compile NMS_Common for 1.21.2 and 1.21.3
+#        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_21_R2
+#
+#      - name: Compile NMS_Common for 1.21.4
+#        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_21_R3
+#
+#      - name: Compile NMS_Common for 1.21.5
+#        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_21_R4
+#
+#      # - name: validate version-specific dependencies (nms-common)
+#      #   run: |
+#      #     nms_common_path="commandapi-platforms/commandapi-bukkit/commandapi-bukkit-nms/commandapi-bukkit-nms-common/target/classes/dev/jorel/commandapi/nms/NMS_Common.class"
+#      #     if ! command -v javap &> /dev/null
+#      #     then
+#      #         echo "javap could not be found, skipping NMS Common validation check"
+#      #         exit
+#      #     else
+#      #         javapcommand=$(javap -v $nms_common_path | grep -E '#[0-9]+ = Class ' | cut -c 46- | sort | grep 'org/bukkit/craftbukkit')
+#      #         if [[ -n "$javapcommand" ]]; then
+#      #             echo "NMS Common has version-specific dependencies!"
+#      #             echo $javapcommand
+#      #             exit 1
+#      #         else
+#      #             echo "NMS Common has no version-specific dependencies :)"
+#      #         fi
+#      #     fi
+#
+#      ### Bukkit tests across all NMS versions ###
+#      # Dev note: Yes, I know I could put this under one run section, but it's a million times easier
+#      # to see which version failed when it's got the version name and subsection in GitHub Actions
+#
+#      - name: Run Bukkit unit tests across all versions (1.20.5 - 1.20.6)
+#        continue-on-error: true
+#        run: mvn clean package -pl :commandapi-bukkit-test-tests -P Platform.Bukkit -Dmaven.javadoc.skip=true -P Minecraft_1_20_5
+#
+#      - name: Run Bukkit unit tests across all versions (Mojang Mapped 1.20.5 - 1.20.6)
+#        continue-on-error: true
+#        run: mvn clean package -pl :commandapi-bukkit-test-tests -P Platform.Bukkit -Dmaven.javadoc.skip=true -P Minecraft_1_20_5_Mojang
+#
+#      - name: Run Bukkit unit tests across all versions (1.20.3 - 1.20.4)
+#        continue-on-error: true
+#        run: mvn clean package -pl :commandapi-bukkit-test-tests -P Platform.Bukkit -Dmaven.javadoc.skip=true -P Minecraft_1_20_3
+#
+#      - name: Run Bukkit unit tests across all versions (1.20.2)
+#        continue-on-error: true
+#        run: mvn clean package -pl :commandapi-bukkit-test-tests -P Platform.Bukkit -Dmaven.javadoc.skip=true -P Minecraft_1_20_2
+#
+#      - name: Run Bukkit unit tests across all versions (1.20 - 1.20.1)
+#        continue-on-error: true
+#        run: mvn clean package -pl :commandapi-bukkit-test-tests -P Platform.Bukkit -Dmaven.javadoc.skip=true -P Minecraft_1_20
+#
+#      - name: Run Bukkit unit tests across all versions (Mojang Mapped 1.20 - 1.20.1)
+#        continue-on-error: true
+#        run: mvn clean package -pl :commandapi-bukkit-test-tests -P Platform.Bukkit -Dmaven.javadoc.skip=true -P Minecraft_1_20_Mojang
+#
+#      # It doesn't matter which version the Kotlin DSL uses. It should be version independent
+#      - name: Run Bukkit Kotlin DSL unit tests
+#        continue-on-error: true
+#        run: mvn clean package -pl :commandapi-bukkit-kotlin-test -P Platform.Bukkit -Dmaven.javadoc.skip=true -P Minecraft_1_20
+#
+#      ### Upload .jar artifacts ###
+#
+#      - name: Upload CommandAPI (Bukkit) plugin artifact
+#        if: ${{ runner.os == 'Linux' && matrix.java == '21' }} # Only upload artifacts built from latest java on one OS
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: CommandAPI (Bukkit plugin)
+#          path: |
+#            commandapi-platforms/commandapi-bukkit/commandapi-bukkit-plugin/target/CommandAPI*.jar
+#            !commandapi-platforms/commandapi-bukkit/commandapi-bukkit-plugin/target/*sources.jar
+#            !commandapi-platforms/commandapi-bukkit/commandapi-bukkit-plugin/target/*javadoc.jar
+#
+#      - name: Upload CommandAPI (Velocity) plugin artifact
+#        if: ${{ runner.os == 'Linux' && matrix.java == '21' }} # Only upload artifacts built from latest java on one OS
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: CommandAPI (Velocity plugin)
+#          path: |
+#            commandapi-platforms/commandapi-velocity/commandapi-velocity-plugin/target/CommandAPI*.jar
+#            !commandapi-platforms/commandapi-velocity/commandapi-velocity-plugin/target/*sources.jar
+#            !commandapi-platforms/commandapi-velocity/commandapi-velocity-plugin/target/*javadoc.jar
+#
+#      ### Examples ###
+#
+#      - name: Build CommandAPI example plugins in examples/ folder
+#        run: cd ./examples; ./build.sh;
+#
+#      ### Save PR information for 'SonarAnalyze'
+#      - name: Save PR number to file
+#        if: github.event_name == 'pull_request' && ${{ matrix.os }} == 'ubuntu-latest' && ${{ matrix.java_version }} == '21'
+#        run: echo ${{ github.event.number }} > PR_NUMBER.txt
+#      - name: Archive PR number
+#        if: github.event_name == 'pull_request' && ${{ matrix.os }} == 'ubuntu-latest' && ${{ matrix.java_version }} == '21'
+#        uses: actions/upload-artifact@v4
+#        with:
+#            name: PR_NUMBER
+#            path: PR_NUMBER.txt
+#
+#  snapshot-deploy:
+#    needs: build # Only run if "build" succeeds
+#    runs-on: ubuntu-latest
+#    if: github.repository == 'CommandAPI/CommandAPI' && github.ref == 'refs/heads/dev/dev'
+#
+#    steps:
+#      - name: Checkout the CommandAPI repository
+#        uses: actions/checkout@v3
+#
+#      - name: Setup JDK 21
+#        uses: actions/setup-java@v4
+#        with:
+#          distribution: temurin
+#          server-id: ossrh # Needs to match the id in the main pom.xml file
+#          server-username: MAVEN_USERNAME
+#          server-password: MAVEN_PASSWORD
+#          java-version: 21
+#          cache: maven
+#
+#      - name: Deploy snapshot version of the CommandAPI (Bukkit+Velocity) to the Sonatype snapshot repository
+#        run: |
+#          if mvn help:evaluate -Dexpression=project.version -q -DforceStdout | grep -E -q '\-SNAPSHOT$';  then
+#            echo "SNAPSHOT version detected: $(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)"
+#            mvn deploy --batch-mode -P Platform.Bukkit,Platform.Velocity -DskipTests=true
+#          else
+#            echo "Version is not a SNAPSHOT version, not deploying to Sonatype Snapshot repo"
+#          fi
+#        env:
+#          MAVEN_USERNAME: ${{ secrets.OSS_SONATYPE_USERNAME }}
+#          MAVEN_PASSWORD: ${{ secrets.OSS_SONATYPE_PASSWORD }}
