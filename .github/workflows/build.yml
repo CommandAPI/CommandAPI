@@ -41,7 +41,15 @@ jobs:
       - name: Compile BytecodeAnalyser using Gradle
         run: |
             cd BytecodeAnalyser
+            chmod +x ./gradlew
             ./gradlew jar
+
+      - name: Upload BytecodeAnalyser jar
+        if: ${{ runner.os == 'Linux' && matrix.java == '21' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: BytecodeAnalyser
+          path: BytecodeAnalyser/build/libs/BytecodeAnalyser*.jar
 #      ### Compilation ###
 #
 #      - name: Build the CommandAPI (Bukkit+Velocity) using maven
