@@ -87,6 +87,19 @@ jobs:
             cd commandapi-platforms/commandapi-bukkit/commandapi-bukkit-nms/commandapi-bukkit-nms-common/target
             chmod +x BytecodeAnalyser*.jar
             java -jar BytecodeAnalyser*.jar
+
+      - name: Inspect the 1.20.1 dev/jorel/commandapi/nms folder
+        run: |
+            cd commandapi-platforms/commandapi-bukkit/commandapi-bukkit-nms/commandapi-bukkit-nms-common/target/1.20.1
+            echo "Verify that folders were extracted"
+            if [ -d dev ]; then
+              cd dev/jorel/commandapi/nms
+              ls
+            else
+              echo "Didn't find the dev/ directory, this is probably an error with GitHub Actions and probably means we can't unzip files."
+              exit 1
+            fi
+
       # - name: validate version-specific dependencies (nms-common)
       #   run: |
       #     nms_common_path="commandapi-platforms/commandapi-bukkit/commandapi-bukkit-nms/commandapi-bukkit-nms-common/target/classes/dev/jorel/commandapi/nms/NMS_Common.class"
