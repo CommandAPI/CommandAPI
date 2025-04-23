@@ -83,6 +83,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scoreboard.Objective;
 
 import java.io.File;
 import java.io.IOException;
@@ -363,6 +364,12 @@ public abstract class NMS_Common extends CommandAPIBukkit<CommandSourceStack> {
 	public final <NBTContainer> Object getNBTCompound(CommandContext<CommandSourceStack> cmdCtx, String key,
 		Function<Object, NBTContainer> nbtContainerConstructor) {
 		return nbtContainerConstructor.apply(CompoundTagArgument.getCompoundTag(cmdCtx, key));
+	}
+
+	@Override
+	public Objective getObjective(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
+		String objectiveName = ObjectiveArgument.getObjective(cmdCtx, key).getName();
+		return Bukkit.getScoreboardManager().getMainScoreboard().getObjective(objectiveName);
 	}
 
 	@Override

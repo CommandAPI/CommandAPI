@@ -90,14 +90,6 @@ jobs:
             chmod +x BytecodeAnalyser*.jar
             java -jar BytecodeAnalyser*.jar
 
-      - name: Inspect the 1.20.1 dev/jorel/commandapi/nms folder
-        run: |
-            cd commandapi-platforms/commandapi-bukkit/commandapi-bukkit-nms/commandapi-bukkit-nms-common/target/1.20.1
-            echo "Verify that folders were extracted"
-            ls
-            echo "Inspect the NMS_Common.class method bytecode"
-            cat bytecode_1.20.1_NMS_Common.txt
-
       # - name: validate version-specific dependencies (nms-common)
       #   run: |
       #     nms_common_path="commandapi-platforms/commandapi-bukkit/commandapi-bukkit-nms/commandapi-bukkit-nms-common/target/classes/dev/jorel/commandapi/nms/NMS_Common.class"
