@@ -81,7 +81,7 @@ jobs:
       - name: Copy BytecodeAnalyser to nms-common target folder
         run: mv BytecodeAnalyser/build/libs/BytecodeAnalyser*.jar commandapi-platforms/commandapi-bukkit/commandapi-bukkit-nms/commandapi-bukkit-nms-common/target
 
-      - name: Run the BytecodeAnalyser
+      - name: Run BytecodeAnalyser
         run: |
             cd commandapi-platforms/commandapi-bukkit/commandapi-bukkit-nms/commandapi-bukkit-nms-common/target
             chmod +x BytecodeAnalyser*.jar
