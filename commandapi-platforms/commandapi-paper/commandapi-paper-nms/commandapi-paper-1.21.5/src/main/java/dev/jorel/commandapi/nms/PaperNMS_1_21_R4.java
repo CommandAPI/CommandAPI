@@ -7,6 +7,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import dev.jorel.commandapi.CommandAPIBukkit;
+import dev.jorel.commandapi.CommandAPIPaper;
 import dev.jorel.commandapi.CommandRegistrationStrategy;
 import dev.jorel.commandapi.PaperCommandRegistration;
 import dev.jorel.commandapi.SafeVarHandle;
@@ -21,6 +22,7 @@ import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.ColorArgument;
 import net.minecraft.commands.arguments.ComponentArgument;
+import net.minecraft.commands.arguments.MessageArgument;
 import net.minecraft.server.MinecraftServer;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.CraftServer;
@@ -29,7 +31,7 @@ import org.bukkit.craftbukkit.help.SimpleHelpMap;
 import java.lang.reflect.Constructor;
 import java.util.List;
 
-public class PaperNMS_1_21_R4 extends PaperNMS_Common {
+public class PaperNMS_1_21_R4 extends CommandAPIPaper<CommandSourceStack> {
 
 	private static final CommandBuildContext COMMAND_BUILD_CONTEXT;
 	private static final Constructor<?> pluginCommandNodeConstructor;
@@ -56,6 +58,11 @@ public class PaperNMS_1_21_R4 extends PaperNMS_Common {
 		}
 		pluginCommandNodeConstructor = pluginCommandNode;
 		metaField = (SafeVarHandle<CommandNode<?>, Object>) metaFieldHandle;
+	}
+
+	@Override
+	public Component getChat(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
+		return GsonComponentSerializer.gson().deserialize(net.minecraft.network.chat.Component.Serializer.toJson(MessageArgument.getMessage(cmdCtx, key), COMMAND_BUILD_CONTEXT));
 	}
 
 	@Override
