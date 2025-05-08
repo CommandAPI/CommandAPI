@@ -13,14 +13,13 @@
 	<packaging>pom</packaging>
 
 	<dependencies>
-		<!-- Common Paper NMS for 1.17+ -->
 		<dependency>
 			<groupId>dev.jorel</groupId>
-			<artifactId>commandapi-paper-nms-common</artifactId>
+			<artifactId>commandapi-bukkit-nms-common</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 
-		<!-- NMS-specific implementations -->
+		<!-- NMS-specific implementations for Paper -->
 		<dependency>
 			<groupId>dev.jorel</groupId>
 			<artifactId>commandapi-paper-1.21.6</artifactId>
@@ -64,6 +63,48 @@
 		<dependency>
 			<groupId>dev.jorel</groupId>
 			<artifactId>commandapi-paper-1.20</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<!-- NMS-specific implementations -->
+		<dependency>
+			<groupId>dev.jorel</groupId>
+			<artifactId>commandapi-bukkit-1.21.5</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>dev.jorel</groupId>
+			<artifactId>commandapi-bukkit-1.21.4</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>dev.jorel</groupId>
+			<artifactId>commandapi-bukkit-1.21.2</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>dev.jorel</groupId>
+			<artifactId>commandapi-bukkit-1.21</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>dev.jorel</groupId>
+			<artifactId>commandapi-bukkit-1.20.5</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>dev.jorel</groupId>
+			<artifactId>commandapi-bukkit-1.20.3</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>dev.jorel</groupId>
+			<artifactId>commandapi-bukkit-1.20.2</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>dev.jorel</groupId>
+			<artifactId>commandapi-bukkit-1.20</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>

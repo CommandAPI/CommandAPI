@@ -59,23 +59,48 @@
 			<artifactId>commandapi-bukkit-1.21.5</artifactId>
 			<version>${project.version}</version>
 			<classifier>mojang-mapped</classifier>
+			<scope>provided</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>dev.jorel</groupId>
-			<artifactId>commandapi-paper-nms-common</artifactId>
+			<artifactId>commandapi-bukkit-nms-common</artifactId>
 			<version>${project.version}</version>
-			<classifier>mojang-mapped</classifier>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 
 	<build>
 		<plugins>
+			<!-- Generate Mojang mapped jar -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>Mojang-Mapped</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<classifier>mojang-mapped</classifier>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- Generate Spigot mapped jar -->
 			<plugin>
 				<groupId>ca.bkaw</groupId>
 				<artifactId>paper-nms-maven-plugin</artifactId>
-				<version>1.4.5-SNAPSHOT</version>
+				<version>1.4.7</version>
+				<executions>
+					<execution>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>remap</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<!-- Allow code coverage -->
 			<plugin>

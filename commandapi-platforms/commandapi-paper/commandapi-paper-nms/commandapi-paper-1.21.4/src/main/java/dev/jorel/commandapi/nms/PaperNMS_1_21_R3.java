@@ -6,6 +6,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import dev.jorel.commandapi.CommandAPIBukkit;
+import dev.jorel.commandapi.CommandAPIPaper;
 import dev.jorel.commandapi.CommandRegistrationStrategy;
 import dev.jorel.commandapi.PaperCommandRegistration;
 import io.papermc.paper.command.brigadier.PaperCommands;
@@ -28,7 +29,7 @@ import org.bukkit.craftbukkit.help.SimpleHelpMap;
 import java.lang.reflect.Constructor;
 import java.util.List;
 
-public class PaperNMS_1_21_R3 extends PaperNMS_Common {
+public class PaperNMS_1_21_R3 extends CommandAPIPaper<CommandSourceStack> {
 
 	private static final CommandBuildContext COMMAND_BUILD_CONTEXT;
 
@@ -54,6 +55,11 @@ public class PaperNMS_1_21_R3 extends PaperNMS_Common {
 	}
 
 	@Override
+	public Component getChat(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
+		return GsonComponentSerializer.gson().deserialize(net.minecraft.network.chat.Component.Serializer.toJson(MessageArgument.getMessage(cmdCtx, key), COMMAND_BUILD_CONTEXT));
+	}
+
+	@Override
 	public NamedTextColor getChatColor(CommandContext<CommandSourceStack> cmdCtx, String key) {
 		final Integer color = ColorArgument.getColor(cmdCtx, key).getColor();
 		return color == null ? NamedTextColor.WHITE : NamedTextColor.namedColor(color);
@@ -62,11 +68,6 @@ public class PaperNMS_1_21_R3 extends PaperNMS_Common {
 	@Override
 	public Component getChatComponent(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
 		return GsonComponentSerializer.gson().deserialize(net.minecraft.network.chat.Component.Serializer.toJson(ComponentArgument.getComponent(cmdCtx, key), COMMAND_BUILD_CONTEXT));
-	}
-
-	@Override
-	public Component getChat(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		return GsonComponentSerializer.gson().deserialize(net.minecraft.network.chat.Component.Serializer.toJson(MessageArgument.getMessage(cmdCtx, key), COMMAND_BUILD_CONTEXT));
 	}
 
 	@Override
