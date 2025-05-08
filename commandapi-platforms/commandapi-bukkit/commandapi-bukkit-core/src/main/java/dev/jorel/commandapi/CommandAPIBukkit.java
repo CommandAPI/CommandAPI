@@ -505,7 +505,7 @@ public abstract class CommandAPIBukkit<Source> implements CommandAPIPlatform<Arg
 
 	@Override
 	public BukkitCommandAPIMessenger setupMessenger() {
-		messenger = new BukkitCommandAPIMessenger(getConfiguration().getPlugin());
+		messenger = new BukkitCommandAPIMessenger(config.getPlugin());
 		return messenger;
 	}
 
