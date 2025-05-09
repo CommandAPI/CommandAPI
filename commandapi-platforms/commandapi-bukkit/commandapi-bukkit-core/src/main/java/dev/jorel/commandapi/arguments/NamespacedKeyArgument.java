@@ -43,7 +43,7 @@ public class NamespacedKeyArgument extends SafeOverrideableArgument<NamespacedKe
 	 * @param nodeName the name of the node for argument
 	 */
 	public NamespacedKeyArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get()._ArgumentMinecraftKeyRegistered(),
+		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentMinecraftKeyRegistered(),
 				NamespacedKey::toString);
 	}
 
@@ -60,6 +60,6 @@ public class NamespacedKeyArgument extends SafeOverrideableArgument<NamespacedKe
 	@Override
 	public <CommandSourceStack> NamespacedKey parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs)
 			throws CommandSyntaxException {
-		return CommandAPIBukkit.<CommandSourceStack>get().getMinecraftKey(cmdCtx, key);
+		return CommandAPIBukkit.<CommandSourceStack>get().getNMS().getMinecraftKey(cmdCtx, key);
 	}
 }
