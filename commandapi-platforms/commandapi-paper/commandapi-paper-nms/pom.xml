@@ -22,9 +22,10 @@
 		<module>commandapi-paper-1.20.3</module>
 		<module>commandapi-paper-1.20.2</module>
 		<module>commandapi-paper-1.20</module>
+        <module>commandapi-paper-dv</module>
 
 		<module>commandapi-paper-nms-dependency</module>
 		<module>commandapi-paper-nms-dependency-mojang-mapped</module>
-	</modules>
+    </modules>
 
 </project>

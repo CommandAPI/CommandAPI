@@ -101,19 +101,32 @@ public class PaperNMS_1_21_R4 extends CommandAPIPaper<CommandSourceStack> {
 		);
 	}
 
+	@SuppressWarnings("UnstableApiUsage")
+	@Override
+	public boolean isDispatcherValid() {
+		boolean validState;
+		try {
+			PaperCommands.INSTANCE.getDispatcher();
+			validState = true;
+		} catch (IllegalStateException e) {
+			validState = false;
+		}
+		return validState;
+	}
+
 	@SuppressWarnings({"UnstableApiUsage"})
 	@Override
 	public <Source> LiteralCommandNode<Source> asPluginCommand(LiteralCommandNode<Source> commandNode, String description, List<String> aliases) {
 		try {
 			if (pluginCommandNodeConstructor != null) {
 				metaField.set(commandNode, pluginCommandNodeConstructor.newInstance(
-					CommandAPIBukkit.getConfiguration().getPlugin().getPluginMeta(),
+					CommandAPIPaper.getConfiguration().getPluginMeta(),
 					description,
 					aliases
 				));
 			} else {
 				commandNode.apiCommandMeta = new APICommandMeta(
-					CommandAPIBukkit.getConfiguration().getPlugin().getPluginMeta(),
+					CommandAPIPaper.getConfiguration().getPluginMeta(),
 					description,
 					aliases,
 					CommandAPIBukkit.getConfiguration().getNamespace(),

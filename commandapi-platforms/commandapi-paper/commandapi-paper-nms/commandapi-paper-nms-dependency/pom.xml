@@ -13,9 +13,17 @@
 	<packaging>pom</packaging>
 
 	<dependencies>
+		<!-- NMS Common -->
 		<dependency>
 			<groupId>dev.jorel</groupId>
 			<artifactId>commandapi-bukkit-nms-common</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<!-- Detect version -->
+		<dependency>
+			<groupId>dev.jorel</groupId>
+			<artifactId>commandapi-paper-dv</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 

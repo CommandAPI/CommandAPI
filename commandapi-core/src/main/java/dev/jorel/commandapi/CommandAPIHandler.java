@@ -150,7 +150,6 @@ extends AbstractArgument<?, ?, Argument, CommandSender>
 	}
 
 	public void onEnable() {
-		platform.onEnable();
 		// Setting up the network messenger usually requires registering
 		//  events, which often does not work until onEnable
 		messenger = platform.setupMessenger();

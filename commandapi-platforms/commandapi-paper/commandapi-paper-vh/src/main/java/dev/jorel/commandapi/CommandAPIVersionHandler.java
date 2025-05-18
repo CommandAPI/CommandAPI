@@ -1,6 +1,7 @@
 package dev.jorel.commandapi;
 
 import dev.jorel.commandapi.exceptions.UnsupportedVersionException;
+import dev.jorel.commandapi.nms.DetectVersion;
 import dev.jorel.commandapi.nms.PaperNMS_1_20_R1;
 import dev.jorel.commandapi.nms.PaperNMS_1_20_R2;
 import dev.jorel.commandapi.nms.PaperNMS_1_20_R3;
@@ -24,7 +25,7 @@ public abstract class CommandAPIVersionHandler {
 					CommandAPI.logWarning("While you may find success with this, further updates might be necessary to fully support the version you are using.");
 				});
 			} else {
-				String version = Bukkit.getBukkitVersion().split("-")[0];
+				String version = DetectVersion.getVersion();
 				CommandAPIPlatform<?, ?, ?> platform = switch (version) {
 					case "1.20", "1.20.1" -> new PaperNMS_1_20_R1();
 					case "1.20.2" -> new PaperNMS_1_20_R2();

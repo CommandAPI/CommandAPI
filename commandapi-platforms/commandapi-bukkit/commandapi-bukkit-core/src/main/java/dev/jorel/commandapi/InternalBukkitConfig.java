@@ -8,8 +8,8 @@ import org.bukkit.plugin.java.JavaPlugin;
  * getter methods.
  */
 public abstract class InternalBukkitConfig extends InternalConfig {
-	// The plugin that is loading the CommandAPI
-	private final JavaPlugin plugin;
+	// The name of the plugin that is loading the CommandAPI
+	private final String pluginName;
 
 	private final boolean skipReloadDatapacks;
 
@@ -20,15 +20,15 @@ public abstract class InternalBukkitConfig extends InternalConfig {
 	 */
 	public InternalBukkitConfig(CommandAPIBukkitConfig<? extends CommandAPIBukkitConfig<?>> config) {
 		super(config);
-		this.plugin = config.plugin;
+		this.pluginName = config.pluginName;
 		this.skipReloadDatapacks = config.skipReloadDatapacks;
 	}
 
 	/**
-	 * @return The {@link JavaPlugin} that is loading the CommandAPI
+	 * @return The name of the {@link JavaPlugin} that is loading the CommandAPI
 	 */
-	public JavaPlugin getPlugin() {
-		return plugin;
+	public String getPluginName() {
+		return pluginName;
 	}
 
 	/**

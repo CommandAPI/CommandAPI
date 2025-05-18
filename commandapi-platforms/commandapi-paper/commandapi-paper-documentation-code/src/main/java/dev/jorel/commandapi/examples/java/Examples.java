@@ -3,6 +3,7 @@ package dev.jorel.commandapi.examples.java;
 import de.tr7zw.changeme.nbtapi.NBTContainer;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
+import dev.jorel.commandapi.CommandAPIPaper;
 import dev.jorel.commandapi.CommandAPIPaperConfig;
 import dev.jorel.commandapi.arguments.ChatArgument;
 import dev.jorel.commandapi.arguments.ChatColorArgument;
@@ -71,7 +72,7 @@ class argument_nbt extends JavaPlugin {
 /* ANCHOR: argumentNBT1 */
 @Override
 public void onLoad() {
-    CommandAPI.onLoad(new CommandAPIPaperConfig(this)
+    CommandAPI.onLoad(new CommandAPIPaperConfig(this.getPluginMeta())
         .initializeNBTAPI(NBTContainer.class, NBTContainer::new)
     );
 }
@@ -83,7 +84,7 @@ JavaPlugin plugin = new JavaPlugin() {};
 
 {
 /* ANCHOR: setupShading1 */
-CommandAPI.onLoad(new CommandAPIPaperConfig(plugin).silentLogs(true));
+CommandAPI.onLoad(new CommandAPIPaperConfig(plugin.getPluginMeta()).silentLogs(true));
 /* ANCHOR_END: setupShading1 */
 }
 
@@ -92,7 +93,7 @@ class MyPlugin extends JavaPlugin {
 
     @Override
     public void onLoad() {
-        CommandAPI.onLoad(new CommandAPIPaperConfig(this).verboseOutput(true)); // Load with verbose output
+        CommandAPI.onLoad(new CommandAPIPaperConfig(this.getPluginMeta()).verboseOutput(true)); // Load with verbose output
 
         new CommandAPICommand("ping")
             .executes((sender, args) -> {
@@ -103,7 +104,7 @@ class MyPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        CommandAPI.onEnable();
+        CommandAPIPaper.onEnable(this);
 
         // Register commands, listeners etc.
     }

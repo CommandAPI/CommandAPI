@@ -21,6 +21,14 @@
 			<classifier>mojang-mapped</classifier>
 		</dependency>
 
+		<!-- Detect version -->
+		<dependency>
+			<groupId>dev.jorel</groupId>
+			<artifactId>commandapi-paper-dv</artifactId>
+			<version>${project.version}</version>
+			<classifier>mojang-mapped</classifier>
+		</dependency>
+
 		<!-- NMS-specific implementations for Paper -->
 		<dependency>
 			<groupId>dev.jorel</groupId>

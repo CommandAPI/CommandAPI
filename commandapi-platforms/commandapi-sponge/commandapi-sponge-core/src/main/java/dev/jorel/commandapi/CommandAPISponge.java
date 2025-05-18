@@ -56,9 +56,9 @@ public class CommandAPISponge extends CommandAPIPlatform<Argument<?>, Object, Ob
 		}
 	}
 
-	@Override
-	public void onEnable() {
-		commandManager = config.getServer().commandManager();
+	public static void onEnable() {
+		CommandAPI.onEnable();
+		CommandAPISponge.get().commandManager = config.getServer().commandManager();
 	}
 
 	@Override

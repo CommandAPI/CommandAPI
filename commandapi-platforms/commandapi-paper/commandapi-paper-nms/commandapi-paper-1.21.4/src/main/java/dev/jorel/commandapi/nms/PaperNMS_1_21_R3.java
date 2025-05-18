@@ -5,7 +5,6 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import dev.jorel.commandapi.CommandAPIBukkit;
 import dev.jorel.commandapi.CommandAPIPaper;
 import dev.jorel.commandapi.CommandRegistrationStrategy;
 import dev.jorel.commandapi.PaperCommandRegistration;
@@ -95,6 +94,19 @@ public class PaperNMS_1_21_R3 extends CommandAPIPaper<CommandSourceStack> {
 		);
 	}
 
+	@SuppressWarnings("UnstableApiUsage")
+	@Override
+	public boolean isDispatcherValid() {
+		boolean validState;
+		try {
+			PaperCommands.INSTANCE.getDispatcher();
+			validState = true;
+		} catch (IllegalStateException e) {
+			validState = false;
+		}
+		return validState;
+	}
+
 	@SuppressWarnings({"unchecked", "UnstableApiUsage"})
 	@Override
 	public <Source> LiteralCommandNode<Source> asPluginCommand(LiteralCommandNode<Source> commandNode, String description, List<String> aliases) {
@@ -102,13 +114,13 @@ public class PaperNMS_1_21_R3 extends CommandAPIPaper<CommandSourceStack> {
 			if (pluginCommandNodeConstructor != null) {
 				return (LiteralCommandNode<Source>) pluginCommandNodeConstructor.newInstance(
 					commandNode.getLiteral(),
-					CommandAPIBukkit.getConfiguration().getPlugin().getPluginMeta(),
+					CommandAPIPaper.getConfiguration().getPluginMeta(),
 					commandNode,
 					description
 				);
 			} else {
 				commandNode.pluginCommandMeta = new PluginCommandMeta(
-					CommandAPIBukkit.getConfiguration().getPlugin().getPluginMeta(),
+					CommandAPIPaper.getConfiguration().getPluginMeta(),
 					description,
 					aliases
 				);

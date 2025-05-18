@@ -15,6 +15,7 @@ import dev.jorel.commandapi.nms.PaperNMS;
 import dev.jorel.commandapi.wrappers.NativeProxyCommandSender;
 import io.papermc.paper.event.server.ServerResourcesReloadedEvent;
 import net.kyori.adventure.text.ComponentLike;
+import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandMap;
@@ -37,6 +38,8 @@ public abstract class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> i
 	private boolean isFoliaPresent = false;
 	private final Class<? extends CommandSender> feedbackForwardingCommandSender;
 	private final Class<? extends CommandSender> nullCommandSender;
+
+	private CommandAPILogger bootstrapLogger;
 
 	@SuppressWarnings("unchecked")
 	protected CommandAPIPaper() {
@@ -90,32 +93,37 @@ public abstract class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> i
 		checkPaperDependencies();
 	}
 
-	@Override
-	public void onEnable() {
-		JavaPlugin plugin = getConfiguration().getPlugin();
+	/**
+	 * Enables the CommandAPI. This should be placed at the start of your
+	 * <code>onEnable()</code> method.
+	 *
+	 * @param plugin The {@link JavaPlugin} that loads the CommandAPI
+	 */
+	public static void onEnable(JavaPlugin plugin) {
+		CommandAPIBukkit.get().plugin = plugin;
 
-		new Schedulers(isFoliaPresent).scheduleSyncDelayed(plugin, () -> {
-			getCommandRegistrationStrategy().runTasksAfterServerStart();
-			if (isFoliaPresent) {
+		new Schedulers(paper.isFoliaPresent).scheduleSyncDelayed(plugin, () -> {
+			CommandAPIBukkit.get().getCommandRegistrationStrategy().runTasksAfterServerStart();
+			if (paper.isFoliaPresent) {
 				CommandAPI.logNormal("Skipping initial datapack reloading because Folia was detected");
 			} else {
 				if (!getConfiguration().skipReloadDatapacks()) {
-					reloadDataPacks();
+					CommandAPIBukkit.get().reloadDataPacks();
 				}
 			}
-			updateHelpForCommands(CommandAPI.getRegisteredCommands());
+			CommandAPIBukkit.get().updateHelpForCommands(CommandAPI.getRegisteredCommands());
 		}, 0L);
 
-		super.stopCommandRegistrations();
+		CommandAPIBukkit.get().stopCommandRegistrations();
 
 		// Basically just a check to ensure we're actually running Paper
-		if (isPaperPresent) {
+		if (paper.isPaperPresent) {
 			Bukkit.getServer().getPluginManager().registerEvents(new Listener() {
 				@EventHandler
 				public void onServerReloadResources(ServerResourcesReloadedEvent event) {
 					// This event is called after Paper is done with everything command related
 					// which means we can put commands back
-					getCommandRegistrationStrategy().preReloadDataPacks();
+					CommandAPIBukkit.get().getCommandRegistrationStrategy().preReloadDataPacks();
 
 					// Normally, the reloadDataPacks() method is responsible for updating commands for
 					// online players. If, however, datapacks aren't supposed to be reloaded upon /minecraft:reload
@@ -128,13 +136,15 @@ public abstract class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> i
 						return;
 					}
 					CommandAPI.logNormal("/minecraft:reload detected. Reloading CommandAPI commands!");
-					reloadDataPacks();
+					CommandAPIBukkit.get().reloadDataPacks();
 				}
 			}, plugin);
 			CommandAPI.logNormal("Hooked into Paper ServerResourcesReloadedEvent");
 		} else {
 			CommandAPI.logNormal("Did not hook into Paper ServerResourcesReloadedEvent while using commandapi-paper. Are you actually using Paper?");
 		}
+
+		CommandAPI.onEnable();
 	}
 
 	private void checkPaperDependencies() {
@@ -225,6 +235,46 @@ public abstract class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> i
 	 */
 	public static WrapperCommandSyntaxException failWithAdventureComponent(ComponentLike message) {
 		return CommandAPI.failWithMessage(BukkitTooltip.messageFromAdventureComponent(message));
+	}
+
+	@SuppressWarnings("ConstantValue")
+	@Override
+	public CommandAPILogger getLogger() {
+		if (Bukkit.getServer() != null) {
+			return super.getLogger();
+		}
+		if (bootstrapLogger == null) {
+			bootstrapLogger = new BootstrapLogger();
+		}
+		return bootstrapLogger;
+	}
+
+	private static class BootstrapLogger implements CommandAPILogger {
+		private final ComponentLogger componentLogger;
+
+		protected BootstrapLogger() {
+			this.componentLogger = ComponentLogger.logger("CommandAPI");
+		}
+
+		@Override
+		public void info(String message) {
+			componentLogger.info(message);
+		}
+
+		@Override
+		public void warning(String message) {
+			componentLogger.warn(message);
+		}
+
+		@Override
+		public void severe(String message) {
+			componentLogger.error(message);
+		}
+
+		@Override
+		public void severe(String message, Throwable exception) {
+			componentLogger.error(message, exception);
+		}
 	}
 
 }

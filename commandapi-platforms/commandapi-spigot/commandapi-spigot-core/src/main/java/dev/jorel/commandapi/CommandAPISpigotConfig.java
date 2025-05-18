@@ -4,8 +4,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class CommandAPISpigotConfig extends CommandAPIBukkitConfig<CommandAPISpigotConfig> {
 
+	JavaPlugin plugin;
+
 	public CommandAPISpigotConfig(JavaPlugin plugin) {
-		super(plugin);
+		super(plugin.getName());
+		this.plugin = plugin;
 	}
 
 	/**
