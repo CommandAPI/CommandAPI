@@ -15,6 +15,7 @@ import dev.jorel.commandapi.commandsenders.AbstractPlayer;
 import dev.jorel.commandapi.commandsenders.BukkitCommandSender;
 import dev.jorel.commandapi.network.BukkitCommandAPIMessenger;
 import dev.jorel.commandapi.nms.NMS;
+import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Keyed;
@@ -28,6 +29,7 @@ import org.bukkit.event.server.ServerLoadEvent;
 import org.bukkit.help.HelpTopic;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.permissions.Permission;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,8 +55,11 @@ public abstract class CommandAPIBukkit<Source> implements BukkitPlatform<Source>
 	protected static InternalBukkitConfig config;
 	private BukkitCommandAPIMessenger messenger;
 
+	protected JavaPlugin plugin;
 	protected NMS<Source> nms;
 	private CommandRegistrationStrategy<Source> commandRegistrationStrategy;
+
+	private CommandAPILogger logger;
 
 	private final boolean isPaperBrigAPI;
 
@@ -91,6 +96,10 @@ public abstract class CommandAPIBukkit<Source> implements BukkitPlatform<Source>
 		throw new IllegalStateException("Tried to access the Bukkit platform, but it was null! Are you using CommandAPI features before calling CommandPAI#onLoad?");
 	}
 
+	public JavaPlugin getPlugin() {
+		return plugin;
+	}
+
 	public NMS<Source> getNMS() {
 		if (nms != null) {
 			return nms;
@@ -122,7 +131,7 @@ public abstract class CommandAPIBukkit<Source> implements BukkitPlatform<Source>
 			public void onServerLoad(ServerLoadEvent event) {
 				CommandAPI.stopCommandRegistration();
 			}
-		}, getConfiguration().getPlugin());
+		}, plugin);
 	}
 
 	private void checkDependencies() {
@@ -238,7 +247,7 @@ public abstract class CommandAPIBukkit<Source> implements BukkitPlatform<Source>
 				} else if (fullDescriptionOptional.isPresent()) {
 					shortDescription = fullDescriptionOptional.get();
 				} else {
-					shortDescription = "A command by the " + config.getPlugin().getName() + " plugin.";
+					shortDescription = "A command by the " + plugin.getName() + " plugin.";
 				}
 	
 				// Generate full description
@@ -310,6 +319,9 @@ public abstract class CommandAPIBukkit<Source> implements BukkitPlatform<Source>
 
 	@Override
 	public void preCommandRegistration(String commandName) {
+		if (Bukkit.getServer() == null) {
+			return; // and pray that nothing happens later
+		}
 		// Warn if the command we're registering already exists in this plugin's
 		// plugin.yml file
 		final PluginCommand pluginCommand = Bukkit.getPluginCommand(commandName);
@@ -317,7 +329,7 @@ public abstract class CommandAPIBukkit<Source> implements BukkitPlatform<Source>
 			return;
 		}
 		String pluginName = pluginCommand.getPlugin().getName();
-		if (config.getPlugin().getName().equals(pluginName)) {
+		if (plugin.getName().equals(pluginName)) {
 			CommandAPI.logWarning(
 				"Plugin command /%s is registered by Bukkit (%s). Did you forget to remove this from your plugin.yml file?"
 					.formatted(commandName, pluginName));
@@ -390,7 +402,7 @@ public abstract class CommandAPIBukkit<Source> implements BukkitPlatform<Source>
 
 	@Override
 	public BukkitCommandAPIMessenger setupMessenger() {
-		messenger = new BukkitCommandAPIMessenger(getConfiguration().getPlugin());
+		messenger = new BukkitCommandAPIMessenger(plugin);
 		return messenger;
 	}
 
@@ -405,7 +417,10 @@ public abstract class CommandAPIBukkit<Source> implements BukkitPlatform<Source>
 	}
 
 	public CommandAPILogger getLogger() {
-		return new DefaultLogger();
+		if (logger == null) {
+			logger = new DefaultLogger();
+		}
+		return logger;
 	}
 
 	private static class DefaultLogger extends Logger implements CommandAPILogger {

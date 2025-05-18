@@ -101,7 +101,7 @@ class MyPlugin : JavaPlugin() {
     }
 
     override fun onEnable() {
-        CommandAPI.onEnable()
+        CommandAPI.onEnable(this)
 
         // Register commands, listeners etc.
     }

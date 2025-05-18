@@ -36,12 +36,6 @@ extends AbstractArgument<?, ?, Argument, CommandSender>
 	void onLoad(CommandAPIConfig<?> config);
 
 	/**
-	 * Platform-specific stuff that should happen when the CommandAPI is enabled,
-	 * such as registering event listeners.
-	 */
-	void onEnable();
-
-	/**
 	 * Platform-specific stuff that should happen when the CommandAPI is disabled.
 	 */
 	void onDisable();
@@ -127,7 +121,7 @@ extends AbstractArgument<?, ?, Argument, CommandSender>
 	 *
 	 * @return The new {@link CommandAPIMessenger} that was created.
 	 */
-	public abstract CommandAPIMessenger<?, ?> setupMessenger();
+	CommandAPIMessenger<?, ?> setupMessenger();
 
 	/**
 	 * @return The Brigadier CommandDispatcher tree being used by the platform's server

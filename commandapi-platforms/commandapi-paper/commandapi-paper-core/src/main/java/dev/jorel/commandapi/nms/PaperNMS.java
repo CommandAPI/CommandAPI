@@ -19,6 +19,8 @@ public interface PaperNMS<CommandListenerWrapper> {
 
 	NMS<?> bukkitNMS();
 
+	boolean isDispatcherValid();
+
 	<Source> LiteralCommandNode<Source> asPluginCommand(LiteralCommandNode<Source> commandNode, String description, List<String> aliases);
 
 	<Source>CommandDispatcher<Source> getPaperCommandDispatcher();

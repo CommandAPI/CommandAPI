@@ -71,7 +71,7 @@ public class CommandAPIMain {
 	@Subscribe
 	public void onProxyInitialization(ProxyInitializeEvent event) {
 		// Enable
-		CommandAPI.onEnable();
+		CommandAPIVelocity.onEnable();
 	}
 
 	@Subscribe

@@ -40,7 +40,7 @@ public class MockCommandAPIPlugin extends JavaPlugin {
 
 	@Override
 	public void onLoad() {
-		CommandAPIPaperConfig config = new CommandAPIPaperConfig(this);
+		CommandAPIPaperConfig config = new CommandAPIPaperConfig(this.getPluginMeta());
 
 		if (configureSettings != null) {
 			configureSettings.accept(config);
@@ -52,7 +52,7 @@ public class MockCommandAPIPlugin extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-		CommandAPI.onEnable();
+		CommandAPIPaper.onEnable(this);
 	}
 
 	@Override

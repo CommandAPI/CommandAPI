@@ -3,6 +3,7 @@ package dev.jorel.commandapi.examples.java;
 import de.tr7zw.changeme.nbtapi.NBTContainer;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
+import dev.jorel.commandapi.CommandAPISpigot;
 import dev.jorel.commandapi.CommandAPISpigotConfig;
 import dev.jorel.commandapi.arguments.ChatArgument;
 import dev.jorel.commandapi.arguments.ChatColorArgument;
@@ -104,7 +105,7 @@ class MyPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        CommandAPI.onEnable();
+        CommandAPISpigot.onEnable();
 
         // Register commands, listeners etc.
     }

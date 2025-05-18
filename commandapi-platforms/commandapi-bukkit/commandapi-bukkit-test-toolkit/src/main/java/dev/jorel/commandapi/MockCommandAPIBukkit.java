@@ -103,9 +103,8 @@ public class MockCommandAPIBukkit extends CommandAPIBukkit<MockCommandSource> im
 		super.onLoad(config);
 	}
 
-	@Override
-	public void onEnable() {
-
+	public static void onEnable() {
+		CommandAPI.onEnable();
 	}
 
 	/**

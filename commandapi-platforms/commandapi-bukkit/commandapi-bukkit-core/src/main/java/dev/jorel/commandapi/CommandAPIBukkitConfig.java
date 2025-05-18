@@ -7,7 +7,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public abstract class CommandAPIBukkitConfig<T extends CommandAPIBukkitConfig<T>> extends CommandAPIConfig<T> {
 
-	JavaPlugin plugin;
+	String pluginName;
 
 	// Default configuration
 	boolean skipReloadDatapacks = true;
@@ -16,12 +16,11 @@ public abstract class CommandAPIBukkitConfig<T extends CommandAPIBukkitConfig<T>
 	 * Creates a new CommandAPIBukkitConfig object. Variables in this
 	 * constructor are required to load the CommandAPI on Bukkit properly.
 	 *
-	 * @param plugin The {@link JavaPlugin} that is loading the CommandAPI
-	 *               This is used when registering events.
+	 * @param pluginName The name of the {@link JavaPlugin} that is loading the CommandAPI
 	 */
-	public CommandAPIBukkitConfig(JavaPlugin plugin) {
-		this.plugin = plugin;
-		super.setNamespace(plugin.getName().toLowerCase());
+	public CommandAPIBukkitConfig(String pluginName) {
+		this.pluginName = pluginName;
+		super.setNamespace(pluginName.toLowerCase());
 	}
 
 	/**
@@ -30,7 +29,7 @@ public abstract class CommandAPIBukkitConfig<T extends CommandAPIBukkitConfig<T>
 	 */
 	@Deprecated(since = "10.0.0", forRemoval = true)
 	public T usePluginNamespace() {
-		super.setNamespace(plugin.getName().toLowerCase());
+		super.setNamespace(pluginName.toLowerCase());
 		super.usePluginNamespace = true;
 		return instance();
 	}

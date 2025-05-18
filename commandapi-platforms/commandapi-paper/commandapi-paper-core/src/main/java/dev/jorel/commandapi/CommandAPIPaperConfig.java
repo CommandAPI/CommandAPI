@@ -1,13 +1,16 @@
 package dev.jorel.commandapi;
 
-import org.bukkit.plugin.java.JavaPlugin;
+import io.papermc.paper.plugin.configuration.PluginMeta;
 
+@SuppressWarnings("UnstableApiUsage")
 public class CommandAPIPaperConfig extends CommandAPIBukkitConfig<CommandAPIPaperConfig> {
 
+	PluginMeta pluginMeta;
 	boolean shouldHookPaperReload = false;
 
-	public CommandAPIPaperConfig(JavaPlugin plugin) {
-		super(plugin);
+	public CommandAPIPaperConfig(PluginMeta pluginMeta) {
+		super(pluginMeta.getName());
+		this.pluginMeta = pluginMeta;
 	}
 
 	/**
@@ -15,7 +18,7 @@ public class CommandAPIPaperConfig extends CommandAPIBukkitConfig<CommandAPIPape
 	 * has finished loading. This does not skip reloading of datapacks when invoked manually
 	 * when {@link #shouldHookPaperReload(boolean)} is set.
 	 * @param skip whether the CommandAPI should skip reloading datapacks when the server has finished loading
-	 * @return this CommandAPIBukkitConfig
+	 * @return this CommandAPIPaperConfig
 	 */
 	public CommandAPIPaperConfig skipReloadDatapacks(boolean skip) {
 		this.skipReloadDatapacks = skip;
@@ -28,7 +31,7 @@ public class CommandAPIPaperConfig extends CommandAPIBukkitConfig<CommandAPIPape
 	 * is run.
 	 *
 	 * @param hooked whether the CommandAPI should hook into Paper's {@link io.papermc.paper.event.server.ServerResourcesReloadedEvent}
-	 * @return this CommandAPIBukkitConfig
+	 * @return this CommandAPIPaperConfig
 	 */
 	public CommandAPIPaperConfig shouldHookPaperReload(boolean hooked) {
 		this.shouldHookPaperReload = hooked;

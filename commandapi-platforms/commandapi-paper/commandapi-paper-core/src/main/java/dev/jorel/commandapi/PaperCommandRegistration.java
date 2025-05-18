@@ -5,12 +5,8 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
-import io.papermc.paper.plugin.configuration.PluginMeta;
 import org.bukkit.help.HelpTopic;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -75,9 +71,12 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 		LiteralCommandNode<Source> commandNode = asPluginCommand(node.build());
 		LiteralCommandNode<Source> namespacedCommandNode = asPluginCommand(CommandAPIHandler.getInstance().namespaceNode(commandNode, namespace));
 
-		// Add to registered command nodes
-		registeredNodes.addChild(commandNode);
-		registeredNodes.addChild(namespacedCommandNode);
+		if (!CommandAPIPaper.getPaper().isDispatcherValid()) {
+			// If it's not valid, then we're registering outside of lifecycle events
+			// Add to registered command nodes
+			registeredNodes.addChild(commandNode);
+			registeredNodes.addChild(namespacedCommandNode);
+		}
 
 		// Register commands
 		RootCommandNode<Source> root = getPaperDispatcher().getRoot();
@@ -132,7 +131,7 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 				if (helpTopic != null) {
 					return ((HelpTopic) helpTopic).getShortText();
 				} else {
-					return command.shortDescription().orElse("A command by the " + CommandAPIBukkit.getConfiguration().getPlugin().getName() + " plugin.");
+					return command.shortDescription().orElse("A command by the " + CommandAPIBukkit.getConfiguration().getPluginName() + " plugin.");
 				}
 			}
 		}

@@ -62,6 +62,11 @@ public class PaperNMS_1_20_R2 extends CommandAPIPaper<CommandSourceStack> {
 	}
 
 	@Override
+	public boolean isDispatcherValid() {
+		return false; // This is fine, it isn't used
+	}
+
+	@Override
 	public <Source> LiteralCommandNode<Source> asPluginCommand(LiteralCommandNode<Source> commandNode, String description, List<String> aliases) {
 		return null; // This is fine, it isn't used
 	}
