@@ -40,7 +40,7 @@ public interface NativeProxyCommandSender extends ProxiedCommandSender {
 	 * @param world    the proxied world that the command will be run in
 	 */
 	static NativeProxyCommandSender from(CommandSender caller, CommandSender callee, Location location, World world) {
-		return CommandAPIBukkit.get().createNativeProxyCommandSender(caller, callee, location, world);
+		return CommandAPIBukkit.get().getNMS().createNativeProxyCommandSender(caller, callee, location, world);
 	}
 
 	/**

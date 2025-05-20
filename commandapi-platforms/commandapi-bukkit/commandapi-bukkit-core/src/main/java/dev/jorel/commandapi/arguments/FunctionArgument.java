@@ -41,7 +41,7 @@ public class FunctionArgument extends SafeOverrideableArgument<FunctionWrapper[]
 	 * @param nodeName the name of the node for this argument
 	 */
 	public FunctionArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get()._ArgumentTag(), fromKey(n -> n));
+		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentTag(), fromKey(n -> n));
 	}
 
 	@Override
@@ -61,6 +61,6 @@ public class FunctionArgument extends SafeOverrideableArgument<FunctionWrapper[]
 	
 	@Override
 	public <CommandSourceStack> FunctionWrapper[] parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-		return CommandAPIBukkit.<CommandSourceStack>get().getFunction(cmdCtx, key);
+		return CommandAPIBukkit.<CommandSourceStack>get().getNMS().getFunction(cmdCtx, key);
 	}
 }

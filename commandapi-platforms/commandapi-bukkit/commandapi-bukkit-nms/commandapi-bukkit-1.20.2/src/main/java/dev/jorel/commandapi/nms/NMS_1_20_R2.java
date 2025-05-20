@@ -21,8 +21,6 @@
 package dev.jorel.commandapi.nms;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.io.Files;
-import com.google.gson.GsonBuilder;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.Message;
 import com.mojang.brigadier.arguments.ArgumentType;
@@ -32,10 +30,9 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.logging.LogUtils;
 import dev.jorel.commandapi.CommandAPI;
+import dev.jorel.commandapi.CommandAPIBukkit;
 import dev.jorel.commandapi.CommandAPIHandler;
-import dev.jorel.commandapi.CommandRegistrationStrategy;
 import dev.jorel.commandapi.SafeVarHandle;
-import dev.jorel.commandapi.SpigotCommandRegistration;
 import dev.jorel.commandapi.arguments.ArgumentSubType;
 import dev.jorel.commandapi.arguments.SuggestionProviders;
 import dev.jorel.commandapi.commandsenders.AbstractCommandSender;
@@ -54,9 +51,6 @@ import dev.jorel.commandapi.wrappers.ParticleData;
 import dev.jorel.commandapi.wrappers.Rotation;
 import dev.jorel.commandapi.wrappers.ScoreboardSlot;
 import dev.jorel.commandapi.wrappers.SimpleFunctionWrapper;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 import net.minecraft.advancements.AdvancementHolder;
@@ -65,7 +59,6 @@ import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandFunction;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.SharedSuggestionProvider;
-import net.minecraft.commands.arguments.ColorArgument;
 import net.minecraft.commands.arguments.ComponentArgument;
 import net.minecraft.commands.arguments.DimensionArgument;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -78,20 +71,14 @@ import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.commands.arguments.ScoreHolderArgument;
 import net.minecraft.commands.arguments.ScoreboardSlotArgument;
 import net.minecraft.commands.arguments.TeamArgument;
-import net.minecraft.commands.arguments.blocks.BlockPredicateArgument;
 import net.minecraft.commands.arguments.blocks.BlockStateArgument;
-import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
-import net.minecraft.commands.arguments.coordinates.ColumnPosArgument;
 import net.minecraft.commands.arguments.coordinates.RotationArgument;
 import net.minecraft.commands.arguments.coordinates.Vec2Argument;
-import net.minecraft.commands.arguments.coordinates.Vec3Argument;
 import net.minecraft.commands.arguments.item.FunctionArgument;
 import net.minecraft.commands.arguments.item.ItemArgument;
 import net.minecraft.commands.arguments.item.ItemInput;
 import net.minecraft.commands.arguments.item.ItemPredicateArgument;
 import net.minecraft.commands.arguments.selector.EntitySelector;
-import net.minecraft.commands.synchronization.ArgumentUtils;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.RegistryAccess.Frozen;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.DustColorTransitionOptions;
@@ -111,7 +98,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.MinecraftServer.ReloadableResources;
 import net.minecraft.server.ServerFunctionLibrary;
 import net.minecraft.server.ServerFunctionManager;
-import net.minecraft.server.level.ColumnPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
@@ -127,7 +113,6 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.DataPackConfig;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.WorldDataConfiguration;
-import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.level.gameevent.BlockPositionSource;
 import net.minecraft.world.level.storage.loot.LootDataType;
 import net.minecraft.world.phys.Vec2;
@@ -145,7 +130,6 @@ import org.bukkit.Vibration.Destination.BlockDestination;
 import org.bukkit.World;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.block.Biome;
-import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.SimpleCommandMap;
@@ -155,7 +139,6 @@ import org.bukkit.craftbukkit.v1_20_R2.CraftServer;
 import org.bukkit.craftbukkit.v1_20_R2.CraftSound;
 import org.bukkit.craftbukkit.v1_20_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_20_R2.block.data.CraftBlockData;
-import org.bukkit.craftbukkit.v1_20_R2.command.BukkitCommandWrapper;
 import org.bukkit.craftbukkit.v1_20_R2.command.VanillaCommandWrapper;
 import org.bukkit.craftbukkit.v1_20_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_20_R2.help.CustomHelpTopic;
@@ -163,19 +146,15 @@ import org.bukkit.craftbukkit.v1_20_R2.help.SimpleHelpMap;
 import org.bukkit.craftbukkit.v1_20_R2.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.v1_20_R2.potion.CraftPotionEffectType;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.help.HelpTopic;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Team;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -297,22 +276,6 @@ public class NMS_1_20_R2 extends NMS_Common {
 	}
 
 	@Override
-	public Component getAdventureChat(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		return GsonComponentSerializer.gson().deserialize(Serializer.toJson(MessageArgument.getMessage(cmdCtx, key)));
-	}
-
-	@Override
-	public NamedTextColor getAdventureChatColor(CommandContext<CommandSourceStack> cmdCtx, String key) {
-		final Integer color = ColorArgument.getColor(cmdCtx, key).getColor();
-		return color == null ? NamedTextColor.WHITE : NamedTextColor.namedColor(color);
-	}
-
-	@Override
-	public final Component getAdventureChatComponent(CommandContext<CommandSourceStack> cmdCtx, String key) {
-		return GsonComponentSerializer.gson().deserialize(Serializer.toJson(ComponentArgument.getComponent(cmdCtx, key)));
-	}
-
-	@Override
 	public final Object getBiome(CommandContext<CommandSourceStack> cmdCtx, String key, ArgumentSubType subType) throws CommandSyntaxException {
 		final ResourceLocation resourceLocation = ResourceArgument.getResource(cmdCtx, key, Registries.BIOME).key().location();
 		return switch(subType) {
@@ -338,16 +301,6 @@ public class NMS_1_20_R2 extends NMS_Common {
 	@Override
 	public CommandSourceStack getBrigadierSourceFromCommandSender(AbstractCommandSender<? extends CommandSender> sender) {
 		return VanillaCommandWrapper.getListener(sender.getSource());
-	}
-
-	@Override
-	public BaseComponent[] getChat(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		return ComponentSerializer.parse(Serializer.toJson(MessageArgument.getMessage(cmdCtx, key)));
-	}
-
-	@Override
-	public BaseComponent[] getChatComponent(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		return ComponentSerializer.parse(Serializer.toJson(ComponentArgument.getComponent(cmdCtx, key)));
 	}
 
 	@Override
@@ -647,7 +600,7 @@ public class NMS_1_20_R2 extends NMS_Common {
 			}
 			return new BukkitNativeProxyCommandSender(new NativeProxyCommandSender_1_20_R2(css, sender, proxy));
 		} else {
-			return wrapCommandSender(sender);
+			return CommandAPIBukkit.get().wrapCommandSender(sender);
 		}
 	}
 
@@ -656,7 +609,7 @@ public class NMS_1_20_R2 extends NMS_Common {
 		if (callee == null) callee = caller;
 
 		// Most parameters default to what is defined by the caller
-		CommandSourceStack css = getBrigadierSourceFromCommandSender(wrapCommandSender(caller));
+		CommandSourceStack css = getBrigadierSourceFromCommandSender(CommandAPIBukkit.get().wrapCommandSender(caller));
 
 		// Position and rotation may be overridden by the Location
 		if (location != null) {
@@ -775,7 +728,8 @@ public class NMS_1_20_R2 extends NMS_Common {
 
 		// Update the ServerFunctionLibrary's command dispatcher with the new one
 		try {
-			serverFunctionLibraryDispatcher.set(serverResources.managers().getFunctionLibrary(), getBrigadierDispatcher());
+			serverFunctionLibraryDispatcher.set(serverResources.managers().getFunctionLibrary(),
+				CommandAPIBukkit.<CommandSourceStack>get().getBrigadierDispatcher());
 		} catch (IllegalAccessException ignored) {
 			// Shouldn't happen, CommandAPIHandler#getField makes it accessible
 		}
@@ -866,7 +820,7 @@ public class NMS_1_20_R2 extends NMS_Common {
 
 			// Register recipes again because reloading datapacks
 			// removes all non-vanilla recipes
-			registerBukkitRecipesSafely(recipes);
+			CommandAPIBukkit.get().registerBukkitRecipesSafely(recipes);
 
 			CommandAPI.logNormal("Finished reloading datapacks");
 		} catch (Exception e) {
@@ -903,17 +857,5 @@ public class NMS_1_20_R2 extends NMS_Common {
 	@Override
 	public ArgumentType<?> _ArgumentEntitySummon() {
 		return ResourceArgument.resource(COMMAND_BUILD_CONTEXT, Registries.ENTITY_TYPE);
-	}
-
-	@Override
-	public CommandRegistrationStrategy<CommandSourceStack> createCommandRegistrationStrategy() {
-		return new SpigotCommandRegistration<>(
-			this.<MinecraftServer>getMinecraftServer().vanillaCommandDispatcher.getDispatcher(),
-			(SimpleCommandMap) getPaper().getCommandMap(),
-			() -> this.<MinecraftServer>getMinecraftServer().getCommands().getDispatcher(),
-			command -> command instanceof VanillaCommandWrapper,
-			node -> new VanillaCommandWrapper(this.<MinecraftServer>getMinecraftServer().vanillaCommandDispatcher, node),
-			node -> node.getCommand() instanceof BukkitCommandWrapper
-		);
 	}
 }

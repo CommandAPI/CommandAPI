@@ -38,7 +38,7 @@ public class MathOperationArgument extends SafeOverrideableArgument<MathOperatio
 	 * @param nodeName the name of the node for this argument
 	 */
 	public MathOperationArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get()._ArgumentMathOperation(), MathOperation::toString);
+		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentMathOperation(), MathOperation::toString);
 	}
 	
 	@Override
@@ -53,6 +53,6 @@ public class MathOperationArgument extends SafeOverrideableArgument<MathOperatio
 	
 	@Override
 	public <CommandSourceStack> MathOperation parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-		return CommandAPIBukkit.<CommandSourceStack>get().getMathOperation(cmdCtx, key);
+		return CommandAPIBukkit.<CommandSourceStack>get().getNMS().getMathOperation(cmdCtx, key);
 	}
 }
