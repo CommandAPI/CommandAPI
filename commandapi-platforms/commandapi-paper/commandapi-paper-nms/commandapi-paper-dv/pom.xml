@@ -12,9 +12,9 @@
 	<artifactId>commandapi-paper-dv</artifactId>
 
 	<properties>
-		<minecraft.mappings>1.20.1-R0.1-SNAPSHOT</minecraft.mappings>
-		<spigot.version>1.20.1-R0.1-SNAPSHOT</spigot.version>
-		<paper.version>1.20.1-R0.1-SNAPSHOT</paper.version>
+		<minecraft.mappings>1.20.6-R0.1-SNAPSHOT</minecraft.mappings>
+		<spigot.version>1.20.6-R0.1-SNAPSHOT</spigot.version>
+		<paper.version>1.20.6-R0.1-SNAPSHOT</paper.version>
 	</properties>
 
 	<repositories>
@@ -26,9 +26,19 @@
 			<id>codemc-repo</id>
 			<url>https://repo.codemc.io/repository/nms/</url>
 		</repository>
+		<repository>
+			<id>papermc</id>
+			<url>https://repo.papermc.io/repository/maven-public/</url>
+		</repository>
 	</repositories>
 
 	<dependencies>
+		<dependency>
+			<groupId>io.papermc.paper</groupId>
+			<artifactId>paper-api</artifactId>
+			<version>${paper.version}</version>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot</artifactId>
@@ -60,7 +70,7 @@
 			<plugin>
 				<groupId>net.md-5</groupId>
 				<artifactId>specialsource-maven-plugin</artifactId>
-				<version>1.2.4</version>
+				<version>2.0.4</version>
 				<executions>
 					<execution>
 						<phase>package</phase>
