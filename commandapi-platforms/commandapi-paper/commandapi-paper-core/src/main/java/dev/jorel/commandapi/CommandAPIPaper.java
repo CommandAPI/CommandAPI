@@ -10,8 +10,7 @@ import dev.jorel.commandapi.commandsenders.BukkitPlayer;
 import dev.jorel.commandapi.commandsenders.BukkitProxiedCommandSender;
 import dev.jorel.commandapi.commandsenders.BukkitRemoteConsoleCommandSender;
 import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
-import dev.jorel.commandapi.nms.NMS;
-import dev.jorel.commandapi.nms.PaperNMS;
+import dev.jorel.commandapi.nms.BundledNMS;
 import dev.jorel.commandapi.wrappers.NativeProxyCommandSender;
 import io.papermc.paper.event.server.ServerResourcesReloadedEvent;
 import net.kyori.adventure.text.ComponentLike;
@@ -25,12 +24,10 @@ import org.bukkit.command.ProxiedCommandSender;
 import org.bukkit.command.RemoteConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.server.ServerLoadEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public abstract class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> implements PaperNMS<Source> {
+public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 
 	private static CommandAPIPaper<?> paper;
 
@@ -41,10 +38,16 @@ public abstract class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> i
 
 	private CommandAPILogger bootstrapLogger;
 
+	private final BundledNMS<Source> nms;
+
 	@SuppressWarnings("unchecked")
 	protected CommandAPIPaper() {
-		this.nms = (NMS<Source>) bukkitNMS();
 		CommandAPIPaper.paper = this;
+
+		VersionContext context = (VersionContext) CommandAPIVersionHandler.getVersion();
+		context.context().run();
+		this.nms = (BundledNMS<Source>) context.nms();
+		super.nms = this.nms;
 
 		Class<? extends CommandSender> tempFeedbackForwardingCommandSender = null;
 		Class<? extends CommandSender> tempNullCommandSender = null;
@@ -79,6 +82,14 @@ public abstract class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> i
 
 	private static void setInternalConfig(InternalPaperConfig config) {
 		CommandAPIBukkit.config = config;
+	}
+
+	@Override
+	public BundledNMS<Source> getNMS() {
+		if (nms != null) {
+			return this.nms;
+		}
+		throw new IllegalStateException("Tried to access NMS instance, but it was null! Are you using CommandAPI features before calling CommandAPI#onLoad?");
 	}
 
 	@Override
@@ -189,6 +200,11 @@ public abstract class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> i
 	@Override
 	public Platform activePlatform() {
 		return Platform.PAPER;
+	}
+
+	@Override
+	public CommandRegistrationStrategy<Source> createCommandRegistrationStrategy() {
+		return nms.createCommandRegistrationStrategy();
 	}
 
 	@Override

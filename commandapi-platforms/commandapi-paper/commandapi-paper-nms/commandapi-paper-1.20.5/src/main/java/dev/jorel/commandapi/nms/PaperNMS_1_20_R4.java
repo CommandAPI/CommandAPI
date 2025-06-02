@@ -5,6 +5,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import dev.jorel.commandapi.CommandAPIBukkit;
 import dev.jorel.commandapi.CommandAPIPaper;
 import dev.jorel.commandapi.CommandRegistrationStrategy;
 import dev.jorel.commandapi.PaperCommandRegistration;
@@ -12,6 +13,7 @@ import dev.jorel.commandapi.SpigotCommandRegistration;
 import io.papermc.paper.command.brigadier.PaperCommands;
 import io.papermc.paper.command.brigadier.PluginCommandNode;
 import io.papermc.paper.command.brigadier.bukkit.BukkitCommandNode;
+import net.kyori.adventure.chat.SignedMessage;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
@@ -31,8 +33,9 @@ import org.bukkit.craftbukkit.help.SimpleHelpMap;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
-public class PaperNMS_1_20_R4 extends CommandAPIPaper<CommandSourceStack> {
+public class PaperNMS_1_20_R4 implements PaperNMS<CommandSourceStack> {
 
 	private static final CommandBuildContext COMMAND_BUILD_CONTEXT;
 	private static final boolean vanillaCommandDispatcherFieldExists;
@@ -52,7 +55,7 @@ public class PaperNMS_1_20_R4 extends CommandAPIPaper<CommandSourceStack> {
 		Commands commandDispatcher;
 		try {
 			Field vanillaCommandDispatcherField = MinecraftServer.class.getDeclaredField("vanillaCommandDispatcher");
-			commandDispatcher = (Commands) vanillaCommandDispatcherField.get(getPaper().bukkitNMS().getMinecraftServer());
+			commandDispatcher = (Commands) vanillaCommandDispatcherField.get(CommandAPIPaper.getPaper().getNMS().<MinecraftServer>getMinecraftServer());
 			fieldExists = true;
 		} catch (NoSuchFieldException | SecurityException | IllegalAccessException e) {
 			// Expected on Paper-1.20.6-65 or later due to https://github.com/PaperMC/Paper/pull/8235
@@ -64,8 +67,10 @@ public class PaperNMS_1_20_R4 extends CommandAPIPaper<CommandSourceStack> {
 	}
 
 	@Override
-	public Component getChat(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		return GsonComponentSerializer.gson().deserialize(net.minecraft.network.chat.Component.Serializer.toJson(MessageArgument.getMessage(cmdCtx, key), COMMAND_BUILD_CONTEXT));
+	public SignedMessage getChat(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
+		CompletableFuture<SignedMessage> future = new CompletableFuture<>();
+		MessageArgument.resolveChatMessage(cmdCtx, key, (message) -> future.complete(message.adventureView()));
+		return future.join();
 	}
 
 	@Override
@@ -80,11 +85,11 @@ public class PaperNMS_1_20_R4 extends CommandAPIPaper<CommandSourceStack> {
 	}
 
 	@Override
-	public NMS<?> bukkitNMS() {
+	public <Source> NMS<Source> bukkitNMS() {
 		if (bukkitNMS == null) {
 			this.bukkitNMS = new NMS_1_20_R4(COMMAND_BUILD_CONTEXT);
 		}
-		return bukkitNMS;
+		return (NMS<Source>) bukkitNMS;
 	}
 
 	@Override
@@ -92,7 +97,7 @@ public class PaperNMS_1_20_R4 extends CommandAPIPaper<CommandSourceStack> {
 		if (vanillaCommandDispatcherFieldExists) {
 			return new SpigotCommandRegistration<>(
 				vanillaCommandDispatcher.getDispatcher(),
-				(SimpleCommandMap) getCommandMap(),
+				(SimpleCommandMap) CommandAPIBukkit.get().getCommandMap(),
 				() -> bukkitNMS.<MinecraftServer>getMinecraftServer().getCommands().getDispatcher(),
 				command -> command instanceof VanillaCommandWrapper,
 				node -> new VanillaCommandWrapper(vanillaCommandDispatcher, node),

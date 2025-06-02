@@ -314,9 +314,9 @@ public abstract class NMS_Common extends NMS<CommandSourceStack> {
 	}
 
 	@Override
-	public final BukkitCommandSender<? extends CommandSender> getCommandSenderFromCommandSource(CommandSourceStack css) {
+	public final <Source> BukkitCommandSender<? extends CommandSender> getCommandSenderFromCommandSource(Source css) {
 		try {
-			return CommandAPIBukkit.get().wrapCommandSender(css.getBukkitSender());
+			return CommandAPIBukkit.get().wrapCommandSender(((CommandSourceStack) css).getBukkitSender());
 		} catch (UnsupportedOperationException e) {
 			return null;
 		}

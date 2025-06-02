@@ -31,20 +31,21 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import com.mojang.brigadier.CommandDispatcher;
-import dev.jorel.commandapi.CommandRegistrationStrategy;
+import dev.jorel.commandapi.arguments.parser.EntitySelectorParser;
+import dev.jorel.commandapi.arguments.parser.RegistryParser;
 import dev.jorel.commandapi.commandsenders.AbstractCommandSender;
 import dev.jorel.commandapi.commandsenders.BukkitCommandSender;
 import dev.jorel.commandapi.preprocessor.Unimplemented;
 import org.bukkit.Axis;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.advancement.Advancement;
+import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
-import org.bukkit.block.data.BlockData;
+import org.bukkit.block.BlockState;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.enchantments.Enchantment;
@@ -76,9 +77,6 @@ import dev.jorel.commandapi.wrappers.ParticleData;
 import dev.jorel.commandapi.wrappers.Rotation;
 import dev.jorel.commandapi.wrappers.ScoreboardSlot;
 import dev.jorel.commandapi.wrappers.SimpleFunctionWrapper;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.md_5.bungee.api.chat.BaseComponent;
 
 import static dev.jorel.commandapi.preprocessor.Unimplemented.REASON.REQUIRES_CRAFTBUKKIT;
 import static dev.jorel.commandapi.preprocessor.Unimplemented.REASON.REQUIRES_CSS;
@@ -307,19 +305,18 @@ public abstract class NMS<CommandListenerWrapper> {
 
 	public abstract EnumSet<Axis> getAxis(CommandContext<CommandListenerWrapper> cmdCtx, String key);
 
-	public abstract Object getBiome(CommandContext<CommandListenerWrapper> cmdCtx, String key, ArgumentSubType subType) throws CommandSyntaxException;
+	public abstract RegistryParser<Biome> getBiome(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException;
 
 	public abstract Predicate<Block> getBlockPredicate(CommandContext<CommandListenerWrapper> cmdCtx, String key)
 		throws CommandSyntaxException;
 
-	public abstract BlockData getBlockState(CommandContext<CommandListenerWrapper> cmdCtx, String key);
+	public abstract BlockState getBlockState(CommandContext<CommandListenerWrapper> cmdCtx, String key);
 
 	public abstract World getDimension(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException;
 
 	public abstract Enchantment getEnchantment(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException; // Throws exception in 1.19.3
 
-	public abstract Object getEntitySelector(CommandContext<CommandListenerWrapper> cmdCtx, String key, ArgumentSubType subType, boolean allowEmpty)
-		throws CommandSyntaxException;
+	public abstract EntitySelectorParser getEntitySelector(CommandContext<CommandListenerWrapper> cmdCtx, String key);
 
 	public abstract EntityType getEntityType(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException;
 
@@ -347,8 +344,7 @@ public abstract class NMS<CommandListenerWrapper> {
 
 	public abstract Location getLocationBlock(CommandContext<CommandListenerWrapper> cmdCtx, String str) throws CommandSyntaxException;
 
-	public abstract Location getLocationPrecise(CommandContext<CommandListenerWrapper> cmdCtx, String str)
-		throws CommandSyntaxException;
+	public abstract Location getLocationPrecise(CommandContext<CommandListenerWrapper> cmdCtx, String str) throws CommandSyntaxException;
 
 	public abstract LootTable getLootTable(CommandContext<CommandListenerWrapper> cmdCtx, String key);
 
@@ -372,12 +368,11 @@ public abstract class NMS<CommandListenerWrapper> {
 	public abstract OfflinePlayer getOfflinePlayer(CommandContext<CommandListenerWrapper> cmdCtx, String key)
 		throws CommandSyntaxException;
 
-	public abstract Object getPotionEffect(CommandContext<CommandListenerWrapper> cmdCtx, String key, ArgumentSubType subType)
-		throws CommandSyntaxException;
+	public abstract RegistryParser<PotionEffectType> getPotionEffect(CommandContext<CommandListenerWrapper> cmdCtx, String key);
 
 	public abstract Recipe getRecipe(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException;
 
-	public abstract Rotation getRotation(CommandContext<CommandListenerWrapper> cmdCtx, String key);
+	public abstract Rotation getRotation(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException;
 
 	public abstract ScoreboardSlot getScoreboardSlot(CommandContext<CommandListenerWrapper> cmdCtx, String key);
 
@@ -402,7 +397,7 @@ public abstract class NMS<CommandListenerWrapper> {
 	 */
 	public abstract SimpleCommandMap getSimpleCommandMap();
 
-	public abstract Object getSound(CommandContext<CommandListenerWrapper> cmdCtx, String key, ArgumentSubType subType);
+	public abstract RegistryParser<Sound> getSound(CommandContext<CommandListenerWrapper> cmdCtx, String key);
 
 	/**
 	 * Retrieve a specific NMS implemented SuggestionProvider
@@ -431,7 +426,7 @@ public abstract class NMS<CommandListenerWrapper> {
 	public abstract BukkitCommandSender<? extends CommandSender> getSenderForCommand(CommandContext<CommandListenerWrapper> cmdCtx, boolean forceNative);
 
 	@Unimplemented(because = REQUIRES_CSS)
-	public abstract BukkitCommandSender<? extends CommandSender> getCommandSenderFromCommandSource(CommandListenerWrapper css);
+	public abstract <Source> BukkitCommandSender<? extends CommandSender> getCommandSenderFromCommandSource(Source css);
 
 	@Unimplemented(because = REQUIRES_CRAFTBUKKIT)
 	public abstract CommandListenerWrapper getBrigadierSourceFromCommandSender(AbstractCommandSender<? extends CommandSender> sender);

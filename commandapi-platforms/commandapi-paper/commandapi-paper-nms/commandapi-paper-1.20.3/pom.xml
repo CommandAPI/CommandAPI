@@ -32,14 +32,19 @@
 		</repository>
 	</repositories>
 
-	<dependencies>
-		<!-- Spigot testing (for reflection checks) -->
+	<pluginRepositories>
+		<pluginRepository>
+			<id>bytecode.space</id>
+			<url>https://repo.bytecode.space/repository/maven-public/</url>
+		</pluginRepository>
+	</pluginRepositories>
 
+	<dependencies>
 		<dependency>
-			<groupId>org.spigotmc</groupId>
-			<artifactId>spigot</artifactId>
-			<version>${spigot.version}</version>
-			<scope>test</scope>
+			<groupId>ca.bkaw</groupId>
+			<artifactId>paper-nms</artifactId>
+			<version>1.20.4-SNAPSHOT</version>
+			<scope>provided</scope>
 		</dependency>
 		<!-- Libraries -->
 		<dependency>
@@ -86,6 +91,7 @@
 				<executions>
 					<execution>
 						<id>Mojang-Mapped</id>
+						<phase>compile</phase>
 						<goals>
 							<goal>jar</goal>
 						</goals>
@@ -97,35 +103,15 @@
 			</plugin>
 			<!-- Generate Spigot mapped jar -->
 			<plugin>
-				<groupId>net.md-5</groupId>
-				<artifactId>specialsource-maven-plugin</artifactId>
-				<version>1.2.4</version>
+				<groupId>ca.bkaw</groupId>
+				<artifactId>paper-nms-maven-plugin</artifactId>
+				<version>1.4.7</version>
 				<executions>
 					<execution>
-						<phase>package</phase>
+						<phase>process-classes</phase>
 						<goals>
 							<goal>remap</goal>
 						</goals>
-						<id>remap-obf</id>
-						<configuration>
-							<srgIn>org.spigotmc:minecraft-server:${minecraft.mappings}:txt:maps-mojang</srgIn>
-							<reverse>true</reverse>
-							<remappedDependencies>org.spigotmc:spigot:${minecraft.mappings}:jar:remapped-mojang</remappedDependencies>
-							<remappedArtifactAttached>true</remappedArtifactAttached>
-							<remappedClassifierName>remapped-obf</remappedClassifierName>
-						</configuration>
-					</execution>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>remap</goal>
-						</goals>
-						<id>remap-spigot</id>
-						<configuration>
-							<inputFile>${project.build.directory}/${project.artifactId}-${project.version}-remapped-obf.jar</inputFile>
-							<srgIn>org.spigotmc:minecraft-server:${minecraft.mappings}:csrg:maps-spigot</srgIn>
-							<remappedDependencies>org.spigotmc:spigot:${minecraft.mappings}:jar:remapped-obf</remappedDependencies>
-						</configuration>
 					</execution>
 				</executions>
 			</plugin>

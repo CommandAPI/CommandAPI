@@ -59,10 +59,14 @@ public class Location2DArgument extends SafeOverrideableArgument<Location2D, Loc
 	 * @param centerPosition whether LocationType.PRECISE_POSITION should center the position of the location within a block
 	 */
 	public Location2DArgument(String nodeName, LocationType type, boolean centerPosition) {
-		super(nodeName, type == LocationType.BLOCK_POSITION ? CommandAPIBukkit.get().getNMS()._ArgumentPosition2D()
+		super(nodeName,
+			type == LocationType.BLOCK_POSITION
+				? CommandAPIBukkit.get().getNMS()._ArgumentPosition2D()
 				: CommandAPIBukkit.get().getNMS()._ArgumentVec2(centerPosition),
-				type == LocationType.BLOCK_POSITION ? (Location2D l) -> l.getBlockX() + " " + l.getBlockZ()
-						: (Location2D l) -> l.getX() + " " + l.getZ());
+			type == LocationType.BLOCK_POSITION
+				? (Location2D l) -> l.getBlockX() + " " + l.getBlockZ()
+				: (Location2D l) -> l.getX() + " " + l.getZ()
+		);
 		isPrecise = type == LocationType.PRECISE_POSITION;
 	}
 

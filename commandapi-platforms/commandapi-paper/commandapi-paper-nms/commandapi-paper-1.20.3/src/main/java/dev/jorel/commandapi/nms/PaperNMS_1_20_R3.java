@@ -5,9 +5,9 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import dev.jorel.commandapi.CommandAPIBukkit;
-import dev.jorel.commandapi.CommandAPIPaper;
 import dev.jorel.commandapi.CommandRegistrationStrategy;
 import dev.jorel.commandapi.SpigotCommandRegistration;
+import net.kyori.adventure.chat.SignedMessage;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
@@ -21,14 +21,17 @@ import org.bukkit.craftbukkit.v1_20_R3.command.BukkitCommandWrapper;
 import org.bukkit.craftbukkit.v1_20_R3.command.VanillaCommandWrapper;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
-public class PaperNMS_1_20_R3 extends CommandAPIPaper<CommandSourceStack> {
+public class PaperNMS_1_20_R3 implements PaperNMS<CommandSourceStack> {
 
 	private NMS_1_20_R3 bukkitNMS;
 
 	@Override
-	public Component getChat(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		return GsonComponentSerializer.gson().deserialize(net.minecraft.network.chat.Component.Serializer.toJson(MessageArgument.getMessage(cmdCtx, key)));
+	public SignedMessage getChat(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
+		CompletableFuture<SignedMessage> future = new CompletableFuture<>();
+		MessageArgument.resolveChatMessage(cmdCtx, key, (message) -> future.complete(message.adventureView()));
+		return future.join();
 	}
 
 	@Override
@@ -43,18 +46,18 @@ public class PaperNMS_1_20_R3 extends CommandAPIPaper<CommandSourceStack> {
 	}
 
 	@Override
-	public NMS<?> bukkitNMS() {
+	public <Source> NMS<Source> bukkitNMS() {
 		if (bukkitNMS == null) {
 			this.bukkitNMS = new NMS_1_20_R3();
 		}
-		return bukkitNMS;
+		return (NMS<Source>) bukkitNMS;
 	}
 
 	@Override
 	public CommandRegistrationStrategy<CommandSourceStack> createCommandRegistrationStrategy() {
 		return new SpigotCommandRegistration<>(
 			bukkitNMS.<MinecraftServer>getMinecraftServer().vanillaCommandDispatcher.getDispatcher(),
-			(SimpleCommandMap) getCommandMap(),
+			(SimpleCommandMap) CommandAPIBukkit.get().getCommandMap(),
 			() -> bukkitNMS.<MinecraftServer>getMinecraftServer().getCommands().getDispatcher(),
 			command -> command instanceof VanillaCommandWrapper,
 			node -> new VanillaCommandWrapper(bukkitNMS.<MinecraftServer>getMinecraftServer().vanillaCommandDispatcher, node),

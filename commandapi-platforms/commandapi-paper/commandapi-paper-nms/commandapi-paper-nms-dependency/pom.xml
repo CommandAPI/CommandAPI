@@ -27,6 +27,13 @@
 			<version>${project.version}</version>
 		</dependency>
 
+		<!-- API types -->
+		<dependency>
+			<groupId>dev.jorel</groupId>
+			<artifactId>commandapi-paper-api</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
 		<!-- NMS-specific implementations for Paper -->
 		<dependency>
 			<groupId>dev.jorel</groupId>

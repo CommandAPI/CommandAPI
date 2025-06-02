@@ -68,6 +68,6 @@ public class ChatColorArgument extends SafeOverrideableArgument<NamedTextColor, 
 	
 	@Override
 	public <CommandSourceStack> NamedTextColor parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-		return CommandAPIPaper.<CommandSourceStack>getPaper().getChatColor(cmdCtx, key);
+		return CommandAPIPaper.<CommandSourceStack>getPaper().getNMS().getChatColor(cmdCtx, key);
 	}
 }

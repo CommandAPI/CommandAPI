@@ -7,6 +7,10 @@ package dev.jorel.commandapi;
  */
 public abstract class CommandAPIVersionHandler {
 
+	static Object getVersion() {
+		throw new IllegalStateException("You have the wrong copy of the CommandAPI! If you're shading, did you use commandapi-core instead of commandapi-{platform}-shade?");
+	}
+
 	/**
 	 * Returns an instance of the version's implementation of CommandAPIPlatform.
 	 *

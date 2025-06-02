@@ -26,6 +26,7 @@
 
 		<module>commandapi-paper-nms-dependency</module>
 		<module>commandapi-paper-nms-dependency-mojang-mapped</module>
+        <module>commandapi-paper-api</module>
     </modules>
 
 </project>

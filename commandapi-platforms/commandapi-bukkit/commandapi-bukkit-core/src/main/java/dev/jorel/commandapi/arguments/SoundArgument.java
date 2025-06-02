@@ -60,7 +60,7 @@ public class SoundArgument extends SafeOverrideableArgument<Sound, Sound> implem
 	
 	@Override
 	public <CommandSourceStack> Sound parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-		return (Sound) CommandAPIBukkit.<CommandSourceStack>get().getNMS().getSound(cmdCtx, key, ArgumentSubType.SOUND_SOUND);
+		return CommandAPIBukkit.<CommandSourceStack>get().getNMS().getSound(cmdCtx, key).type().get();
 	}
 
 	/**
@@ -97,7 +97,7 @@ public class SoundArgument extends SafeOverrideableArgument<Sound, Sound> implem
 
 		@Override
 		public <CommandSourceStack> org.bukkit.NamespacedKey parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-			return (org.bukkit.NamespacedKey) CommandAPIBukkit.<CommandSourceStack>get().getNMS().getSound(cmdCtx, key, ArgumentSubType.SOUND_NAMESPACEDKEY);
+			return CommandAPIBukkit.<CommandSourceStack>get().getNMS().getSound(cmdCtx, key).key().get();
 		}
 
 	}

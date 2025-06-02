@@ -28,68 +28,75 @@ import org.bukkit.Location;
 
 /**
  * An argument that represents the Bukkit {@link Location} object
- * 
- * @since 1.1
+ *
  * @apiNote Returns a {@link Location} object
+ * @since 1.1
  */
 public class LocationArgument extends SafeOverrideableArgument<Location, Location> {
-	
+
 	/**
 	 * A Location argument. Represents Minecraft locations. Defaults to {@link LocationType#PRECISE_POSITION}
+	 *
 	 * @param nodeName the name of the node for this argument
 	 */
 	public LocationArgument(String nodeName) {
 		this(nodeName, LocationType.PRECISE_POSITION);
 	}
-	
+
 	/**
 	 * A Location argument. Represents Minecraft locations
+	 *
 	 * @param nodeName the name of the node for this argument
-	 * @param type the location type of this location, either {@link LocationType#BLOCK_POSITION} or {@link LocationType#PRECISE_POSITION}
+	 * @param type     the location type of this location, either {@link LocationType#BLOCK_POSITION} or {@link LocationType#PRECISE_POSITION}
 	 */
 	public LocationArgument(String nodeName, LocationType type) {
 		this(nodeName, type, true);
 	}
-	
+
 	/**
 	 * A Location argument. Represents Minecraft locations
-	 * @param nodeName the name of the node for this argument
-	 * @param type the location type of this location, either {@link LocationType#BLOCK_POSITION} or {@link LocationType#PRECISE_POSITION}
+	 *
+	 * @param nodeName       the name of the node for this argument
+	 * @param type           the location type of this location, either {@link LocationType#BLOCK_POSITION} or {@link LocationType#PRECISE_POSITION}
 	 * @param centerPosition whether LocationType.PRECISE_POSITION should center the position of the location within a block
 	 */
 	public LocationArgument(String nodeName, LocationType type, boolean centerPosition) {
-		super(nodeName, type == LocationType.BLOCK_POSITION ? CommandAPIBukkit.get().getNMS()._ArgumentPosition()
+		super(nodeName,
+			type == LocationType.BLOCK_POSITION
+				? CommandAPIBukkit.get().getNMS()._ArgumentPosition()
 				: CommandAPIBukkit.get().getNMS()._ArgumentVec3(centerPosition),
-				type == LocationType.BLOCK_POSITION
-						? (Location l) -> l.getBlockX() + " " + l.getBlockY() + " " + l.getBlockZ()
-						: (Location l) -> l.getX() + " " + l.getY() + " " + l.getZ());
+			type == LocationType.BLOCK_POSITION
+				? (Location l) -> l.getBlockX() + " " + l.getBlockY() + " " + l.getBlockZ()
+				: (Location l) -> l.getX() + " " + l.getY() + " " + l.getZ()
+		);
 		isPrecise = type == LocationType.PRECISE_POSITION;
 	}
-	
+
 	private final boolean isPrecise;
 
 	/**
 	 * Returns whether this argument is {@link LocationType#BLOCK_POSITION} or {@link LocationType#PRECISE_POSITION}
+	 *
 	 * @return the location type of this argument
 	 */
 	public LocationType getLocationType() {
 		return isPrecise ? LocationType.PRECISE_POSITION : LocationType.BLOCK_POSITION;
 	}
-	
+
 	@Override
 	public Class<Location> getPrimitiveType() {
 		return Location.class;
 	}
-	
+
 	@Override
 	public CommandAPIArgumentType getArgumentType() {
 		return CommandAPIArgumentType.LOCATION;
 	}
-	
+
 	@Override
 	public <CommandSourceStack> Location parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-		return isPrecise ?
-			CommandAPIBukkit.<CommandSourceStack>get().getNMS().getLocationPrecise(cmdCtx, key) :
-			CommandAPIBukkit.<CommandSourceStack>get().getNMS().getLocationBlock(cmdCtx, key);
+		return isPrecise
+			? CommandAPIBukkit.<CommandSourceStack>get().getNMS().getLocationPrecise(cmdCtx, key)
+			: CommandAPIBukkit.<CommandSourceStack>get().getNMS().getLocationBlock(cmdCtx, key);
 	}
 }

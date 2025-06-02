@@ -26,6 +26,7 @@ import dev.jorel.commandapi.CommandAPIBukkit;
 import dev.jorel.commandapi.CommandAPIPaper;
 import dev.jorel.commandapi.exceptions.PaperAdventureNotFoundException;
 import dev.jorel.commandapi.executors.CommandArguments;
+import net.kyori.adventure.chat.SignedMessage;
 import net.kyori.adventure.text.Component;
 
 /**
@@ -33,9 +34,9 @@ import net.kyori.adventure.text.Component;
  * 
  * @since 5.10
  * 
- * @apiNote Returns a {@link Component} object
+ * @apiNote Returns a {@link net.kyori.adventure.chat.SignedMessage} object
  */
-public class ChatArgument extends Argument<Component> implements GreedyArgument {
+public class ChatArgument extends Argument<SignedMessage> implements GreedyArgument {
 
 	/**
 	 * Constructs a Chat argument with a given node name. Represents fancy greedy
@@ -47,15 +48,15 @@ public class ChatArgument extends Argument<Component> implements GreedyArgument 
 		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentChat());
 
 		try {
-			Class.forName("net.kyori.adventure.text.Component");
+			Class.forName("net.kyori.adventure.chat.SignedMessage");
 		} catch (ClassNotFoundException e) {
 			throw new PaperAdventureNotFoundException(this.getClass());
 		}
 	}
 
 	@Override
-	public Class<Component> getPrimitiveType() {
-		return Component.class;
+	public Class<SignedMessage> getPrimitiveType() {
+		return SignedMessage.class;
 	}
 
 	@Override
@@ -64,7 +65,7 @@ public class ChatArgument extends Argument<Component> implements GreedyArgument 
 	}
 
 	@Override
-	public <CommandSourceStack> Component parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-		return CommandAPIPaper.<CommandSourceStack>getPaper().getChat(cmdCtx, key);
+	public <CommandSourceStack> SignedMessage parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
+		return CommandAPIPaper.<CommandSourceStack>getPaper().getNMS().getChat(cmdCtx, key);
 	}
 }

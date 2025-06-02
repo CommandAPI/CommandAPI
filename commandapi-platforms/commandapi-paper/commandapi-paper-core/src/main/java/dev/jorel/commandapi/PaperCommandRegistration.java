@@ -47,7 +47,7 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 	}
 
 	public CommandDispatcher<Source> getPaperDispatcher() {
-		return CommandAPIPaper.getPaper().getPaperCommandDispatcher();
+		return CommandAPIPaper.getPaper().getNMS().getPaperCommandDispatcher();
 	}
 
 	// Implement CommandRegistrationStrategy methods
@@ -71,7 +71,7 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 		LiteralCommandNode<Source> commandNode = asPluginCommand(node.build());
 		LiteralCommandNode<Source> namespacedCommandNode = asPluginCommand(CommandAPIHandler.getInstance().namespaceNode(commandNode, namespace));
 
-		if (!CommandAPIPaper.getPaper().isDispatcherValid()) {
+		if (!CommandAPIPaper.getPaper().getNMS().isDispatcherValid()) {
 			// If it's not valid, then we're registering outside of lifecycle events
 			// Add to registered command nodes
 			registeredNodes.addChild(commandNode);
@@ -115,7 +115,7 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 	}
 
 	private LiteralCommandNode<Source> asPluginCommand(LiteralCommandNode<Source> commandNode) {
-		return CommandAPIPaper.getPaper().asPluginCommand(commandNode, getDescription(commandNode.getLiteral()), getAliasesForCommand(commandNode.getLiteral()));
+		return CommandAPIPaper.getPaper().getNMS().asPluginCommand(commandNode, getDescription(commandNode.getLiteral()), getAliasesForCommand(commandNode.getLiteral()));
 	}
 
 	private String getDescription(String commandName) {

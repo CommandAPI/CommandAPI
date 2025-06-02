@@ -1,7 +1,9 @@
 package dev.jorel.commandapi;
 
 import dev.jorel.commandapi.exceptions.UnsupportedVersionException;
+import dev.jorel.commandapi.nms.APITypeProvider;
 import dev.jorel.commandapi.nms.DetectVersion;
+import dev.jorel.commandapi.nms.PaperNMS;
 import dev.jorel.commandapi.nms.PaperNMS_1_20_R1;
 import dev.jorel.commandapi.nms.PaperNMS_1_20_R2;
 import dev.jorel.commandapi.nms.PaperNMS_1_20_R3;
@@ -16,17 +18,21 @@ import org.bukkit.Bukkit;
 public abstract class CommandAPIVersionHandler {
 
 	static LoadContext getPlatform() {
+		return new LoadContext(new CommandAPIPaper<>());
+	}
+
+	static Object getVersion() {
 		String latestMajorVersion = "21"; // Change this for Minecraft's major update
 
 		try {
 			if (CommandAPI.getConfiguration().shouldUseLatestNMSVersion()) {
-				return new LoadContext(new PaperNMS_1_21_R5(), () -> {
+				return new VersionContext(new APITypeProvider(new PaperNMS_1_21_R5()), () -> {
 					CommandAPI.logWarning("Loading the CommandAPI with the latest and potentially incompatible NMS implementation.");
 					CommandAPI.logWarning("While you may find success with this, further updates might be necessary to fully support the version you are using.");
 				});
 			} else {
 				String version = DetectVersion.getVersion();
-				CommandAPIPlatform<?, ?, ?> platform = switch (version) {
+				PaperNMS<?> versionAdapter = switch (version) {
 					case "1.20", "1.20.1" -> new PaperNMS_1_20_R1();
 					case "1.20.2" -> new PaperNMS_1_20_R2();
 					case "1.20.3", "1.20.4" -> new PaperNMS_1_20_R3();
@@ -38,13 +44,13 @@ public abstract class CommandAPIVersionHandler {
 					case "1.21.6" -> new PaperNMS_1_21_R5();
 					default -> null;
 				};
-				if (platform != null) {
-					return new LoadContext(platform);
+				if (versionAdapter != null) {
+					return new VersionContext(new APITypeProvider(versionAdapter));
 				}
 				if (CommandAPI.getConfiguration().shouldBeLenientForMinorVersions()) {
 					String currentMajorVersion = version.split("\\.")[1];
 					if (latestMajorVersion.equals(currentMajorVersion)) {
-						return new LoadContext(new PaperNMS_1_21_R5(), () -> {
+						return new VersionContext(new APITypeProvider(new PaperNMS_1_21_R5()), () -> {
 							CommandAPI.logWarning("Loading the CommandAPI with a potentially incompatible NMS implementation.");
 							CommandAPI.logWarning("While you may find success with this, further updates might be necessary to fully support the version you are using.");
 						});

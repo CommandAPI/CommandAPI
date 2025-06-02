@@ -24,17 +24,18 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.jorel.commandapi.CommandAPIBukkit;
 import dev.jorel.commandapi.executors.CommandArguments;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.data.BlockData;
 
 /**
- * An argument that represents the Bukkit BlockData object
+ * An argument that represents the Bukkit BlockState object
  * 
  * @since 3.1
  * 
- * @apiNote Returns a {@link BlockData} object
+ * @apiNote Returns a {@link org.bukkit.block.BlockState} object
  * 
  */
-public class BlockStateArgument extends Argument<BlockData> {
+public class BlockStateArgument extends Argument<BlockState> {
 
 	/**
 	 * Constructs a BlockStateArgument with a given node name.
@@ -46,8 +47,8 @@ public class BlockStateArgument extends Argument<BlockData> {
 	}
 
 	@Override
-	public Class<BlockData> getPrimitiveType() {
-		return BlockData.class;
+	public Class<BlockState> getPrimitiveType() {
+		return BlockState.class;
 	}
 
 	@Override
@@ -56,7 +57,7 @@ public class BlockStateArgument extends Argument<BlockData> {
 	}
 
 	@Override
-	public <CommandSourceStack> BlockData parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs)
+	public <CommandSourceStack> BlockState parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs)
 			throws CommandSyntaxException {
 		return CommandAPIBukkit.<CommandSourceStack>get().getNMS().getBlockState(cmdCtx, key);
 	}

@@ -69,7 +69,7 @@ public class EntitySelectorArgument {
 
 		@Override
 		public <CommandSourceStack> Entity parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-			return (Entity) CommandAPIBukkit.<CommandSourceStack>get().getNMS().getEntitySelector(cmdCtx, key, ArgumentSubType.ENTITYSELECTOR_ONE_ENTITY, true);
+			return CommandAPIBukkit.<CommandSourceStack>get().getNMS().getEntitySelector(cmdCtx, key).entity().get();
 		}
 
 		@Override
@@ -106,7 +106,7 @@ public class EntitySelectorArgument {
 
 		@Override
 		public <CommandSourceStack> Player parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-			return (Player) CommandAPIBukkit.<CommandSourceStack>get().getNMS().getEntitySelector(cmdCtx, key, ArgumentSubType.ENTITYSELECTOR_ONE_PLAYER, true);
+			return CommandAPIBukkit.<CommandSourceStack>get().getNMS().getEntitySelector(cmdCtx, key).player().get();
 		}
 
 		@Override
@@ -154,10 +154,9 @@ public class EntitySelectorArgument {
 			return CommandAPIArgumentType.ENTITY_SELECTOR;
 		}
 
-		@SuppressWarnings("unchecked")
 		@Override
 		public <CommandSourceStack> Collection<Entity> parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-			return (Collection<Entity>) CommandAPIBukkit.<CommandSourceStack>get().getNMS().getEntitySelector(cmdCtx, key, ArgumentSubType.ENTITYSELECTOR_MANY_ENTITIES, this.allowEmpty);
+			return CommandAPIBukkit.<CommandSourceStack>get().getNMS().getEntitySelector(cmdCtx, key).entities().apply(this.allowEmpty);
 		}
 
 		@SuppressWarnings("unchecked")
@@ -210,10 +209,9 @@ public class EntitySelectorArgument {
 			return CommandAPIArgumentType.ENTITY_SELECTOR;
 		}
 
-		@SuppressWarnings("unchecked")
 		@Override
 		public <CommandSourceStack> Collection<Player> parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-			return (Collection<Player>) CommandAPIBukkit.<CommandSourceStack>get().getNMS().getEntitySelector(cmdCtx, key, ArgumentSubType.ENTITYSELECTOR_MANY_PLAYERS, allowEmpty);
+			return CommandAPIBukkit.<CommandSourceStack>get().getNMS().getEntitySelector(cmdCtx, key).players().apply(this.allowEmpty);
 		}
 
 		@SuppressWarnings("unchecked")

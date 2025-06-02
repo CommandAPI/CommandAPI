@@ -12,6 +12,7 @@ import io.papermc.paper.command.brigadier.PaperCommands;
 import io.papermc.paper.command.brigadier.PluginCommandMeta;
 import io.papermc.paper.command.brigadier.bukkit.BukkitCommandNode;
 import io.papermc.paper.plugin.configuration.PluginMeta;
+import net.kyori.adventure.chat.SignedMessage;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
@@ -27,8 +28,9 @@ import org.bukkit.craftbukkit.help.SimpleHelpMap;
 
 import java.lang.reflect.Constructor;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
-public class PaperNMS_1_21_R3 extends CommandAPIPaper<CommandSourceStack> {
+public class PaperNMS_1_21_R3 implements PaperNMS<CommandSourceStack> {
 
 	private static final CommandBuildContext COMMAND_BUILD_CONTEXT;
 
@@ -54,8 +56,10 @@ public class PaperNMS_1_21_R3 extends CommandAPIPaper<CommandSourceStack> {
 	}
 
 	@Override
-	public Component getChat(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		return GsonComponentSerializer.gson().deserialize(net.minecraft.network.chat.Component.Serializer.toJson(MessageArgument.getMessage(cmdCtx, key), COMMAND_BUILD_CONTEXT));
+	public SignedMessage getChat(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
+		CompletableFuture<SignedMessage> future = new CompletableFuture<>();
+		MessageArgument.resolveChatMessage(cmdCtx, key, (message) -> future.complete(message.adventureView()));
+		return future.join();
 	}
 
 	@Override
@@ -70,11 +74,11 @@ public class PaperNMS_1_21_R3 extends CommandAPIPaper<CommandSourceStack> {
 	}
 
 	@Override
-	public NMS<?> bukkitNMS() {
+	public <Source> NMS<Source> bukkitNMS() {
 		if (bukkitNMS == null) {
 			this.bukkitNMS = new NMS_1_21_R3(COMMAND_BUILD_CONTEXT);
 		}
-		return bukkitNMS;
+		return (NMS<Source>) bukkitNMS;
 	}
 
 	@Override

@@ -63,6 +63,6 @@ public class ChatComponentArgument extends Argument<Component> {
 	
 	@Override
 	public <CommandSourceStack> Component parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-		return CommandAPIPaper.<CommandSourceStack>getPaper().getChatComponent(cmdCtx, key);
+		return CommandAPIPaper.<CommandSourceStack>getPaper().getNMS().getChatComponent(cmdCtx, key);
 	}
 }
