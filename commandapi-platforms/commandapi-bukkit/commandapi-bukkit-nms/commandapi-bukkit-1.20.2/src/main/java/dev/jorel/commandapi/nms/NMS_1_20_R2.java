@@ -33,7 +33,6 @@ import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPIBukkit;
 import dev.jorel.commandapi.CommandAPIHandler;
 import dev.jorel.commandapi.SafeVarHandle;
-import dev.jorel.commandapi.arguments.ArgumentSubType;
 import dev.jorel.commandapi.arguments.SuggestionProviders;
 import dev.jorel.commandapi.arguments.parser.EntitySelectorParser;
 import dev.jorel.commandapi.arguments.parser.RegistryParser;
@@ -44,7 +43,7 @@ import dev.jorel.commandapi.preprocessor.Differs;
 import dev.jorel.commandapi.preprocessor.NMSMeta;
 import dev.jorel.commandapi.preprocessor.RequireField;
 import dev.jorel.commandapi.wrappers.ComplexRecipeImpl;
-import dev.jorel.commandapi.wrappers.FloatRange;
+import dev.jorel.commandapi.wrappers.DoubleRange;
 import dev.jorel.commandapi.wrappers.FunctionWrapper;
 import dev.jorel.commandapi.wrappers.IntegerRange;
 import dev.jorel.commandapi.wrappers.Location2D;
@@ -385,13 +384,13 @@ public class NMS_1_20_R2 extends NMS_Common {
 	}
 
 	@Override
-	public FloatRange getFloatRange(CommandContext<CommandSourceStack> cmdCtx, String key) {
+	public DoubleRange getDoubleRange(CommandContext<CommandSourceStack> cmdCtx, String key) {
 		MinMaxBounds.Doubles range = RangeArgument.Floats.getRange(cmdCtx, key);
 		final Double lowBoxed = range.min().orElse(null);
 		final Double highBoxed = range.max().orElse(null);
-		final double low = lowBoxed == null ? -Float.MAX_VALUE : lowBoxed;
-		final double high = highBoxed == null ? Float.MAX_VALUE : highBoxed;
-		return new FloatRange((float) low, (float) high);
+		final double low = lowBoxed == null ? -Double.MAX_VALUE : lowBoxed;
+		final double high = highBoxed == null ? Double.MAX_VALUE : highBoxed;
+		return new DoubleRange(low, high);
 	}
 
 	@Override

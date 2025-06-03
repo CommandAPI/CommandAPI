@@ -34,10 +34,10 @@ inline fun CommandTree.integerRangeArgument(nodeName: String, optional: Boolean 
 
 // Float arguments
 inline fun CommandTree.floatArgument(nodeName: String, min: Float = -Float.MAX_VALUE, max: Float = Float.MAX_VALUE, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): CommandTree = then(FloatArgument(nodeName, min, max).setOptional(optional).apply(block))
-inline fun CommandTree.floatRangeArgument(nodeName: String, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): CommandTree = then(FloatRangeArgument(nodeName).setOptional(optional).apply(block))
 
 // Double arguments
 inline fun CommandTree.doubleArgument(nodeName: String, min: Double = -Double.MAX_VALUE, max: Double = Double.MAX_VALUE, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): CommandTree = then(DoubleArgument(nodeName, min, max).setOptional(optional).apply(block))
+inline fun CommandTree.doubleRangeArgument(nodeName: String, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): CommandTree = then(DoubleRangeArgument(nodeName).setOptional(optional).apply(block))
 
 // Long arguments
 inline fun CommandTree.longArgument(nodeName: String, min: Long = Long.MIN_VALUE, max: Long = Long.MAX_VALUE, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): CommandTree = then(LongArgument(nodeName, min, max).setOptional(optional).apply(block))
@@ -137,10 +137,10 @@ inline fun Argument<*>.integerRangeArgument(nodeName: String, optional: Boolean 
 
 // Float arguments
 inline fun Argument<*>.floatArgument(nodeName: String, min: Float = -Float.MAX_VALUE, max: Float = Float.MAX_VALUE, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): Argument<*> = then(FloatArgument(nodeName, min, max).setOptional(optional).apply(block))
-inline fun Argument<*>.floatRangeArgument(nodeName: String, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): Argument<*> = then(FloatRangeArgument(nodeName).setOptional(optional).apply(block))
 
 // Double arguments
 inline fun Argument<*>.doubleArgument(nodeName: String, min: Double = -Double.MAX_VALUE, max: Double = Double.MAX_VALUE, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): Argument<*> = then(DoubleArgument(nodeName, min, max).setOptional(optional).apply(block))
+inline fun Argument<*>.doubleRangeArgument(nodeName: String, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): Argument<*> = then(DoubleRangeArgument(nodeName).setOptional(optional).apply(block))
 
 // Long arguments
 inline fun Argument<*>.longArgument(nodeName: String, min: Long = Long.MIN_VALUE, max: Long = Long.MAX_VALUE, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): Argument<*> = then(LongArgument(nodeName, min, max).setOptional(optional).apply(block))

@@ -18,20 +18,41 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package dev.jorel.commandapi.annotations.arguments;
+package dev.jorel.commandapi.arguments;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import dev.jorel.commandapi.arguments.FloatRangeArgument;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.jorel.commandapi.CommandAPIBukkit;
+import dev.jorel.commandapi.executors.CommandArguments;
+import dev.jorel.commandapi.wrappers.DoubleRange;
 
 /**
- * Annotation equivalent of the {@link FloatRangeArgument}
+ * An argument that represents a range of float values
+ * 
+ * @since 3.0
  */
-@Primitive("dev.jorel.commandapi.wrappers.FloatRange")
-@Retention(RetentionPolicy.SOURCE)
-@Target(ElementType.PARAMETER)
-public @interface AFloatRangeArgument {
+public class DoubleRangeArgument extends SafeOverrideableArgument<DoubleRange, DoubleRange> {
+
+	/**
+	 * A DoubleRange argument that represents a range of floating-point values
+	 * @param nodeName the name of the node for this argument
+	 */
+	public DoubleRangeArgument(String nodeName) {
+		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentFloatRange(), DoubleRange::toString);
+	}
+
+	@Override
+	public Class<DoubleRange> getPrimitiveType() {
+		return DoubleRange.class;
+	}
+
+	@Override
+	public CommandAPIArgumentType getArgumentType() {
+		return CommandAPIArgumentType.FLOAT_RANGE;
+	}
+	
+	@Override
+	public <CommandSourceStack> DoubleRange parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
+		return CommandAPIBukkit.<CommandSourceStack>get().getNMS().getDoubleRange(cmdCtx, key);
+	}
 }

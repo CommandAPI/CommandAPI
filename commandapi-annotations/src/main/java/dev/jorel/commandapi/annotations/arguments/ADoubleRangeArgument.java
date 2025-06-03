@@ -18,41 +18,18 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package dev.jorel.commandapi.arguments;
+package dev.jorel.commandapi.annotations.arguments;
 
-import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.jorel.commandapi.CommandAPIBukkit;
-import dev.jorel.commandapi.executors.CommandArguments;
-import dev.jorel.commandapi.wrappers.FloatRange;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * An argument that represents a range of float values
- * 
- * @since 3.0
+ * Annotation equivalent of the {@link dev.jorel.commandapi.arguments.DoubleRangeArgument}
  */
-public class FloatRangeArgument extends SafeOverrideableArgument<FloatRange, FloatRange> {
-
-	/**
-	 * A FloatRange argument that represents a range of floating-point values
-	 * @param nodeName the name of the node for this argument
-	 */
-	public FloatRangeArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentFloatRange(), FloatRange::toString);
-	}
-
-	@Override
-	public Class<FloatRange> getPrimitiveType() {
-		return FloatRange.class;
-	}
-
-	@Override
-	public CommandAPIArgumentType getArgumentType() {
-		return CommandAPIArgumentType.FLOAT_RANGE;
-	}
-	
-	@Override
-	public <CommandSourceStack> FloatRange parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-		return CommandAPIBukkit.<CommandSourceStack>get().getNMS().getFloatRange(cmdCtx, key);
-	}
+@Primitive("dev.jorel.commandapi.wrappers.DoubleRange")
+@Retention(RetentionPolicy.SOURCE)
+@Target(ElementType.PARAMETER)
+public @interface ADoubleRangeArgument {
 }

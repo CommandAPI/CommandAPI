@@ -9,7 +9,6 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
 import dev.jorel.commandapi.arguments.*;
 import dev.jorel.commandapi.commandsenders.AbstractCommandSender;
 import dev.jorel.commandapi.commandsenders.BukkitCommandSender;
-import dev.jorel.commandapi.nms.NMS;
 import dev.jorel.commandapi.spying.CommandAPIHandlerSpy;
 import dev.jorel.commandapi.wrappers.Rotation;
 import dev.jorel.commandapi.wrappers.*;
@@ -503,7 +502,7 @@ public class MockCommandAPIBukkit extends CommandAPIBukkit<MockCommandSource> im
 	}
 
 	@Override
-	public FloatRange getFloatRange(CommandContext<MockCommandSource> cmdCtx, String key) {
+	public DoubleRange getFloatRange(CommandContext<MockCommandSource> cmdCtx, String key) {
 		throw new UnimplementedMethodException();
 	}
 

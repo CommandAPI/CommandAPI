@@ -50,7 +50,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
 import org.bukkit.help.HelpTopic;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
@@ -67,7 +66,7 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
 
 import dev.jorel.commandapi.arguments.ArgumentSubType;
 import dev.jorel.commandapi.arguments.SuggestionProviders;
-import dev.jorel.commandapi.wrappers.FloatRange;
+import dev.jorel.commandapi.wrappers.DoubleRange;
 import dev.jorel.commandapi.wrappers.FunctionWrapper;
 import dev.jorel.commandapi.wrappers.IntegerRange;
 import dev.jorel.commandapi.wrappers.Location2D;
@@ -320,7 +319,7 @@ public abstract class NMS<CommandListenerWrapper> {
 
 	public abstract EntityType getEntityType(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException;
 
-	public abstract FloatRange getFloatRange(CommandContext<CommandListenerWrapper> cmdCtx, String key);
+	public abstract DoubleRange getDoubleRange(CommandContext<CommandListenerWrapper> cmdCtx, String key);
 
 	public abstract FunctionWrapper[] getFunction(CommandContext<CommandListenerWrapper> cmdCtx, String key)
 		throws CommandSyntaxException;

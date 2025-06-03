@@ -10,7 +10,7 @@ import dev.jorel.commandapi.arguments.ArgumentSubType;
 import dev.jorel.commandapi.arguments.SuggestionProviders;
 import dev.jorel.commandapi.commandsenders.AbstractCommandSender;
 import dev.jorel.commandapi.commandsenders.BukkitCommandSender;
-import dev.jorel.commandapi.wrappers.FloatRange;
+import dev.jorel.commandapi.wrappers.DoubleRange;
 import dev.jorel.commandapi.wrappers.FunctionWrapper;
 import dev.jorel.commandapi.wrappers.IntegerRange;
 import dev.jorel.commandapi.wrappers.Location2D;
@@ -305,7 +305,7 @@ public interface MockNMS<CommandSource> {
 
 	EntityType getEntityType(CommandContext<CommandSource> cmdCtx, String key) throws CommandSyntaxException;
 
-	FloatRange getFloatRange(CommandContext<CommandSource> cmdCtx, String key);
+	DoubleRange getFloatRange(CommandContext<CommandSource> cmdCtx, String key);
 
 	FunctionWrapper[] getFunction(CommandContext<CommandSource> cmdCtx, String key)
 		throws CommandSyntaxException;

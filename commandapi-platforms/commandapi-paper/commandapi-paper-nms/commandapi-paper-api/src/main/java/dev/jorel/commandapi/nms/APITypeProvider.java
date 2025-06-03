@@ -19,7 +19,7 @@ import dev.jorel.commandapi.arguments.parser.function.ThrowingBiFunction;
 import dev.jorel.commandapi.arguments.parser.function.ThrowingSupplier;
 import dev.jorel.commandapi.commandsenders.AbstractCommandSender;
 import dev.jorel.commandapi.commandsenders.BukkitCommandSender;
-import dev.jorel.commandapi.wrappers.FloatRange;
+import dev.jorel.commandapi.wrappers.DoubleRange;
 import dev.jorel.commandapi.wrappers.FunctionWrapper;
 import dev.jorel.commandapi.wrappers.IntegerRange;
 import dev.jorel.commandapi.wrappers.Location2D;
@@ -33,6 +33,7 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
 import io.papermc.paper.command.brigadier.argument.SignedMessageResolver;
 import io.papermc.paper.command.brigadier.argument.predicate.ItemStackPredicate;
+import io.papermc.paper.command.brigadier.argument.range.DoubleRangeProvider;
 import io.papermc.paper.command.brigadier.argument.range.IntegerRangeProvider;
 import io.papermc.paper.command.brigadier.argument.resolvers.BlockPositionResolver;
 import io.papermc.paper.command.brigadier.argument.resolvers.FinePositionResolver;
@@ -546,9 +547,15 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	}
 
 	@Override
-	public FloatRange getFloatRange(CommandContext<CommandSourceStack> cmdCtx, String key) {
+	public DoubleRange getDoubleRange(CommandContext<CommandSourceStack> cmdCtx, String key) {
 		return parse(cmdCtx, key,
-			(ctx, name) -> paperNMS.<CommandSourceStack>bukkitNMS().getFloatRange(ctx, name)
+			(ctx, name) -> {
+				DoubleRangeProvider rangeProvider = ctx.getArgument(name, DoubleRangeProvider.class);
+				final double low = rangeProvider.range().hasLowerBound() ? rangeProvider.range().lowerEndpoint() : -Double.MAX_VALUE;
+				final double high = rangeProvider.range().hasUpperBound() ? rangeProvider.range().upperEndpoint() : Double.MAX_VALUE;
+				return new DoubleRange(low, high);
+			},
+			(ctx, name) -> paperNMS.<CommandSourceStack>bukkitNMS().getDoubleRange(ctx, name)
 		);
 	}
 

@@ -17,7 +17,7 @@ import dev.jorel.commandapi.arguments.ChatComponentArgument;
 import dev.jorel.commandapi.arguments.EnchantmentArgument;
 import dev.jorel.commandapi.arguments.EntitySelectorArgument;
 import dev.jorel.commandapi.arguments.EntityTypeArgument;
-import dev.jorel.commandapi.arguments.FloatRangeArgument;
+import dev.jorel.commandapi.arguments.DoubleRangeArgument;
 import dev.jorel.commandapi.arguments.FunctionArgument;
 import dev.jorel.commandapi.arguments.IntegerRangeArgument;
 import dev.jorel.commandapi.arguments.ItemStackArgument;
@@ -42,7 +42,7 @@ import dev.jorel.commandapi.arguments.TeamArgument;
 import dev.jorel.commandapi.arguments.TimeArgument;
 import dev.jorel.commandapi.arguments.UUIDArgument;
 import dev.jorel.commandapi.arguments.WorldArgument;
-import dev.jorel.commandapi.wrappers.FloatRange;
+import dev.jorel.commandapi.wrappers.DoubleRange;
 import dev.jorel.commandapi.wrappers.FunctionWrapper;
 import dev.jorel.commandapi.wrappers.IntegerRange;
 import dev.jorel.commandapi.wrappers.Location2D;
@@ -105,7 +105,7 @@ public class TestPlugin extends JavaPlugin {
 		register(new EntitySelectorArgument.ManyPlayers("manyplayerstype"), Collection.class, Object::toString);
 		register(new EntitySelectorArgument.ManyEntities("manyentitiestype"), Collection.class, Object::toString);
 		register(new EntityTypeArgument("entitytype"), EntityType.class, Object::toString);
-		register(new FloatRangeArgument("floatrangetype"), FloatRange.class, range -> range.getLowerBound() + ".." + range.getUpperBound()); // TODO: Needs argument logic work: not defined as MinMaxBounds$Doubles
+		register(new DoubleRangeArgument("floatrangetype"), DoubleRange.class, range -> range.getLowerBound() + ".." + range.getUpperBound());
 		register(new FunctionArgument("functionstype"), FunctionWrapper[].class, Arrays::toString);
 		register(new IntegerRangeArgument("integerrangetype"), IntegerRange.class, range -> range.getLowerBound() + ".." + range.getUpperBound());
 		register(new ItemStackArgument("itemstacktype"), ItemStack.class, stack -> stack.getType().getItemTranslationKey());

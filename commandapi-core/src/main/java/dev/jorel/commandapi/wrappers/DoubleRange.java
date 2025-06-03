@@ -23,46 +23,46 @@ package dev.jorel.commandapi.wrappers;
 import java.util.Objects;
 
 /**
- * A class representing a range of floats
+ * A class representing a range of doubles
  */
-public class FloatRange {
+public class DoubleRange {
 
-	private final float low;
-	private final float high;
+	private final double low;
+	private final double high;
 	
 	/**
-	 * Constructs a FloatRange with a lower bound and an upper bound
+	 * Constructs a DoubleRange with a lower bound and an upper bound
 	 * @param low the lower bound of this range
 	 * @param high the upper bound of this range
 	 */
-	public FloatRange(float low, float high) {
+	public DoubleRange(double low, double high) {
 		this.low = low;
 		this.high = high;
 	}
 	
 	/**
-	 * Constructs a FloatRange with a given lower bound and no upper bound
+	 * Constructs a DoubleRange with a given lower bound and no upper bound
 	 * @param min the lower bound of this range
-	 * @return a FloatRange min..
+	 * @return a DoubleRange min..
 	 */
-	public static FloatRange floatRangeGreaterThanOrEq(float min) {
-		return new FloatRange(min, Float.MAX_VALUE);
+	public static DoubleRange doubleRangeGreaterThanOrEq(double min) {
+		return new DoubleRange(min, Double.MAX_VALUE);
 	}
 	
 	/**
-	 * Constructs a FloatRange with a given upper bound and no lower bound
+	 * Constructs a DoubleRange with a given upper bound and no lower bound
 	 * @param max the upper bound of this range
-	 * @return a FloatRange ..max
+	 * @return a DoubleRange ..max
 	 */
-	public static FloatRange floatRangeLessThanOrEq(float max) {
-		return new FloatRange(-Float.MAX_VALUE, max);
+	public static DoubleRange doubleRangeLessThanOrEq(double max) {
+		return new DoubleRange(-Double.MAX_VALUE, max);
 	}
 	
 	/**
 	 * The lower bound of this range.
 	 * @return the lower bound of this range
 	 */
-	public float getLowerBound() {
+	public double getLowerBound() {
 		return this.low;
 	}
 	
@@ -70,28 +70,28 @@ public class FloatRange {
 	 * The upper bound of this range.
 	 * @return the upper bound of this range
 	 */
-	public float getUpperBound() {
+	public double getUpperBound() {
 		return this.high;
 	}
 	
 	/**
-	 * Determines if a float is within range of the lower bound (inclusive) and the upper bound (inclusive). 
-	 * @param f the float to check within range
-	 * @return true if the given float is within the declared range
+	 * Determines if a double is within range of the lower bound (inclusive) and the upper bound (inclusive).
+	 * @param f the double to check within range
+	 * @return true if the given double is within the declared range
 	 */
-	public boolean isInRange(float f) {
+	public boolean isInRange(double f) {
 		return f >= low && f <= high;
 	}
 	
 	/**
-	 * Converts this FloatRange to a Minecraft string for use with arguments
+	 * Converts this DoubleRange to a Minecraft string for use with arguments
 	 * @return a Minecraft string for use with arguments
 	 */
 	@Override
 	public String toString() {
-		if(this.high == Float.MAX_VALUE) {
+		if(this.high == Double.MAX_VALUE) {
 			return this.low + "..";
-		} else if(this.low == -Float.MAX_VALUE) {
+		} else if(this.low == -Double.MAX_VALUE) {
 			return ".." + this.high;
 		} else {
 			return this.low + ".." + this.high;
@@ -108,12 +108,12 @@ public class FloatRange {
 		if (this == obj) {
 			return true;
 		}
-		if (!(obj instanceof FloatRange)) {
+		if (!(obj instanceof DoubleRange)) {
 			return false;
 		}
-		FloatRange other = (FloatRange) obj;
-		return Float.floatToIntBits(high) == Float.floatToIntBits(other.high) &&
-			Float.floatToIntBits(low) == Float.floatToIntBits(other.low);
+		DoubleRange other = (DoubleRange) obj;
+		return Double.doubleToLongBits(high) == Double.doubleToLongBits(other.high) &&
+			Double.doubleToLongBits(low) == Double.doubleToLongBits(other.low);
 	}
 	
 }
