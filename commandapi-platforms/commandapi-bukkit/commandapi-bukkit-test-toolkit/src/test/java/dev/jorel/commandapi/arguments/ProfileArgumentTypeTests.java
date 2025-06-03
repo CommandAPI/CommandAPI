@@ -30,7 +30,7 @@ class ProfileArgumentTypeTests extends CommandTestBase {
 			.withArguments(
 				offlinePlayer ?
 					new OfflinePlayerArgument("offline") :
-					new PlayerArgument("player")
+					new PlayerProfileArgument("player")
 			)
 			.executes(DEFAULT_EXECUTOR)
 			.register();

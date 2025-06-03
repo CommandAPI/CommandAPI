@@ -10,8 +10,6 @@ import dev.jorel.commandapi.executors.PlayerCommandExecutor
 import net.kyori.adventure.inventory.Book
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import org.bukkit.Bukkit
 import org.bukkit.Server
 import org.bukkit.entity.Player
@@ -32,7 +30,7 @@ CommandAPICommand("namecolor")
 
 /* ANCHOR: argumentChatAdventure2 */
 CommandAPICommand("showbook")
-    .withArguments(PlayerArgument("target"))
+    .withArguments(PlayerProfileArgument("target"))
     .withArguments(TextArgument("title"))
     .withArguments(StringArgument("author"))
     .withArguments(ChatComponentArgument("contents"))

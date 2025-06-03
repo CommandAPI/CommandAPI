@@ -18,13 +18,17 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
+import com.destroystokyo.paper.profile.PlayerProfile;
+import dev.jorel.commandapi.annotations.arguments.APlayerProfileArgument;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import dev.jorel.commandapi.annotations.Alias;
 import dev.jorel.commandapi.annotations.Command;
 import dev.jorel.commandapi.annotations.Subcommand;
-import dev.jorel.commandapi.annotations.arguments.APlayerArgument;
+
+import java.util.List;
 
 /* ANCHOR: teleport_command */
 @Command("teleport")    
@@ -34,10 +38,16 @@ public class TeleportCommand {
     
 /* ANCHOR: teleport_subcommand */
 @Subcommand({"teleport", "tp"})
-public static void teleport(Player player, @APlayerArgument OfflinePlayer target) {
-    if(target.isOnline() && target instanceof Player onlineTarget) {
-        player.teleport(onlineTarget);
-    }
+public static void teleport(Player player, @APlayerProfileArgument List<PlayerProfile> target) {
+	for (PlayerProfile profile : target) {
+		if (profile.getId() == null) {
+			continue;
+		}
+		OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(profile.getId());
+		if (offlinePlayer.isOnline() && offlinePlayer instanceof Player onlineTarget) {
+			player.teleport(onlineTarget);
+		}
+	}
 }
 /* ANCHOR_END: teleport_subcommand */
 

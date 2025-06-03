@@ -20,18 +20,24 @@
  *******************************************************************************/
 package dev.jorel.commandapi.arguments;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.jorel.commandapi.CommandAPIBukkit;
+import dev.jorel.commandapi.CommandAPIPaper;
 import dev.jorel.commandapi.executors.CommandArguments;
-import org.bukkit.OfflinePlayer;
+
+import java.util.List;
 
 /**
- * An argument that represents the Bukkit Player object
+ * An argument that represents the Paper PlayerProfile object.
+ * <p>
+ * Note that this Argument internally references Mojang's authentication servers to resolve
+ * usernames, which gives it a slight performance overhead compared to {@link EntitySelectorArgument.OnePlayer}.
  * 
- * @since 6.0.0
+ * @since 1.1
  */
-public class OfflinePlayerArgument extends SafeOverrideableArgument<OfflinePlayer, OfflinePlayer> {
+public class PlayerProfileArgument extends SafeOverrideableArgument<List, PlayerProfile> {
 
 	/**
 	 * A Player argument. Produces a single player, regardless of whether
@@ -39,22 +45,22 @@ public class OfflinePlayerArgument extends SafeOverrideableArgument<OfflinePlaye
 	 * 
 	 * @param nodeName the name of the node for this argument
 	 */
-	public OfflinePlayerArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentProfile(), OfflinePlayer::getName);
+	public PlayerProfileArgument(String nodeName) {
+		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentProfile(), PlayerProfile::getName);
 	}
 
 	@Override
-	public Class<OfflinePlayer> getPrimitiveType() {
-		return OfflinePlayer.class;
+	public Class<List> getPrimitiveType() {
+		return List.class;
 	}
 	
 	@Override
 	public CommandAPIArgumentType getArgumentType() {
-		return CommandAPIArgumentType.OFFLINE_PLAYER;
+		return CommandAPIArgumentType.PLAYER;
 	}
 	
 	@Override
-	public <CommandSourceStack> OfflinePlayer parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-		return CommandAPIBukkit.<CommandSourceStack>get().getNMS().getOfflinePlayer(cmdCtx, key);
+	public <CommandSourceStack> List<PlayerProfile> parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
+		return CommandAPIPaper.<CommandSourceStack>getPaper().getNMS().getProfile(cmdCtx, key);
 	}
 }

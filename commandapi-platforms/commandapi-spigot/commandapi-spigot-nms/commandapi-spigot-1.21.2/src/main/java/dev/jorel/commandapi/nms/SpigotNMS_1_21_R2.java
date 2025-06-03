@@ -1,5 +1,6 @@
 package dev.jorel.commandapi.nms;
 
+import com.google.common.collect.Collections2;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.jorel.commandapi.CommandAPISpigot;
@@ -11,6 +12,7 @@ import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.ColorArgument;
 import net.minecraft.commands.arguments.ComponentArgument;
+import net.minecraft.commands.arguments.GameProfileArgument;
 import net.minecraft.commands.arguments.MessageArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
@@ -20,6 +22,10 @@ import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.craftbukkit.v1_21_R2.CraftServer;
 import org.bukkit.craftbukkit.v1_21_R2.command.BukkitCommandWrapper;
 import org.bukkit.craftbukkit.v1_21_R2.command.VanillaCommandWrapper;
+import org.bukkit.craftbukkit.v1_21_R2.profile.CraftPlayerProfile;
+import org.bukkit.profile.PlayerProfile;
+
+import java.util.List;
 
 public class SpigotNMS_1_21_R2 extends CommandAPISpigot<CommandSourceStack> {
 
@@ -49,6 +55,14 @@ public class SpigotNMS_1_21_R2 extends CommandAPISpigot<CommandSourceStack> {
 	@Override
 	public BaseComponent[] getChatComponent(CommandContext<CommandSourceStack> cmdCtx, String key) {
 		return ComponentSerializer.parse(Component.Serializer.toJson(ComponentArgument.getComponent(cmdCtx, key), COMMAND_BUILD_CONTEXT));
+	}
+
+	@Override
+	public final List<PlayerProfile> getProfile(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
+		GameProfileArgument.Result result = cmdCtx.getArgument(key, GameProfileArgument.Result.class);
+		return result instanceof GameProfileArgument.SelectorResult selectorResult
+			? List.of(Collections2.transform(selectorResult.getNames(cmdCtx.getSource()), CraftPlayerProfile::new).toArray(new PlayerProfile[0]))
+			: List.of(Collections2.transform(result.getNames(cmdCtx.getSource()), CraftPlayerProfile::new).toArray(new PlayerProfile[0]));
 	}
 
 	@Override

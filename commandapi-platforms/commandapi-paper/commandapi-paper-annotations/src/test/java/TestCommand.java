@@ -19,8 +19,12 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
+import dev.jorel.commandapi.annotations.arguments.APlayerProfileArgument;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -31,7 +35,6 @@ import dev.jorel.commandapi.annotations.Default;
 import dev.jorel.commandapi.annotations.Help;
 import dev.jorel.commandapi.annotations.Permission;
 import dev.jorel.commandapi.annotations.Subcommand;
-import dev.jorel.commandapi.annotations.arguments.APlayerArgument;
 import dev.jorel.commandapi.annotations.arguments.AStringArgument;
 
 @Command("warp")	
@@ -63,9 +66,15 @@ public class TestCommand {
 	
 	@Subcommand("create")
 	@Permission("warps.create")
-	public static void tpWarp(CommandSender sender, @APlayerArgument OfflinePlayer target, @AStringArgument String warpName) {
-		if(target.isOnline() && target instanceof Player onlineTarget) {
-			onlineTarget.teleport(warps.get(warpName));			
+	public static void tpWarp(CommandSender sender, @APlayerProfileArgument List<PlayerProfile> target, @AStringArgument String warpName) {
+		for (PlayerProfile profile : target) {
+			if (profile.getId() == null) {
+				continue;
+			}
+			OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(profile.getId());
+			if (offlinePlayer.isOnline() && offlinePlayer instanceof Player onlineTarget) {
+				onlineTarget.teleport(warps.get(warpName));
+			}
 		}
 	}
 	

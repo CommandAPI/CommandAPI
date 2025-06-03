@@ -9,7 +9,6 @@ import dev.jorel.commandapi.executors.CommandArguments
 import dev.jorel.commandapi.executors.CommandExecutor
 import dev.jorel.commandapi.executors.PlayerCommandExecutor
 import net.md_5.bungee.api.chat.BaseComponent
-import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Material
@@ -34,7 +33,7 @@ CommandAPICommand("namecolor")
 
 /* ANCHOR: argumentChatSpigot2 */
 CommandAPICommand("makebook")
-    .withArguments(PlayerArgument("player"))
+    .withArguments(PlayerProfileArgument("player"))
     .withArguments(ChatComponentArgument("contents"))
     .executes(CommandExecutor { _, args ->
         val player = args["player"] as Player

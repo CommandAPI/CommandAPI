@@ -370,16 +370,6 @@ public abstract class NMS_Common extends NMS<CommandSourceStack> {
 	}
 
 	@Override
-	public final Player getPlayer(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		Player target = Bukkit.getPlayer(GameProfileArgument.getGameProfiles(cmdCtx, key).iterator().next().getId());
-		if (target == null) {
-			throw GameProfileArgument.ERROR_UNKNOWN_PLAYER.create();
-		} else {
-			return target;
-		}
-	}
-
-	@Override
 	public final int getTime(CommandContext<CommandSourceStack> cmdCtx, String key) {
 		return cmdCtx.getArgument(key, Integer.class);
 	}

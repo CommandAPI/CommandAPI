@@ -1,11 +1,14 @@
 package dev.jorel.commandapi.arguments;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.jorel.commandapi.CommandAPIBukkit;
+import dev.jorel.commandapi.CommandAPIPaper;
 import dev.jorel.commandapi.executors.CommandArguments;
 import org.bukkit.OfflinePlayer;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -13,7 +16,7 @@ import java.util.concurrent.CompletableFuture;
  *
  * @since 9.7.1
  */
-public class AsyncOfflinePlayerArgument extends SafeOverrideableArgument<CompletableFuture<OfflinePlayer>, OfflinePlayer> {
+public class AsyncPlayerProfileArgument extends SafeOverrideableArgument<CompletableFuture<List<PlayerProfile>>, PlayerProfile> {
 
 	/**
 	 * A Player argument. Produces a single player, regardless of whether
@@ -21,14 +24,14 @@ public class AsyncOfflinePlayerArgument extends SafeOverrideableArgument<Complet
 	 *
 	 * @param nodeName the name of the node for this argument
 	 */
-	public AsyncOfflinePlayerArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentProfile(), OfflinePlayer::getName);
+	public AsyncPlayerProfileArgument(String nodeName) {
+		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentProfile(), PlayerProfile::getName);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Class<CompletableFuture<OfflinePlayer>> getPrimitiveType() {
-		return (Class<CompletableFuture<OfflinePlayer>>) (Class<?>) CompletableFuture.class;
+	public Class<CompletableFuture<List<PlayerProfile>>> getPrimitiveType() {
+		return (Class<CompletableFuture<List<PlayerProfile>>>) (Class<?>) CompletableFuture.class;
 	}
 
 	@Override
@@ -37,10 +40,10 @@ public class AsyncOfflinePlayerArgument extends SafeOverrideableArgument<Complet
 	}
 
 	@Override
-	public <CommandSourceStack> CompletableFuture<OfflinePlayer> parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) {
+	public <CommandSourceStack> CompletableFuture<List<PlayerProfile>> parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) {
 		return CompletableFuture.supplyAsync(() -> {
 			try {
-				return CommandAPIBukkit.<CommandSourceStack>get().getNMS().getOfflinePlayer(cmdCtx, key);
+				return CommandAPIPaper.<CommandSourceStack>getPaper().getNMS().getProfile(cmdCtx, key);
 			} catch (CommandSyntaxException e) {
 				throw new RuntimeException(e);
 			}

@@ -25,13 +25,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import dev.jorel.commandapi.arguments.OfflinePlayerArgument;
-
 /**
- * Annotation equivalent of the {@link OfflinePlayerArgument}
+ * Annotation equivalent of the {@link dev.jorel.commandapi.arguments.PlayerProfileArgument}
  */
-@Primitive("org.bukkit.OfflinePlayer")
+@Primitive("java.util.List<com.destroystokyo.paper.profile.PlayerProfile>")
 @Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.PARAMETER)
-public @interface AOfflinePlayerArgument {
+public @interface APlayerProfileArgument {
 }

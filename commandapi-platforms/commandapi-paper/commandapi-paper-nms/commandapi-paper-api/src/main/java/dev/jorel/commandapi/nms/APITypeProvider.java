@@ -62,7 +62,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
 import org.bukkit.help.HelpTopic;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
@@ -75,6 +74,7 @@ import org.bukkit.scoreboard.Team;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
@@ -527,15 +527,12 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	@Override
 	public EntitySelectorParser getEntitySelector(CommandContext<CommandSourceStack> cmdCtx, String key) {
 		return parse(cmdCtx, key,
-			(ctx, name) -> {
-				EntitySelectorParser parser = new EntitySelectorParser(
-					() -> ctx.getArgument(name, PlayerSelectorArgumentResolver.class).resolve((CommandSourceStack) ctx.getSource()).getFirst(),
-					() -> ctx.getArgument(name, EntitySelectorArgumentResolver.class).resolve((CommandSourceStack) ctx.getSource()).getFirst(),
-					(allowEmpty) -> ctx.getArgument(name, PlayerSelectorArgumentResolver.class).resolve((CommandSourceStack) ctx.getSource()),
-					(allowEmpty) -> ctx.getArgument(name, EntitySelectorArgumentResolver.class).resolve((CommandSourceStack) ctx.getSource())
-				);
-				return parser;
-			},
+			(ctx, name) -> new EntitySelectorParser(
+				() -> ctx.getArgument(name, PlayerSelectorArgumentResolver.class).resolve(ctx.getSource()).getFirst(),
+				() -> ctx.getArgument(name, EntitySelectorArgumentResolver.class).resolve(ctx.getSource()).getFirst(),
+				(allowEmpty) -> ctx.getArgument(name, PlayerSelectorArgumentResolver.class).resolve(ctx.getSource()),
+				(allowEmpty) -> ctx.getArgument(name, EntitySelectorArgumentResolver.class).resolve(ctx.getSource())
+			),
 			(ctx, name) -> paperNMS.<CommandSourceStack>bukkitNMS().getEntitySelector(ctx, name)
 		);
 	}
@@ -686,14 +683,6 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	public ParticleData<?> getParticle(CommandContext<CommandSourceStack> cmdCtx, String key) {
 		return parse(cmdCtx, key,
 			(ctx, name) -> paperNMS.<CommandSourceStack>bukkitNMS().getParticle(ctx, name)
-		);
-	}
-
-	@Override
-	public Player getPlayer(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		return parseT(cmdCtx, key,
-			(ctx, name) -> Bukkit.getPlayer(getIdFromProfile(ctx, name)),
-			(ctx, name) -> paperNMS.<CommandSourceStack>bukkitNMS().getPlayer(ctx, name)
 		);
 	}
 
@@ -904,6 +893,17 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 		return parseT(cmdCtx, key,
 			(ctx, name) -> ctx.getArgument(name, Component.class),
 			((PaperNMS<CommandSourceStack>) paperNMS)::getChatComponent
+		);
+	}
+
+	@Override
+	public List<PlayerProfile> getProfile(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
+		return parseT(cmdCtx, key,
+			(ctx, name) -> {
+				PlayerProfileListResolver profileListResolver = ctx.getArgument(name, PlayerProfileListResolver.class);
+				return new ArrayList<>(profileListResolver.resolve(ctx.getSource()));
+			},
+			(ctx, name) -> ((PaperNMS<CommandSourceStack>) paperNMS).getProfile(ctx, name)
 		);
 	}
 

@@ -1,5 +1,8 @@
 package dev.jorel.commandapi.nms;
 
+import com.destroystokyo.paper.profile.CraftPlayerProfile;
+import com.destroystokyo.paper.profile.PlayerProfile;
+import com.google.common.collect.Collections2;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -14,6 +17,7 @@ import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.ColorArgument;
 import net.minecraft.commands.arguments.ComponentArgument;
+import net.minecraft.commands.arguments.GameProfileArgument;
 import net.minecraft.commands.arguments.MessageArgument;
 import net.minecraft.server.MinecraftServer;
 import org.bukkit.command.SimpleCommandMap;
@@ -43,6 +47,14 @@ public class PaperNMS_1_20_R2 implements PaperNMS<CommandSourceStack> {
 	@Override
 	public final Component getChatComponent(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
 		return GsonComponentSerializer.gson().deserialize(net.minecraft.network.chat.Component.Serializer.toJson(ComponentArgument.getComponent(cmdCtx, key)));
+	}
+
+	@Override
+	public final List<PlayerProfile> getProfile(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
+		GameProfileArgument.Result result = cmdCtx.getArgument(key, GameProfileArgument.Result.class);
+		return result instanceof GameProfileArgument.SelectorResult selectorResult
+			? List.of(Collections2.transform(selectorResult.getNames(cmdCtx.getSource()), CraftPlayerProfile::new).toArray(new PlayerProfile[0]))
+			: List.of(Collections2.transform(result.getNames(cmdCtx.getSource()), CraftPlayerProfile::new).toArray(new PlayerProfile[0]));
 	}
 
 	@Override

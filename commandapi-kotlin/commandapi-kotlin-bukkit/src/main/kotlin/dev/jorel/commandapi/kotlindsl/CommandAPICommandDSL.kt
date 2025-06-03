@@ -4,9 +4,7 @@ package dev.jorel.commandapi.kotlindsl
 
 import dev.jorel.commandapi.*
 import dev.jorel.commandapi.arguments.*
-import org.bukkit.command.CommandSender
 import org.bukkit.plugin.java.JavaPlugin
-import java.util.function.Predicate
 
 inline fun commandAPICommand(name: String, command: CommandAPICommand.() -> Unit = {}) = CommandAPICommand(name).apply(command).register()
 inline fun commandAPICommand(name: String, namespace: String, command: CommandAPICommand.() -> Unit = {}) = CommandAPICommand(name).apply(command).register(namespace)
@@ -55,9 +53,6 @@ inline fun CommandAPICommand.entitySelectorArgumentOneEntity(nodeName: String, o
 inline fun CommandAPICommand.entitySelectorArgumentManyEntities(nodeName: String, allowEmpty: Boolean = true, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): CommandAPICommand = withArguments(EntitySelectorArgument.ManyEntities(nodeName, allowEmpty).setOptional(optional).apply(block))
 inline fun CommandAPICommand.entitySelectorArgumentOnePlayer(nodeName: String, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): CommandAPICommand = withArguments(EntitySelectorArgument.OnePlayer(nodeName).setOptional(optional).apply(block))
 inline fun CommandAPICommand.entitySelectorArgumentManyPlayers(nodeName: String, allowEmpty: Boolean = true, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): CommandAPICommand = withArguments(EntitySelectorArgument.ManyPlayers(nodeName, allowEmpty).setOptional(optional).apply(block))
-inline fun CommandAPICommand.playerArgument(nodeName: String, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): CommandAPICommand = withArguments(PlayerArgument(nodeName).setOptional(optional).apply(block))
-inline fun CommandAPICommand.offlinePlayerArgument(nodeName: String, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): CommandAPICommand = withArguments(OfflinePlayerArgument(nodeName).setOptional(optional).apply(block))
-inline fun CommandAPICommand.asyncOfflinePlayerArgument(nodeName: String, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): CommandAPICommand = withArguments(AsyncOfflinePlayerArgument(nodeName).setOptional(optional).apply(block))
 inline fun CommandAPICommand.entityTypeArgument(nodeName: String, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): CommandAPICommand = withArguments(EntityTypeArgument(nodeName).setOptional(optional).apply(block))
 
 // Scoreboard arguments

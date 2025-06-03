@@ -363,8 +363,6 @@ public abstract class NMS<CommandListenerWrapper> {
 
 	public abstract ParticleData<?> getParticle(CommandContext<CommandListenerWrapper> cmdCtx, String key);
 
-	public abstract Player getPlayer(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException;
-
 	public abstract OfflinePlayer getOfflinePlayer(CommandContext<CommandListenerWrapper> cmdCtx, String key)
 		throws CommandSyntaxException;
 

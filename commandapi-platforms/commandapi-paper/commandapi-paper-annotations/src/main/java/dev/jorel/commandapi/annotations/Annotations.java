@@ -25,7 +25,7 @@ import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.CommandPermission;
 import dev.jorel.commandapi.annotations.arguments.AAdvancementArgument;
 import dev.jorel.commandapi.annotations.arguments.AAngleArgument;
-import dev.jorel.commandapi.annotations.arguments.AAsyncOfflinePlayerArgument;
+import dev.jorel.commandapi.annotations.arguments.AAsyncPlayerProfileArgument;
 import dev.jorel.commandapi.annotations.arguments.AAxisArgument;
 import dev.jorel.commandapi.annotations.arguments.ABiomeArgument;
 import dev.jorel.commandapi.annotations.arguments.ABlockPredicateArgument;
@@ -57,9 +57,8 @@ import dev.jorel.commandapi.annotations.arguments.ANBTCompoundArgument;
 import dev.jorel.commandapi.annotations.arguments.ANamespacedKeyArgument;
 import dev.jorel.commandapi.annotations.arguments.AObjectiveArgument;
 import dev.jorel.commandapi.annotations.arguments.AObjectiveCriteriaArgument;
-import dev.jorel.commandapi.annotations.arguments.AOfflinePlayerArgument;
 import dev.jorel.commandapi.annotations.arguments.AParticleArgument;
-import dev.jorel.commandapi.annotations.arguments.APlayerArgument;
+import dev.jorel.commandapi.annotations.arguments.APlayerProfileArgument;
 import dev.jorel.commandapi.annotations.arguments.APotionEffectArgument;
 import dev.jorel.commandapi.annotations.arguments.ARecipeArgument;
 import dev.jorel.commandapi.annotations.arguments.ARotationArgument;
@@ -108,7 +107,7 @@ import java.util.stream.Stream;
 public class Annotations extends AbstractProcessor {
 
 	private static final Class<?>[] ARGUMENT_ANNOTATIONS = new Class[] { AAdvancementArgument.class,
-		AAngleArgument.class, AAxisArgument.class, AAsyncOfflinePlayerArgument.class, ABiomeArgument.class, ABlockPredicateArgument.class,
+		AAngleArgument.class, AAxisArgument.class, AAsyncPlayerProfileArgument.class, ABiomeArgument.class, ABlockPredicateArgument.class,
 		ABlockStateArgument.class, ABooleanArgument.class,
 		AChatArgument.class, AChatColorArgument.class, AChatComponentArgument.class, ADoubleArgument.class,
 		AEnchantmentArgument.class, AEntitySelectorArgument.ManyEntities.class, AEntitySelectorArgument.ManyPlayers.class,
@@ -118,7 +117,7 @@ public class Annotations extends AbstractProcessor {
 		AItemStackPredicateArgument.class, ALiteralArgument.class, ALocation2DArgument.class,
 		ALocationArgument.class, ALongArgument.class, ALootTableArgument.class, AMathOperationArgument.class,
 		AMultiLiteralArgument.class, ANamespacedKeyArgument.class, ANBTCompoundArgument.class, AObjectiveArgument.class,
-		AObjectiveCriteriaArgument.class, AOfflinePlayerArgument.class, AParticleArgument.class, APlayerArgument.class,
+		AObjectiveCriteriaArgument.class, AParticleArgument.class, APlayerProfileArgument.class,
 		APotionEffectArgument.class, ARecipeArgument.class, ARotationArgument.class, AScoreboardSlotArgument.class,
 		AScoreHolderArgument.Single.class, AScoreHolderArgument.Multiple.class, ASoundArgument.class, AStringArgument.class, ATeamArgument.class,
 		ATextArgument.class, ATimeArgument.class, AUUIDArgument.class, AWorldArgument.class };

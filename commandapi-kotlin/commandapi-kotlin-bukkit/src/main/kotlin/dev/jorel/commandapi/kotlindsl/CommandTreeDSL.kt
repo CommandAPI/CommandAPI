@@ -4,7 +4,6 @@ import dev.jorel.commandapi.*
 import dev.jorel.commandapi.arguments.*
 import org.bukkit.command.CommandSender
 import org.bukkit.plugin.java.JavaPlugin
-import java.util.function.Predicate
 
 const val WILL_NOT_REGISTER = "will-not-reg"
 
@@ -62,9 +61,6 @@ inline fun CommandTree.entitySelectorArgumentOneEntity(nodeName: String, optiona
 inline fun CommandTree.entitySelectorArgumentManyEntities(nodeName: String, allowEmpty: Boolean = true, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): CommandTree = then(EntitySelectorArgument.ManyEntities(nodeName, allowEmpty).setOptional(optional).apply(block))
 inline fun CommandTree.entitySelectorArgumentOnePlayer(nodeName: String, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): CommandTree = then(EntitySelectorArgument.OnePlayer(nodeName).setOptional(optional).apply(block))
 inline fun CommandTree.entitySelectorArgumentManyPlayers(nodeName: String, allowEmpty: Boolean = true, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): CommandTree = then(EntitySelectorArgument.ManyPlayers(nodeName, allowEmpty).setOptional(optional).apply(block))
-inline fun CommandTree.playerArgument(nodeName: String, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): CommandTree = then(PlayerArgument(nodeName).setOptional(optional).apply(block))
-inline fun CommandTree.offlinePlayerArgument(nodeName: String, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): CommandTree = then(OfflinePlayerArgument(nodeName).setOptional(optional).apply(block))
-inline fun CommandTree.asyncOfflinePlayerArgument(nodeName: String, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): CommandTree = then(AsyncOfflinePlayerArgument(nodeName).setOptional(optional).apply(block))
 inline fun CommandTree.entityTypeArgument(nodeName: String, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): CommandTree = then(EntityTypeArgument(nodeName).setOptional(optional).apply(block))
 
 // Scoreboard arguments
@@ -168,9 +164,6 @@ inline fun Argument<*>.entitySelectorArgumentOneEntity(nodeName: String, optiona
 inline fun Argument<*>.entitySelectorArgumentManyEntities(nodeName: String, allowEmpty: Boolean = true, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): Argument<*> = then(EntitySelectorArgument.ManyEntities(nodeName, allowEmpty).setOptional(optional).apply(block))
 inline fun Argument<*>.entitySelectorArgumentOnePlayer(nodeName: String, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): Argument<*> = then(EntitySelectorArgument.OnePlayer(nodeName).setOptional(optional).apply(block))
 inline fun Argument<*>.entitySelectorArgumentManyPlayers(nodeName: String, allowEmpty: Boolean = true, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): Argument<*> = then(EntitySelectorArgument.ManyPlayers(nodeName, allowEmpty).setOptional(optional).apply(block))
-inline fun Argument<*>.playerArgument(nodeName: String, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): Argument<*> = then(PlayerArgument(nodeName).setOptional(optional).apply(block))
-inline fun Argument<*>.offlinePlayerArgument(nodeName: String, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): Argument<*> = then(OfflinePlayerArgument(nodeName).setOptional(optional).apply(block))
-inline fun Argument<*>.asyncOfflinePlayerArgument(nodeName: String, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): Argument<*> = then(AsyncOfflinePlayerArgument(nodeName).setOptional(optional).apply(block))
 inline fun Argument<*>.entityTypeArgument(nodeName: String, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): Argument<*> = then(EntityTypeArgument(nodeName).setOptional(optional).apply(block))
 
 // Scoreboard arguments

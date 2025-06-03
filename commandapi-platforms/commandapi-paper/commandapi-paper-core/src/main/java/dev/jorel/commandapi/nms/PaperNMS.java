@@ -1,5 +1,6 @@
 package dev.jorel.commandapi.nms;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -18,6 +19,8 @@ public interface PaperNMS<CommandListenerWrapper> {
 	NamedTextColor getChatColor(CommandContext<CommandListenerWrapper> cmdCtx, String key);
 
 	Component getChatComponent(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException;
+
+	List<PlayerProfile> getProfile(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException;
 
 	<Source> NMS<Source> bukkitNMS();
 

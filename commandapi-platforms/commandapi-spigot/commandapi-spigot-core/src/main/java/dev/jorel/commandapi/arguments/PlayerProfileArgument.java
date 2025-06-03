@@ -23,18 +23,21 @@ package dev.jorel.commandapi.arguments;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.jorel.commandapi.CommandAPIBukkit;
+import dev.jorel.commandapi.CommandAPISpigot;
 import dev.jorel.commandapi.executors.CommandArguments;
-import org.bukkit.entity.Player;
+import org.bukkit.profile.PlayerProfile;
+
+import java.util.List;
 
 /**
- * An argument that represents the Bukkit Player object.
+ * An argument that represents the Paper PlayerProfile object.
  * <p>
  * Note that this Argument internally references Mojang's authentication servers to resolve
- * usernames, which gives it a slight performance overhead compared to {@link EntitySelectorArgument.OnePlayer}.
+ * usernames, which gives it a slight performance overhead compared to {@link dev.jorel.commandapi.arguments.EntitySelectorArgument.OnePlayer}.
  * 
  * @since 1.1
  */
-public class PlayerArgument extends SafeOverrideableArgument<Player, Player> {
+public class PlayerProfileArgument extends SafeOverrideableArgument<List, PlayerProfile> {
 
 	/**
 	 * A Player argument. Produces a single player, regardless of whether
@@ -42,13 +45,13 @@ public class PlayerArgument extends SafeOverrideableArgument<Player, Player> {
 	 * 
 	 * @param nodeName the name of the node for this argument
 	 */
-	public PlayerArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentProfile(), Player::getName);
+	public PlayerProfileArgument(String nodeName) {
+		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentProfile(), PlayerProfile::getName);
 	}
 
 	@Override
-	public Class<Player> getPrimitiveType() {
-		return Player.class;
+	public Class<List> getPrimitiveType() {
+		return List.class;
 	}
 	
 	@Override
@@ -57,7 +60,7 @@ public class PlayerArgument extends SafeOverrideableArgument<Player, Player> {
 	}
 	
 	@Override
-	public <CommandSourceStack> Player parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-		return CommandAPIBukkit.<CommandSourceStack>get().getNMS().getPlayer(cmdCtx, key);
+	public <CommandSourceStack> List<PlayerProfile> parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
+		return CommandAPISpigot.<CommandSourceStack>getSpigot().getProfile(cmdCtx, key);
 	}
 }

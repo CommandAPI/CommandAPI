@@ -220,11 +220,6 @@ public enum CommandAPIArgumentType {
 	OBJECTIVE_CRITERIA("minecraft:objective_criteria"),
 
 	/**
-	 * The OfflinePlayerArgument
-	 */
-	OFFLINE_PLAYER("api:offline_player"),
-
-	/**
 	 * The ParticleArgument
 	 */
 	PARTICLE("minecraft:particle"),

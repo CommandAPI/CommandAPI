@@ -8,15 +8,12 @@ import dev.jorel.commandapi.CommandAPIPaperConfig;
 import dev.jorel.commandapi.arguments.ChatArgument;
 import dev.jorel.commandapi.arguments.ChatColorArgument;
 import dev.jorel.commandapi.arguments.ChatComponentArgument;
-import dev.jorel.commandapi.arguments.NBTCompoundArgument;
-import dev.jorel.commandapi.arguments.PlayerArgument;
+import dev.jorel.commandapi.arguments.PlayerProfileArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
 import dev.jorel.commandapi.arguments.TextArgument;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
@@ -37,7 +34,7 @@ new CommandAPICommand("namecolor")
 
 /* ANCHOR: argumentChatAdventure2 */
 new CommandAPICommand("showbook")
-    .withArguments(new PlayerArgument("target"))
+    .withArguments(new PlayerProfileArgument("target"))
     .withArguments(new TextArgument("title"))
     .withArguments(new StringArgument("author"))
     .withArguments(new ChatComponentArgument("contents"))

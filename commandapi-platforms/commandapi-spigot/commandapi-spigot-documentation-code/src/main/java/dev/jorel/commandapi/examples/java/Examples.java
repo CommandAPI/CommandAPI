@@ -8,10 +8,8 @@ import dev.jorel.commandapi.CommandAPISpigotConfig;
 import dev.jorel.commandapi.arguments.ChatArgument;
 import dev.jorel.commandapi.arguments.ChatColorArgument;
 import dev.jorel.commandapi.arguments.ChatComponentArgument;
-import dev.jorel.commandapi.arguments.NBTCompoundArgument;
-import dev.jorel.commandapi.arguments.PlayerArgument;
+import dev.jorel.commandapi.arguments.PlayerProfileArgument;
 import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -35,7 +33,7 @@ new CommandAPICommand("namecolor")
 
 /* ANCHOR: argumentChatSpigot2 */
 new CommandAPICommand("makebook")
-    .withArguments(new PlayerArgument("player"))
+    .withArguments(new PlayerProfileArgument("player"))
     .withArguments(new ChatComponentArgument("contents"))
     .executes((sender, args) -> {
         Player player = (Player) args.get("player");
