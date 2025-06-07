@@ -68,7 +68,7 @@ public class SpigotNMS_1_21_R1 extends CommandAPISpigot<CommandSourceStack> {
 	@Override
 	public NMS<?> bukkitNMS() {
 		if (bukkitNMS == null) {
-			this.bukkitNMS = new NMS_1_21_R1(COMMAND_BUILD_CONTEXT);
+			this.bukkitNMS = new NMS_1_21_R1(() -> COMMAND_BUILD_CONTEXT);
 		}
 		return bukkitNMS;
 	}

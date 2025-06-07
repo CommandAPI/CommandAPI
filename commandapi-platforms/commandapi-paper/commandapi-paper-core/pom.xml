@@ -42,7 +42,7 @@
 		<dependency>
 			<groupId>dev.folia</groupId>
 			<artifactId>folia-api</artifactId>
-			<version>1.19.4-R0.1-SNAPSHOT</version>
+			<version>${paper.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

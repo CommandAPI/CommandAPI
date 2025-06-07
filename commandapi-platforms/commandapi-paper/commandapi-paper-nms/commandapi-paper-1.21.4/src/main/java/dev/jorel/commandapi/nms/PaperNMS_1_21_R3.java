@@ -36,20 +36,13 @@ import java.util.concurrent.CompletableFuture;
 
 public class PaperNMS_1_21_R3 implements PaperNMS<CommandSourceStack> {
 
-	private static final CommandBuildContext COMMAND_BUILD_CONTEXT;
+	private CommandBuildContext commandBuildContext;
 
 	private static final Constructor<?> pluginCommandNodeConstructor;
 
 	private NMS_1_21_R3 bukkitNMS;
 
 	static {
-		if (Bukkit.getServer() instanceof CraftServer server) {
-			COMMAND_BUILD_CONTEXT = CommandBuildContext.simple(server.getServer().registryAccess(),
-				server.getServer().getWorldData().enabledFeatures());
-		} else {
-			COMMAND_BUILD_CONTEXT = null;
-		}
-
 		Constructor<?> pluginCommandNode;
 		try {
 			pluginCommandNode = Class.forName("io.papermc.paper.command.brigadier.PluginCommandNode").getDeclaredConstructor(String.class, PluginMeta.class, LiteralCommandNode.class, String.class);
@@ -57,6 +50,19 @@ public class PaperNMS_1_21_R3 implements PaperNMS<CommandSourceStack> {
 			pluginCommandNode = null;
 		}
 		pluginCommandNodeConstructor = pluginCommandNode;
+	}
+
+	private CommandBuildContext getCommandBuildContext() {
+		if (commandBuildContext != null) {
+			return commandBuildContext;
+		}
+		if (Bukkit.getServer() instanceof CraftServer server) {
+			commandBuildContext = CommandBuildContext.simple(server.getServer().registryAccess(),
+				server.getServer().getWorldData().enabledFeatures());
+			return commandBuildContext;
+		} else {
+			return PaperCommands.INSTANCE.getBuildContext();
+		}
 	}
 
 	@Override
@@ -74,7 +80,7 @@ public class PaperNMS_1_21_R3 implements PaperNMS<CommandSourceStack> {
 
 	@Override
 	public Component getChatComponent(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		return GsonComponentSerializer.gson().deserialize(net.minecraft.network.chat.Component.Serializer.toJson(ComponentArgument.getComponent(cmdCtx, key), COMMAND_BUILD_CONTEXT));
+		return GsonComponentSerializer.gson().deserialize(net.minecraft.network.chat.Component.Serializer.toJson(ComponentArgument.getComponent(cmdCtx, key), getCommandBuildContext()));
 	}
 
 	@Override
@@ -88,7 +94,7 @@ public class PaperNMS_1_21_R3 implements PaperNMS<CommandSourceStack> {
 	@Override
 	public <Source> NMS<Source> bukkitNMS() {
 		if (bukkitNMS == null) {
-			this.bukkitNMS = new NMS_1_21_R3(COMMAND_BUILD_CONTEXT);
+			this.bukkitNMS = new NMS_1_21_R3(this::getCommandBuildContext);
 		}
 		return (NMS<Source>) bukkitNMS;
 	}
@@ -108,48 +114,5 @@ public class PaperNMS_1_21_R3 implements PaperNMS<CommandSourceStack> {
 				return command instanceof BukkitCommandNode.BukkitBrigCommand;
 			}
 		);
-	}
-
-	@SuppressWarnings("UnstableApiUsage")
-	@Override
-	public boolean isDispatcherValid() {
-		boolean validState;
-		try {
-			PaperCommands.INSTANCE.getDispatcher();
-			validState = true;
-		} catch (IllegalStateException e) {
-			validState = false;
-		}
-		return validState;
-	}
-
-	@SuppressWarnings({"unchecked", "UnstableApiUsage"})
-	@Override
-	public <Source> LiteralCommandNode<Source> asPluginCommand(LiteralCommandNode<Source> commandNode, String description, List<String> aliases) {
-		try {
-			if (pluginCommandNodeConstructor != null) {
-				return (LiteralCommandNode<Source>) pluginCommandNodeConstructor.newInstance(
-					commandNode.getLiteral(),
-					CommandAPIPaper.getConfiguration().getPluginMeta(),
-					commandNode,
-					description
-				);
-			} else {
-				commandNode.pluginCommandMeta = new PluginCommandMeta(
-					CommandAPIPaper.getConfiguration().getPluginMeta(),
-					description,
-					aliases
-				);
-				return commandNode;
-			}
-		} catch (ReflectiveOperationException e) {
-			return commandNode;
-		}
-	}
-
-	@SuppressWarnings({"unchecked", "UnstableApiUsage"})
-	@Override
-	public <Source> CommandDispatcher<Source> getPaperCommandDispatcher() {
-		return (CommandDispatcher<Source>) PaperCommands.INSTANCE.getDispatcherInternal();
 	}
 }

@@ -13,6 +13,7 @@ import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
 import dev.jorel.commandapi.nms.BundledNMS;
 import dev.jorel.commandapi.wrappers.NativeProxyCommandSender;
 import io.papermc.paper.event.server.ServerResourcesReloadedEvent;
+import io.papermc.paper.plugin.lifecycle.event.LifecycleEventOwner;
 import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.bukkit.Bukkit;
@@ -38,6 +39,7 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 
 	private CommandAPILogger bootstrapLogger;
 
+	private LifecycleEventOwner lifecycleEventOwner;
 	private final BundledNMS<Source> nms;
 
 	@SuppressWarnings("unchecked")
@@ -80,6 +82,10 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 		return (InternalPaperConfig) CommandAPIBukkit.getConfiguration();
 	}
 
+	public LifecycleEventOwner getLifecycleEventOwner() {
+		return lifecycleEventOwner;
+	}
+
 	private static void setInternalConfig(InternalPaperConfig config) {
 		CommandAPIBukkit.config = config;
 	}
@@ -94,14 +100,17 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 
 	@Override
 	public void onLoad(CommandAPIConfig<?> config) {
-		if (config instanceof CommandAPIPaperConfig paperConfig) {
+		if (config instanceof CommandAPIPaperConfig<? extends LifecycleEventOwner> paperConfig) {
 			CommandAPIPaper.setInternalConfig(new InternalPaperConfig(paperConfig));
+			this.lifecycleEventOwner = paperConfig.lifecycleEventOwner;
 		} else {
 			CommandAPI.logError("CommandAPIBukkit was loaded with non-Bukkit config!");
 			CommandAPI.logError("Attempts to access Bukkit-specific config variables will fail!");
 		}
 		super.onLoad();
 		checkPaperDependencies();
+		PaperCommandRegistration registration = (PaperCommandRegistration) CommandAPIBukkit.get().getCommandRegistrationStrategy();
+		registration.registerLifecycleEvent(Bukkit.getServer() == null);
 	}
 
 	/**
@@ -112,6 +121,7 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 	 */
 	public static void onEnable(JavaPlugin plugin) {
 		CommandAPIBukkit.get().plugin = plugin;
+		CommandAPIPaper.getPaper().lifecycleEventOwner = plugin;
 
 		new Schedulers(paper.isFoliaPresent).scheduleSyncDelayed(plugin, () -> {
 			CommandAPIBukkit.get().getCommandRegistrationStrategy().runTasksAfterServerStart();
@@ -156,6 +166,8 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 		}
 
 		CommandAPI.onEnable();
+		PaperCommandRegistration registration = (PaperCommandRegistration) CommandAPIBukkit.get().getCommandRegistrationStrategy();
+		registration.registerLifecycleEvent(Bukkit.getServer() == null);
 	}
 
 	private void checkPaperDependencies() {

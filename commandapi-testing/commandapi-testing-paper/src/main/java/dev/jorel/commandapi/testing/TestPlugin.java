@@ -50,6 +50,7 @@ import dev.jorel.commandapi.wrappers.MathOperation;
 import dev.jorel.commandapi.wrappers.ParticleData;
 import dev.jorel.commandapi.wrappers.Rotation;
 import dev.jorel.commandapi.wrappers.ScoreboardSlot;
+import io.papermc.paper.plugin.lifecycle.event.LifecycleEventOwner;
 import net.kyori.adventure.chat.ChatType;
 import net.kyori.adventure.chat.SignedMessage;
 import net.kyori.adventure.text.Component;
@@ -87,7 +88,7 @@ public class TestPlugin extends JavaPlugin {
 
 	@Override
 	public void onLoad() {
-		CommandAPI.onLoad(new CommandAPIPaperConfig(this.getPluginMeta()));
+		CommandAPI.onLoad(new CommandAPIPaperConfig<>(this.getPluginMeta(), this));
 
 		register(new AdvancementArgument("advancementtype"), Advancement.class, advancement -> advancement.key().asString());
 		register(new AngleArgument("angletype"), float.class, Object::toString);

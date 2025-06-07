@@ -1,16 +1,26 @@
 package dev.jorel.commandapi;
 
 import io.papermc.paper.plugin.configuration.PluginMeta;
+import io.papermc.paper.plugin.lifecycle.event.LifecycleEventOwner;
 
 @SuppressWarnings("UnstableApiUsage")
-public class CommandAPIPaperConfig extends CommandAPIBukkitConfig<CommandAPIPaperConfig> {
+public class CommandAPIPaperConfig<T extends LifecycleEventOwner> extends CommandAPIBukkitConfig<CommandAPIPaperConfig<T>> {
 
 	PluginMeta pluginMeta;
+	LifecycleEventOwner lifecycleEventOwner;
 	boolean shouldHookPaperReload = false;
 
-	public CommandAPIPaperConfig(PluginMeta pluginMeta) {
+	/**
+	 * Creates a new {@code CommandAPIPaperConfig} object
+	 *
+	 * @param pluginMeta the {@link io.papermc.paper.plugin.configuration.PluginMeta} of the plugin loading the CommandAPI
+	 * @param lifecycleEventOwner a {@link io.papermc.paper.plugin.lifecycle.event.LifecycleEventOwner}.
+	 *                           Can be a {@link org.bukkit.plugin.java.JavaPlugin} or a {@link io.papermc.paper.plugin.bootstrap.BootstrapContext}
+	 */
+	public CommandAPIPaperConfig(PluginMeta pluginMeta, T lifecycleEventOwner) {
 		super(pluginMeta.getName());
 		this.pluginMeta = pluginMeta;
+		this.lifecycleEventOwner = lifecycleEventOwner;
 	}
 
 	/**
@@ -20,7 +30,7 @@ public class CommandAPIPaperConfig extends CommandAPIBukkitConfig<CommandAPIPape
 	 * @param skip whether the CommandAPI should skip reloading datapacks when the server has finished loading
 	 * @return this CommandAPIPaperConfig
 	 */
-	public CommandAPIPaperConfig skipReloadDatapacks(boolean skip) {
+	public CommandAPIPaperConfig<T> skipReloadDatapacks(boolean skip) {
 		this.skipReloadDatapacks = skip;
 		return this;
 	}
@@ -33,13 +43,13 @@ public class CommandAPIPaperConfig extends CommandAPIBukkitConfig<CommandAPIPape
 	 * @param hooked whether the CommandAPI should hook into Paper's {@link io.papermc.paper.event.server.ServerResourcesReloadedEvent}
 	 * @return this CommandAPIPaperConfig
 	 */
-	public CommandAPIPaperConfig shouldHookPaperReload(boolean hooked) {
+	public CommandAPIPaperConfig<T> shouldHookPaperReload(boolean hooked) {
 		this.shouldHookPaperReload = hooked;
 		return this;
 	}
 
 	@Override
-	public CommandAPIPaperConfig instance() {
+	public CommandAPIPaperConfig<T> instance() {
 		return this;
 	}
 }

@@ -35,24 +35,19 @@ import org.bukkit.craftbukkit.help.SimpleHelpMap;
 
 import java.lang.reflect.Constructor;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
 
 public class PaperNMS_1_21_R4 implements PaperNMS<CommandSourceStack> {
 
-	private static final CommandBuildContext COMMAND_BUILD_CONTEXT;
+	private CommandBuildContext commandBuildContext;
 	private static final Constructor<?> pluginCommandNodeConstructor;
 	private static final SafeVarHandle<CommandNode<?>, Object> metaField;
 
 	private NMS_1_21_R4 bukkitNMS;
 
 	static {
-		if (Bukkit.getServer() instanceof CraftServer server) {
-			COMMAND_BUILD_CONTEXT = CommandBuildContext.simple(server.getServer().registryAccess(),
-				server.getServer().getWorldData().enabledFeatures());
-		} else {
-			COMMAND_BUILD_CONTEXT = null;
-		}
-
 		Constructor<?> pluginCommandNode;
 		SafeVarHandle<CommandNode<?>, ?> metaFieldHandle = null;
 		try {
@@ -64,6 +59,19 @@ public class PaperNMS_1_21_R4 implements PaperNMS<CommandSourceStack> {
 		}
 		pluginCommandNodeConstructor = pluginCommandNode;
 		metaField = (SafeVarHandle<CommandNode<?>, Object>) metaFieldHandle;
+	}
+
+	private CommandBuildContext getCommandBuildContext() {
+		if (commandBuildContext != null) {
+			return commandBuildContext;
+		}
+		if (Bukkit.getServer() instanceof CraftServer server) {
+			commandBuildContext = CommandBuildContext.simple(server.getServer().registryAccess(),
+				server.getServer().getWorldData().enabledFeatures());
+			return commandBuildContext;
+		} else {
+			return PaperCommands.INSTANCE.getBuildContext();
+		}
 	}
 
 	@Override
@@ -81,7 +89,7 @@ public class PaperNMS_1_21_R4 implements PaperNMS<CommandSourceStack> {
 
 	@Override
 	public Component getChatComponent(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		return GsonComponentSerializer.gson().deserialize(net.minecraft.network.chat.Component.Serializer.toJson(ComponentArgument.getResolvedComponent(cmdCtx, key), COMMAND_BUILD_CONTEXT));
+		return GsonComponentSerializer.gson().deserialize(net.minecraft.network.chat.Component.Serializer.toJson(ComponentArgument.getResolvedComponent(cmdCtx, key), getCommandBuildContext()));
 	}
 
 	@Override
@@ -95,7 +103,7 @@ public class PaperNMS_1_21_R4 implements PaperNMS<CommandSourceStack> {
 	@Override
 	public <Source> NMS<Source> bukkitNMS() {
 		if (bukkitNMS == null) {
-			this.bukkitNMS = new NMS_1_21_R4(COMMAND_BUILD_CONTEXT);
+			this.bukkitNMS = new NMS_1_21_R4(this::getCommandBuildContext);
 		}
 		return (NMS<Source>) bukkitNMS;
 	}
@@ -115,50 +123,6 @@ public class PaperNMS_1_21_R4 implements PaperNMS<CommandSourceStack> {
 				return command instanceof BukkitCommandNode.BukkitBrigCommand;
 			}
 		);
-	}
-
-	@SuppressWarnings("UnstableApiUsage")
-	@Override
-	public boolean isDispatcherValid() {
-		boolean validState;
-		try {
-			PaperCommands.INSTANCE.getDispatcher();
-			validState = true;
-		} catch (IllegalStateException e) {
-			validState = false;
-		}
-		return validState;
-	}
-
-	@SuppressWarnings({"UnstableApiUsage"})
-	@Override
-	public <Source> LiteralCommandNode<Source> asPluginCommand(LiteralCommandNode<Source> commandNode, String description, List<String> aliases) {
-		try {
-			if (pluginCommandNodeConstructor != null) {
-				metaField.set(commandNode, pluginCommandNodeConstructor.newInstance(
-					CommandAPIPaper.getConfiguration().getPluginMeta(),
-					description,
-					aliases
-				));
-			} else {
-				commandNode.apiCommandMeta = new APICommandMeta(
-					CommandAPIPaper.getConfiguration().getPluginMeta(),
-					description,
-					aliases,
-					CommandAPIBukkit.getConfiguration().getNamespace(),
-					false
-				);
-			}
-			return commandNode;
-		} catch (ReflectiveOperationException e) {
-			return commandNode;
-		}
-	}
-
-	@SuppressWarnings({"unchecked", "UnstableApiUsage"})
-	@Override
-	public <Source> CommandDispatcher<Source> getPaperCommandDispatcher() {
-		return (CommandDispatcher<Source>) PaperCommands.INSTANCE.getDispatcherInternal();
 	}
 
 }

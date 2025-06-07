@@ -923,19 +923,4 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	public CommandRegistrationStrategy<CommandSourceStack> createCommandRegistrationStrategy() {
 		return ((PaperNMS<CommandSourceStack>) paperNMS).createCommandRegistrationStrategy();
 	}
-
-	@Override
-	public boolean isDispatcherValid() {
-		return paperNMS.isDispatcherValid();
-	}
-
-	@Override
-	public <Source> LiteralCommandNode<Source> asPluginCommand(LiteralCommandNode<Source> commandNode, String description, List<String> aliases) {
-		return paperNMS.asPluginCommand(commandNode, description, aliases);
-	}
-
-	@Override
-	public <Source> CommandDispatcher<Source> getPaperCommandDispatcher() {
-		return paperNMS.getPaperCommandDispatcher();
-	}
 }

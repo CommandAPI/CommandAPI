@@ -20,6 +20,8 @@
  *******************************************************************************/
 import java.util.Map;
 
+import net.minecraft.commands.arguments.blocks.ArgumentTileLocation;
+import net.minecraft.nbt.NBTTagCompound;
 import org.bukkit.craftbukkit.v1_21_R5.help.SimpleHelpMap;
 
 import com.mojang.brigadier.CommandDispatcher;
@@ -38,4 +40,5 @@ import net.minecraft.world.level.gameevent.EntityPositionSource;
 @RequireField(in = SimpleHelpMap.class, name = "helpTopics", ofType = Map.class)
 @RequireField(in = EntityPositionSource.class, name = "e", ofType = Either.class)
 @RequireField(in = MinecraftServer.class, name = "aE", ofType = FuelValues.class)
+@RequireField(in = ArgumentTileLocation.class, name = "c", ofType = NBTTagCompound.class)
 public class SafeReflect {}

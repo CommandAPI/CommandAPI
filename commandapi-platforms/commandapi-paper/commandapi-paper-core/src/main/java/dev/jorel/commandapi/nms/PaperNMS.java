@@ -26,10 +26,4 @@ public interface PaperNMS<CommandListenerWrapper> {
 
 	CommandRegistrationStrategy<CommandListenerWrapper> createCommandRegistrationStrategy();
 
-	boolean isDispatcherValid();
-
-	<Source> LiteralCommandNode<Source> asPluginCommand(LiteralCommandNode<Source> commandNode, String description, List<String> aliases);
-
-	<Source>CommandDispatcher<Source> getPaperCommandDispatcher();
-
 }

@@ -65,7 +65,7 @@ class argument_nbt : JavaPlugin() {
 
 /* ANCHOR: argumentNBT1 */
 override fun onLoad() {
-    CommandAPI.onLoad(CommandAPIPaperConfig(this.pluginMeta)
+    CommandAPI.onLoad(CommandAPIPaperConfig(this.pluginMeta, this)
         .initializeNBTAPI(NBTContainer::class.java, ::NBTContainer)
     )
 }
@@ -78,7 +78,7 @@ val plugin: JavaPlugin = object : JavaPlugin() {}
 
 fun setupShading1() {
 /* ANCHOR: setupShading1 */
-CommandAPI.onLoad(CommandAPIPaperConfig(plugin.pluginMeta).silentLogs(true))
+CommandAPI.onLoad(CommandAPIPaperConfig<>(plugin.pluginMeta, this).silentLogs(true))
 /* ANCHOR_END: setupShading1 */
 }
 
@@ -86,7 +86,7 @@ CommandAPI.onLoad(CommandAPIPaperConfig(plugin.pluginMeta).silentLogs(true))
 class MyPlugin : JavaPlugin() {
 
     override fun onLoad() {
-        CommandAPI.onLoad(CommandAPIPaperConfig(this.pluginMeta).verboseOutput(true)) // Load with verbose output
+        CommandAPI.onLoad(CommandAPIPaperConfig(this.pluginMeta, this).verboseOutput(true)) // Load with verbose output
 
         CommandAPICommand("ping")
             .executes(CommandExecutor { sender, _ ->

@@ -63,9 +63,8 @@
 
 		<dependency>
 			<groupId>dev.jorel</groupId>
-			<artifactId>commandapi-paper-nms-common</artifactId>
+			<artifactId>commandapi-bukkit-nms-common</artifactId>
 			<version>${project.version}</version>
-			<classifier>mojang-mapped</classifier>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>

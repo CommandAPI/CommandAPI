@@ -186,6 +186,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
 
 // Mojang-Mapped reflection
@@ -210,9 +211,9 @@ public class NMS_1_21_R2 extends NMS_Common {
 	private static final SafeVarHandle<BlockInput, CompoundTag> blockInputTag;
 
 	// Derived from net.minecraft.commands.Commands;
-	private final CommandBuildContext commandBuildContext;
+	private final Supplier<CommandBuildContext> commandBuildContext;
 
-	public NMS_1_21_R2(CommandBuildContext commandBuildContext) {
+	public NMS_1_21_R2(Supplier<CommandBuildContext> commandBuildContext) {
 		this.commandBuildContext = commandBuildContext;
 	}
 
@@ -242,7 +243,7 @@ public class NMS_1_21_R2 extends NMS_Common {
 
 	@Override
 	protected CommandBuildContext getCommandBuildContext() {
-		return commandBuildContext;
+		return commandBuildContext.get();
 	}
 
 	@Differs(from = "1.21.1", by = "New advancement argument implementation")
@@ -253,12 +254,12 @@ public class NMS_1_21_R2 extends NMS_Common {
 	
 	@Override
 	public ArgumentType<?> _ArgumentChatComponent() {
-		return ComponentArgument.textComponent(commandBuildContext);
+		return ComponentArgument.textComponent(commandBuildContext.get());
 	}
 
 	@Override
 	public final ArgumentType<?> _ArgumentEnchantment() {
-		return ResourceArgument.resource(commandBuildContext, Registries.ENCHANTMENT);
+		return ResourceArgument.resource(commandBuildContext.get(), Registries.ENCHANTMENT);
 	}
 
 	@Differs(from = "1.21.1", by = "New recipe argument implementation")
@@ -269,7 +270,7 @@ public class NMS_1_21_R2 extends NMS_Common {
 
 	@Override
 	public final ArgumentType<?> _ArgumentSyntheticBiome() {
-		return ResourceArgument.resource(commandBuildContext, Registries.BIOME);
+		return ResourceArgument.resource(commandBuildContext.get(), Registries.BIOME);
 	}
 
 	@Override
@@ -284,7 +285,7 @@ public class NMS_1_21_R2 extends NMS_Common {
 	
 	@Differs(from = "1.20.6", by = "ItemInput constructor uses a data components patch, instead of a data components map")
 	private String serializeNMSItemStack(ItemStack is) {
-		return new ItemInput(is.getItemHolder(), is.getComponentsPatch()).serialize(commandBuildContext);
+		return new ItemInput(is.getItemHolder(), is.getComponentsPatch()).serialize(commandBuildContext.get());
 	}
 
 	@Override
@@ -989,7 +990,7 @@ public class NMS_1_21_R2 extends NMS_Common {
 	@Override
 	public Message generateMessageFromJson(String json) {
 		// TODO: Same as #getAdventureChatComponent, figure out if an empty provider is suitable here
-		return Serializer.fromJson(json, commandBuildContext);
+		return Serializer.fromJson(json, commandBuildContext.get());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -1004,12 +1005,12 @@ public class NMS_1_21_R2 extends NMS_Common {
 
 	@Override
 	public ArgumentType<?> _ArgumentMobEffect() {
-		return ResourceArgument.resource(commandBuildContext, Registries.MOB_EFFECT);
+		return ResourceArgument.resource(commandBuildContext.get(), Registries.MOB_EFFECT);
 	}
 
 	@Override
 	public ArgumentType<?> _ArgumentEntitySummon() {
-		return ResourceArgument.resource(commandBuildContext, Registries.ENTITY_TYPE);
+		return ResourceArgument.resource(commandBuildContext.get(), Registries.ENTITY_TYPE);
 	}
 
 }

@@ -12,6 +12,10 @@
 	<artifactId>commandapi-paper</artifactId>
 	<packaging>pom</packaging>
 
+	<properties>
+		<paper.version>1.20.6-R0.1-SNAPSHOT</paper.version>
+	</properties>
+
 	<modules>
         <module>commandapi-paper-annotations</module>
 		<module>commandapi-paper-core</module>

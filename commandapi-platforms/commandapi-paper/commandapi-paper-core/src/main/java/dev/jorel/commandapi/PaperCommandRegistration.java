@@ -1,11 +1,22 @@
 package dev.jorel.commandapi;
 
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.suggestion.SuggestionProvider;
+import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+import io.papermc.paper.command.brigadier.Commands;
+import io.papermc.paper.plugin.bootstrap.BootstrapContext;
+import io.papermc.paper.plugin.lifecycle.event.LifecycleEventOwner;
+import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
+import org.bukkit.Bukkit;
 import org.bukkit.help.HelpTopic;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,6 +25,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * Handles logic for registering commands after Paper build 65, where <a href="https://github.com/PaperMC/Paper/pull/8235">https://github.com/PaperMC/Paper/pull/8235</a>
@@ -25,8 +37,9 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 	private final Runnable reloadHelpTopics;
 	private final Predicate<CommandNode<Source>> isBukkitCommand;
 
-	// Store registered commands nodes for eventual reloads
-	private final RootCommandNode<Source> registeredNodes = new RootCommandNode<>();
+	private final boolean[] lifecycleEventRegistered = new boolean[2];
+	private final CommandDispatcher<CommandSourceStack> bootstrapDispatcher = new CommandDispatcher<>();
+	private final CommandDispatcher<CommandSourceStack> pluginDispatcher = new CommandDispatcher<>();
 
 	public PaperCommandRegistration(Supplier<CommandDispatcher<Source>> getBrigadierDispatcher, Runnable reloadHelpTopics, Predicate<CommandNode<Source>> isBukkitCommand) {
 		this.getBrigadierDispatcher = getBrigadierDispatcher;
@@ -44,10 +57,6 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 	 */
 	public boolean isBukkitCommand(CommandNode<Source> node) {
 		return isBukkitCommand.test(node);
-	}
-
-	public CommandDispatcher<Source> getPaperDispatcher() {
-		return CommandAPIPaper.getPaper().getNMS().getPaperCommandDispatcher();
 	}
 
 	// Implement CommandRegistrationStrategy methods
@@ -68,22 +77,13 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 
 	@Override
 	public LiteralCommandNode<Source> registerCommandNode(LiteralArgumentBuilder<Source> node, String namespace) {
-		LiteralCommandNode<Source> commandNode = asPluginCommand(node.build());
-		LiteralCommandNode<Source> namespacedCommandNode = asPluginCommand(CommandAPIHandler.getInstance().namespaceNode(commandNode, namespace));
-
-		if (!CommandAPIPaper.getPaper().getNMS().isDispatcherValid()) {
-			// If it's not valid, then we're registering outside of lifecycle events
-			// Add to registered command nodes
-			registeredNodes.addChild(commandNode);
-			registeredNodes.addChild(namespacedCommandNode);
+		LiteralCommandNode<Source> built = node.build();
+		if (Bukkit.getServer() == null) {
+			bootstrapDispatcher.getRoot().addChild((CommandNode<CommandSourceStack>) built);
+		} else {
+			pluginDispatcher.getRoot().addChild((CommandNode<CommandSourceStack>) built);
 		}
-
-		// Register commands
-		RootCommandNode<Source> root = getPaperDispatcher().getRoot();
-		root.addChild(commandNode);
-		root.addChild(namespacedCommandNode);
-
-		return commandNode;
+		return built;
 	}
 
 	@Override
@@ -94,28 +94,38 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 			// If we are unregistering a Vanilla command, DO NOT unregister BukkitCommandNodes
 			c -> !unregisterBukkit ^ isBukkitCommand.test(c));
 
-		// CommandAPI commands count as non-Bukkit
-		if (!unregisterBukkit) {
-			// Don't add nodes back after a reload
-			removeBrigadierCommands(registeredNodes, commandName, unregisterNamespaces, c -> true);
-		}
-
 		// Update the dispatcher file
 		CommandAPIHandler.getInstance().writeDispatcherToFile();
 	}
 
 	@Override
 	public void preReloadDataPacks() {
-		RootCommandNode<Source> root = getPaperDispatcher().getRoot();
-		for (CommandNode<Source> commandNode : registeredNodes.getChildren()) {
-			root.addChild(commandNode);
-		}
 		reloadHelpTopics.run();
 		CommandAPIBukkit.get().updateHelpForCommands(CommandAPI.getRegisteredCommands());
 	}
 
-	private LiteralCommandNode<Source> asPluginCommand(LiteralCommandNode<Source> commandNode) {
-		return CommandAPIPaper.getPaper().getNMS().asPluginCommand(commandNode, getDescription(commandNode.getLiteral()), getAliasesForCommand(commandNode.getLiteral()));
+	void registerLifecycleEvent(boolean bootstrap) {
+		if (bootstrap && !lifecycleEventRegistered[0]) {
+			BootstrapContext context = (BootstrapContext) CommandAPIPaper.getPaper().getLifecycleEventOwner();
+			lifecycleEventRegistered[0] = true;
+			context.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event -> {
+				for (CommandNode<CommandSourceStack> commandNode : bootstrapDispatcher.getRoot().getChildren()) {
+					LiteralCommandNode<CommandSourceStack> node = (LiteralCommandNode<CommandSourceStack>) commandNode;
+					event.registrar().register(node, getDescription(node.getLiteral()));
+				}
+			});
+			return;
+		}
+		if (!bootstrap && !lifecycleEventRegistered[1]) {
+			JavaPlugin plugin = (JavaPlugin) CommandAPIPaper.getPaper().getLifecycleEventOwner();
+			lifecycleEventRegistered[1] = true;
+			plugin.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event -> {
+				for (CommandNode<CommandSourceStack> commandNode : pluginDispatcher.getRoot().getChildren()) {
+					LiteralCommandNode<CommandSourceStack> node = (LiteralCommandNode<CommandSourceStack>) commandNode;
+					event.registrar().register(node, getDescription(node.getLiteral()));
+				}
+			});
+		}
 	}
 
 	private String getDescription(String commandName) {
@@ -136,22 +146,6 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 			}
 		}
 		return "";
-	}
-
-	private List<String> getAliasesForCommand(String commandName) {
-		Set<String> aliases = new HashSet<>();
-		String namespaceStripped;
-		if (commandName.contains(":")) {
-			namespaceStripped = commandName.split(":")[1];
-		} else {
-			namespaceStripped = commandName;
-		}
-		for (RegisteredCommand command : CommandAPI.getRegisteredCommands()) {
-			if (command.commandName().equals(namespaceStripped)) {
-				aliases.addAll(Arrays.asList(command.aliases()));
-			}
-		}
-		return new ArrayList<>(aliases);
 	}
 
 }

@@ -11,6 +11,7 @@ import dev.jorel.commandapi.arguments.ChatComponentArgument;
 import dev.jorel.commandapi.arguments.PlayerProfileArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
 import dev.jorel.commandapi.arguments.TextArgument;
+import io.papermc.paper.plugin.lifecycle.event.LifecycleEventOwner;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -69,7 +70,7 @@ class argument_nbt extends JavaPlugin {
 /* ANCHOR: argumentNBT1 */
 @Override
 public void onLoad() {
-    CommandAPI.onLoad(new CommandAPIPaperConfig(this.getPluginMeta())
+    CommandAPI.onLoad(new CommandAPIPaperConfig<>(this.getPluginMeta(), this)
         .initializeNBTAPI(NBTContainer.class, NBTContainer::new)
     );
 }
@@ -81,7 +82,7 @@ JavaPlugin plugin = new JavaPlugin() {};
 
 {
 /* ANCHOR: setupShading1 */
-CommandAPI.onLoad(new CommandAPIPaperConfig(plugin.getPluginMeta()).silentLogs(true));
+CommandAPI.onLoad(new CommandAPIPaperConfig(plugin.getPluginMeta(), (LifecycleEventOwner) this).silentLogs(true));
 /* ANCHOR_END: setupShading1 */
 }
 
@@ -90,7 +91,7 @@ class MyPlugin extends JavaPlugin {
 
     @Override
     public void onLoad() {
-        CommandAPI.onLoad(new CommandAPIPaperConfig(this.getPluginMeta()).verboseOutput(true)); // Load with verbose output
+        CommandAPI.onLoad(new CommandAPIPaperConfig<>(this.getPluginMeta(), this).verboseOutput(true)); // Load with verbose output
 
         new CommandAPICommand("ping")
             .executes((sender, args) -> {

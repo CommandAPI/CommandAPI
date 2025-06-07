@@ -34,16 +34,20 @@ import java.util.concurrent.CompletableFuture;
 
 public class PaperNMS_1_21_R2 implements PaperNMS<CommandSourceStack> {
 
-	private static final CommandBuildContext COMMAND_BUILD_CONTEXT;
+	private CommandBuildContext commandBuildContext;
 
 	private NMS_1_21_R2 bukkitNMS;
 
-	static {
+	private CommandBuildContext getCommandBuildContext() {
+		if (commandBuildContext != null) {
+			return commandBuildContext;
+		}
 		if (Bukkit.getServer() instanceof CraftServer server) {
-			COMMAND_BUILD_CONTEXT = CommandBuildContext.simple(server.getServer().registryAccess(),
+			commandBuildContext = CommandBuildContext.simple(server.getServer().registryAccess(),
 				server.getServer().getWorldData().enabledFeatures());
+			return commandBuildContext;
 		} else {
-			COMMAND_BUILD_CONTEXT = null;
+			return PaperCommands.INSTANCE.getBuildContext();
 		}
 	}
 
@@ -62,7 +66,7 @@ public class PaperNMS_1_21_R2 implements PaperNMS<CommandSourceStack> {
 
 	@Override
 	public Component getChatComponent(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		return GsonComponentSerializer.gson().deserialize(net.minecraft.network.chat.Component.Serializer.toJson(ComponentArgument.getComponent(cmdCtx, key), COMMAND_BUILD_CONTEXT));
+		return GsonComponentSerializer.gson().deserialize(net.minecraft.network.chat.Component.Serializer.toJson(ComponentArgument.getComponent(cmdCtx, key), getCommandBuildContext()));
 	}
 
 	@Override
@@ -76,7 +80,7 @@ public class PaperNMS_1_21_R2 implements PaperNMS<CommandSourceStack> {
 	@Override
 	public <Source> NMS<Source> bukkitNMS() {
 		if (bukkitNMS == null) {
-			this.bukkitNMS = new NMS_1_21_R2(COMMAND_BUILD_CONTEXT);
+			this.bukkitNMS = new NMS_1_21_R2(this::getCommandBuildContext);
 		}
 		return (NMS<Source>) bukkitNMS;
 	}
@@ -98,33 +102,4 @@ public class PaperNMS_1_21_R2 implements PaperNMS<CommandSourceStack> {
 		);
 	}
 
-	@SuppressWarnings("UnstableApiUsage")
-	@Override
-	public boolean isDispatcherValid() {
-		boolean validState;
-		try {
-			PaperCommands.INSTANCE.getDispatcher();
-			validState = true;
-		} catch (IllegalStateException e) {
-			validState = false;
-		}
-		return validState;
-	}
-
-	@SuppressWarnings({"unchecked", "UnstableApiUsage"})
-	@Override
-	public <Source> LiteralCommandNode<Source> asPluginCommand(LiteralCommandNode<Source> commandNode, String description, List<String> aliases) {
-		return (LiteralCommandNode<Source>) new PluginCommandNode(
-			commandNode.getLiteral(),
-			CommandAPIPaper.getConfiguration().getPluginMeta(),
-			(LiteralCommandNode<io.papermc.paper.command.brigadier.CommandSourceStack>) commandNode,
-			description
-		);
-	}
-
-	@SuppressWarnings({"unchecked", "UnstableApiUsage"})
-	@Override
-	public <Source> CommandDispatcher<Source> getPaperCommandDispatcher() {
-		return (CommandDispatcher<Source>) PaperCommands.INSTANCE.getDispatcherInternal();
-	}
 }

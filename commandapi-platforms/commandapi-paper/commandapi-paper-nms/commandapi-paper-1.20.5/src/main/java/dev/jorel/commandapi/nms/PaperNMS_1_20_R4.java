@@ -41,20 +41,13 @@ import java.util.concurrent.CompletableFuture;
 
 public class PaperNMS_1_20_R4 implements PaperNMS<CommandSourceStack> {
 
-	private static final CommandBuildContext COMMAND_BUILD_CONTEXT;
+	private CommandBuildContext commandBuildContext;
 	private static final boolean vanillaCommandDispatcherFieldExists;
 	private static final Commands vanillaCommandDispatcher;
 
 	private NMS_1_20_R4 bukkitNMS;
 
 	static {
-		if (Bukkit.getServer() instanceof CraftServer server) {
-			COMMAND_BUILD_CONTEXT = CommandBuildContext.simple(server.getServer().registryAccess(),
-				server.getServer().getWorldData().enabledFeatures());
-		} else {
-			COMMAND_BUILD_CONTEXT = null;
-		}
-
 		boolean fieldExists;
 		Commands commandDispatcher;
 		try {
@@ -68,6 +61,19 @@ public class PaperNMS_1_20_R4 implements PaperNMS<CommandSourceStack> {
 		}
 		vanillaCommandDispatcher = commandDispatcher;
 		vanillaCommandDispatcherFieldExists = fieldExists;
+	}
+
+	private CommandBuildContext getCommandBuildContext() {
+		if (commandBuildContext != null) {
+			return commandBuildContext;
+		}
+		if (Bukkit.getServer() instanceof CraftServer server) {
+			commandBuildContext = CommandBuildContext.simple(server.getServer().registryAccess(),
+				server.getServer().getWorldData().enabledFeatures());
+			return commandBuildContext;
+		} else {
+			return PaperCommands.INSTANCE.getBuildContext();
+		}
 	}
 
 	@Override
@@ -85,7 +91,7 @@ public class PaperNMS_1_20_R4 implements PaperNMS<CommandSourceStack> {
 
 	@Override
 	public Component getChatComponent(CommandContext<CommandSourceStack> cmdCtx, String key) {
-		return GsonComponentSerializer.gson().deserialize(net.minecraft.network.chat.Component.Serializer.toJson(ComponentArgument.getComponent(cmdCtx, key), COMMAND_BUILD_CONTEXT));
+		return GsonComponentSerializer.gson().deserialize(net.minecraft.network.chat.Component.Serializer.toJson(ComponentArgument.getComponent(cmdCtx, key), getCommandBuildContext()));
 	}
 
 	@Override
@@ -99,7 +105,7 @@ public class PaperNMS_1_20_R4 implements PaperNMS<CommandSourceStack> {
 	@Override
 	public <Source> NMS<Source> bukkitNMS() {
 		if (bukkitNMS == null) {
-			this.bukkitNMS = new NMS_1_20_R4(COMMAND_BUILD_CONTEXT);
+			this.bukkitNMS = new NMS_1_20_R4(this::getCommandBuildContext);
 		}
 		return (NMS<Source>) bukkitNMS;
 	}
@@ -130,36 +136,6 @@ public class PaperNMS_1_20_R4 implements PaperNMS<CommandSourceStack> {
 				}
 			);
 		}
-	}
-
-	@SuppressWarnings("UnstableApiUsage")
-	@Override
-	public boolean isDispatcherValid() {
-		boolean validState;
-		try {
-			PaperCommands.INSTANCE.getDispatcher();
-			validState = true;
-		} catch (IllegalStateException e) {
-			validState = false;
-		}
-		return validState;
-	}
-
-	@SuppressWarnings({"unchecked", "UnstableApiUsage"})
-	@Override
-	public <Source> LiteralCommandNode<Source> asPluginCommand(LiteralCommandNode<Source> commandNode, String description, List<String> aliases) {
-		return (LiteralCommandNode<Source>) new PluginCommandNode(
-			commandNode.getLiteral(),
-			CommandAPIPaper.getConfiguration().getPluginMeta(),
-			(LiteralCommandNode<io.papermc.paper.command.brigadier.CommandSourceStack>) commandNode,
-			description
-		);
-	}
-
-	@SuppressWarnings({"unchecked", "UnstableApiUsage"})
-	@Override
-	public <Source> CommandDispatcher<Source> getPaperCommandDispatcher() {
-		return (CommandDispatcher<Source>) PaperCommands.INSTANCE.getDispatcherInternal();
 	}
 
 }

@@ -1,12 +1,17 @@
 package dev.jorel.commandapi.nms;
 
+import com.destroystokyo.paper.profile.CraftPlayerProfile;
+import com.destroystokyo.paper.profile.PlayerProfile;
+import com.google.common.collect.Collections2;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.jorel.commandapi.CommandAPIPaper;
 import dev.jorel.commandapi.CommandRegistrationStrategy;
 import dev.jorel.commandapi.PaperCommandRegistration;
+import io.papermc.paper.command.brigadier.PaperCommands;
 import io.papermc.paper.command.brigadier.bukkit.BukkitCommandNode;
+import net.kyori.adventure.chat.SignedMessage;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
@@ -14,30 +19,40 @@ import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.ColorArgument;
 import net.minecraft.commands.arguments.ComponentArgument;
+import net.minecraft.commands.arguments.GameProfileArgument;
 import net.minecraft.commands.arguments.MessageArgument;
 import net.minecraft.server.MinecraftServer;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.help.SimpleHelpMap;
 
-public class PaperNMS_1_21_R5 extends CommandAPIPaper<CommandSourceStack> {
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
-	private static final CommandBuildContext COMMAND_BUILD_CONTEXT;
+public class PaperNMS_1_21_R5 implements PaperNMS<CommandSourceStack> {
+
+	private CommandBuildContext commandBuildContext;
 
 	private NMS_1_21_R5 bukkitNMS;
 
-	static {
+	private CommandBuildContext getCommandBuildContext() {
+		if (commandBuildContext != null) {
+			return commandBuildContext;
+		}
 		if (Bukkit.getServer() instanceof CraftServer server) {
-			COMMAND_BUILD_CONTEXT = CommandBuildContext.simple(server.getServer().registryAccess(),
+			commandBuildContext = CommandBuildContext.simple(server.getServer().registryAccess(),
 				server.getServer().getWorldData().enabledFeatures());
+			return commandBuildContext;
 		} else {
-			COMMAND_BUILD_CONTEXT = null;
+			return PaperCommands.INSTANCE.getBuildContext();
 		}
 	}
 
 	@Override
-	public Component getChat(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		return GsonComponentSerializer.gson().deserialize(bukkitNMS.toJson(MessageArgument.getMessage(cmdCtx, key)));
+	public SignedMessage getChat(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
+		CompletableFuture<SignedMessage> future = new CompletableFuture<>();
+		MessageArgument.resolveChatMessage(cmdCtx, key, (message) -> future.complete(message.adventureView()));
+		return future.join();
 	}
 
 	@Override
@@ -52,11 +67,19 @@ public class PaperNMS_1_21_R5 extends CommandAPIPaper<CommandSourceStack> {
 	}
 
 	@Override
-	public NMS<?> bukkitNMS() {
+	public final List<PlayerProfile> getProfile(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
+		GameProfileArgument.Result result = cmdCtx.getArgument(key, GameProfileArgument.Result.class);
+		return result instanceof GameProfileArgument.SelectorResult selectorResult
+			? List.of(Collections2.transform(selectorResult.getNames(cmdCtx.getSource()), CraftPlayerProfile::new).toArray(new PlayerProfile[0]))
+			: List.of(Collections2.transform(result.getNames(cmdCtx.getSource()), CraftPlayerProfile::new).toArray(new PlayerProfile[0]));
+	}
+
+	@Override
+	public <Source> NMS<Source> bukkitNMS() {
 		if (bukkitNMS == null) {
-			this.bukkitNMS = new NMS_1_21_R5(COMMAND_BUILD_CONTEXT);
+			this.bukkitNMS = new NMS_1_21_R5(this::getCommandBuildContext);
 		}
-		return bukkitNMS;
+		return (NMS<Source>) bukkitNMS;
 	}
 
 	@Override

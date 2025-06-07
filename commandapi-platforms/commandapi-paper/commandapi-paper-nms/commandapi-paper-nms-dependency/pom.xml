@@ -20,13 +20,6 @@
 			<version>${project.version}</version>
 		</dependency>
 
-		<!-- Detect version -->
-		<dependency>
-			<groupId>dev.jorel</groupId>
-			<artifactId>commandapi-paper-dv</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-
 		<!-- API types -->
 		<dependency>
 			<groupId>dev.jorel</groupId>
@@ -63,21 +56,6 @@
 		<dependency>
 			<groupId>dev.jorel</groupId>
 			<artifactId>commandapi-paper-1.20.5</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>dev.jorel</groupId>
-			<artifactId>commandapi-paper-1.20.3</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>dev.jorel</groupId>
-			<artifactId>commandapi-paper-1.20.2</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>dev.jorel</groupId>
-			<artifactId>commandapi-paper-1.20</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 

@@ -22,6 +22,7 @@ package dev.jorel.commandapi;
 
 import dev.jorel.commandapi.config.BukkitConfigurationAdapter;
 import dev.jorel.commandapi.config.DefaultBukkitConfig;
+import io.papermc.paper.plugin.lifecycle.event.LifecycleEventOwner;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.InvalidPluginException;
@@ -46,7 +47,7 @@ public class CommandAPIMain extends JavaPlugin {
 		// Read config file
 		saveDefaultConfig();
 		FileConfiguration fileConfig = getConfig();
-		CommandAPIPaperConfig config = new CommandAPIPaperConfig(this.getPluginMeta())
+		CommandAPIPaperConfig<CommandAPIMain> config = new CommandAPIPaperConfig<>(this.getPluginMeta(),this)
 			.verboseOutput(fileConfig.getBoolean("verbose-outputs"))
 			.silentLogs(fileConfig.getBoolean("silent-logs"))
 			.useLatestNMSVersion(fileConfig.getBoolean("use-latest-nms-version"))
