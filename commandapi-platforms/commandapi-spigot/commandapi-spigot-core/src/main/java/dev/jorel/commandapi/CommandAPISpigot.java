@@ -35,7 +35,6 @@ public abstract class CommandAPISpigot<Source> extends CommandAPIBukkit<Source> 
 	protected CommandAPISpigot() {
 		this.nms = (NMS<Source>) bukkitNMS();
 		CommandAPISpigot.spigot = this;
-		setInstance(this);
 	}
 
 	@SuppressWarnings("unchecked")

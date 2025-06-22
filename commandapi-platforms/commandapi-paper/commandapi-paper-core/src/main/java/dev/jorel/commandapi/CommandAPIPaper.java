@@ -66,8 +66,6 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 
 		this.feedbackForwardingCommandSender = tempFeedbackForwardingCommandSender;
 		this.nullCommandSender = tempNullCommandSender;
-
-		setInstance(this);
 	}
 
 	@SuppressWarnings("unchecked")

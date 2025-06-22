@@ -50,7 +50,6 @@ import java.util.logging.Logger;
 public abstract class CommandAPIBukkit<Source> implements BukkitPlatform<Source> {
 
 	// References to utility classes
-	private static BukkitPlatform<?> instance;
 	private static CommandAPIBukkit<?> bukkit;
 	protected static InternalBukkitConfig config;
 	private BukkitCommandAPIMessenger messenger;
@@ -76,10 +75,6 @@ public abstract class CommandAPIBukkit<Source> implements BukkitPlatform<Source>
 		this.isPaperBrigAPI = paperCommandSourceStackPresent;
 	}
 
-	protected <T extends BukkitPlatform<?>> void setInstance(T instance) {
-		CommandAPIBukkit.instance = instance;
-	}
-
 	@SuppressWarnings("unchecked")
 	public static <Source> CommandAPIBukkit<Source> get() {
 		if (CommandAPIBukkit.bukkit != null) {
@@ -90,8 +85,8 @@ public abstract class CommandAPIBukkit<Source> implements BukkitPlatform<Source>
 
 	@SuppressWarnings("unchecked")
 	public static <T extends BukkitPlatform<?>> T platform() {
-		if (CommandAPIBukkit.instance != null) {
-			return (T) instance;
+		if (CommandAPIBukkit.bukkit != null) {
+			return (T) bukkit;
 		}
 		throw new IllegalStateException("Tried to access the Bukkit platform, but it was null! Are you using CommandAPI features before calling CommandPAI#onLoad?");
 	}
@@ -151,7 +146,7 @@ public abstract class CommandAPIBukkit<Source> implements BukkitPlatform<Source>
 			}
 		}
 
-		commandRegistrationStrategy = ((BukkitPlatform<Source>) instance).createCommandRegistrationStrategy();
+		commandRegistrationStrategy = ((BukkitPlatform<Source>) bukkit).createCommandRegistrationStrategy();
 	}
 
 	/*
@@ -304,9 +299,7 @@ public abstract class CommandAPIBukkit<Source> implements BukkitPlatform<Source>
 	}
 
 	@Override
-	public BukkitCommandSender<? extends CommandSender> wrapCommandSender(CommandSender sender) {
-		return instance.wrapCommandSender(sender);
-	}
+	public abstract BukkitCommandSender<? extends CommandSender> wrapCommandSender(CommandSender sender);
 
 	@Override
 	public void registerPermission(String string) {
