@@ -40,5 +40,5 @@ import net.minecraft.world.level.gameevent.EntityPositionSource;
 @RequireField(in = SimpleHelpMap.class, name = "helpTopics", ofType = Map.class)
 @RequireField(in = EntityPositionSource.class, name = "e", ofType = Either.class)
 @RequireField(in = MinecraftServer.class, name = "aE", ofType = FuelValues.class)
-@RequireField(in = ArgumentTileLocation.class, name = "c", ofType = NBTTagCompound.class)
+@RequireField(in = ArgumentTileLocation.class, name = "d", ofType = NBTTagCompound.class)
 public class SafeReflect {}

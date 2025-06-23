@@ -139,7 +139,7 @@ public class TestPlugin extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-		CommandAPIPaper.onEnable(this);
+		CommandAPI.onEnable();
 	}
 
 	private <T> void register(Argument<T> argument, Class<T> castType, Function<T, String> toString) {
