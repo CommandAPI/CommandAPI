@@ -13,6 +13,7 @@ public class DefaultVelocityConfig extends DefaultConfig {
 		options.put("silent-logs", SILENT_LOGS);
 		options.put("messages.missing-executor-implementation", MISSING_EXECUTOR_IMPLEMENTATION);
 		options.put("create-dispatcher-json", CREATE_DISPATCHER_JSON);
+		options.put("error-on-failed-packet-sends", ERROR_ON_FAILED_PACKET_SENDS);
 
 		Map<String, CommentedSection> sections = new LinkedHashMap<>();
 		sections.put("messages", SECTION_MESSAGE);

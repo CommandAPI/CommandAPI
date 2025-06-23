@@ -84,6 +84,7 @@ public class DefaultBukkitConfig extends DefaultConfig {
 		options.put("be-lenient-for-minor-versions", BE_LENIENT_FOR_MINOR_VERSIONS);
 		options.put("hook-paper-reload", SHOULD_HOOK_PAPER_RELOAD);
 		options.put("skip-initial-datapack-reload", SKIP_RELOAD_DATAPACKS);
+		options.put("error-on-failed-packet-sends", ERROR_ON_FAILED_PACKET_SENDS);
 		options.put("plugins-to-convert", PLUGINS_TO_CONVERT);
 		options.put("other-commands-to-convert", OTHER_COMMANDS_TO_CONVERT);
 		options.put("skip-sender-proxy", SKIP_SENDER_PROXY);

@@ -53,7 +53,8 @@ public class CommandAPIMain extends JavaPlugin {
 			.dispatcherFile(fileConfig.getBoolean("create-dispatcher-json") ? new File(getDataFolder(), "command_registration.json") : null)
 			.shouldHookPaperReload(fileConfig.getBoolean("hook-paper-reload"))
 			.skipReloadDatapacks(fileConfig.getBoolean("skip-initial-datapack-reload"))
-			.beLenientForMinorVersions(fileConfig.getBoolean("be-lenient-for-minor-versions"));
+			.beLenientForMinorVersions(fileConfig.getBoolean("be-lenient-for-minor-versions"))
+			.errorOnFailedPacketSends(fileConfig.getBoolean("error-on-failed-packet-sends"));
 
 		for (String pluginName : fileConfig.getStringList("skip-sender-proxy")) {
 			if (Bukkit.getPluginManager().getPlugin(pluginName) != null) {

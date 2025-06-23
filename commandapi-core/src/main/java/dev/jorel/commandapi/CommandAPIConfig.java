@@ -53,6 +53,8 @@ extends CommandAPIConfig<Impl>
 	boolean usePluginNamespace = false;
 	String namespace = null;
 
+	boolean errorOnFailedPacketSends;
+
 	/**
 	 * Sets verbose output logging for the CommandAPI if true.
 	 *
@@ -191,4 +193,15 @@ extends CommandAPIConfig<Impl>
 	 */
 	public abstract Impl usePluginNamespace();
 
+	/**
+	 * Sets whether the CommandAPI should throw an exception if it cannot send a packet.
+	 * If false, the problem will be logged as a warning instead.
+	 *
+	 * @param value Whether an exception should be thrown when a packet cannot be sent
+	 * @return this CommandAPIConfig
+	 */
+	public Impl errorOnFailedPacketSends(boolean value) {
+		this.errorOnFailedPacketSends = value;
+		return instance();
+	}
 }

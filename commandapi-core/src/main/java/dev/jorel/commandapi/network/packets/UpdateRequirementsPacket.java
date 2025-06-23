@@ -35,7 +35,7 @@ public record UpdateRequirementsPacket() implements CommandAPIPacket {
 	public void write(FriendlyByteBuffer buffer, Object target, int protocolVersion) throws ProtocolVersionTooOldException {
 		if (protocolVersion == 0) {
 			throw ProtocolVersionTooOldException.whileSending(target, protocolVersion,
-				"CommandAPI version 10.0.0 or greater is required to receive UpdateRequirementsPacket"
+				"CommandAPI version 10.0.0 or greater is required to receive UpdateRequirementsPacket."
 			);
 		}
 		// Nothing to write
