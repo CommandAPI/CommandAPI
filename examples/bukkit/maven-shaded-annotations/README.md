@@ -11,12 +11,12 @@ Key points:
       <dependency>
           <groupId>dev.jorel</groupId>
           <artifactId>commandapi-bukkit-shade</artifactId>
-          <version>10.2.0-SNAPSHOT</version>
+          <version>11.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
           <groupId>dev.jorel</groupId>
           <artifactId>commandapi-annotations</artifactId>
-          <version>10.2.0-SNAPSHOT</version>
+          <version>11.0.0-SNAPSHOT</version>
           <scope>provided</scope>
       </dependency>
   </dependencies>
@@ -36,7 +36,7 @@ Key points:
                       <path>
                           <groupId>dev.jorel</groupId>
                           <artifactId>commandapi-annotations</artifactId>
-                          <version>10.2.0-SNAPSHOT</version>
+                          <version>11.0.0-SNAPSHOT</version>
                       </path>
                   </annotationProcessorPaths>
               </configuration>

@@ -20,7 +20,7 @@
 		<dependency>
 			<groupId>dev.jorel</groupId>
 			<artifactId>commandapi-paper-core</artifactId>
-			<version>10.2.0-SNAPSHOT</version>
+			<version>11.0.0-SNAPSHOT</version>
 		</dependency>
 
 		<!--This adds the Paper API artifact to the build -->

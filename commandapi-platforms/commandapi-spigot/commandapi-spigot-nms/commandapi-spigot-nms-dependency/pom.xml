@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>dev.jorel</groupId>
 		<artifactId>commandapi-spigot-nms</artifactId>
-		<version>10.2.0-SNAPSHOT</version>
+		<version>11.0.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>commandapi-spigot-nms-dependency</artifactId>
