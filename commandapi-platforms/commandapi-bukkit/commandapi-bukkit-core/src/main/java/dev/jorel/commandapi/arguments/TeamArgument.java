@@ -38,7 +38,7 @@ public class TeamArgument extends SafeOverrideableArgument<Team, Team> {
 	 * @param nodeName the name of the node for this argument
 	 */
 	public TeamArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get()._ArgumentScoreboardTeam(), Team::getName);
+		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentScoreboardTeam(), Team::getName);
 	}
 
 	@Override
@@ -53,6 +53,6 @@ public class TeamArgument extends SafeOverrideableArgument<Team, Team> {
 	
 	@Override
 	public <CommandSourceStack> Team parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-		return CommandAPIBukkit.<CommandSourceStack>get().getTeam(cmdCtx, key);
+		return CommandAPIBukkit.<CommandSourceStack>get().getNMS().getTeam(cmdCtx, key);
 	}
 }

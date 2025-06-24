@@ -20,6 +20,8 @@
  *******************************************************************************/
 package dev.jorel.commandapi.nms;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Map;
@@ -28,22 +30,26 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import dev.jorel.commandapi.CommandRegistrationStrategy;
+import com.mojang.brigadier.CommandDispatcher;
+import dev.jorel.commandapi.arguments.parser.EntitySelectorParser;
+import dev.jorel.commandapi.arguments.parser.RegistryParser;
+import dev.jorel.commandapi.commandsenders.AbstractCommandSender;
+import dev.jorel.commandapi.commandsenders.BukkitCommandSender;
+import dev.jorel.commandapi.preprocessor.Unimplemented;
 import org.bukkit.Axis;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.advancement.Advancement;
+import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
-import org.bukkit.block.data.BlockData;
+import org.bukkit.block.BlockState;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
 import org.bukkit.help.HelpTopic;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
@@ -60,7 +66,7 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
 
 import dev.jorel.commandapi.arguments.ArgumentSubType;
 import dev.jorel.commandapi.arguments.SuggestionProviders;
-import dev.jorel.commandapi.wrappers.FloatRange;
+import dev.jorel.commandapi.wrappers.DoubleRange;
 import dev.jorel.commandapi.wrappers.FunctionWrapper;
 import dev.jorel.commandapi.wrappers.IntegerRange;
 import dev.jorel.commandapi.wrappers.Location2D;
@@ -70,9 +76,11 @@ import dev.jorel.commandapi.wrappers.ParticleData;
 import dev.jorel.commandapi.wrappers.Rotation;
 import dev.jorel.commandapi.wrappers.ScoreboardSlot;
 import dev.jorel.commandapi.wrappers.SimpleFunctionWrapper;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.md_5.bungee.api.chat.BaseComponent;
+
+import static dev.jorel.commandapi.preprocessor.Unimplemented.REASON.REQUIRES_CRAFTBUKKIT;
+import static dev.jorel.commandapi.preprocessor.Unimplemented.REASON.REQUIRES_CSS;
+import static dev.jorel.commandapi.preprocessor.Unimplemented.REASON.REQUIRES_MINECRAFT_SERVER;
+import static dev.jorel.commandapi.preprocessor.Unimplemented.REASON.VERSION_SPECIFIC_IMPLEMENTATION;
 
 public interface NMS<CommandListenerWrapper> {
 
@@ -292,39 +300,26 @@ public interface NMS<CommandListenerWrapper> {
 
 	Advancement getAdvancement(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException;
 
-	Component getAdventureChat(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException;
-
-	NamedTextColor getAdventureChatColor(CommandContext<CommandListenerWrapper> cmdCtx, String key);
-
-	Component getAdventureChatComponent(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException;
-
 	float getAngle(CommandContext<CommandListenerWrapper> cmdCtx, String key);
 
 	EnumSet<Axis> getAxis(CommandContext<CommandListenerWrapper> cmdCtx, String key);
 
-	Object getBiome(CommandContext<CommandListenerWrapper> cmdCtx, String key, ArgumentSubType subType) throws CommandSyntaxException;
+	RegistryParser<Biome> getBiome(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException;
 
 	Predicate<Block> getBlockPredicate(CommandContext<CommandListenerWrapper> cmdCtx, String key)
 		throws CommandSyntaxException;
 
-	BlockData getBlockState(CommandContext<CommandListenerWrapper> cmdCtx, String key);
-
-	BaseComponent[] getChat(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException;
-
-	ChatColor getChatColor(CommandContext<CommandListenerWrapper> cmdCtx, String key);
-
-	BaseComponent[] getChatComponent(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException;
+	BlockState getBlockState(CommandContext<CommandListenerWrapper> cmdCtx, String key);
 
 	World getDimension(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException;
 
 	Enchantment getEnchantment(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException; // Throws exception in 1.19.3
 
-	Object getEntitySelector(CommandContext<CommandListenerWrapper> cmdCtx, String key, ArgumentSubType subType, boolean allowEmpty)
-		throws CommandSyntaxException;
+	EntitySelectorParser getEntitySelector(CommandContext<CommandListenerWrapper> cmdCtx, String key);
 
 	EntityType getEntityType(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException;
 
-	FloatRange getFloatRange(CommandContext<CommandListenerWrapper> cmdCtx, String key);
+	DoubleRange getDoubleRange(CommandContext<CommandListenerWrapper> cmdCtx, String key);
 
 	FunctionWrapper[] getFunction(CommandContext<CommandListenerWrapper> cmdCtx, String key)
 		throws CommandSyntaxException;
@@ -348,8 +343,7 @@ public interface NMS<CommandListenerWrapper> {
 
 	Location getLocationBlock(CommandContext<CommandListenerWrapper> cmdCtx, String str) throws CommandSyntaxException;
 
-	Location getLocationPrecise(CommandContext<CommandListenerWrapper> cmdCtx, String str)
-		throws CommandSyntaxException;
+	Location getLocationPrecise(CommandContext<CommandListenerWrapper> cmdCtx, String str) throws CommandSyntaxException;
 
 	LootTable getLootTable(CommandContext<CommandListenerWrapper> cmdCtx, String key);
 
@@ -368,17 +362,14 @@ public interface NMS<CommandListenerWrapper> {
 
 	ParticleData<?> getParticle(CommandContext<CommandListenerWrapper> cmdCtx, String key);
 
-	Player getPlayer(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException;
-
 	OfflinePlayer getOfflinePlayer(CommandContext<CommandListenerWrapper> cmdCtx, String key)
 		throws CommandSyntaxException;
 
-	Object getPotionEffect(CommandContext<CommandListenerWrapper> cmdCtx, String key, ArgumentSubType subType)
-		throws CommandSyntaxException;
+	RegistryParser<PotionEffectType> getPotionEffect(CommandContext<CommandListenerWrapper> cmdCtx, String key);
 
 	Recipe getRecipe(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException;
 
-	Rotation getRotation(CommandContext<CommandListenerWrapper> cmdCtx, String key);
+	Rotation getRotation(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException;
 
 	ScoreboardSlot getScoreboardSlot(CommandContext<CommandListenerWrapper> cmdCtx, String key);
 
@@ -403,7 +394,7 @@ public interface NMS<CommandListenerWrapper> {
 	 */
 	SimpleCommandMap getSimpleCommandMap();
 
-	Object getSound(CommandContext<CommandListenerWrapper> cmdCtx, String key, ArgumentSubType subType);
+	RegistryParser<Sound> getSound(CommandContext<CommandListenerWrapper> cmdCtx, String key);
 
 	/**
 	 * Retrieve a specific NMS implemented SuggestionProvider
@@ -428,7 +419,21 @@ public interface NMS<CommandListenerWrapper> {
 
 	Message generateMessageFromJson(String json);
 
-	CommandRegistrationStrategy<CommandListenerWrapper> createCommandRegistrationStrategy();
+	@Unimplemented(because = REQUIRES_CSS)
+	BukkitCommandSender<? extends CommandSender> getSenderForCommand(CommandContext<CommandListenerWrapper> cmdCtx, boolean forceNative);
+
+	@Unimplemented(because = REQUIRES_CSS)
+	<Source> BukkitCommandSender<? extends CommandSender> getCommandSenderFromCommandSource(Source css);
+
+	@Unimplemented(because = REQUIRES_CRAFTBUKKIT)
+	CommandListenerWrapper getBrigadierSourceFromCommandSender(AbstractCommandSender<? extends CommandSender> sender);
+
+	@Unimplemented(because = {REQUIRES_MINECRAFT_SERVER, VERSION_SPECIFIC_IMPLEMENTATION})
+	void createDispatcherFile(File file, CommandDispatcher<CommandListenerWrapper> brigadierDispatcher) throws IOException;
+
+	@Unimplemented(because = REQUIRES_MINECRAFT_SERVER) // What are the odds?
+	<T> T getMinecraftServer();
 
 	NativeProxyCommandSender createNativeProxyCommandSender(CommandSender caller, CommandSender callee, Location location, World world);
+
 }

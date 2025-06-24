@@ -39,7 +39,7 @@ public class LootTableArgument extends SafeOverrideableArgument<LootTable, LootT
 	 * @param nodeName the name of the node for this argument
 	 */
 	public LootTableArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get()._ArgumentMinecraftKeyRegistered(), fromKey(Keyed::getKey));
+		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentMinecraftKeyRegistered(), fromKey(Keyed::getKey));
 	}
 	
 	@Override
@@ -59,6 +59,6 @@ public class LootTableArgument extends SafeOverrideableArgument<LootTable, LootT
 	
 	@Override
 	public <CommandSourceStack> LootTable parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-		return CommandAPIBukkit.<CommandSourceStack>get().getLootTable(cmdCtx, key);
+		return CommandAPIBukkit.<CommandSourceStack>get().getNMS().getLootTable(cmdCtx, key);
 	}
 }

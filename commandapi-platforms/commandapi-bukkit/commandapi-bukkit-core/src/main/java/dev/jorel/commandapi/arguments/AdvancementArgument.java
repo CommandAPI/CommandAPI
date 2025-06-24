@@ -40,7 +40,7 @@ public class AdvancementArgument extends SafeOverrideableArgument<Advancement, A
 	 * @param nodeName the name of the node for argument
 	 */
 	public AdvancementArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get()._ArgumentAdvancement(), fromKey(Advancement::getKey));
+		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentAdvancement(), fromKey(Advancement::getKey));
 	}
 
 	@Override
@@ -60,6 +60,6 @@ public class AdvancementArgument extends SafeOverrideableArgument<Advancement, A
 
 	@Override
 	public <CommandSourceStack> Advancement parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-		return CommandAPIBukkit.<CommandSourceStack>get().getAdvancement(cmdCtx, key);
+		return CommandAPIBukkit.<CommandSourceStack>get().getNMS().getAdvancement(cmdCtx, key);
 	}
 }

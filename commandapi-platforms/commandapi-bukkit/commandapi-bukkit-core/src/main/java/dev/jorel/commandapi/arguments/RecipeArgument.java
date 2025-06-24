@@ -39,7 +39,7 @@ public class RecipeArgument extends SafeOverrideableArgument<Recipe, Recipe> imp
 	 * @param nodeName the name of the node for this argument
 	 */
 	public RecipeArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get()._ArgumentRecipe(), fromKey((Recipe r) -> ((Keyed) r).getKey()));
+		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentRecipe(), fromKey((Recipe r) -> ((Keyed) r).getKey()));
 	}
 
 	@Override
@@ -59,7 +59,7 @@ public class RecipeArgument extends SafeOverrideableArgument<Recipe, Recipe> imp
 	
 	@Override
 	public <CommandSourceStack> Recipe parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-		return CommandAPIBukkit.<CommandSourceStack>get().getRecipe(cmdCtx, key);
+		return CommandAPIBukkit.<CommandSourceStack>get().getNMS().getRecipe(cmdCtx, key);
 	}
 	
 }

@@ -20,70 +20,7 @@
  *******************************************************************************/
 package dev.jorel.commandapi.nms;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.lang.reflect.Field;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Predicate;
-import java.util.function.ToIntFunction;
-
-import dev.jorel.commandapi.*;
-import dev.jorel.commandapi.wrappers.Rotation;
-import net.minecraft.commands.arguments.ObjectiveArgument;
-import net.minecraft.commands.arguments.TeamArgument;
-import net.minecraft.commands.arguments.coordinates.RotationArgument;
-import org.bukkit.Bukkit;
-import org.bukkit.Color;
-import org.bukkit.Location;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Particle;
-import org.bukkit.Particle.DustOptions;
-import org.bukkit.Particle.DustTransition;
-import org.bukkit.Registry;
-import org.bukkit.Vibration;
-import org.bukkit.Vibration.Destination;
-import org.bukkit.Vibration.Destination.BlockDestination;
-import org.bukkit.World;
-import org.bukkit.advancement.Advancement;
-import org.bukkit.block.Biome;
-import org.bukkit.block.Block;
-import org.bukkit.block.data.BlockData;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.SimpleCommandMap;
-import org.bukkit.craftbukkit.v1_20_R4.CraftLootTable;
-import org.bukkit.craftbukkit.v1_20_R4.CraftParticle;
-import org.bukkit.craftbukkit.v1_20_R4.CraftServer;
-import org.bukkit.craftbukkit.v1_20_R4.CraftSound;
-import org.bukkit.craftbukkit.v1_20_R4.CraftWorld;
-import org.bukkit.craftbukkit.v1_20_R4.block.data.CraftBlockData;
-import org.bukkit.craftbukkit.v1_20_R4.command.BukkitCommandWrapper;
-import org.bukkit.craftbukkit.v1_20_R4.command.VanillaCommandWrapper;
-import org.bukkit.craftbukkit.v1_20_R4.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_20_R4.help.CustomHelpTopic;
-import org.bukkit.craftbukkit.v1_20_R4.help.SimpleHelpMap;
-import org.bukkit.craftbukkit.v1_20_R4.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_20_R4.potion.CraftPotionEffectType;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
-import org.bukkit.help.HelpTopic;
-import org.bukkit.inventory.Recipe;
-
 import com.google.common.collect.ImmutableList;
-import com.google.common.io.Files;
-import com.google.gson.GsonBuilder;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.Message;
 import com.mojang.brigadier.arguments.ArgumentType;
@@ -94,9 +31,13 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-
-import dev.jorel.commandapi.arguments.ArgumentSubType;
+import dev.jorel.commandapi.CommandAPI;
+import dev.jorel.commandapi.CommandAPIBukkit;
+import dev.jorel.commandapi.CommandAPIHandler;
+import dev.jorel.commandapi.SafeVarHandle;
 import dev.jorel.commandapi.arguments.SuggestionProviders;
+import dev.jorel.commandapi.arguments.parser.EntitySelectorParser;
+import dev.jorel.commandapi.arguments.parser.RegistryParser;
 import dev.jorel.commandapi.commandsenders.AbstractCommandSender;
 import dev.jorel.commandapi.commandsenders.BukkitCommandSender;
 import dev.jorel.commandapi.commandsenders.BukkitNativeProxyCommandSender;
@@ -104,19 +45,15 @@ import dev.jorel.commandapi.preprocessor.Differs;
 import dev.jorel.commandapi.preprocessor.NMSMeta;
 import dev.jorel.commandapi.preprocessor.RequireField;
 import dev.jorel.commandapi.wrappers.ComplexRecipeImpl;
-import dev.jorel.commandapi.wrappers.FloatRange;
+import dev.jorel.commandapi.wrappers.DoubleRange;
 import dev.jorel.commandapi.wrappers.FunctionWrapper;
 import dev.jorel.commandapi.wrappers.IntegerRange;
 import dev.jorel.commandapi.wrappers.Location2D;
 import dev.jorel.commandapi.wrappers.NativeProxyCommandSender;
 import dev.jorel.commandapi.wrappers.ParticleData;
+import dev.jorel.commandapi.wrappers.Rotation;
 import dev.jorel.commandapi.wrappers.ScoreboardSlot;
 import dev.jorel.commandapi.wrappers.SimpleFunctionWrapper;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.chat.ComponentSerializer;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.commands.CommandBuildContext;
@@ -124,23 +61,21 @@ import net.minecraft.commands.CommandResultCallback;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.FunctionInstantiationException;
 import net.minecraft.commands.SharedSuggestionProvider;
-import net.minecraft.commands.arguments.ColorArgument;
 import net.minecraft.commands.arguments.ComponentArgument;
 import net.minecraft.commands.arguments.DimensionArgument;
 import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.commands.arguments.MessageArgument;
+import net.minecraft.commands.arguments.ObjectiveArgument;
 import net.minecraft.commands.arguments.ParticleArgument;
 import net.minecraft.commands.arguments.RangeArgument;
 import net.minecraft.commands.arguments.ResourceArgument;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.commands.arguments.ScoreHolderArgument;
 import net.minecraft.commands.arguments.ScoreboardSlotArgument;
-import net.minecraft.commands.arguments.blocks.BlockPredicateArgument;
+import net.minecraft.commands.arguments.TeamArgument;
+import net.minecraft.commands.arguments.blocks.BlockInput;
 import net.minecraft.commands.arguments.blocks.BlockStateArgument;
-import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
-import net.minecraft.commands.arguments.coordinates.ColumnPosArgument;
+import net.minecraft.commands.arguments.coordinates.RotationArgument;
 import net.minecraft.commands.arguments.coordinates.Vec2Argument;
-import net.minecraft.commands.arguments.coordinates.Vec3Argument;
 import net.minecraft.commands.arguments.item.FunctionArgument;
 import net.minecraft.commands.arguments.item.ItemArgument;
 import net.minecraft.commands.arguments.item.ItemInput;
@@ -149,7 +84,6 @@ import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.commands.execution.ExecutionContext;
 import net.minecraft.commands.functions.CommandFunction;
 import net.minecraft.commands.functions.InstantiatedFunction;
-import net.minecraft.commands.synchronization.ArgumentUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.PatchedDataComponentMap;
@@ -173,7 +107,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.MinecraftServer.ReloadableResources;
 import net.minecraft.server.ServerFunctionLibrary;
 import net.minecraft.server.ServerFunctionManager;
-import net.minecraft.server.level.ColumnPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
@@ -190,13 +123,68 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.DataPackConfig;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.WorldDataConfiguration;
-import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.level.gameevent.BlockPositionSource;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.ScoreHolder;
+import org.bukkit.Bukkit;
+import org.bukkit.Color;
+import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Particle;
+import org.bukkit.Particle.DustOptions;
+import org.bukkit.Particle.DustTransition;
+import org.bukkit.Registry;
+import org.bukkit.Sound;
+import org.bukkit.Vibration;
+import org.bukkit.Vibration.Destination;
+import org.bukkit.Vibration.Destination.BlockDestination;
+import org.bukkit.World;
+import org.bukkit.advancement.Advancement;
+import org.bukkit.block.Biome;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.SimpleCommandMap;
+import org.bukkit.craftbukkit.v1_20_R4.CraftLootTable;
+import org.bukkit.craftbukkit.v1_20_R4.CraftParticle;
+import org.bukkit.craftbukkit.v1_20_R4.CraftRegistry;
+import org.bukkit.craftbukkit.v1_20_R4.CraftServer;
+import org.bukkit.craftbukkit.v1_20_R4.CraftSound;
+import org.bukkit.craftbukkit.v1_20_R4.CraftWorld;
+import org.bukkit.craftbukkit.v1_20_R4.block.CraftBlockEntityState;
+import org.bukkit.craftbukkit.v1_20_R4.block.CraftBlockStates;
+import org.bukkit.craftbukkit.v1_20_R4.block.data.CraftBlockData;
+import org.bukkit.craftbukkit.v1_20_R4.command.VanillaCommandWrapper;
+import org.bukkit.craftbukkit.v1_20_R4.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_20_R4.help.CustomHelpTopic;
+import org.bukkit.craftbukkit.v1_20_R4.help.SimpleHelpMap;
+import org.bukkit.craftbukkit.v1_20_R4.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_20_R4.potion.CraftPotionEffectType;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
+import org.bukkit.help.HelpTopic;
+import org.bukkit.inventory.Recipe;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Team;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.function.ToIntFunction;
 
 // Mojang-Mapped reflection
 /**
@@ -207,48 +195,37 @@ import org.bukkit.scoreboard.Team;
 @RequireField(in = EntitySelector.class, name = "usesSelector", ofType = boolean.class)
 // @RequireField(in = ItemInput.class, name = "tag", ofType = CompoundTag.class)
 @RequireField(in = ServerFunctionLibrary.class, name = "dispatcher", ofType = CommandDispatcher.class)
+@RequireField(in = BlockInput.class, name = "tag", ofType = CompoundTag.class)
 public class NMS_1_20_R4 extends NMS_Common {
 
 	private static final SafeVarHandle<SimpleHelpMap, Map<String, HelpTopic>> helpMapTopics;
 	private static final Field entitySelectorUsesSelector;
 	// private static final SafeVarHandle<ItemInput, CompoundTag> itemInput;
 	private static final Field serverFunctionLibraryDispatcher;
-	private static final boolean vanillaCommandDispatcherFieldExists;
+	private static final SafeVarHandle<BlockInput, CompoundTag> blockInputTag;
 
 	// Derived from net.minecraft.commands.Commands;
-	private static final CommandBuildContext COMMAND_BUILD_CONTEXT;
+	private final Supplier<CommandBuildContext> commandBuildContext;
+
+	public NMS_1_20_R4(Supplier<CommandBuildContext> commandBuildContext) {
+		this.commandBuildContext = commandBuildContext;
+	}
 
 	// Compute all var handles all in one go so we don't do this during main server
 	// runtime
 	static {
-		if (Bukkit.getServer() instanceof CraftServer server) {
-			COMMAND_BUILD_CONTEXT = CommandBuildContext.simple(server.getServer().registryAccess(),
-					server.getServer().getWorldData().getDataConfiguration().enabledFeatures());
-		} else {
-			COMMAND_BUILD_CONTEXT = null;
-		}
-
 		helpMapTopics = SafeVarHandle.ofOrNull(SimpleHelpMap.class, "helpTopics", "helpTopics", Map.class);
 		// For some reason, MethodHandles fails for this field, but Field works okay
 		entitySelectorUsesSelector = CommandAPIHandler.getField(EntitySelector.class, "p", "usesSelector");
 		// itemInput = SafeVarHandle.ofOrNull(ItemInput.class, "c", "tag", CompoundTag.class);
 		// For some reason, MethodHandles fails for this field, but Field works okay
 		serverFunctionLibraryDispatcher = CommandAPIHandler.getField(ServerFunctionLibrary.class, "g", "dispatcher");
-
-		boolean fieldExists;
-		try {
-			MinecraftServer.class.getDeclaredField("vanillaCommandDispatcher");
-			fieldExists = true;
-		} catch (NoSuchFieldException | SecurityException e) {
-			// Expected on Paper-1.20.6-65 or later due to https://github.com/PaperMC/Paper/pull/8235
-			fieldExists = false;
-		}
-		vanillaCommandDispatcherFieldExists = fieldExists;
+		blockInputTag = SafeVarHandle.ofOrNull(BlockInput.class, "c", "tag", CompoundTag.class);
 	}
 
 	@Override
 	protected CommandBuildContext getCommandBuildContext() {
-		return COMMAND_BUILD_CONTEXT;
+		return commandBuildContext.get();
 	}
 
 	@Override
@@ -259,12 +236,12 @@ public class NMS_1_20_R4 extends NMS_Common {
 	@Differs(from = "1.20.4", by = "Now needs a command build context")
 	@Override
 	public ArgumentType<?> _ArgumentChatComponent() {
-		return ComponentArgument.textComponent(COMMAND_BUILD_CONTEXT);
+		return ComponentArgument.textComponent(commandBuildContext.get());
 	}
 
 	@Override
 	public final ArgumentType<?> _ArgumentEnchantment() {
-		return ResourceArgument.resource(COMMAND_BUILD_CONTEXT, Registries.ENCHANTMENT);
+		return ResourceArgument.resource(commandBuildContext.get(), Registries.ENCHANTMENT);
 	}
 
 	@Override
@@ -274,7 +251,7 @@ public class NMS_1_20_R4 extends NMS_Common {
 
 	@Override
 	public final ArgumentType<?> _ArgumentSyntheticBiome() {
-		return ResourceArgument.resource(COMMAND_BUILD_CONTEXT, Registries.BIOME);
+		return ResourceArgument.resource(commandBuildContext.get(), Registries.BIOME);
 	}
 
 	@Override
@@ -287,9 +264,9 @@ public class NMS_1_20_R4 extends NMS_Common {
 		return new String[] { "1.20.5", "1.20.6" };
 	};
 	
-	private static String serializeNMSItemStack(ItemStack is) {
+	private String serializeNMSItemStack(ItemStack is) {
 		final DataComponentMap patchedMap = PatchedDataComponentMap.fromPatch(PatchedDataComponentMap.EMPTY, is.getComponentsPatch());
-		return new ItemInput(is.getItemHolder(), patchedMap).serialize(COMMAND_BUILD_CONTEXT);
+		return new ItemInput(is.getItemHolder(), patchedMap).serialize(commandBuildContext.get());
 	}
 
 	@Differs(from = "1.20.4", by = "Everything")
@@ -332,7 +309,8 @@ public class NMS_1_20_R4 extends NMS_Common {
 		CommandResultCallback onCommandResult = (succeeded, resultValue) -> result.set(resultValue);
 
 		try {
-			final InstantiatedFunction<CommandSourceStack> instantiatedFunction = commandFunction.instantiate((CompoundTag) null, this.getBrigadierDispatcher());
+			final InstantiatedFunction<CommandSourceStack> instantiatedFunction = commandFunction.instantiate((CompoundTag) null,
+				CommandAPIBukkit.<CommandSourceStack>get().getBrigadierDispatcher());
 			net.minecraft.commands.Commands.executeCommandInContext(css, (executioncontext) -> {
 				ExecutionContext.queueInitialFunctionCall(executioncontext, instantiatedFunction, css, onCommandResult);
 			});
@@ -355,7 +333,8 @@ public class NMS_1_20_R4 extends NMS_Common {
 		// Unpack the commands by instantiating the function with no CSS, then retrieving its entries
 		String[] commands = new String[0];
 		try {
-			final InstantiatedFunction<CommandSourceStack> instantiatedFunction = commandFunction.instantiate((CompoundTag) null, this.getBrigadierDispatcher());
+			final InstantiatedFunction<CommandSourceStack> instantiatedFunction = commandFunction.instantiate((CompoundTag) null,
+				CommandAPIBukkit.<CommandSourceStack>get().getBrigadierDispatcher());
 
 			List<?> cArr = instantiatedFunction.entries();
 			commands = new String[cArr.size()];
@@ -380,66 +359,38 @@ public class NMS_1_20_R4 extends NMS_Common {
 			throws CommandSyntaxException {
 		return ResourceLocationArgument.getAdvancement(cmdCtx, key).toBukkit();
 	}
-	
-	@Differs(from = "1.20.4", by = "Serializer.toJson now needs a Provider")
+
 	@Override
-	public Component getAdventureChat(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		return GsonComponentSerializer.gson().deserialize(Serializer.toJson(MessageArgument.getMessage(cmdCtx, key), COMMAND_BUILD_CONTEXT));
+	public final RegistryParser<Biome> getBiome(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
+		final ResourceLocation resourceLocation = ResourceArgument.getResource(cmdCtx, key, Registries.BIOME).key().location();
+		return new RegistryParser<>(
+			() -> {
+				Biome biome;
+				try {
+					biome = Biome.valueOf(resourceLocation.getPath().toUpperCase());
+				} catch(IllegalArgumentException biomeNotFound) {
+					biome = null;
+				}
+				return biome;
+			},
+			() -> fromResourceLocation(resourceLocation)
+		);
 	}
 
 	@Override
-	public NamedTextColor getAdventureChatColor(CommandContext<CommandSourceStack> cmdCtx, String key) {
-		final Integer color = ColorArgument.getColor(cmdCtx, key).getColor();
-		return color == null ? NamedTextColor.WHITE : NamedTextColor.namedColor(color);
-	}
-
-	@Override
-	public final Component getAdventureChatComponent(CommandContext<CommandSourceStack> cmdCtx, String key) {
-		// TODO: Figure out if an empty provider is suitable for this context
-		return GsonComponentSerializer.gson()
-				.deserialize(Serializer.toJson(ComponentArgument.getComponent(cmdCtx, key), COMMAND_BUILD_CONTEXT));
-	}
-
-	@Override
-	public final Object getBiome(CommandContext<CommandSourceStack> cmdCtx, String key, ArgumentSubType subType)
-			throws CommandSyntaxException {
-		final ResourceLocation resourceLocation = ResourceArgument.getResource(cmdCtx, key, Registries.BIOME).key()
-				.location();
-		return switch (subType) {
-		case BIOME_BIOME -> {
-			Biome biome = null;
-			try {
-				biome = Biome.valueOf(resourceLocation.getPath().toUpperCase());
-			} catch (IllegalArgumentException biomeNotFound) {
-				biome = null;
-			}
-			yield biome;
+	public final BlockState getBlockState(CommandContext<CommandSourceStack> cmdCtx, String key) {
+		BlockInput input = BlockStateArgument.getBlock(cmdCtx, key);
+		BlockState snapshot = CraftBlockStates.getBlockState(CraftRegistry.getMinecraftRegistry(), BlockPos.ZERO, input.getState(), null);
+		if (blockInputTag.get(input) != null && snapshot instanceof CraftBlockEntityState<?> blockEntitySnapshot) {
+			blockEntitySnapshot.loadData(blockInputTag.get(input));
 		}
-		case BIOME_NAMESPACEDKEY -> (NamespacedKey) fromResourceLocation(resourceLocation);
-		default -> null;
-		};
-	}
-
-	@Override
-	public final BlockData getBlockState(CommandContext<CommandSourceStack> cmdCtx, String key) {
-		return CraftBlockData.fromData(BlockStateArgument.getBlock(cmdCtx, key).getState());
+		return snapshot;
 	}
 
 	@Override
 	public CommandSourceStack getBrigadierSourceFromCommandSender(
 			AbstractCommandSender<? extends CommandSender> sender) {
 		return VanillaCommandWrapper.getListener(sender.getSource());
-	}
-
-	@Differs(from = "1.20.4", by = "Serializer.toJson now needs a Provider")
-	@Override
-	public final BaseComponent[] getChat(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		return ComponentSerializer.parse(Serializer.toJson(MessageArgument.getMessage(cmdCtx, key), COMMAND_BUILD_CONTEXT));
-	}
-
-	@Override
-	public BaseComponent[] getChatComponent(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		return ComponentSerializer.parse(Serializer.toJson(ComponentArgument.getComponent(cmdCtx, key), COMMAND_BUILD_CONTEXT));
 	}
 
 	@Override
@@ -456,8 +407,7 @@ public class NMS_1_20_R4 extends NMS_Common {
 	}
 
 	@Override
-	public final Object getEntitySelector(CommandContext<CommandSourceStack> cmdCtx, String str,
-			ArgumentSubType subType, boolean allowEmpty) throws CommandSyntaxException {
+	public final EntitySelectorParser getEntitySelector(CommandContext<CommandSourceStack> cmdCtx, String str) {
 
 		// We override the rule whereby players need "minecraft.command.selector" and
 		// have to have level 2 permissions in order to use entity selectors. We're
@@ -470,60 +420,58 @@ public class NMS_1_20_R4 extends NMS_Common {
 			// Shouldn't happen, CommandAPIHandler#getField makes it accessible
 		}
 
-		return switch (subType) {
-		case ENTITYSELECTOR_MANY_ENTITIES:
-			try {
-				List<org.bukkit.entity.Entity> result = new ArrayList<>();
-				for (Entity entity : argument.findEntities(cmdCtx.getSource())) {
-					result.add(entity.getBukkitEntity());
+		return new EntitySelectorParser(
+			() -> argument.findSinglePlayer(cmdCtx.getSource()).getBukkitEntity(),
+			() -> argument.findSingleEntity(cmdCtx.getSource()).getBukkitEntity(),
+			(allowEmpty) -> {
+				try {
+					List<Player> result = new ArrayList<>();
+					for (ServerPlayer player : argument.findPlayers(cmdCtx.getSource())) {
+						result.add(player.getBukkitEntity());
+					}
+					if (result.isEmpty() && !allowEmpty) {
+						throw EntityArgument.NO_PLAYERS_FOUND.create();
+					} else {
+						return result;
+					}
+				} catch (CommandSyntaxException e) {
+					if (allowEmpty) {
+						return new ArrayList<Player>();
+					} else {
+						throw e;
+					}
 				}
-				if (result.isEmpty() && !allowEmpty) {
-					throw EntityArgument.NO_ENTITIES_FOUND.create();
-				} else {
-					yield result;
-				}
-			} catch (CommandSyntaxException e) {
-				if (allowEmpty) {
-					yield new ArrayList<org.bukkit.entity.Entity>();
-				} else {
-					throw e;
+			},
+			(allowEmpty) -> {
+				try {
+					List<org.bukkit.entity.Entity> result = new ArrayList<>();
+					for (Entity entity : argument.findEntities(cmdCtx.getSource())) {
+						result.add(entity.getBukkitEntity());
+					}
+					if (result.isEmpty() && !allowEmpty) {
+						throw EntityArgument.NO_ENTITIES_FOUND.create();
+					} else {
+						return result;
+					}
+				} catch (CommandSyntaxException e) {
+					if (allowEmpty) {
+						return new ArrayList<org.bukkit.entity.Entity>();
+					} else {
+						throw e;
+					}
 				}
 			}
-		case ENTITYSELECTOR_MANY_PLAYERS:
-			try {
-				List<Player> result = new ArrayList<>();
-				for (ServerPlayer player : argument.findPlayers(cmdCtx.getSource())) {
-					result.add(player.getBukkitEntity());
-				}
-				if (result.isEmpty() && !allowEmpty) {
-					throw EntityArgument.NO_PLAYERS_FOUND.create();
-				} else {
-					yield result;
-				}
-			} catch (CommandSyntaxException e) {
-				if (allowEmpty) {
-					yield new ArrayList<Player>();
-				} else {
-					throw e;
-				}
-			}
-		case ENTITYSELECTOR_ONE_ENTITY:
-			yield argument.findSingleEntity(cmdCtx.getSource()).getBukkitEntity();
-		case ENTITYSELECTOR_ONE_PLAYER:
-			yield argument.findSinglePlayer(cmdCtx.getSource()).getBukkitEntity();
-		default:
-			throw new IllegalArgumentException("Unexpected value: " + subType);
-		};
+		);
 	}
 
 	@Override
-	public FloatRange getFloatRange(CommandContext<CommandSourceStack> cmdCtx, String key) {
+	public DoubleRange getDoubleRange(CommandContext<CommandSourceStack> cmdCtx, String key) {
 		MinMaxBounds.Doubles range = RangeArgument.Floats.getRange(cmdCtx, key);
 		final Double lowBoxed = range.min().orElse(null);
 		final Double highBoxed = range.max().orElse(null);
-		final double low = lowBoxed == null ? -Float.MAX_VALUE : lowBoxed;
-		final double high = highBoxed == null ? Float.MAX_VALUE : highBoxed;
-		return new FloatRange((float) low, (float) high);
+		final double low = lowBoxed == null ? -Double.MAX_VALUE : lowBoxed;
+		final double high = highBoxed == null ? Double.MAX_VALUE : highBoxed;
+		return new DoubleRange(low, high);
 	}
 
 	@Override
@@ -704,12 +652,11 @@ public class NMS_1_20_R4 extends NMS_Common {
 	}
 
 	@Override
-	public Object getPotionEffect(CommandContext<CommandSourceStack> cmdCtx, String key, ArgumentSubType subType) throws CommandSyntaxException {
-		return switch (subType) {
-			case POTION_EFFECT_POTION_EFFECT -> CraftPotionEffectType.minecraftToBukkit(ResourceArgument.getMobEffect(cmdCtx, key).value());
-			case POTION_EFFECT_NAMESPACEDKEY -> fromResourceLocation(ResourceLocationArgument.getId(cmdCtx, key));
-			default -> throw new IllegalArgumentException("Unexpected value: " + subType);
-		};
+	public RegistryParser<PotionEffectType> getPotionEffect(CommandContext<CommandSourceStack> cmdCtx, String key) {
+		return new RegistryParser<>(
+			() -> CraftPotionEffectType.minecraftToBukkit(ResourceArgument.getMobEffect(cmdCtx, key).value()),
+			() -> fromResourceLocation(ResourceLocationArgument.getId(cmdCtx, key))
+		);
 	}
 
 	@Override
@@ -767,7 +714,7 @@ public class NMS_1_20_R4 extends NMS_Common {
 
 			return new BukkitNativeProxyCommandSender(new NativeProxyCommandSender_1_20_R4(css, sender, proxy));
 		} else {
-			return wrapCommandSender(sender);
+			return CommandAPIBukkit.get().wrapCommandSender(sender);
 		}
 	}
 
@@ -776,7 +723,7 @@ public class NMS_1_20_R4 extends NMS_Common {
 		if (callee == null) callee = caller;
 
 		// Most parameters default to what is defined by the caller
-		CommandSourceStack css = getBrigadierSourceFromCommandSender(wrapCommandSender(caller));
+		CommandSourceStack css = getBrigadierSourceFromCommandSender(CommandAPIBukkit.get().wrapCommandSender(caller));
 
 		// Position and rotation may be overridden by the Location
 		if (location != null) {
@@ -807,22 +754,19 @@ public class NMS_1_20_R4 extends NMS_Common {
 	}
 
 	@Override
-	public final Object getSound(CommandContext<CommandSourceStack> cmdCtx, String key, ArgumentSubType subType) {
+	public final RegistryParser<Sound> getSound(CommandContext<CommandSourceStack> cmdCtx, String key) {
 		final ResourceLocation soundResource = ResourceLocationArgument.getId(cmdCtx, key);
-		return switch (subType) {
-		case SOUND_SOUND -> {
-			final SoundEvent soundEvent = BuiltInRegistries.SOUND_EVENT.get(soundResource);
-			if (soundEvent == null) {
-				yield null;
-			} else {
-				yield CraftSound.minecraftToBukkit(soundEvent);
-			}
-		}
-		case SOUND_NAMESPACEDKEY -> {
-			yield NamespacedKey.fromString(soundResource.getNamespace() + ":" + soundResource.getPath());
-		}
-		default -> throw new IllegalArgumentException("Unexpected value: " + subType);
-		};
+		return new RegistryParser<>(
+			() -> {
+				final SoundEvent soundEvent = BuiltInRegistries.SOUND_EVENT.get(soundResource);
+				if(soundEvent == null) {
+					return null;
+				} else {
+					return CraftSound.minecraftToBukkit(soundEvent);
+				}
+			},
+			() -> NamespacedKey.fromString(soundResource.getNamespace() + ":" + soundResource.getPath())
+		);
 	}
 
 	@Override
@@ -895,7 +839,7 @@ public class NMS_1_20_R4 extends NMS_Common {
 		// Update the ServerFunctionLibrary's command dispatcher with the new one
 		try {
 			serverFunctionLibraryDispatcher.set(serverResources.managers().getFunctionLibrary(),
-					getBrigadierDispatcher());
+					CommandAPIBukkit.<CommandSourceStack>get().getBrigadierDispatcher());
 		} catch (IllegalAccessException ignored) {
 			// Shouldn't happen, CommandAPIHandler#getField makes it accessible
 		}
@@ -993,7 +937,7 @@ public class NMS_1_20_R4 extends NMS_Common {
 
 			// Register recipes again because reloading datapacks
 			// removes all non-vanilla recipes
-			registerBukkitRecipesSafely(recipes);
+			CommandAPIBukkit.get().registerBukkitRecipesSafely(recipes);
 
 			CommandAPI.logNormal("Finished reloading datapacks");
 		} catch (Exception e) {
@@ -1010,7 +954,7 @@ public class NMS_1_20_R4 extends NMS_Common {
 	@Override
 	public Message generateMessageFromJson(String json) {
 		// TODO: Same as #getAdventureChatComponent, figure out if an empty provider is suitable here
-		return Serializer.fromJson(json, COMMAND_BUILD_CONTEXT);
+		return Serializer.fromJson(json, commandBuildContext.get());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -1025,45 +969,11 @@ public class NMS_1_20_R4 extends NMS_Common {
 
 	@Override
 	public ArgumentType<?> _ArgumentMobEffect() {
-		return ResourceArgument.resource(COMMAND_BUILD_CONTEXT, Registries.MOB_EFFECT);
+		return ResourceArgument.resource(commandBuildContext.get(), Registries.MOB_EFFECT);
 	}
 
 	@Override
 	public ArgumentType<?> _ArgumentEntitySummon() {
-		return ResourceArgument.resource(COMMAND_BUILD_CONTEXT, Registries.ENTITY_TYPE);
-	}
-
-	@Override
-	public CommandRegistrationStrategy<CommandSourceStack> createCommandRegistrationStrategy() {
-		if (vanillaCommandDispatcherFieldExists) {
-			return new SpigotCommandRegistration<>(
-				this.<MinecraftServer>getMinecraftServer().vanillaCommandDispatcher.getDispatcher(),
-				(SimpleCommandMap) getPaper().getCommandMap(),
-				() -> this.<MinecraftServer>getMinecraftServer().getCommands().getDispatcher(),
-				command -> command instanceof VanillaCommandWrapper,
-				node -> new VanillaCommandWrapper(this.<MinecraftServer>getMinecraftServer().vanillaCommandDispatcher, node),
-				node -> node.getCommand() instanceof BukkitCommandWrapper
-			);
-		} else {
-			// This class is Paper-server specific, so we need to use paper's userdev plugin to
-			//  access it directly. That might need gradle, but there might also be a maven version?
-			//  https://discord.com/channels/289587909051416579/1121227200277004398/1246910745761812480
-			Class<?> bukkitCommandNode_bukkitBrigCommand;
-			try {
-				bukkitCommandNode_bukkitBrigCommand = Class.forName("io.papermc.paper.command.brigadier.bukkit.BukkitCommandNode$BukkitBrigCommand");
-			} catch (ClassNotFoundException e) {
-				throw new IllegalStateException("Expected to find class", e);
-			}
-			return new PaperCommandRegistration<>(
-				() -> this.<MinecraftServer>getMinecraftServer().getCommands().getDispatcher(),
-				() -> {
-					SimpleHelpMap helpMap = (SimpleHelpMap) Bukkit.getServer().getHelpMap();
-					helpMap.clear();
-					helpMap.initializeGeneralTopics();
-					helpMap.initializeCommands();
-				},
-				node -> bukkitCommandNode_bukkitBrigCommand.isInstance(node.getCommand())
-			);
-		}
+		return ResourceArgument.resource(commandBuildContext.get(), Registries.ENTITY_TYPE);
 	}
 }

@@ -21,6 +21,7 @@ import org.bukkit.*;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.enchantments.Enchantment;
@@ -45,7 +46,7 @@ import java.util.function.Predicate;
  * An implementation of {@link CommandAPIBukkit} that is compatible with a MockBukkit testing environment.
  * Does not rely on any version-specific Minecraft code to (ideally) support testing in any version.
  */
-public class MockCommandAPIBukkit extends CommandAPIBukkit<MockCommandSource> {
+public class MockCommandAPIBukkit extends CommandAPIBukkit<MockCommandSource> implements MockNMS<MockCommandSource> {
 	// Static instance
 	private static MockCommandAPIBukkit instance;
 
@@ -101,11 +102,25 @@ public class MockCommandAPIBukkit extends CommandAPIBukkit<MockCommandSource> {
 		super.onLoad(config);
 	}
 
+	public static void onEnable() {
+		CommandAPI.onEnable();
+	}
+
 	/**
 	 * @return The {@link CommandAPIHandlerSpy} object intercepting calls to {@link CommandAPIHandler} methods.
 	 */
 	public CommandAPIHandlerSpy getCommandAPIHandlerSpy() {
 		return commandAPIHandlerSpy;
+	}
+
+	@Override
+	public CommandMap getCommandMap() {
+		return Bukkit.getCommandMap();
+	}
+
+	@Override
+	public Platform activePlatform() {
+		return Platform.PAPER;
 	}
 
 	@Override
@@ -487,7 +502,7 @@ public class MockCommandAPIBukkit extends CommandAPIBukkit<MockCommandSource> {
 	}
 
 	@Override
-	public FloatRange getFloatRange(CommandContext<MockCommandSource> cmdCtx, String key) {
+	public DoubleRange getFloatRange(CommandContext<MockCommandSource> cmdCtx, String key) {
 		throw new UnimplementedMethodException();
 	}
 

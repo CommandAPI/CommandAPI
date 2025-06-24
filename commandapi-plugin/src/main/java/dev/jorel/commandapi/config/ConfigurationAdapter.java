@@ -27,14 +27,12 @@ public interface ConfigurationAdapter<Configuration> {
 
 	ConfigurationAdapter<Configuration> createNew();
 
-	DefaultConfig createDefaultConfig();
-
 	ConfigurationAdapter<Configuration> loadFromFile() throws IOException;
 
 	void saveToFile() throws IOException;
 
-	default void saveDefaultConfig(File directory, Logger logger) {
-		ConfigGenerator generator = ConfigGenerator.createNew(createDefaultConfig());
+	default void saveDefaultConfig(DefaultConfig defaultConfig, File directory, Logger logger) {
+		ConfigGenerator generator = ConfigGenerator.createNew(defaultConfig);
 		ConfigurationAdapter<Configuration> existingConfig;
 		if (!directory.exists()) {
 			if (!directory.mkdirs()) {

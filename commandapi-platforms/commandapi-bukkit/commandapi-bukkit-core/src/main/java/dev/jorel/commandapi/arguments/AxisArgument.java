@@ -45,7 +45,7 @@ public class AxisArgument extends SafeOverrideableArgument<EnumSet, EnumSet<Axis
 	 * @param nodeName the name of the node for argument
 	 */
 	public AxisArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get()._ArgumentAxis(),
+		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentAxis(),
 			e -> e.stream().map(Axis::name).map(String::toLowerCase).reduce(String::concat).get());
 	}
 
@@ -63,6 +63,6 @@ public class AxisArgument extends SafeOverrideableArgument<EnumSet, EnumSet<Axis
 	public <CommandSourceStack> EnumSet<Axis> parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key,
                                                             CommandArguments previousArgs)
 		throws CommandSyntaxException {
-		return CommandAPIBukkit.<CommandSourceStack>get().getAxis(cmdCtx, key);
+		return CommandAPIBukkit.<CommandSourceStack>get().getNMS().getAxis(cmdCtx, key);
 	}
 }

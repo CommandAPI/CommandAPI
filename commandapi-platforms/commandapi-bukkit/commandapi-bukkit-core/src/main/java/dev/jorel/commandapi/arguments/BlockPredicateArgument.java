@@ -45,7 +45,7 @@ public class BlockPredicateArgument extends Argument<Predicate> {
 	 * @param nodeName the name of the node for argument
 	 */
 	public BlockPredicateArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get()._ArgumentBlockPredicate());
+		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentBlockPredicate());
 	}
 
 	@Override
@@ -61,6 +61,6 @@ public class BlockPredicateArgument extends Argument<Predicate> {
 	@Override
 	public <CommandSourceStack> Predicate<?> parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs)
 			throws CommandSyntaxException {
-		return CommandAPIBukkit.<CommandSourceStack>get().getBlockPredicate(cmdCtx, key);
+		return CommandAPIBukkit.<CommandSourceStack>get().getNMS().getBlockPredicate(cmdCtx, key);
 	}
 }

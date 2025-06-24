@@ -95,7 +95,6 @@ public class CommandAPIVelocity implements CommandAPIPlatform<Argument<?>, Comma
 
 	@Override
 	public void onEnable() {
-		// Nothing to do
 	}
 
 	@Override

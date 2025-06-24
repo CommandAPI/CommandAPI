@@ -43,8 +43,8 @@ public class BiomeArgument extends SafeOverrideableArgument<Biome, Biome> implem
 	 * @param nodeName the name of the node for argument
 	 */
 	public BiomeArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get()._ArgumentSyntheticBiome(),
-			((Function<Biome, String>) Biome::name).andThen(String::toLowerCase));
+		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentSyntheticBiome(),
+			((Function<Biome, String>) biome -> biome.name() /* Hopefully this makes it compatible with older and newer versions */).andThen(String::toLowerCase));
 	}
 
 	@Override
@@ -65,7 +65,7 @@ public class BiomeArgument extends SafeOverrideableArgument<Biome, Biome> implem
 	@Override
 	public <CommandSourceStack> Biome parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs)
 		throws CommandSyntaxException {
-		return (Biome) CommandAPIBukkit.<CommandSourceStack>get().getBiome(cmdCtx, key, ArgumentSubType.BIOME_BIOME);
+		return CommandAPIBukkit.<CommandSourceStack>get().getNMS().getBiome(cmdCtx, key).type().get();
 	}
 
 	/**
@@ -82,7 +82,7 @@ public class BiomeArgument extends SafeOverrideableArgument<Biome, Biome> implem
 		 * @param nodeName the name of the node for argument
 		 */
 		public NamespacedKey(String nodeName) {
-			super(nodeName, CommandAPIBukkit.get()._ArgumentSyntheticBiome(), org.bukkit.NamespacedKey::toString);
+			super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentSyntheticBiome(), org.bukkit.NamespacedKey::toString);
 		}
 
 		@Override
@@ -103,7 +103,7 @@ public class BiomeArgument extends SafeOverrideableArgument<Biome, Biome> implem
 		@Override
 		public <CommandSourceStack> org.bukkit.NamespacedKey parseArgument(CommandContext<CommandSourceStack> cmdCtx,
                                                                            String key, CommandArguments previousArgs) throws CommandSyntaxException {
-			return (org.bukkit.NamespacedKey) CommandAPIBukkit.<CommandSourceStack>get().getBiome(cmdCtx, key, ArgumentSubType.BIOME_NAMESPACEDKEY);
+			return CommandAPIBukkit.<CommandSourceStack>get().getNMS().getBiome(cmdCtx, key).key().get();
 		}
 
 	}

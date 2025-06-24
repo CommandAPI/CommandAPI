@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import dev.jorel.commandapi.executors.CommandArguments;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.ComponentLike;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.boss.BarColor;
@@ -198,11 +200,15 @@ public class BetterBossBarsCommand {
 
 	private void addBossbar(CommandSender sender, CommandArguments args) {
 		NamespacedKey id = (NamespacedKey) args.get(0);
-		BaseComponent[] name = (BaseComponent[]) args.get(1);
+		Component name = (Component) args.get(1);
 
-		Bukkit.createBossBar(id, BaseComponent.toLegacyText(name), BarColor.WHITE, BarStyle.SOLID);
+		net.kyori.adventure.bossbar.BossBar bossBar = net.kyori.adventure.bossbar.BossBar.bossBar(name, 1.0f, net.kyori.adventure.bossbar.BossBar.Color.WHITE, net.kyori.adventure.bossbar.BossBar.Overlay.PROGRESS);
 		this.maxValues.put(id, 100);
-		sender.sendMessage("Created custom bossbar [" + BaseComponent.toLegacyText(name) + ChatColor.WHITE + "]");
+		sender.sendMessage(Component.text()
+			.append(Component.text("Created custom bossbar ["))
+			.append(bossBar.name())
+			.append(Component.text("]"))
+		);
 	}
 
 	private void list(CommandSender sender, CommandArguments args) {

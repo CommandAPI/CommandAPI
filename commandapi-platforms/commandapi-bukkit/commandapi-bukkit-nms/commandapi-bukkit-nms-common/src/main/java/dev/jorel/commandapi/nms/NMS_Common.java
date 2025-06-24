@@ -104,9 +104,8 @@ import java.util.function.Predicate;
  * NMS classes to maintain an error-free NMS_Common module that is applicable to all
  * versions.
  */
-public abstract class NMS_Common extends CommandAPIBukkit<CommandSourceStack> {
-
-	public final NamespacedKey fromResourceLocation(ResourceLocation key) {
+public abstract class NMS_Common implements NMS<CommandSourceStack> {
+	public NamespacedKey fromResourceLocation(ResourceLocation key) {
 		return NamespacedKey.fromString(key.getNamespace() + ":" + key.getPath());
 	}
 
@@ -315,14 +314,9 @@ public abstract class NMS_Common extends CommandAPIBukkit<CommandSourceStack> {
 	}
 
 	@Override
-	public final ChatColor getChatColor(CommandContext<CommandSourceStack> cmdCtx, String key) {
-		return ChatColor.getByChar(ColorArgument.getColor(cmdCtx, key).getChar());
-	}
-
-	@Override
-	public final BukkitCommandSender<? extends CommandSender> getCommandSenderFromCommandSource(CommandSourceStack css) {
+	public final <Source> BukkitCommandSender<? extends CommandSender> getCommandSenderFromCommandSource(Source css) {
 		try {
-			return wrapCommandSender(css.getBukkitSender());
+			return CommandAPIBukkit.get().wrapCommandSender(((CommandSourceStack) css).getBukkitSender());
 		} catch (UnsupportedOperationException e) {
 			return null;
 		}
@@ -373,16 +367,6 @@ public abstract class NMS_Common extends CommandAPIBukkit<CommandSourceStack> {
 	@Override
 	public final OfflinePlayer getOfflinePlayer(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
 		return Bukkit.getOfflinePlayer(GameProfileArgument.getGameProfiles(cmdCtx, key).iterator().next().getId());
-	}
-
-	@Override
-	public final Player getPlayer(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		Player target = Bukkit.getPlayer(GameProfileArgument.getGameProfiles(cmdCtx, key).iterator().next().getId());
-		if (target == null) {
-			throw GameProfileArgument.ERROR_UNKNOWN_PLAYER.create();
-		} else {
-			return target;
-		}
 	}
 
 	@Override

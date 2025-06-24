@@ -38,7 +38,7 @@ public class TimeArgument extends SafeOverrideableArgument<Integer, Time> {
 	 * @param nodeName the name of the node for this argument 
 	 */
 	public TimeArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get()._ArgumentTime(), Time::toString);
+		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentTime(), Time::toString);
 	}
 
 	@Override
@@ -53,6 +53,6 @@ public class TimeArgument extends SafeOverrideableArgument<Integer, Time> {
 	
 	@Override
 	public <CommandSourceStack> Integer parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-		return CommandAPIBukkit.<CommandSourceStack>get().getTime(cmdCtx, key);
+		return CommandAPIBukkit.<CommandSourceStack>get().getNMS().getTime(cmdCtx, key);
 	}
 }

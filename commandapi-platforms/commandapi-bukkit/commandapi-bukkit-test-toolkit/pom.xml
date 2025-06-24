@@ -10,7 +10,7 @@
 	</parent>
 
 	<artifactId>commandapi-bukkit-test-toolkit</artifactId>
-	<name>CommandAPI - Bukkit support testing toolkit</name>
+	<name>Bukkit support testing toolkit</name>
 
 	<properties>
 		<maven.compiler.source>21</maven.compiler.source>
@@ -45,7 +45,7 @@
 		<!-- Compatibility with CommandAPI Bukkit API -->
 		<dependency>
 			<groupId>dev.jorel</groupId>
-			<artifactId>commandapi-bukkit-core</artifactId>
+			<artifactId>commandapi-paper-core</artifactId>
 			<version>${project.version}</version>
 			<scope>provided</scope>
 		</dependency>
@@ -56,6 +56,13 @@
 			<artifactId>mockito-core</artifactId>
 			<version>5.11.0</version>
 			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>io.papermc.paper</groupId>
+			<artifactId>paper-api</artifactId>
+			<version>1.20.6-R0.1-SNAPSHOT</version>
+			<scope>provided</scope>
 		</dependency>
 
 		<!-- Pass Brigadier to our dependents -->

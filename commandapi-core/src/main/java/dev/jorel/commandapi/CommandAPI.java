@@ -80,10 +80,11 @@ public class CommandAPI {
 	 * @return the CommandAPI's logger
 	 */
 	public static CommandAPILogger getLogger() {
-		if (logger == null) {
-			logger = CommandAPIHandler.getInstance().getPlatform().getLogger();
+		if (logger != null) {
+			// A custom logger was defined, use that
+			return logger;
 		}
-		return logger;
+		return CommandAPIHandler.getInstance().getPlatform().getLogger();
 	}
 
 	// Loading, enabling, and disabling
@@ -114,6 +115,9 @@ public class CommandAPI {
 			new CommandAPIHandler<>(platform);
 			loadContext.context().run();
 
+			// Load the platform
+			CommandAPIHandler.getInstance().onLoad(config);
+
 			// Log platform load
 			final String platformClassHierarchy;
 			{
@@ -128,9 +132,6 @@ public class CommandAPI {
 				platformClassHierarchy = String.join(" > ", platformClassHierarchyList);
 			}
 			logNormal("Loaded platform " + platformClassHierarchy);
-
-			// Finish loading
-			CommandAPIHandler.getInstance().onLoad(config);
 
 			loaded = true;
 		} else {

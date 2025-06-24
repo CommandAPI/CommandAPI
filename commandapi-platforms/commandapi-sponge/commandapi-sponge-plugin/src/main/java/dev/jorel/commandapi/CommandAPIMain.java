@@ -33,7 +33,7 @@ public class CommandAPIMain {
 
 	@Listener
 	public void onServerStart(final StartedEngineEvent<Server> event) {
-		CommandAPI.onEnable();
+		CommandAPISponge.onEnable();
 	}
 
 	@Listener

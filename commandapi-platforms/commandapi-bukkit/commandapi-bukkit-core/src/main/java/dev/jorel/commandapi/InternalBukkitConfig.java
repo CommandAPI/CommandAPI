@@ -1,6 +1,5 @@
 package dev.jorel.commandapi;
 
-import io.papermc.paper.event.server.ServerResourcesReloadedEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -8,13 +7,10 @@ import org.bukkit.plugin.java.JavaPlugin;
  * only ever read from, nothing is ever written to it. That's why there's only
  * getter methods.
  */
-public class InternalBukkitConfig extends InternalConfig {
-	// The plugin that is loading the CommandAPI
-	private final JavaPlugin plugin;
+public abstract class InternalBukkitConfig extends InternalConfig {
+	// The name of the plugin that is loading the CommandAPI
+	private final String pluginName;
 
-	// Whether to hook into paper's reload event to reload datapacks when /minecraft:reload is run
-	private final boolean shouldHookPaperReload;
-	
 	private final boolean skipReloadDatapacks;
 
 	/**
@@ -22,30 +18,18 @@ public class InternalBukkitConfig extends InternalConfig {
 	 *
 	 * @param config The configuration to use to set up this internal configuration
 	 */
-	public InternalBukkitConfig(CommandAPIBukkitConfig config) {
+	public InternalBukkitConfig(CommandAPIBukkitConfig<? extends CommandAPIBukkitConfig<?>> config) {
 		super(config);
-		this.plugin = config.plugin;
-		this.shouldHookPaperReload = config.shouldHookPaperReload;
+		this.pluginName = config.pluginName;
 		this.skipReloadDatapacks = config.skipReloadDatapacks;
 	}
 
 	/**
-	 * @return The {@link JavaPlugin} that is loading the CommandAPI
+	 * @return The name of the {@link JavaPlugin} that is loading the CommandAPI
 	 */
-	public JavaPlugin getPlugin() {
-		return plugin;
+	public String getPluginName() {
+		return pluginName;
 	}
-
-	/**
-	 * @return Whether the CommandAPI should hook into Paper's {@link ServerResourcesReloadedEvent}
-	 * when available to perform the CommandAPI's custom datapack reload when {@code /minecraft:reload}
-	 * is run.
-	 */
-	public boolean shouldHookPaperReload() {
-		return shouldHookPaperReload;
-	}
-	
-
 
 	/**
 	 * @return Whether the CommandAPI should skip reloading datapacks when the server has finished loading
@@ -53,4 +37,5 @@ public class InternalBukkitConfig extends InternalConfig {
 	public boolean skipReloadDatapacks() {
 		return skipReloadDatapacks;
 	}
+
 }

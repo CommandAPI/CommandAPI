@@ -40,7 +40,7 @@ public class NBTCompoundArgument<NBTContainer> extends SafeOverrideableArgument<
 	 * @param nodeName the name of the node for this argument
 	 */
 	public NBTCompoundArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get()._ArgumentNBTCompound(), NBTContainer::toString);
+		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentNBTCompound(), NBTContainer::toString);
 		if (CommandAPI.getConfiguration().getNBTContainerClass() == null || CommandAPI.getConfiguration().getNBTContainerConstructor() == null) {
 			throw new NullPointerException(
 					"The NBTCompoundArgument hasn't been initialized properly! Use CommandAPIConfig.initializeNBTAPI() in your onLoad() method");
@@ -62,6 +62,6 @@ public class NBTCompoundArgument<NBTContainer> extends SafeOverrideableArgument<
 	@Override
 	public <CommandSourceStack> NBTContainer parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs)
 			throws CommandSyntaxException {
-		return (NBTContainer) CommandAPIBukkit.<CommandSourceStack>get().getNBTCompound(cmdCtx, key, CommandAPI.getConfiguration().getNBTContainerConstructor());
+		return (NBTContainer) CommandAPIBukkit.<CommandSourceStack>get().getNMS().getNBTCompound(cmdCtx, key, CommandAPI.getConfiguration().getNBTContainerConstructor());
 	}
 }
