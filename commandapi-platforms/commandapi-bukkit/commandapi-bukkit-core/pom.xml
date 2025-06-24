@@ -10,7 +10,7 @@
 	</parent>
 
 	<artifactId>commandapi-bukkit-core</artifactId>
-	<name>CommandAPI - Bukkit support core library</name>
+	<name>Bukkit support core library</name>
 
 	<repositories>
 		<repository>

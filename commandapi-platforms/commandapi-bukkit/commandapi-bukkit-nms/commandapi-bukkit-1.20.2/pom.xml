@@ -26,7 +26,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>commandapi-bukkit-1.20.2</artifactId>
-	<name>CommandAPI - Bukkit support for 1.20.2</name>
+	<name>Bukkit support for 1.20.2</name>
 
 	<properties>
 		<minecraft.mappings>1.20.2-R0.1-SNAPSHOT</minecraft.mappings>

@@ -31,6 +31,6 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>commandapi-preprocessor</artifactId>
-    <name>CommandAPI - Development Maven preprocessor</name>
+    <name>Development Maven preprocessor</name>
 
 </project>

@@ -10,6 +10,7 @@
 	</parent>
 
 	<artifactId>commandapi-paper-nms</artifactId>
+	<name>Paper support NMS library</name>
 	<packaging>pom</packaging>
 
 	<modules>

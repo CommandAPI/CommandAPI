@@ -10,6 +10,7 @@
 	</parent>
 
 	<artifactId>commandapi-spigot</artifactId>
+	<name>Spigot support</name>
 	<packaging>pom</packaging>
 
 	<modules>

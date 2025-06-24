@@ -30,7 +30,7 @@
 	</parent>
 
 	<artifactId>commandapi-bukkit-nms</artifactId>
-	<name>CommandAPI - Bukkit support NMS library</name>
+	<name>Bukkit support NMS library</name>
 	<packaging>pom</packaging>
 
 	<modules>

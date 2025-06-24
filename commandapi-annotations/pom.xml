@@ -22,7 +22,7 @@
 	</parent>
 
 	<artifactId>commandapi-annotations</artifactId>
-	<name>CommandAPI - Annotations Library</name>
+	<name>Annotations Library</name>
 
 	<repositories>
 		<repository>

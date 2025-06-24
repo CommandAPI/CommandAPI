@@ -10,6 +10,7 @@
 	</parent>
 
 	<artifactId>commandapi-kotlin-spigot</artifactId>
+	<name>Spigot support in Kotlin</name>
 
 	<build>
 		<sourceDirectory>src/main/kotlin</sourceDirectory>

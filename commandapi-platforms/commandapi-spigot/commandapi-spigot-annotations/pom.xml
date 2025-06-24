@@ -10,6 +10,7 @@
 	</parent>
 
 	<artifactId>commandapi-spigot-annotations</artifactId>
+	<name>Spigot Annotations</name>
 
 	<repositories>
 		<repository>

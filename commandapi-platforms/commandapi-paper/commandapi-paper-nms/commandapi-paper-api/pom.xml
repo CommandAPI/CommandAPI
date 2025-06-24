@@ -10,6 +10,7 @@
 	</parent>
 
 	<artifactId>commandapi-paper-api</artifactId>
+	<name>Paper API support</name>
 
 	<properties>
 		<paper.version>1.21.6-R0.1-SNAPSHOT</paper.version>

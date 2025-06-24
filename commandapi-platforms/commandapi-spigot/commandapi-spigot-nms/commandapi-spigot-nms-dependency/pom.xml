@@ -10,6 +10,7 @@
 	</parent>
 
 	<artifactId>commandapi-spigot-nms-dependency</artifactId>
+	<name>Spigot support Spigot-mapped NMS dependency</name>
 	<packaging>pom</packaging>
 
 	<dependencies>

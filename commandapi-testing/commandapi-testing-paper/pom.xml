@@ -10,6 +10,7 @@
 	</parent>
 
 	<artifactId>commandapi-testing-paper</artifactId>
+	<name>Testing plugin for Paper</name>
 
 	<repositories>
 		<repository>

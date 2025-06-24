@@ -10,6 +10,7 @@
 	</parent>
 
 	<artifactId>commandapi-paper-vh</artifactId>
+	<name>Paper support version handler</name>
 
 	<repositories>
 		<repository>

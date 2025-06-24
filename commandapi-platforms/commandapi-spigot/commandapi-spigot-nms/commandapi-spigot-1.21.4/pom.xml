@@ -10,6 +10,7 @@
 	</parent>
 
 	<artifactId>commandapi-spigot-1.21.4</artifactId>
+	<name>Spigot support for 1.21.4</name>
 
 	<properties>
 		<minecraft.mappings>1.21.4-R0.1-SNAPSHOT</minecraft.mappings>

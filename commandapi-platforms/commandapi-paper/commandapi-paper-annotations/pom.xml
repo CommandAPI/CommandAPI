@@ -10,6 +10,7 @@
 	</parent>
 
 	<artifactId>commandapi-paper-annotations</artifactId>
+	<name>Paper Annotations</name>
 
 	<repositories>
 		<repository>

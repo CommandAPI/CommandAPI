@@ -10,6 +10,7 @@
 	</parent>
 
 	<artifactId>commandapi-paper-1.21.6</artifactId>
+	<name>Paper support for 1.21.6</name>
 
 	<properties>
 		<minecraft.mappings>1.21.6-R0.1-SNAPSHOT</minecraft.mappings>

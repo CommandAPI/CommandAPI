@@ -10,7 +10,7 @@
 	</parent>
 
 	<artifactId>commandapi-kotlin</artifactId>
-	<name>CommandAPI - Kotlin support</name>
+	<name>Kotlin support</name>
 	<packaging>pom</packaging>
 
 </project>

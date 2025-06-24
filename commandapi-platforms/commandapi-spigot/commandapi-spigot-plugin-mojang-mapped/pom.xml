@@ -10,6 +10,7 @@
 	</parent>
 
 	<artifactId>commandapi-spigot-plugin-mojang-mapped</artifactId>
+	<name>Spigot support Mojang-mapped plugin</name>
 
 	<repositories>
 		<repository>

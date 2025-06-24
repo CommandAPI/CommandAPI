@@ -24,7 +24,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>commandapi-bukkit-nms-dependency</artifactId>
-	<name>CommandAPI - Bukkit support Spigot-mapped NMS dependency</name>
+	<name>Bukkit support Spigot-mapped NMS dependency</name>
 	<packaging>pom</packaging>
 
 	<dependencies>

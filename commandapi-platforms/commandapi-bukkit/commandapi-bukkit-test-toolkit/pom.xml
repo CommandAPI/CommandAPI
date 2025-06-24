@@ -10,7 +10,7 @@
 	</parent>
 
 	<artifactId>commandapi-bukkit-test-toolkit</artifactId>
-	<name>CommandAPI - Bukkit support testing toolkit</name>
+	<name>Bukkit support testing toolkit</name>
 
 	<properties>
 		<maven.compiler.source>21</maven.compiler.source>

@@ -10,6 +10,7 @@
 	</parent>
 
 	<artifactId>commandapi-testing</artifactId>
+	<name>Collection of testing plugins for different platforms</name>
 	<packaging>pom</packaging>
 
 	<modules>

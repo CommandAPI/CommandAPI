@@ -10,6 +10,7 @@
 	</parent>
 
 	<artifactId>commandapi-paper</artifactId>
+	<name>Paper support</name>
 	<packaging>pom</packaging>
 
 	<properties>

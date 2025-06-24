@@ -10,6 +10,7 @@
 	</parent>
 
 	<artifactId>commandapi-spigot-1.20</artifactId>
+	<name>Spigot support for 1.20</name>
 
 	<properties>
 		<minecraft.mappings>1.20.1-R0.1-SNAPSHOT</minecraft.mappings>

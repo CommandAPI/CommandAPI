@@ -11,7 +11,7 @@
 	</parent>
 
 	<artifactId>commandapi-platforms</artifactId>
-	<name>CommandAPI - Multi-platform support</name>
+	<name>Multi-platform support</name>
 	<packaging>pom</packaging>
 
 	<profiles>

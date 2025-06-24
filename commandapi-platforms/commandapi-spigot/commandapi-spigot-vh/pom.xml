@@ -10,6 +10,7 @@
 	</parent>
 
 	<artifactId>commandapi-spigot-vh</artifactId>
+	<name>Spigot support version handler</name>
 
 	<dependencies>
 		<dependency>

@@ -10,7 +10,7 @@
 	</parent>
 
 	<artifactId>commandapi-spigot-plugin</artifactId>
-	<name>CommandAPI - Bukkit support Spigot-mapped plugin</name>
+	<name>Spigot support Spigot-mapped plugin</name>
 
 	<repositories>
 		<repository>

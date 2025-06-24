@@ -11,7 +11,7 @@
 	</parent>
 
 	<artifactId>commandapi-bukkit-plugin-common</artifactId>
-	<name>CommandAPI - Bukkit support plugin common library</name>
+	<name>Bukkit support plugin common library</name>
 
 	<build>
 		<plugins>

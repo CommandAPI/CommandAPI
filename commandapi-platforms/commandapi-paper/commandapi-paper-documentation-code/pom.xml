@@ -10,6 +10,7 @@
 	</parent>
 
 	<artifactId>commandapi-paper-documentation-code</artifactId>
+	<name>Paper documentation code</name>
 
 	<repositories>
 		<repository>

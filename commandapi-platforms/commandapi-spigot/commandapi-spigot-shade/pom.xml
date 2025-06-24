@@ -10,6 +10,7 @@
 	</parent>
 
 	<artifactId>commandapi-spigot-shade</artifactId>
+	<name>Spigot support Spigot-mapped shade library</name>
 
 	<dependencies>
 		<dependency>

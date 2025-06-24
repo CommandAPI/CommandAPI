@@ -10,7 +10,7 @@
 	</parent>
 
 	<artifactId>commandapi-bukkit-shade-mojang-mapped</artifactId>
-	<name>CommandAPI - Bukkit support Mojang-mapped shade library</name>
+	<name>Spigot support Mojang-mapped shade library</name>
 
 	<dependencies>
 		<dependency>

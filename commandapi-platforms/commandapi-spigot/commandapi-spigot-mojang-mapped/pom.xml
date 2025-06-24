@@ -10,5 +10,6 @@
 	</parent>
 
 	<artifactId>commandapi-spigot-mojang-mapped</artifactId>
+	<name>Spigot mojang mapped dependency</name>
 
 </project>

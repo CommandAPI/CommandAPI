@@ -10,6 +10,7 @@
 	</parent>
 
 	<artifactId>commandapi-spigot-nms-dependency-mojang-mapped</artifactId>
+	<name>Spigot support Mojang-mapped NMS dependency</name>
 	<packaging>pom</packaging>
 
 	<dependencies>

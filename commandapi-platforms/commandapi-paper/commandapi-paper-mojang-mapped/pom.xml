@@ -10,5 +10,6 @@
 	</parent>
 
 	<artifactId>commandapi-paper-mojang-mapped</artifactId>
+	<name>Paper mojang mapped dependency</name>
 
 </project>

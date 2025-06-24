@@ -10,7 +10,7 @@
 	</parent>
 
 	<artifactId>commandapi-paper-shade</artifactId>
-	<name>CommandAPI - Paper support Mojang-mapped shade library</name>
+	<name>Paper support shade library</name>
 
 	<dependencies>
 		<dependency>

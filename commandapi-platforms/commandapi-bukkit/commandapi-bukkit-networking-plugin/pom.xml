@@ -10,7 +10,7 @@
 	</parent>
 
 	<artifactId>commandapi-bukkit-networking-plugin</artifactId>
-	<name>CommandAPI - Bukkit support Velocity networking plugin</name>
+	<name>Bukkit support Velocity networking plugin</name>
 
 	<dependencies>
 		<dependency>

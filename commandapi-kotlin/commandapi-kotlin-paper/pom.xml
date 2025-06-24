@@ -10,6 +10,7 @@
 	</parent>
 
 	<artifactId>commandapi-kotlin-paper</artifactId>
+	<name>Paper support in Kotlin</name>
 
 	<build>
 		<sourceDirectory>src/main/kotlin</sourceDirectory>

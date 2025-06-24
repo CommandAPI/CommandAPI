@@ -10,7 +10,7 @@
 	</parent>
 
 	<artifactId>commandapi-paper-plugin</artifactId>
-	<name>CommandAPI - Paper support plugin</name>
+	<name>Paper support plugin</name>
 
 	<repositories>
 		<repository>
