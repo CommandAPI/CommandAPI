@@ -12,6 +12,7 @@ import com.mojang.brigadier.tree.RootCommandNode;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.bootstrap.BootstrapContext;
+import io.papermc.paper.plugin.lifecycle.event.LifecycleEventManager;
 import io.papermc.paper.plugin.lifecycle.event.LifecycleEventOwner;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import org.bukkit.Bukkit;
@@ -104,28 +105,28 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 		CommandAPIBukkit.get().updateHelpForCommands(CommandAPI.getRegisteredCommands());
 	}
 
-	void registerLifecycleEvent(boolean bootstrap) {
+	void registerLifecycleEvent() {
+		boolean bootstrap = Bukkit.getServer() == null;
 		if (bootstrap && !lifecycleEventRegistered[0]) {
 			BootstrapContext context = (BootstrapContext) CommandAPIPaper.getPaper().getLifecycleEventOwner();
 			lifecycleEventRegistered[0] = true;
-			context.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event -> {
-				for (CommandNode<CommandSourceStack> commandNode : bootstrapDispatcher.getRoot().getChildren()) {
-					LiteralCommandNode<CommandSourceStack> node = (LiteralCommandNode<CommandSourceStack>) commandNode;
-					event.registrar().register(node, getDescription(node.getLiteral()));
-				}
-			});
+			registerLifecycleEvent(context.getLifecycleManager(), bootstrapDispatcher);
 			return;
 		}
 		if (!bootstrap && !lifecycleEventRegistered[1]) {
 			JavaPlugin plugin = (JavaPlugin) CommandAPIPaper.getPaper().getLifecycleEventOwner();
 			lifecycleEventRegistered[1] = true;
-			plugin.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event -> {
-				for (CommandNode<CommandSourceStack> commandNode : pluginDispatcher.getRoot().getChildren()) {
-					LiteralCommandNode<CommandSourceStack> node = (LiteralCommandNode<CommandSourceStack>) commandNode;
-					event.registrar().register(node, getDescription(node.getLiteral()));
-				}
-			});
+			registerLifecycleEvent(plugin.getLifecycleManager(), pluginDispatcher);
 		}
+	}
+
+	private void registerLifecycleEvent(LifecycleEventManager<?> lifecycleEventManager, CommandDispatcher<CommandSourceStack> dispatcher) {
+		lifecycleEventManager.registerEventHandler(LifecycleEvents.COMMANDS, event -> {
+			for (CommandNode<CommandSourceStack> commandNode : dispatcher.getRoot().getChildren()) {
+				LiteralCommandNode<CommandSourceStack> node = (LiteralCommandNode<CommandSourceStack>) commandNode;
+				event.registrar().register(node, getDescription(node.getLiteral()));
+			}
+		});
 	}
 
 	private String getDescription(String commandName) {

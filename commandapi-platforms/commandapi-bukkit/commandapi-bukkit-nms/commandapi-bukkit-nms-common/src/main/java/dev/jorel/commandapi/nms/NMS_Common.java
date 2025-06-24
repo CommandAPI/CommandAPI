@@ -104,7 +104,7 @@ import java.util.function.Predicate;
  * NMS classes to maintain an error-free NMS_Common module that is applicable to all
  * versions.
  */
-public abstract class NMS_Common extends NMS<CommandSourceStack> {
+public abstract class NMS_Common implements NMS<CommandSourceStack> {
 	public NamespacedKey fromResourceLocation(ResourceLocation key) {
 		return NamespacedKey.fromString(key.getNamespace() + ":" + key.getPath());
 	}

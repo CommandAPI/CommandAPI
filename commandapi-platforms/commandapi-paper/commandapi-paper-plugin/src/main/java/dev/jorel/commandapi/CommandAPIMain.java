@@ -134,7 +134,7 @@ public class CommandAPIMain extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-		CommandAPIPaper.onEnable(this);
+		CommandAPI.onEnable();
 	}
 
 	/**

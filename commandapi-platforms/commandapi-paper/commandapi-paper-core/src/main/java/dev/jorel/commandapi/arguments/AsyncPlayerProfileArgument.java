@@ -12,15 +12,14 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * An argument that represents the Bukkit OfflinePlayer object with asynchronous support.
+ * An argument that represents a list of the Paper PlayerProfile object with asynchronous support.
  *
- * @since 9.7.1
+ * @since 11.0.0
  */
 public class AsyncPlayerProfileArgument extends SafeOverrideableArgument<CompletableFuture<List<PlayerProfile>>, PlayerProfile> {
 
 	/**
-	 * A Player argument. Produces a single player, regardless of whether
-	 * <code>@a</code>, <code>@p</code>, <code>@r</code> or <code>@e</code> is used.
+	 * A PlayerProfile argument. Returns a {@link List<PlayerProfile>}
 	 *
 	 * @param nodeName the name of the node for this argument
 	 */

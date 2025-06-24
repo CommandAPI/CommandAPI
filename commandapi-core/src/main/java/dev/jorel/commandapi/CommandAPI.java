@@ -151,7 +151,7 @@ public class CommandAPI {
 	 * Enables the CommandAPI. This should be placed at the start of your
 	 * <code>onEnable()</code> method.
 	 */
-	static void onEnable() {
+	public static void onEnable() {
 		CommandAPIHandler.getInstance().onEnable();
 	}
 

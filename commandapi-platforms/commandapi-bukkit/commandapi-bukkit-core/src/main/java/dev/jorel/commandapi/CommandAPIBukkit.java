@@ -44,9 +44,6 @@ import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-// CommandAPIBukkit needs all of the methods fromNMS, so it implements NMS.
-// Our implementation of CommandAPIBukkit is now derived
-// using the version handler (and thus, deferred to our NMS-specific implementations)
 public abstract class CommandAPIBukkit<Source> implements BukkitPlatform<Source> {
 
 	// References to utility classes

@@ -108,18 +108,17 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 		super.onLoad();
 		checkPaperDependencies();
 		PaperCommandRegistration registration = (PaperCommandRegistration) CommandAPIBukkit.get().getCommandRegistrationStrategy();
-		registration.registerLifecycleEvent(Bukkit.getServer() == null);
+		registration.registerLifecycleEvent();
 	}
 
 	/**
 	 * Enables the CommandAPI. This should be placed at the start of your
 	 * <code>onEnable()</code> method.
-	 *
-	 * @param plugin The {@link JavaPlugin} that loads the CommandAPI
 	 */
-	public static void onEnable(JavaPlugin plugin) {
-		CommandAPIBukkit.get().plugin = plugin;
-		CommandAPIPaper.getPaper().lifecycleEventOwner = plugin;
+	@Override
+	public void onEnable() {
+		super.plugin = (JavaPlugin) Bukkit.getPluginManager().getPlugin(getConfiguration().getPluginName());
+		CommandAPIPaper.getPaper().lifecycleEventOwner = super.plugin;
 
 		new Schedulers(paper.isFoliaPresent).scheduleSyncDelayed(plugin, () -> {
 			CommandAPIBukkit.get().getCommandRegistrationStrategy().runTasksAfterServerStart();
@@ -133,7 +132,7 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 			CommandAPIBukkit.get().updateHelpForCommands(CommandAPI.getRegisteredCommands());
 		}, 0L);
 
-		CommandAPIBukkit.get().stopCommandRegistrations();
+		super.stopCommandRegistrations();
 
 		// Basically just a check to ensure we're actually running Paper
 		if (paper.isPaperPresent) {
@@ -163,9 +162,8 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 			CommandAPI.logNormal("Did not hook into Paper ServerResourcesReloadedEvent while using commandapi-paper. Are you actually using Paper?");
 		}
 
-		CommandAPI.onEnable();
-		PaperCommandRegistration registration = (PaperCommandRegistration) CommandAPIBukkit.get().getCommandRegistrationStrategy();
-		registration.registerLifecycleEvent(Bukkit.getServer() == null);
+		PaperCommandRegistration registration = (PaperCommandRegistration) super.getCommandRegistrationStrategy();
+		registration.registerLifecycleEvent();
 	}
 
 	private void checkPaperDependencies() {
@@ -270,37 +268,9 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 			return super.getLogger();
 		}
 		if (bootstrapLogger == null) {
-			bootstrapLogger = new BootstrapLogger();
+			bootstrapLogger = CommandAPILogger.fromSlf4jLogger(ComponentLogger.logger("CommandAPI"));
 		}
 		return bootstrapLogger;
-	}
-
-	private static class BootstrapLogger implements CommandAPILogger {
-		private final ComponentLogger componentLogger;
-
-		protected BootstrapLogger() {
-			this.componentLogger = ComponentLogger.logger("CommandAPI");
-		}
-
-		@Override
-		public void info(String message) {
-			componentLogger.info(message);
-		}
-
-		@Override
-		public void warning(String message) {
-			componentLogger.warn(message);
-		}
-
-		@Override
-		public void severe(String message) {
-			componentLogger.error(message);
-		}
-
-		@Override
-		public void severe(String message, Throwable exception) {
-			componentLogger.error(message, exception);
-		}
 	}
 
 }

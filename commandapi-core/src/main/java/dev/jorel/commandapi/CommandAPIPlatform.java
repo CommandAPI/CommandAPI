@@ -36,6 +36,11 @@ extends AbstractArgument<?, ?, Argument, CommandSender>
 	void onLoad(CommandAPIConfig<?> config);
 
 	/**
+	 * Platform-specific stuff that should happen when the CommandAPI is enabled
+	 */
+	void onEnable();
+
+	/**
 	 * Platform-specific stuff that should happen when the CommandAPI is disabled.
 	 */
 	void onDisable();

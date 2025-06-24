@@ -132,7 +132,7 @@ public class CommandAPIMain extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-		CommandAPISpigot.onEnable();
+		CommandAPI.onEnable();
 	}
 
 	/**

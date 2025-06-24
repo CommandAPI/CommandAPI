@@ -35,13 +35,12 @@ import java.util.List;
  * Note that this Argument internally references Mojang's authentication servers to resolve
  * usernames, which gives it a slight performance overhead compared to {@link EntitySelectorArgument.OnePlayer}.
  * 
- * @since 1.1
+ * @since 11.0.0
  */
 public class PlayerProfileArgument extends SafeOverrideableArgument<List, PlayerProfile> {
 
 	/**
-	 * A Player argument. Produces a single player, regardless of whether
-	 * <code>@a</code>, <code>@p</code>, <code>@r</code> or <code>@e</code> is used.
+	 * A PlayerProfile argument. Returns a {@link List<PlayerProfile>}
 	 * 
 	 * @param nodeName the name of the node for this argument
 	 */

@@ -93,8 +93,8 @@ public class CommandAPIVelocity implements CommandAPIPlatform<Argument<?>, Comma
 		CommandAPIVelocity.config = internalVelocityConfig;
 	}
 
-	public static void onEnable() {
-		CommandAPI.onEnable();
+	@Override
+	public void onEnable() {
 	}
 
 	@Override

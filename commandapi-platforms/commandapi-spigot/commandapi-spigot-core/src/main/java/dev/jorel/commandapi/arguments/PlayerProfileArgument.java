@@ -30,18 +30,17 @@ import org.bukkit.profile.PlayerProfile;
 import java.util.List;
 
 /**
- * An argument that represents the Paper PlayerProfile object.
+ * An argument that represents the Spigot PlayerProfile object.
  * <p>
  * Note that this Argument internally references Mojang's authentication servers to resolve
  * usernames, which gives it a slight performance overhead compared to {@link dev.jorel.commandapi.arguments.EntitySelectorArgument.OnePlayer}.
  * 
- * @since 1.1
+ * @since 11.0.0
  */
 public class PlayerProfileArgument extends SafeOverrideableArgument<List, PlayerProfile> {
 
 	/**
-	 * A Player argument. Produces a single player, regardless of whether
-	 * <code>@a</code>, <code>@p</code>, <code>@r</code> or <code>@e</code> is used.
+	 * A PlayerProfile argument. Returns a {@link List<PlayerProfile>}
 	 * 
 	 * @param nodeName the name of the node for this argument
 	 */

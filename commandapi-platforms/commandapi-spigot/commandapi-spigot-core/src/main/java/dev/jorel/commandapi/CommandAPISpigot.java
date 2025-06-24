@@ -68,8 +68,9 @@ public abstract class CommandAPISpigot<Source> extends CommandAPIBukkit<Source> 
 	 * Enables the CommandAPI. This should be placed at the start of your
 	 * <code>onEnable()</code> method.
 	 */
-	public static void onEnable() {
-		CommandAPIBukkit.get().plugin = getConfiguration().getPlugin();
+	@Override
+	public void onEnable() {
+		super.plugin = getConfiguration().getPlugin();
 
 		Bukkit.getScheduler().scheduleSyncDelayedTask(CommandAPIBukkit.get().plugin, () -> {
 			// Sort out permissions after the server has finished registering them all
@@ -80,9 +81,7 @@ public abstract class CommandAPISpigot<Source> extends CommandAPIBukkit<Source> 
 			CommandAPIBukkit.get().updateHelpForCommands(CommandAPI.getRegisteredCommands());
 		}, 0L);
 
-		CommandAPIBukkit.get().stopCommandRegistrations();
-
-		CommandAPI.onEnable();
+		super.stopCommandRegistrations();
 	}
 
 	@Override
