@@ -878,40 +878,22 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 
 	@Override
 	public SignedMessage getChat(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		return parseT(cmdCtx, key,
-			(ctx, name) -> {
-				CompletableFuture<SignedMessage> signedMessageResolver = ctx.getArgument(name, SignedMessageResolver.class).resolveSignedMessage(name, ctx);
-				return signedMessageResolver.join();
-			},
-			((PaperNMS<CommandSourceStack>) paperNMS)::getChat
-		);
+		return cmdCtx.getArgument(key, SignedMessageResolver.class).resolveSignedMessage(key, cmdCtx).join();
 	}
 
 	@Override
 	public NamedTextColor getChatColor(CommandContext<CommandSourceStack> cmdCtx, String key) {
-		return parse(cmdCtx, key,
-			(ctx, name) -> ctx.getArgument(name, NamedTextColor.class),
-			((PaperNMS<CommandSourceStack>) paperNMS)::getChatColor
-		);
+		return cmdCtx.getArgument(key, NamedTextColor.class);
 	}
 
 	@Override
 	public Component getChatComponent(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		return parseT(cmdCtx, key,
-			(ctx, name) -> ctx.getArgument(name, Component.class),
-			((PaperNMS<CommandSourceStack>) paperNMS)::getChatComponent
-		);
+		return cmdCtx.getArgument(key, Component.class);
 	}
 
 	@Override
 	public List<PlayerProfile> getProfile(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		return parseT(cmdCtx, key,
-			(ctx, name) -> {
-				PlayerProfileListResolver profileListResolver = ctx.getArgument(name, PlayerProfileListResolver.class);
-				return new ArrayList<>(profileListResolver.resolve(ctx.getSource()));
-			},
-			(ctx, name) -> ((PaperNMS<CommandSourceStack>) paperNMS).getProfile(ctx, name)
-		);
+		return new ArrayList<>(cmdCtx.getArgument(key, PlayerProfileListResolver.class).resolve(cmdCtx.getSource()));
 	}
 
 	@Override

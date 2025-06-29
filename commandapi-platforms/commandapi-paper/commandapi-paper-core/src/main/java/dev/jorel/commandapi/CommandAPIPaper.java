@@ -139,22 +139,12 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 			Bukkit.getServer().getPluginManager().registerEvents(new Listener() {
 				@EventHandler
 				public void onServerReloadResources(ServerResourcesReloadedEvent event) {
-					// This event is called after Paper is done with everything command related
-					// which means we can put commands back
 					CommandAPIBukkit.get().getCommandRegistrationStrategy().preReloadDataPacks();
 
-					// Normally, the reloadDataPacks() method is responsible for updating commands for
-					// online players. If, however, datapacks aren't supposed to be reloaded upon /minecraft:reload
-					// we have to do this manually here. This won't have any effect on Spigot and Paper version prior to
-					// paper-1.20.6-65
-					if (!CommandAPIPaper.getConfiguration().shouldHookPaperReload()) {
-						for (Player player : Bukkit.getOnlinePlayers()) {
-							player.updateCommands();
-						}
-						return;
+					if (getConfiguration().isCommandAPIPlugin()) {
+						CommandAPI.logNormal("/minecraft:reload detected. Reloading CommandAPI commands!");
+						CommandAPIBukkit.get().reloadDataPacks();
 					}
-					CommandAPI.logNormal("/minecraft:reload detected. Reloading CommandAPI commands!");
-					CommandAPIBukkit.get().reloadDataPacks();
 				}
 			}, plugin);
 			CommandAPI.logNormal("Hooked into Paper ServerResourcesReloadedEvent");
