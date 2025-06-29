@@ -23,8 +23,8 @@ public class CommandAPIPaperConfig<T extends LifecycleEventOwner> extends Comman
 		this.lifecycleEventOwner = lifecycleEventOwner;
 	}
 
-	CommandAPIPaperConfig<T> isCommandAPIPlugin(boolean isCommandAPIPlugin) {
-		this.isCommandAPIPlugin = isCommandAPIPlugin;
+	CommandAPIPaperConfig<T> isCommandAPIPlugin() {
+		this.isCommandAPIPlugin = true;
 		return this;
 	}
 

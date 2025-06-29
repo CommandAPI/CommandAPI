@@ -54,7 +54,7 @@ public class CommandAPIMain extends JavaPlugin {
 			.missingExecutorImplementationMessage(fileConfig.getString("messages.missing-executor-implementation"))
 			.dispatcherFile(fileConfig.getBoolean("create-dispatcher-json") ? new File(getDataFolder(), "command_registration.json") : null)
 			.beLenientForMinorVersions(fileConfig.getBoolean("be-lenient-for-minor-versions"))
-			.isCommandAPIPlugin(true);
+			.isCommandAPIPlugin();
 
 		for (String pluginName : fileConfig.getStringList("skip-sender-proxy")) {
 			if (Bukkit.getPluginManager().getPlugin(pluginName) != null) {
