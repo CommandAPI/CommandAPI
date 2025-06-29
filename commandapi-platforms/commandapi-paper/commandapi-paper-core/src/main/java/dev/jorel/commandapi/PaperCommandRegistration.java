@@ -101,10 +101,11 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 
 	@Override
 	public void preReloadDataPacks() {
-		reloadHelpTopics.run();
+		reloadHelpTopics.run(); // TODO: Is this necessary
 		CommandAPIBukkit.get().updateHelpForCommands(CommandAPI.getRegisteredCommands());
 	}
 
+	@SuppressWarnings("ConstantValue")
 	void registerLifecycleEvent() {
 		boolean bootstrap = Bukkit.getServer() == null;
 		if (bootstrap && !lifecycleEventRegistered[0]) {
