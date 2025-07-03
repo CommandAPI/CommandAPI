@@ -81,6 +81,9 @@ jobs:
       - name: Compile NMS_Common for 1.21.5
         run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_21_R4
 
+      - name: Compile NMS_Common for 1.21.6 and 1.21.7
+        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_21_R5
+
       - name: Copy BytecodeAnalyser to nms-common target folder
         run: mv BytecodeAnalyser/build/libs/BytecodeAnalyser*.jar commandapi-platforms/commandapi-bukkit/commandapi-bukkit-nms/commandapi-bukkit-nms-common/target
 
