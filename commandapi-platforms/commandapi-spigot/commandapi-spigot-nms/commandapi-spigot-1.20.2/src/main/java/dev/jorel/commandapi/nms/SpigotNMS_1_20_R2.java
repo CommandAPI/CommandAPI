@@ -52,7 +52,7 @@ public class SpigotNMS_1_20_R2 extends CommandAPISpigot<CommandSourceStack> {
 	}
 
 	@Override
-	public NMS<?> bukkitNMS() {
+	public NMS<CommandSourceStack> bukkitNMS() {
 		if (bukkitNMS == null) {
 			this.bukkitNMS = new NMS_1_20_R2();
 		}
