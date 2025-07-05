@@ -33,7 +33,7 @@ public abstract class CommandAPISpigot<Source> extends CommandAPIBukkit<Source> 
 
 	@SuppressWarnings("unchecked")
 	protected CommandAPISpigot() {
-		this.nms = (NMS<Source>) bukkitNMS();
+		this.nms = bukkitNMS();
 		CommandAPISpigot.spigot = this;
 	}
 

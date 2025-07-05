@@ -4,7 +4,7 @@ import dev.jorel.commandapi.CommandRegistrationStrategy;
 
 public interface PaperNMS<CommandListenerWrapper> {
 
-	<Source> NMS<Source> bukkitNMS();
+	NMS<CommandListenerWrapper> bukkitNMS();
 
 	CommandRegistrationStrategy<CommandListenerWrapper> createCommandRegistrationStrategy();
 

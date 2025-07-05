@@ -8,7 +8,6 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
-import com.mojang.brigadier.tree.LiteralCommandNode;
 import dev.jorel.commandapi.BukkitTooltip;
 import dev.jorel.commandapi.CommandRegistrationStrategy;
 import dev.jorel.commandapi.arguments.ArgumentSubType;
@@ -82,7 +81,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -91,10 +89,10 @@ import java.util.function.Supplier;
 @SuppressWarnings("UnstableApiUsage")
 public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 
-	private final PaperNMS<?> paperNMS;
+	private final PaperNMS<CommandSourceStack> paperNMS;
 
 	public APITypeProvider(PaperNMS<?> paperNMS) {
-		this.paperNMS = paperNMS;
+		this.paperNMS = (PaperNMS<CommandSourceStack>) paperNMS;
 		bukkitNMS();
 	}
 
@@ -151,28 +149,28 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	@Override
 	public ArgumentType<?> _ArgumentAdvancement() {
 		return getArgumentType(
-			() -> paperNMS.<CommandSourceStack>bukkitNMS()._ArgumentAdvancement()
+			() -> paperNMS.bukkitNMS()._ArgumentAdvancement()
 		);
 	}
 
 	@Override
 	public ArgumentType<?> _ArgumentAngle() {
 		return getArgumentType(
-			() -> paperNMS.<CommandSourceStack>bukkitNMS()._ArgumentAngle()
+			() -> paperNMS.bukkitNMS()._ArgumentAngle()
 		);
 	}
 
 	@Override
 	public ArgumentType<?> _ArgumentAxis() {
 		return getArgumentType(
-			() -> paperNMS.<CommandSourceStack>bukkitNMS()._ArgumentAxis()
+			() -> paperNMS.bukkitNMS()._ArgumentAxis()
 		);
 	}
 
 	@Override
 	public ArgumentType<?> _ArgumentBlockPredicate() {
 		return getArgumentType(
-			() -> paperNMS.<CommandSourceStack>bukkitNMS()._ArgumentBlockPredicate()
+			() -> paperNMS.bukkitNMS()._ArgumentBlockPredicate()
 		);
 	}
 
@@ -180,7 +178,7 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	public ArgumentType<?> _ArgumentBlockState() {
 		return getArgumentType(
 			() -> ArgumentTypes.blockState(),
-			() -> paperNMS.<CommandSourceStack>bukkitNMS()._ArgumentBlockState()
+			() -> paperNMS.bukkitNMS()._ArgumentBlockState()
 		);
 	}
 
@@ -188,7 +186,7 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	public ArgumentType<?> _ArgumentChat() {
 		return getArgumentType(
 			() -> ArgumentTypes.signedMessage(),
-			() -> paperNMS.<CommandSourceStack>bukkitNMS()._ArgumentChat()
+			() -> paperNMS.bukkitNMS()._ArgumentChat()
 		);
 	}
 
@@ -196,7 +194,7 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	public ArgumentType<?> _ArgumentChatComponent() {
 		return getArgumentType(
 			() -> ArgumentTypes.component(),
-			() -> paperNMS.<CommandSourceStack>bukkitNMS()._ArgumentChatComponent()
+			() -> paperNMS.bukkitNMS()._ArgumentChatComponent()
 		);
 	}
 
@@ -204,7 +202,7 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	public ArgumentType<?> _ArgumentChatFormat() {
 		return getArgumentType(
 			() -> ArgumentTypes.namedColor(),
-			() -> paperNMS.<CommandSourceStack>bukkitNMS()._ArgumentChatFormat()
+			() -> paperNMS.bukkitNMS()._ArgumentChatFormat()
 		);
 	}
 
@@ -212,7 +210,7 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	public ArgumentType<?> _ArgumentDimension() {
 		return getArgumentType(
 			() -> ArgumentTypes.world(),
-			() -> paperNMS.<CommandSourceStack>bukkitNMS()._ArgumentDimension()
+			() -> paperNMS.bukkitNMS()._ArgumentDimension()
 		);
 	}
 
@@ -220,7 +218,7 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	public ArgumentType<?> _ArgumentEnchantment() {
 		return getArgumentType(
 			() -> ArgumentTypes.resource(RegistryKey.ENCHANTMENT),
-			() -> paperNMS.<CommandSourceStack>bukkitNMS()._ArgumentEnchantment()
+			() -> paperNMS.bukkitNMS()._ArgumentEnchantment()
 		);
 	}
 
@@ -234,7 +232,7 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 				case ENTITYSELECTOR_MANY_PLAYERS -> ArgumentTypes.players();
 				default -> throw new Exception(); // Doesn't matter too much, it'll get to the right exception anyway
 			},
-			() -> paperNMS.<CommandSourceStack>bukkitNMS()._ArgumentEntity(subType)
+			() -> paperNMS.bukkitNMS()._ArgumentEntity(subType)
 		);
 	}
 
@@ -242,7 +240,7 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	public ArgumentType<?> _ArgumentEntitySummon() {
 		return getArgumentType(
 			() -> ArgumentTypes.resource(RegistryKey.ENTITY_TYPE),
-			() -> paperNMS.<CommandSourceStack>bukkitNMS()._ArgumentEntitySummon()
+			() -> paperNMS.bukkitNMS()._ArgumentEntitySummon()
 		);
 	}
 
@@ -250,7 +248,7 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	public ArgumentType<?> _ArgumentFloatRange() {
 		return getArgumentType(
 			() -> ArgumentTypes.doubleRange(),
-			() -> paperNMS.<CommandSourceStack>bukkitNMS()._ArgumentFloatRange()
+			() -> paperNMS.bukkitNMS()._ArgumentFloatRange()
 		);
 	}
 
@@ -258,7 +256,7 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	public ArgumentType<?> _ArgumentIntRange() {
 		return getArgumentType(
 			() -> ArgumentTypes.integerRange(),
-			() -> paperNMS.<CommandSourceStack>bukkitNMS()._ArgumentIntRange()
+			() -> paperNMS.bukkitNMS()._ArgumentIntRange()
 		);
 	}
 
@@ -266,7 +264,7 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	public ArgumentType<?> _ArgumentItemPredicate() {
 		return getArgumentType(
 			() -> ArgumentTypes.itemPredicate(),
-			() -> paperNMS.<CommandSourceStack>bukkitNMS()._ArgumentItemPredicate()
+			() -> paperNMS.bukkitNMS()._ArgumentItemPredicate()
 		);
 	}
 
@@ -274,14 +272,14 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	public ArgumentType<?> _ArgumentItemStack() {
 		return getArgumentType(
 			() -> ArgumentTypes.itemStack(),
-			() -> paperNMS.<CommandSourceStack>bukkitNMS()._ArgumentItemStack()
+			() -> paperNMS.bukkitNMS()._ArgumentItemStack()
 		);
 	}
 
 	@Override
 	public ArgumentType<?> _ArgumentMathOperation() {
 		return getArgumentType(
-			() -> paperNMS.<CommandSourceStack>bukkitNMS()._ArgumentMathOperation()
+			() -> paperNMS.bukkitNMS()._ArgumentMathOperation()
 		);
 	}
 
@@ -289,7 +287,7 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	public ArgumentType<?> _ArgumentMinecraftKeyRegistered() {
 		return getArgumentType(
 			() -> ArgumentTypes.namespacedKey(),
-			() -> paperNMS.<CommandSourceStack>bukkitNMS()._ArgumentMinecraftKeyRegistered()
+			() -> paperNMS.bukkitNMS()._ArgumentMinecraftKeyRegistered()
 		);
 	}
 
@@ -297,21 +295,21 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	public ArgumentType<?> _ArgumentMobEffect() {
 		return getArgumentType(
 			() -> ArgumentTypes.resource(RegistryKey.MOB_EFFECT),
-			() -> paperNMS.<CommandSourceStack>bukkitNMS()._ArgumentMobEffect()
+			() -> paperNMS.bukkitNMS()._ArgumentMobEffect()
 		);
 	}
 
 	@Override
 	public ArgumentType<?> _ArgumentNBTCompound() {
 		return getArgumentType(
-			() -> paperNMS.<CommandSourceStack>bukkitNMS()._ArgumentNBTCompound()
+			() -> paperNMS.bukkitNMS()._ArgumentNBTCompound()
 		);
 	}
 
 	@Override
 	public ArgumentType<?> _ArgumentParticle() {
 		return getArgumentType(
-			() -> paperNMS.<CommandSourceStack>bukkitNMS()._ArgumentParticle()
+			() -> paperNMS.bukkitNMS()._ArgumentParticle()
 		);
 	}
 
@@ -319,14 +317,14 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	public ArgumentType<?> _ArgumentPosition() {
 		return getArgumentType(
 			() -> ArgumentTypes.blockPosition(),
-			() -> paperNMS.<CommandSourceStack>bukkitNMS()._ArgumentPosition()
+			() -> paperNMS.bukkitNMS()._ArgumentPosition()
 		);
 	}
 
 	@Override
 	public ArgumentType<?> _ArgumentPosition2D() {
 		return getArgumentType(
-			() -> paperNMS.<CommandSourceStack>bukkitNMS()._ArgumentPosition2D()
+			() -> paperNMS.bukkitNMS()._ArgumentPosition2D()
 		);
 	}
 
@@ -334,14 +332,14 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	public ArgumentType<?> _ArgumentProfile() {
 		return getArgumentType(
 			() -> ArgumentTypes.playerProfiles(),
-			() -> paperNMS.<CommandSourceStack>bukkitNMS()._ArgumentProfile()
+			() -> paperNMS.bukkitNMS()._ArgumentProfile()
 		);
 	}
 
 	@Override
 	public ArgumentType<?> _ArgumentRecipe() {
 		return getArgumentType(
-			() -> paperNMS.<CommandSourceStack>bukkitNMS()._ArgumentRecipe()
+			() -> paperNMS.bukkitNMS()._ArgumentRecipe()
 		);
 	}
 
@@ -349,7 +347,7 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	public ArgumentType<?> _ArgumentRotation() {
 		return getArgumentType(
 			() -> ArgumentTypes.rotation(),
-			() -> paperNMS.<CommandSourceStack>bukkitNMS()._ArgumentRotation()
+			() -> paperNMS.bukkitNMS()._ArgumentRotation()
 		);
 	}
 
@@ -357,14 +355,14 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	public ArgumentType<?> _ArgumentScoreboardCriteria() {
 		return getArgumentType(
 			() -> ArgumentTypes.objectiveCriteria(),
-			() -> paperNMS.<CommandSourceStack>bukkitNMS()._ArgumentScoreboardCriteria()
+			() -> paperNMS.bukkitNMS()._ArgumentScoreboardCriteria()
 		);
 	}
 
 	@Override
 	public ArgumentType<?> _ArgumentScoreboardObjective() {
 		return getArgumentType(
-			() -> paperNMS.<CommandSourceStack>bukkitNMS()._ArgumentScoreboardObjective()
+			() -> paperNMS.bukkitNMS()._ArgumentScoreboardObjective()
 		);
 	}
 
@@ -372,28 +370,28 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	public ArgumentType<?> _ArgumentScoreboardSlot() {
 		return getArgumentType(
 			() -> ArgumentTypes.scoreboardDisplaySlot(),
-			() -> paperNMS.<CommandSourceStack>bukkitNMS()._ArgumentScoreboardSlot()
+			() -> paperNMS.bukkitNMS()._ArgumentScoreboardSlot()
 		);
 	}
 
 	@Override
 	public ArgumentType<?> _ArgumentScoreboardTeam() {
 		return getArgumentType(
-			() -> paperNMS.<CommandSourceStack>bukkitNMS()._ArgumentScoreboardTeam()
+			() -> paperNMS.bukkitNMS()._ArgumentScoreboardTeam()
 		);
 	}
 
 	@Override
 	public ArgumentType<?> _ArgumentScoreholder(ArgumentSubType subType) {
 		return getArgumentType(
-			() -> paperNMS.<CommandSourceStack>bukkitNMS()._ArgumentScoreholder(subType)
+			() -> paperNMS.bukkitNMS()._ArgumentScoreholder(subType)
 		);
 	}
 
 	@Override
 	public ArgumentType<?> _ArgumentTag() {
 		return getArgumentType(
-			() -> paperNMS.<CommandSourceStack>bukkitNMS()._ArgumentTag()
+			() -> paperNMS.bukkitNMS()._ArgumentTag()
 		);
 	}
 
@@ -401,7 +399,7 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	public ArgumentType<?> _ArgumentTime() {
 		return getArgumentType(
 			() -> ArgumentTypes.time(),
-			() -> paperNMS.<CommandSourceStack>bukkitNMS()._ArgumentTime()
+			() -> paperNMS.bukkitNMS()._ArgumentTime()
 		);
 	}
 
@@ -409,14 +407,14 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	public ArgumentType<?> _ArgumentUUID() {
 		return getArgumentType(
 			() -> ArgumentTypes.uuid(),
-			() -> paperNMS.<CommandSourceStack>bukkitNMS()._ArgumentUUID()
+			() -> paperNMS.bukkitNMS()._ArgumentUUID()
 		);
 	}
 
 	@Override
 	public ArgumentType<?> _ArgumentVec2(boolean centerPosition) {
 		return getArgumentType(
-			() -> paperNMS.<CommandSourceStack>bukkitNMS()._ArgumentVec2(centerPosition)
+			() -> paperNMS.bukkitNMS()._ArgumentVec2(centerPosition)
 		);
 	}
 
@@ -424,7 +422,7 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	public ArgumentType<?> _ArgumentVec3(boolean centerPosition) {
 		return getArgumentType(
 			() -> ArgumentTypes.finePosition(centerPosition),
-			() -> paperNMS.<CommandSourceStack>bukkitNMS()._ArgumentVec3(centerPosition)
+			() -> paperNMS.bukkitNMS()._ArgumentVec3(centerPosition)
 		);
 	}
 
@@ -432,53 +430,53 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	public ArgumentType<?> _ArgumentSyntheticBiome() {
 		return getArgumentType(
 			() -> ArgumentTypes.resource(RegistryKey.BIOME),
-			() -> paperNMS.<CommandSourceStack>bukkitNMS()._ArgumentSyntheticBiome()
+			() -> paperNMS.bukkitNMS()._ArgumentSyntheticBiome()
 		);
 	}
 
 	@Override
 	public String[] compatibleVersions() {
-		return paperNMS.<CommandSourceStack>bukkitNMS().compatibleVersions();
+		return paperNMS.bukkitNMS().compatibleVersions();
 	}
 
 	@Override
 	public String convert(ItemStack is) {
-		return paperNMS.<CommandSourceStack>bukkitNMS().convert(is);
+		return paperNMS.bukkitNMS().convert(is);
 	}
 
 	@Override
 	public String convert(ParticleData<?> particle) {
-		return paperNMS.<CommandSourceStack>bukkitNMS().convert(particle);
+		return paperNMS.bukkitNMS().convert(particle);
 	}
 
 	@Override
 	public String convert(PotionEffectType potion) {
-		return paperNMS.<CommandSourceStack>bukkitNMS().convert(potion);
+		return paperNMS.bukkitNMS().convert(potion);
 	}
 
 	@Override
 	public String convert(Sound sound) {
-		return paperNMS.<CommandSourceStack>bukkitNMS().convert(sound);
+		return paperNMS.bukkitNMS().convert(sound);
 	}
 
 	@Override
 	public Advancement getAdvancement(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
 		return parseT(cmdCtx, key,
-			(ctx, name) -> paperNMS.<CommandSourceStack>bukkitNMS().getAdvancement(ctx, name)
+			(ctx, name) -> paperNMS.bukkitNMS().getAdvancement(ctx, name)
 		);
 	}
 
 	@Override
 	public float getAngle(CommandContext<CommandSourceStack> cmdCtx, String key) {
 		return parse(cmdCtx, key,
-			(ctx, name) -> paperNMS.<CommandSourceStack>bukkitNMS().getAngle(ctx, name)
+			(ctx, name) -> paperNMS.bukkitNMS().getAngle(ctx, name)
 		);
 	}
 
 	@Override
 	public EnumSet<Axis> getAxis(CommandContext<CommandSourceStack> cmdCtx, String key) {
 		return parse(cmdCtx, key,
-			(ctx, name) -> paperNMS.<CommandSourceStack>bukkitNMS().getAxis(ctx, name)
+			(ctx, name) -> paperNMS.bukkitNMS().getAxis(ctx, name)
 		);
 	}
 
@@ -490,14 +488,14 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 				() -> ctx.getArgument(name, Biome.class),
 				() -> ctx.getArgument(name, Biome.class).getKey()
 			),
-			(ctx, name) -> paperNMS.<CommandSourceStack>bukkitNMS().getBiome(ctx, name)
+			(ctx, name) -> paperNMS.bukkitNMS().getBiome(ctx, name)
 		);
 	}
 
 	@Override
 	public Predicate<Block> getBlockPredicate(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
 		return parseT(cmdCtx, key,
-			(ctx, name) -> paperNMS.<CommandSourceStack>bukkitNMS().getBlockPredicate(ctx, name)
+			(ctx, name) -> paperNMS.bukkitNMS().getBlockPredicate(ctx, name)
 		);
 	}
 
@@ -505,7 +503,7 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	public BlockState getBlockState(CommandContext<CommandSourceStack> cmdCtx, String key) {
 		return parse(cmdCtx, key,
 			(ctx, name) -> ctx.getArgument(name, BlockState.class),
-			(ctx, name) -> paperNMS.<CommandSourceStack>bukkitNMS().getBlockState(ctx, name)
+			(ctx, name) -> paperNMS.bukkitNMS().getBlockState(ctx, name)
 		);
 	}
 
@@ -513,7 +511,7 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	public World getDimension(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
 		return parseT(cmdCtx, key,
 			(ctx, name) -> ctx.getArgument(name, World.class),
-			(ctx, name) -> paperNMS.<CommandSourceStack>bukkitNMS().getDimension(ctx, name)
+			(ctx, name) -> paperNMS.bukkitNMS().getDimension(ctx, name)
 		);
 	}
 
@@ -521,7 +519,7 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	public Enchantment getEnchantment(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
 		return parseT(cmdCtx, key,
 			(ctx, name) -> ctx.getArgument(name, Enchantment.class),
-			(ctx, name) -> paperNMS.<CommandSourceStack>bukkitNMS().getEnchantment(ctx, name)
+			(ctx, name) -> paperNMS.bukkitNMS().getEnchantment(ctx, name)
 		);
 	}
 
@@ -534,7 +532,7 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 				(allowEmpty) -> ctx.getArgument(name, PlayerSelectorArgumentResolver.class).resolve(ctx.getSource()),
 				(allowEmpty) -> ctx.getArgument(name, EntitySelectorArgumentResolver.class).resolve(ctx.getSource())
 			),
-			(ctx, name) -> paperNMS.<CommandSourceStack>bukkitNMS().getEntitySelector(ctx, name)
+			(ctx, name) -> paperNMS.bukkitNMS().getEntitySelector(ctx, name)
 		);
 	}
 
@@ -542,7 +540,7 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	public EntityType getEntityType(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
 		return parseT(cmdCtx, key,
 			(ctx, name) -> ctx.getArgument(name, EntityType.class),
-			(ctx, name) -> paperNMS.<CommandSourceStack>bukkitNMS().getEntityType(ctx, name)
+			(ctx, name) -> paperNMS.bukkitNMS().getEntityType(ctx, name)
 		);
 	}
 
@@ -555,25 +553,25 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 				final double high = rangeProvider.range().hasUpperBound() ? rangeProvider.range().upperEndpoint() : Double.MAX_VALUE;
 				return new DoubleRange(low, high);
 			},
-			(ctx, name) -> paperNMS.<CommandSourceStack>bukkitNMS().getDoubleRange(ctx, name)
+			(ctx, name) -> paperNMS.bukkitNMS().getDoubleRange(ctx, name)
 		);
 	}
 
 	@Override
 	public FunctionWrapper[] getFunction(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
 		return parseT(cmdCtx, key,
-			(ctx, name) -> paperNMS.<CommandSourceStack>bukkitNMS().getFunction(ctx, name)
+			(ctx, name) -> paperNMS.bukkitNMS().getFunction(ctx, name)
 		);
 	}
 
 	@Override
 	public SimpleFunctionWrapper getFunction(NamespacedKey key) {
-		return paperNMS.<CommandSourceStack>bukkitNMS().getFunction(key);
+		return paperNMS.bukkitNMS().getFunction(key);
 	}
 
 	@Override
 	public Set<NamespacedKey> getFunctions() {
-		return paperNMS.<CommandSourceStack>bukkitNMS().getFunctions();
+		return paperNMS.bukkitNMS().getFunctions();
 	}
 
 	@Override
@@ -585,7 +583,7 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 				final int high = rangeProvider.range().hasUpperBound() ? rangeProvider.range().upperEndpoint() : Integer.MAX_VALUE;
 				return new IntegerRange(low, high);
 			},
-			(ctx, name) -> paperNMS.<CommandSourceStack>bukkitNMS().getIntRange(ctx, name)
+			(ctx, name) -> paperNMS.bukkitNMS().getIntRange(ctx, name)
 		);
 	}
 
@@ -593,7 +591,7 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	public ItemStack getItemStack(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
 		return parseT(cmdCtx, key,
 			(ctx, name) -> ctx.getArgument(name, ItemStack.class),
-			(ctx, name) -> paperNMS.<CommandSourceStack>bukkitNMS().getItemStack(ctx, name)
+			(ctx, name) -> paperNMS.bukkitNMS().getItemStack(ctx, name)
 		);
 	}
 
@@ -601,21 +599,21 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	public Predicate<ItemStack> getItemStackPredicate(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
 		return parseT(cmdCtx, key,
 			(ctx, name) -> ctx.getArgument(name, ItemStackPredicate.class),
-			(ctx, name) -> paperNMS.<CommandSourceStack>bukkitNMS().getItemStackPredicate(ctx, name)
+			(ctx, name) -> paperNMS.bukkitNMS().getItemStackPredicate(ctx, name)
 		);
 	}
 
 	@Override
 	public Location2D getLocation2DBlock(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
 		return parseT(cmdCtx, key,
-			(ctx, name) -> paperNMS.<CommandSourceStack>bukkitNMS().getLocation2DBlock(ctx, name)
+			(ctx, name) -> paperNMS.bukkitNMS().getLocation2DBlock(ctx, name)
 		);
 	}
 
 	@Override
 	public Location2D getLocation2DPrecise(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
 		return parseT(cmdCtx, key,
-			(ctx, name) -> paperNMS.<CommandSourceStack>bukkitNMS().getLocation2DPrecise(ctx, name)
+			(ctx, name) -> paperNMS.bukkitNMS().getLocation2DPrecise(ctx, name)
 		);
 	}
 
@@ -626,7 +624,7 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 				BlockPosition blockPosition = ctx.getArgument(name, BlockPositionResolver.class).resolve(ctx.getSource());
 				return new Location(getWorldForCSS(ctx.getSource()), blockPosition.blockX(), blockPosition.blockY(), blockPosition.blockZ());
 			},
-			(ctx, name) -> paperNMS.<CommandSourceStack>bukkitNMS().getLocationBlock(ctx, name)
+			(ctx, name) -> paperNMS.bukkitNMS().getLocationBlock(ctx, name)
 		);
 	}
 
@@ -637,7 +635,7 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 				FinePosition finePosition = ctx.getArgument(name, FinePositionResolver.class).resolve(ctx.getSource());
 				return new Location(getWorldForCSS(ctx.getSource()), finePosition.x(), finePosition.y(), finePosition.z());
 			},
-			(ctx, name) -> paperNMS.<CommandSourceStack>bukkitNMS().getLocationPrecise(ctx, name)
+			(ctx, name) -> paperNMS.bukkitNMS().getLocationPrecise(ctx, name)
 		);
 	}
 
@@ -645,14 +643,14 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	public LootTable getLootTable(CommandContext<CommandSourceStack> cmdCtx, String key) {
 		return parse(cmdCtx, key,
 			(ctx, name) -> Bukkit.getLootTable(ctx.getArgument(name, NamespacedKey.class)),
-			(ctx, name) -> paperNMS.<CommandSourceStack>bukkitNMS().getLootTable(ctx, name)
+			(ctx, name) -> paperNMS.bukkitNMS().getLootTable(ctx, name)
 		);
 	}
 
 	@Override
 	public MathOperation getMathOperation(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
 		return parseT(cmdCtx, key,
-			(ctx, name) -> paperNMS.<CommandSourceStack>bukkitNMS().getMathOperation(ctx, name)
+			(ctx, name) -> paperNMS.bukkitNMS().getMathOperation(ctx, name)
 		);
 	}
 
@@ -660,21 +658,21 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	public NamespacedKey getMinecraftKey(CommandContext<CommandSourceStack> cmdCtx, String key) {
 		return parse(cmdCtx, key,
 			(ctx, name) -> ctx.getArgument(name, NamespacedKey.class),
-			(ctx, name) -> paperNMS.<CommandSourceStack>bukkitNMS().getMinecraftKey(ctx, name)
+			(ctx, name) -> paperNMS.bukkitNMS().getMinecraftKey(ctx, name)
 		);
 	}
 
 	@Override
 	public <NBTContainer> Object getNBTCompound(CommandContext<CommandSourceStack> cmdCtx, String key, Function<Object, NBTContainer> nbtContainerConstructor) {
 		return parse(cmdCtx, key,
-			(ctx, name) -> paperNMS.<CommandSourceStack>bukkitNMS().getNBTCompound(ctx, name, nbtContainerConstructor)
+			(ctx, name) -> paperNMS.bukkitNMS().getNBTCompound(ctx, name, nbtContainerConstructor)
 		);
 	}
 
 	@Override
 	public Objective getObjective(CommandContext<CommandSourceStack> cmdCtx, String key) throws IllegalArgumentException, CommandSyntaxException {
 		return parseT(cmdCtx, key,
-			(ctx, name) -> paperNMS.<CommandSourceStack>bukkitNMS().getObjective(ctx, name)
+			(ctx, name) -> paperNMS.bukkitNMS().getObjective(ctx, name)
 		);
 	}
 
@@ -682,14 +680,14 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	public String getObjectiveCriteria(CommandContext<CommandSourceStack> cmdCtx, String key) {
 		return parse(cmdCtx, key,
 			(ctx, name) -> ctx.getArgument(name, Criteria.class).getName(),
-			(ctx, name) -> paperNMS.<CommandSourceStack>bukkitNMS().getObjectiveCriteria(ctx, name)
+			(ctx, name) -> paperNMS.bukkitNMS().getObjectiveCriteria(ctx, name)
 		);
 	}
 
 	@Override
 	public ParticleData<?> getParticle(CommandContext<CommandSourceStack> cmdCtx, String key) {
 		return parse(cmdCtx, key,
-			(ctx, name) -> paperNMS.<CommandSourceStack>bukkitNMS().getParticle(ctx, name)
+			(ctx, name) -> paperNMS.bukkitNMS().getParticle(ctx, name)
 		);
 	}
 
@@ -697,7 +695,7 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	public OfflinePlayer getOfflinePlayer(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
 		return parseT(cmdCtx, key,
 			(ctx, name) -> Bukkit.getOfflinePlayer(getIdFromProfile(ctx, name)),
-			(ctx, name) -> paperNMS.<CommandSourceStack>bukkitNMS().getOfflinePlayer(ctx, name)
+			(ctx, name) -> paperNMS.bukkitNMS().getOfflinePlayer(ctx, name)
 		);
 	}
 
@@ -717,14 +715,14 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 				() -> ctx.getArgument(name, PotionEffectType.class),
 				() -> ctx.getArgument(name, PotionEffectType.class).getKey()
 			),
-			(ctx, name) -> paperNMS.<CommandSourceStack>bukkitNMS().getPotionEffect(ctx, name)
+			(ctx, name) -> paperNMS.bukkitNMS().getPotionEffect(ctx, name)
 		);
 	}
 
 	@Override
 	public Recipe getRecipe(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
 		return parseT(cmdCtx, key,
-			(ctx, name) -> paperNMS.<CommandSourceStack>bukkitNMS().getRecipe(ctx, name)
+			(ctx, name) -> paperNMS.bukkitNMS().getRecipe(ctx, name)
 		);
 	}
 
@@ -735,7 +733,7 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 				io.papermc.paper.math.Rotation rotation = ctx.getArgument(name, RotationResolver.class).resolve((CommandSourceStack) ctx.getSource());
 				return new Rotation(rotation.yaw(), rotation.pitch());
 			},
-			(ctx, name) -> paperNMS.<CommandSourceStack>bukkitNMS().getRotation(ctx, name)
+			(ctx, name) -> paperNMS.bukkitNMS().getRotation(ctx, name)
 		);
 	}
 
@@ -746,28 +744,28 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 				DisplaySlot displaySlot = ctx.getArgument(name, DisplaySlot.class);
 				return ScoreboardSlot.of(displaySlot);
 			},
-			(ctx, name) -> paperNMS.<CommandSourceStack>bukkitNMS().getScoreboardSlot(ctx, name)
+			(ctx, name) -> paperNMS.bukkitNMS().getScoreboardSlot(ctx, name)
 		);
 	}
 
 	@Override
 	public Collection<String> getScoreHolderMultiple(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
 		return parseT(cmdCtx, key,
-			(ctx, name) -> paperNMS.<CommandSourceStack>bukkitNMS().getScoreHolderMultiple(ctx, name)
+			(ctx, name) -> paperNMS.bukkitNMS().getScoreHolderMultiple(ctx, name)
 		);
 	}
 
 	@Override
 	public String getScoreHolderSingle(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
 		return parseT(cmdCtx, key,
-			(ctx, name) -> paperNMS.<CommandSourceStack>bukkitNMS().getScoreHolderSingle(ctx, name)
+			(ctx, name) -> paperNMS.bukkitNMS().getScoreHolderSingle(ctx, name)
 		);
 	}
 
 	@Override
 	public Team getTeam(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
 		return parseT(cmdCtx, key,
-			(ctx, name) -> paperNMS.<CommandSourceStack>bukkitNMS().getTeam(ctx, name)
+			(ctx, name) -> paperNMS.bukkitNMS().getTeam(ctx, name)
 		);
 	}
 
@@ -775,7 +773,7 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	public int getTime(CommandContext<CommandSourceStack> cmdCtx, String key) {
 		return parse(cmdCtx, key,
 			(ctx, name) -> ctx.getArgument(name, Integer.class),
-			(ctx, name) -> paperNMS.<CommandSourceStack>bukkitNMS().getTime(ctx, name)
+			(ctx, name) -> paperNMS.bukkitNMS().getTime(ctx, name)
 		);
 	}
 
@@ -783,18 +781,18 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	public UUID getUUID(CommandContext<CommandSourceStack> cmdCtx, String key) {
 		return parse(cmdCtx, key,
 			(ctx, name) -> ctx.getArgument(name, UUID.class),
-			(ctx, name) -> paperNMS.<CommandSourceStack>bukkitNMS().getUUID(ctx, name)
+			(ctx, name) -> paperNMS.bukkitNMS().getUUID(ctx, name)
 		);
 	}
 
 	@Override
 	public World getWorldForCSS(CommandSourceStack clw) {
-		return paperNMS.<CommandSourceStack>bukkitNMS().getWorldForCSS(clw);
+		return paperNMS.bukkitNMS().getWorldForCSS(clw);
 	}
 
 	@Override
 	public SimpleCommandMap getSimpleCommandMap() {
-		return paperNMS.<CommandSourceStack>bukkitNMS().getSimpleCommandMap();
+		return paperNMS.bukkitNMS().getSimpleCommandMap();
 	}
 
 	@Override
@@ -807,73 +805,73 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 					() -> namespace
 				);
 			},
-			(ctx, name) -> paperNMS.<CommandSourceStack>bukkitNMS().getSound(ctx, name)
+			(ctx, name) -> paperNMS.bukkitNMS().getSound(ctx, name)
 		);
 	}
 
 	@Override
 	public SuggestionProvider<CommandSourceStack> getSuggestionProvider(SuggestionProviders provider) {
-		return paperNMS.<CommandSourceStack>bukkitNMS().getSuggestionProvider(provider);
+		return paperNMS.bukkitNMS().getSuggestionProvider(provider);
 	}
 
 	@Override
 	public SimpleFunctionWrapper[] getTag(NamespacedKey key) {
-		return paperNMS.<CommandSourceStack>bukkitNMS().getTag(key);
+		return paperNMS.bukkitNMS().getTag(key);
 	}
 
 	@Override
 	public Set<NamespacedKey> getTags() {
-		return paperNMS.<CommandSourceStack>bukkitNMS().getTags();
+		return paperNMS.bukkitNMS().getTags();
 	}
 
 	@Override
 	public void reloadDataPacks() {
-		paperNMS.<CommandSourceStack>bukkitNMS().reloadDataPacks();
+		paperNMS.bukkitNMS().reloadDataPacks();
 	}
 
 	@Override
 	public HelpTopic generateHelpTopic(String commandName, String shortDescription, String fullDescription, String permission) {
-		return paperNMS.<CommandSourceStack>bukkitNMS().generateHelpTopic(commandName, shortDescription, fullDescription, permission);
+		return paperNMS.bukkitNMS().generateHelpTopic(commandName, shortDescription, fullDescription, permission);
 	}
 
 	@Override
 	public Map<String, HelpTopic> getHelpMap() {
-		return paperNMS.<CommandSourceStack>bukkitNMS().getHelpMap();
+		return paperNMS.bukkitNMS().getHelpMap();
 	}
 
 	@Override
 	public Message generateMessageFromJson(String json) {
-		return paperNMS.<CommandSourceStack>bukkitNMS().generateMessageFromJson(json);
+		return paperNMS.bukkitNMS().generateMessageFromJson(json);
 	}
 
 	@Override
 	public BukkitCommandSender<? extends CommandSender> getSenderForCommand(CommandContext<CommandSourceStack> cmdCtx, boolean forceNative) {
-		return paperNMS.<CommandSourceStack>bukkitNMS().getSenderForCommand(cmdCtx, forceNative);
+		return paperNMS.bukkitNMS().getSenderForCommand(cmdCtx, forceNative);
 	}
 
 	@Override
 	public <Source> BukkitCommandSender<? extends CommandSender> getCommandSenderFromCommandSource(Source css) {
-		return paperNMS.<CommandSourceStack>bukkitNMS().getCommandSenderFromCommandSource(css);
+		return paperNMS.bukkitNMS().getCommandSenderFromCommandSource(css);
 	}
 
 	@Override
 	public CommandSourceStack getBrigadierSourceFromCommandSender(AbstractCommandSender<? extends CommandSender> sender) {
-		return paperNMS.<CommandSourceStack>bukkitNMS().getBrigadierSourceFromCommandSender(sender);
+		return paperNMS.bukkitNMS().getBrigadierSourceFromCommandSender(sender);
 	}
 
 	@Override
 	public void createDispatcherFile(File file, CommandDispatcher<CommandSourceStack> brigadierDispatcher) throws IOException {
-		paperNMS.<CommandSourceStack>bukkitNMS().createDispatcherFile(file, brigadierDispatcher);
+		paperNMS.bukkitNMS().createDispatcherFile(file, brigadierDispatcher);
 	}
 
 	@Override
 	public <T> T getMinecraftServer() {
-		return paperNMS.<CommandSourceStack>bukkitNMS().getMinecraftServer();
+		return paperNMS.bukkitNMS().getMinecraftServer();
 	}
 
 	@Override
 	public NativeProxyCommandSender createNativeProxyCommandSender(CommandSender caller, CommandSender callee, Location location, World world) {
-		return paperNMS.<CommandSourceStack>bukkitNMS().createNativeProxyCommandSender(caller, callee, location, world);
+		return paperNMS.bukkitNMS().createNativeProxyCommandSender(caller, callee, location, world);
 	}
 
 	@Override
@@ -897,8 +895,8 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	}
 
 	@Override
-	public <Source> NMS<Source> bukkitNMS() {
-		return paperNMS.bukkitNMS();
+	public NMS<CommandSourceStack> bukkitNMS() {
+		return ((PaperNMS<CommandSourceStack>) paperNMS).bukkitNMS();
 	}
 
 	@Override

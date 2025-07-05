@@ -60,12 +60,14 @@
 			<groupId>dev.jorel</groupId>
 			<artifactId>commandapi-bukkit-1.21</artifactId>
 			<version>${project.version}</version>
+			<classifier>mojang-mapped</classifier>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>dev.jorel</groupId>
 			<artifactId>commandapi-bukkit-nms-common</artifactId>
 			<version>${project.version}</version>
+			<classifier>mojang-mapped</classifier>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>

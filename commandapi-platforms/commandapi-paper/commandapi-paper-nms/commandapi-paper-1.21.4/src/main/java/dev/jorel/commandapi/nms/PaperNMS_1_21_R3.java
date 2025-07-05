@@ -32,11 +32,11 @@ public class PaperNMS_1_21_R3 implements PaperNMS<CommandSourceStack> {
 	}
 
 	@Override
-	public <Source> NMS<Source> bukkitNMS() {
+	public NMS<CommandSourceStack> bukkitNMS() {
 		if (bukkitNMS == null) {
 			this.bukkitNMS = new NMS_1_21_R3(this::getCommandBuildContext);
 		}
-		return (NMS<Source>) bukkitNMS;
+		return bukkitNMS;
 	}
 
 	@Override
