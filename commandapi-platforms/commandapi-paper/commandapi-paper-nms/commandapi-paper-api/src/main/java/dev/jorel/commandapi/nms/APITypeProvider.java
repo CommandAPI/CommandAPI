@@ -176,104 +176,68 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 
 	@Override
 	public ArgumentType<?> _ArgumentBlockState() {
-		return getArgumentType(
-			() -> ArgumentTypes.blockState(),
-			() -> paperNMS.bukkitNMS()._ArgumentBlockState()
-		);
+		return ArgumentTypes.blockState();
 	}
 
 	@Override
 	public ArgumentType<?> _ArgumentChat() {
-		return getArgumentType(
-			() -> ArgumentTypes.signedMessage(),
-			() -> paperNMS.bukkitNMS()._ArgumentChat()
-		);
+		return ArgumentTypes.signedMessage();
 	}
 
 	@Override
 	public ArgumentType<?> _ArgumentChatComponent() {
-		return getArgumentType(
-			() -> ArgumentTypes.component(),
-			() -> paperNMS.bukkitNMS()._ArgumentChatComponent()
-		);
+		return ArgumentTypes.component();
 	}
 
 	@Override
 	public ArgumentType<?> _ArgumentChatFormat() {
-		return getArgumentType(
-			() -> ArgumentTypes.namedColor(),
-			() -> paperNMS.bukkitNMS()._ArgumentChatFormat()
-		);
+		return ArgumentTypes.namedColor();
 	}
 
 	@Override
 	public ArgumentType<?> _ArgumentDimension() {
-		return getArgumentType(
-			() -> ArgumentTypes.world(),
-			() -> paperNMS.bukkitNMS()._ArgumentDimension()
-		);
+		return ArgumentTypes.world();
 	}
 
 	@Override
 	public ArgumentType<?> _ArgumentEnchantment() {
-		return getArgumentType(
-			() -> ArgumentTypes.resource(RegistryKey.ENCHANTMENT),
-			() -> paperNMS.bukkitNMS()._ArgumentEnchantment()
-		);
+		return ArgumentTypes.resource(RegistryKey.ENCHANTMENT);
 	}
 
 	@Override
 	public ArgumentType<?> _ArgumentEntity(ArgumentSubType subType) {
-		return getArgumentType(
-			() -> switch (subType) {
-				case ENTITYSELECTOR_ONE_ENTITY -> ArgumentTypes.entity();
-				case ENTITYSELECTOR_MANY_ENTITIES -> ArgumentTypes.entities();
-				case ENTITYSELECTOR_ONE_PLAYER -> ArgumentTypes.player();
-				case ENTITYSELECTOR_MANY_PLAYERS -> ArgumentTypes.players();
-				default -> throw new Exception(); // Doesn't matter too much, it'll get to the right exception anyway
-			},
-			() -> paperNMS.bukkitNMS()._ArgumentEntity(subType)
-		);
+		return switch (subType) {
+			case ENTITYSELECTOR_ONE_ENTITY -> ArgumentTypes.entity();
+			case ENTITYSELECTOR_MANY_ENTITIES -> ArgumentTypes.entities();
+			case ENTITYSELECTOR_ONE_PLAYER -> ArgumentTypes.player();
+			case ENTITYSELECTOR_MANY_PLAYERS -> ArgumentTypes.players();
+			default -> throw new IllegalArgumentException("Unexpected value: " + subType);
+		};
 	}
 
 	@Override
 	public ArgumentType<?> _ArgumentEntitySummon() {
-		return getArgumentType(
-			() -> ArgumentTypes.resource(RegistryKey.ENTITY_TYPE),
-			() -> paperNMS.bukkitNMS()._ArgumentEntitySummon()
-		);
+		return ArgumentTypes.resource(RegistryKey.ENTITY_TYPE);
 	}
 
 	@Override
 	public ArgumentType<?> _ArgumentFloatRange() {
-		return getArgumentType(
-			() -> ArgumentTypes.doubleRange(),
-			() -> paperNMS.bukkitNMS()._ArgumentFloatRange()
-		);
+		return ArgumentTypes.doubleRange();
 	}
 
 	@Override
 	public ArgumentType<?> _ArgumentIntRange() {
-		return getArgumentType(
-			() -> ArgumentTypes.integerRange(),
-			() -> paperNMS.bukkitNMS()._ArgumentIntRange()
-		);
+		return ArgumentTypes.integerRange();
 	}
 
 	@Override
 	public ArgumentType<?> _ArgumentItemPredicate() {
-		return getArgumentType(
-			() -> ArgumentTypes.itemPredicate(),
-			() -> paperNMS.bukkitNMS()._ArgumentItemPredicate()
-		);
+		return ArgumentTypes.itemPredicate();
 	}
 
 	@Override
 	public ArgumentType<?> _ArgumentItemStack() {
-		return getArgumentType(
-			() -> ArgumentTypes.itemStack(),
-			() -> paperNMS.bukkitNMS()._ArgumentItemStack()
-		);
+		return ArgumentTypes.itemStack();
 	}
 
 	@Override
@@ -285,18 +249,12 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 
 	@Override
 	public ArgumentType<?> _ArgumentMinecraftKeyRegistered() {
-		return getArgumentType(
-			() -> ArgumentTypes.namespacedKey(),
-			() -> paperNMS.bukkitNMS()._ArgumentMinecraftKeyRegistered()
-		);
+		return ArgumentTypes.namespacedKey();
 	}
 
 	@Override
 	public ArgumentType<?> _ArgumentMobEffect() {
-		return getArgumentType(
-			() -> ArgumentTypes.resource(RegistryKey.MOB_EFFECT),
-			() -> paperNMS.bukkitNMS()._ArgumentMobEffect()
-		);
+		return ArgumentTypes.resource(RegistryKey.MOB_EFFECT);
 	}
 
 	@Override
@@ -315,10 +273,7 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 
 	@Override
 	public ArgumentType<?> _ArgumentPosition() {
-		return getArgumentType(
-			() -> ArgumentTypes.blockPosition(),
-			() -> paperNMS.bukkitNMS()._ArgumentPosition()
-		);
+		return ArgumentTypes.blockPosition();
 	}
 
 	@Override
@@ -330,10 +285,7 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 
 	@Override
 	public ArgumentType<?> _ArgumentProfile() {
-		return getArgumentType(
-			() -> ArgumentTypes.playerProfiles(),
-			() -> paperNMS.bukkitNMS()._ArgumentProfile()
-		);
+		return ArgumentTypes.playerProfiles();
 	}
 
 	@Override
@@ -346,17 +298,14 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	@Override
 	public ArgumentType<?> _ArgumentRotation() {
 		return getArgumentType(
-			() -> ArgumentTypes.rotation(),
+			() -> ArgumentTypes.rotation(), // Since 1.21.4
 			() -> paperNMS.bukkitNMS()._ArgumentRotation()
 		);
 	}
 
 	@Override
 	public ArgumentType<?> _ArgumentScoreboardCriteria() {
-		return getArgumentType(
-			() -> ArgumentTypes.objectiveCriteria(),
-			() -> paperNMS.bukkitNMS()._ArgumentScoreboardCriteria()
-		);
+		return ArgumentTypes.objectiveCriteria();
 	}
 
 	@Override
@@ -368,10 +317,7 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 
 	@Override
 	public ArgumentType<?> _ArgumentScoreboardSlot() {
-		return getArgumentType(
-			() -> ArgumentTypes.scoreboardDisplaySlot(),
-			() -> paperNMS.bukkitNMS()._ArgumentScoreboardSlot()
-		);
+		return ArgumentTypes.scoreboardDisplaySlot();
 	}
 
 	@Override
@@ -397,18 +343,12 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 
 	@Override
 	public ArgumentType<?> _ArgumentTime() {
-		return getArgumentType(
-			() -> ArgumentTypes.time(),
-			() -> paperNMS.bukkitNMS()._ArgumentTime()
-		);
+		return ArgumentTypes.time();
 	}
 
 	@Override
 	public ArgumentType<?> _ArgumentUUID() {
-		return getArgumentType(
-			() -> ArgumentTypes.uuid(),
-			() -> paperNMS.bukkitNMS()._ArgumentUUID()
-		);
+		return ArgumentTypes.uuid();
 	}
 
 	@Override
@@ -421,17 +361,14 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	@Override
 	public ArgumentType<?> _ArgumentVec3(boolean centerPosition) {
 		return getArgumentType(
-			() -> ArgumentTypes.finePosition(centerPosition),
+			() -> ArgumentTypes.finePosition(centerPosition), // Since 1.21
 			() -> paperNMS.bukkitNMS()._ArgumentVec3(centerPosition)
 		);
 	}
 
 	@Override
 	public ArgumentType<?> _ArgumentSyntheticBiome() {
-		return getArgumentType(
-			() -> ArgumentTypes.resource(RegistryKey.BIOME),
-			() -> paperNMS.bukkitNMS()._ArgumentSyntheticBiome()
-		);
+		return ArgumentTypes.resource(RegistryKey.BIOME);
 	}
 
 	@Override
@@ -482,13 +419,9 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 
 	@Override
 	public RegistryParser<Biome> getBiome(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		return parseT(
-			cmdCtx, key,
-			(ctx, name) -> new RegistryParser<>(
-				() -> ctx.getArgument(name, Biome.class),
-				() -> ctx.getArgument(name, Biome.class).getKey()
-			),
-			(ctx, name) -> paperNMS.bukkitNMS().getBiome(ctx, name)
+		return new RegistryParser<>(
+			() -> cmdCtx.getArgument(key, Biome.class),
+			() -> cmdCtx.getArgument(key, Biome.class).getKey()
 		);
 	}
 
@@ -501,60 +434,40 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 
 	@Override
 	public BlockState getBlockState(CommandContext<CommandSourceStack> cmdCtx, String key) {
-		return parse(cmdCtx, key,
-			(ctx, name) -> ctx.getArgument(name, BlockState.class),
-			(ctx, name) -> paperNMS.bukkitNMS().getBlockState(ctx, name)
-		);
+		return cmdCtx.getArgument(key, BlockState.class);
 	}
 
 	@Override
 	public World getDimension(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		return parseT(cmdCtx, key,
-			(ctx, name) -> ctx.getArgument(name, World.class),
-			(ctx, name) -> paperNMS.bukkitNMS().getDimension(ctx, name)
-		);
+		return cmdCtx.getArgument(key, World.class);
 	}
 
 	@Override
 	public Enchantment getEnchantment(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		return parseT(cmdCtx, key,
-			(ctx, name) -> ctx.getArgument(name, Enchantment.class),
-			(ctx, name) -> paperNMS.bukkitNMS().getEnchantment(ctx, name)
-		);
+		return cmdCtx.getArgument(key, Enchantment.class);
 	}
 
 	@Override
 	public EntitySelectorParser getEntitySelector(CommandContext<CommandSourceStack> cmdCtx, String key) {
-		return parse(cmdCtx, key,
-			(ctx, name) -> new EntitySelectorParser(
-				() -> ctx.getArgument(name, PlayerSelectorArgumentResolver.class).resolve(ctx.getSource()).getFirst(),
-				() -> ctx.getArgument(name, EntitySelectorArgumentResolver.class).resolve(ctx.getSource()).getFirst(),
-				(allowEmpty) -> ctx.getArgument(name, PlayerSelectorArgumentResolver.class).resolve(ctx.getSource()),
-				(allowEmpty) -> ctx.getArgument(name, EntitySelectorArgumentResolver.class).resolve(ctx.getSource())
-			),
-			(ctx, name) -> paperNMS.bukkitNMS().getEntitySelector(ctx, name)
+		return new EntitySelectorParser(
+			() -> cmdCtx.getArgument(key, PlayerSelectorArgumentResolver.class).resolve(cmdCtx.getSource()).getFirst(),
+			() -> cmdCtx.getArgument(key, EntitySelectorArgumentResolver.class).resolve(cmdCtx.getSource()).getFirst(),
+			(allowEmpty) -> cmdCtx.getArgument(key, PlayerSelectorArgumentResolver.class).resolve(cmdCtx.getSource()),
+			(allowEmpty) -> cmdCtx.getArgument(key, EntitySelectorArgumentResolver.class).resolve(cmdCtx.getSource())
 		);
 	}
 
 	@Override
 	public EntityType getEntityType(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		return parseT(cmdCtx, key,
-			(ctx, name) -> ctx.getArgument(name, EntityType.class),
-			(ctx, name) -> paperNMS.bukkitNMS().getEntityType(ctx, name)
-		);
+		return cmdCtx.getArgument(key, EntityType.class);
 	}
 
 	@Override
 	public DoubleRange getDoubleRange(CommandContext<CommandSourceStack> cmdCtx, String key) {
-		return parse(cmdCtx, key,
-			(ctx, name) -> {
-				DoubleRangeProvider rangeProvider = ctx.getArgument(name, DoubleRangeProvider.class);
-				final double low = rangeProvider.range().hasLowerBound() ? rangeProvider.range().lowerEndpoint() : -Double.MAX_VALUE;
-				final double high = rangeProvider.range().hasUpperBound() ? rangeProvider.range().upperEndpoint() : Double.MAX_VALUE;
-				return new DoubleRange(low, high);
-			},
-			(ctx, name) -> paperNMS.bukkitNMS().getDoubleRange(ctx, name)
-		);
+		DoubleRangeProvider rangeProvider = cmdCtx.getArgument(key, DoubleRangeProvider.class);
+		final double low = rangeProvider.range().hasLowerBound() ? rangeProvider.range().lowerEndpoint() : -Double.MAX_VALUE;
+		final double high = rangeProvider.range().hasUpperBound() ? rangeProvider.range().upperEndpoint() : Double.MAX_VALUE;
+		return new DoubleRange(low, high);
 	}
 
 	@Override
@@ -576,31 +489,20 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 
 	@Override
 	public IntegerRange getIntRange(CommandContext<CommandSourceStack> cmdCtx, String key) {
-		return parse(cmdCtx, key,
-			(ctx, name) -> {
-				IntegerRangeProvider rangeProvider = ctx.getArgument(name, IntegerRangeProvider.class);
-				final int low = rangeProvider.range().hasLowerBound() ? rangeProvider.range().lowerEndpoint() : Integer.MIN_VALUE;
-				final int high = rangeProvider.range().hasUpperBound() ? rangeProvider.range().upperEndpoint() : Integer.MAX_VALUE;
-				return new IntegerRange(low, high);
-			},
-			(ctx, name) -> paperNMS.bukkitNMS().getIntRange(ctx, name)
-		);
+		IntegerRangeProvider rangeProvider = cmdCtx.getArgument(key, IntegerRangeProvider.class);
+		final int low = rangeProvider.range().hasLowerBound() ? rangeProvider.range().lowerEndpoint() : Integer.MIN_VALUE;
+		final int high = rangeProvider.range().hasUpperBound() ? rangeProvider.range().upperEndpoint() : Integer.MAX_VALUE;
+		return new IntegerRange(low, high);
 	}
 
 	@Override
 	public ItemStack getItemStack(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		return parseT(cmdCtx, key,
-			(ctx, name) -> ctx.getArgument(name, ItemStack.class),
-			(ctx, name) -> paperNMS.bukkitNMS().getItemStack(ctx, name)
-		);
+		return cmdCtx.getArgument(key, ItemStack.class);
 	}
 
 	@Override
 	public Predicate<ItemStack> getItemStackPredicate(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		return parseT(cmdCtx, key,
-			(ctx, name) -> ctx.getArgument(name, ItemStackPredicate.class),
-			(ctx, name) -> paperNMS.bukkitNMS().getItemStackPredicate(ctx, name)
-		);
+		return cmdCtx.getArgument(key, ItemStackPredicate.class);
 	}
 
 	@Override
@@ -619,13 +521,8 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 
 	@Override
 	public Location getLocationBlock(CommandContext<CommandSourceStack> cmdCtx, String str) throws CommandSyntaxException {
-		return parseT(cmdCtx, str,
-			(ctx, name) -> {
-				BlockPosition blockPosition = ctx.getArgument(name, BlockPositionResolver.class).resolve(ctx.getSource());
-				return new Location(getWorldForCSS(ctx.getSource()), blockPosition.blockX(), blockPosition.blockY(), blockPosition.blockZ());
-			},
-			(ctx, name) -> paperNMS.bukkitNMS().getLocationBlock(ctx, name)
-		);
+		BlockPosition blockPosition = cmdCtx.getArgument(str, BlockPositionResolver.class).resolve(cmdCtx.getSource());
+		return new Location(getWorldForCSS(cmdCtx.getSource()), blockPosition.blockX(), blockPosition.blockY(), blockPosition.blockZ());
 	}
 
 	@Override
@@ -656,10 +553,7 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 
 	@Override
 	public NamespacedKey getMinecraftKey(CommandContext<CommandSourceStack> cmdCtx, String key) {
-		return parse(cmdCtx, key,
-			(ctx, name) -> ctx.getArgument(name, NamespacedKey.class),
-			(ctx, name) -> paperNMS.bukkitNMS().getMinecraftKey(ctx, name)
-		);
+		return cmdCtx.getArgument(key, NamespacedKey.class);
 	}
 
 	@Override
@@ -678,10 +572,7 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 
 	@Override
 	public String getObjectiveCriteria(CommandContext<CommandSourceStack> cmdCtx, String key) {
-		return parse(cmdCtx, key,
-			(ctx, name) -> ctx.getArgument(name, Criteria.class).getName(),
-			(ctx, name) -> paperNMS.bukkitNMS().getObjectiveCriteria(ctx, name)
-		);
+		return cmdCtx.getArgument(key, Criteria.class).getName();
 	}
 
 	@Override
@@ -710,12 +601,9 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 
 	@Override
 	public RegistryParser<PotionEffectType> getPotionEffect(CommandContext<CommandSourceStack> cmdCtx, String key) {
-		return parse(cmdCtx, key,
-			(ctx, name) -> new RegistryParser<>(
-				() -> ctx.getArgument(name, PotionEffectType.class),
-				() -> ctx.getArgument(name, PotionEffectType.class).getKey()
-			),
-			(ctx, name) -> paperNMS.bukkitNMS().getPotionEffect(ctx, name)
+		return new RegistryParser<>(
+			() -> cmdCtx.getArgument(key, PotionEffectType.class),
+			() -> cmdCtx.getArgument(key, PotionEffectType.class).getKey()
 		);
 	}
 
@@ -739,13 +627,8 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 
 	@Override
 	public ScoreboardSlot getScoreboardSlot(CommandContext<CommandSourceStack> cmdCtx, String key) {
-		return parse(cmdCtx, key,
-			(ctx, name) -> {
-				DisplaySlot displaySlot = ctx.getArgument(name, DisplaySlot.class);
-				return ScoreboardSlot.of(displaySlot);
-			},
-			(ctx, name) -> paperNMS.bukkitNMS().getScoreboardSlot(ctx, name)
-		);
+		DisplaySlot displaySlot = cmdCtx.getArgument(key, DisplaySlot.class);
+		return ScoreboardSlot.of(displaySlot);
 	}
 
 	@Override
@@ -771,18 +654,12 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 
 	@Override
 	public int getTime(CommandContext<CommandSourceStack> cmdCtx, String key) {
-		return parse(cmdCtx, key,
-			(ctx, name) -> ctx.getArgument(name, Integer.class),
-			(ctx, name) -> paperNMS.bukkitNMS().getTime(ctx, name)
-		);
+		return cmdCtx.getArgument(key, Integer.class);
 	}
 
 	@Override
 	public UUID getUUID(CommandContext<CommandSourceStack> cmdCtx, String key) {
-		return parse(cmdCtx, key,
-			(ctx, name) -> ctx.getArgument(name, UUID.class),
-			(ctx, name) -> paperNMS.bukkitNMS().getUUID(ctx, name)
-		);
+		return cmdCtx.getArgument(key, UUID.class);
 	}
 
 	@Override
