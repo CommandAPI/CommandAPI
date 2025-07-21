@@ -405,6 +405,16 @@ This is the current roadmap for the CommandAPI (as of 1st April 2025):
             </td>
         </tr>
         <tr>
+            <td valign="top"><b>10.1.2</b></td>
+            <td valign="top">July 2025</td>
+            <td valign="top">
+                <b>Minecraft Version Changes:</b>
+                <ul>
+                    <li>Adds support for Minecraft 1.21.8</li>
+                </ul>
+            </td>
+        </tr>
+        <tr>
             <td valign="top"><b>10.1.1</b></td>
             <td valign="top">July 2025</td>
             <td valign="top">
