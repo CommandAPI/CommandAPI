@@ -20,7 +20,7 @@
 		<dependency>
 			<groupId>dev.jorel</groupId>
 			<artifactId>commandapi-bukkit-core</artifactId>
-			<version>10.1.1</version>
+			<version>10.1.2</version>
 		</dependency>
 
 		<!--This adds the Spigot API artifact to the build -->

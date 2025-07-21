@@ -37,7 +37,7 @@
 		<dependency>
 			<groupId>dev.jorel</groupId>
 			<artifactId>commandapi-bukkit-test-tests</artifactId>
-			<version>10.1.1</version>
+			<version>10.1.2</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
@@ -46,7 +46,7 @@
 		<dependency>
 			<groupId>dev.jorel</groupId>
 			<artifactId>commandapi-bukkit-shade</artifactId>
-			<version>10.1.1</version>
+			<version>10.1.2</version>
 		</dependency>
 
 		<!--This adds the Spigot API artifact to the build -->
@@ -69,14 +69,14 @@
 			<!-- Generic test implementation -->
 			<groupId>dev.jorel</groupId>
 			<artifactId>commandapi-bukkit-test-impl</artifactId>
-			<version>10.1.1</version>
+			<version>10.1.2</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<!-- Test implementation specific to 1.20 -->
 			<groupId>dev.jorel</groupId>
 			<artifactId>commandapi-bukkit-test-impl-1.20</artifactId>
-			<version>10.1.1</version>
+			<version>10.1.2</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

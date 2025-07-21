@@ -22,7 +22,7 @@ dependencies {
 	implementation("org.spigotmc:spigot-api:1.20.1-R0.1-SNAPSHOT")
 
 	// The CommandAPI dependency used for Bukkit and it's forks
-	implementation("dev.jorel:commandapi-bukkit-core:10.1.1")
+	implementation("dev.jorel:commandapi-bukkit-core:10.1.2")
 	// Due to all functions available in the kotlindsl being inlined, we only need this dependency at compile-time
-	compileOnly("dev.jorel:commandapi-bukkit-kotlin:10.1.1")
+	compileOnly("dev.jorel:commandapi-bukkit-kotlin:10.1.2")
 }
