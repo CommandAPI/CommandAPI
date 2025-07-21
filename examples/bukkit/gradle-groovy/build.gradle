@@ -29,7 +29,7 @@ dependencies {
 	implementation 'org.spigotmc:spigot-api:1.20.1-R0.1-SNAPSHOT'
 
 	// The CommandAPI dependency used for Bukkit and it's forks
-	implementation 'dev.jorel:commandapi-bukkit-plugin:10.1.1'
+	implementation 'dev.jorel:commandapi-bukkit-plugin:10.1.2'
 	
 	// NBT API to use NBT-based arguments
 	implementation 'de.tr7zw:item-nbt-api-plugin:2.12.2'

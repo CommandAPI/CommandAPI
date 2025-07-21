@@ -19,7 +19,7 @@
 	<parent>
 		<artifactId>commandapi</artifactId>
 		<groupId>dev.jorel</groupId>
-		<version>10.1.1</version>
+		<version>10.1.2</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
