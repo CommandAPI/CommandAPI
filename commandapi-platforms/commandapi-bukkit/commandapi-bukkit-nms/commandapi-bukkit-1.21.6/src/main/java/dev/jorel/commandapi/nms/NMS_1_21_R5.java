@@ -205,7 +205,7 @@ import java.util.function.ToIntFunction;
 // Mojang-Mapped reflection
 
 /**
- * NMS implementation for Minecraft 1.21.6
+ * NMS implementation for Minecraft 1.21.6, 1.21.7 and 1.21.8
  */
 @NMSMeta(compatibleWith = {"1.21.6", "1.21.7", "1.21.8"})
 @RequireField(in = SimpleHelpMap.class, name = "helpTopics", ofType = Map.class)
