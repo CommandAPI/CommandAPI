@@ -34,7 +34,7 @@ public abstract class CommandAPIVersionHandler {
 					case "1.21.2", "1.21.3" -> new SpigotNMS_1_21_R2();
 					case "1.21.4" -> new SpigotNMS_1_21_R3();
 					case "1.21.5" -> new SpigotNMS_1_21_R4();
-					case "1.21.6", "1.21.7" -> new SpigotNMS_1_21_R5();
+					case "1.21.6", "1.21.7", "1.21.8" -> new SpigotNMS_1_21_R5();
 					default -> null;
 				};
 				if (platform != null) {
