@@ -60,6 +60,7 @@
 			<artifactId>commandapi-bukkit-1.21.6</artifactId>
 			<version>${project.version}</version>
 			<classifier>mojang-mapped</classifier>
+			<scope>provided</scope>
 		</dependency>
 
 		<dependency>

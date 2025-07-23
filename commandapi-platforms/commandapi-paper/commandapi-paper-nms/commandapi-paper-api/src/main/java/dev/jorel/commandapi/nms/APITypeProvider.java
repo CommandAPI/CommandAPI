@@ -46,6 +46,7 @@ import io.papermc.paper.registry.RegistryKey;
 import net.kyori.adventure.chat.SignedMessage;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.bukkit.Axis;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -61,7 +62,9 @@ import org.bukkit.block.BlockState;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.help.HelpTopic;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
@@ -449,11 +452,26 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 
 	@Override
 	public EntitySelectorParser getEntitySelector(CommandContext<CommandSourceStack> cmdCtx, String key) {
+		GsonComponentSerializer gson = GsonComponentSerializer.gson();
+		SimpleCommandExceptionType NO_ENTITIES_FOUND = new SimpleCommandExceptionType(paperNMS.bukkitNMS().generateMessageFromJson(gson.serialize(Component.translatable("argument.entity.notfound.entity"))));
+		SimpleCommandExceptionType NO_PLAYERS_FOUND = new SimpleCommandExceptionType(paperNMS.bukkitNMS().generateMessageFromJson(gson.serialize(Component.translatable("argument.entity.notfound.player"))));
 		return new EntitySelectorParser(
 			() -> cmdCtx.getArgument(key, PlayerSelectorArgumentResolver.class).resolve(cmdCtx.getSource()).getFirst(),
 			() -> cmdCtx.getArgument(key, EntitySelectorArgumentResolver.class).resolve(cmdCtx.getSource()).getFirst(),
-			(allowEmpty) -> cmdCtx.getArgument(key, PlayerSelectorArgumentResolver.class).resolve(cmdCtx.getSource()),
-			(allowEmpty) -> cmdCtx.getArgument(key, EntitySelectorArgumentResolver.class).resolve(cmdCtx.getSource())
+			(allowEmpty) -> {
+				List<Player> players = cmdCtx.getArgument(key, PlayerSelectorArgumentResolver.class).resolve(cmdCtx.getSource());
+				if (players.isEmpty() && !allowEmpty) {
+					throw NO_PLAYERS_FOUND.create();
+				}
+				return players;
+			},
+			(allowEmpty) -> {
+				List<Entity> entities = cmdCtx.getArgument(key, EntitySelectorArgumentResolver.class).resolve(cmdCtx.getSource());
+				if (entities.isEmpty() && !allowEmpty) {
+					throw NO_ENTITIES_FOUND.create();
+				}
+				return entities;
+			}
 		);
 	}
 
