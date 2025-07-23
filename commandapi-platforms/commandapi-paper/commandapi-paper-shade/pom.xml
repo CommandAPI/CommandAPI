@@ -30,6 +30,11 @@
 			<version>${project.version}</version>
 			<type>pom</type>
 		</dependency>
+		<dependency>
+			<groupId>dev.jorel</groupId>
+			<artifactId>commandapi-paper-mojang-mapped</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -54,6 +59,12 @@
 									<artifact>dev.jorel:commandapi-core</artifact>
 									<excludes>
 										<exclude>dev/jorel/commandapi/CommandAPIVersionHandler**</exclude>
+									</excludes>
+								</filter>
+								<filter>
+									<artifact>dev.jorel:commandapi-core</artifact>
+									<excludes>
+										<exclude>dev/jorel/commandapi/MojangMappedVersionHandler**</exclude>
 									</excludes>
 								</filter>
 							</filters>
