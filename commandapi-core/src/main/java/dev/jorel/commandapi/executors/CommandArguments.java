@@ -8,9 +8,10 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import javax.annotation.Nullable;
-
 import dev.jorel.commandapi.arguments.AbstractArgument;
+import org.jetbrains.annotations.Contract;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * This class stores the arguments for this command
@@ -21,6 +22,7 @@ import dev.jorel.commandapi.arguments.AbstractArgument;
  * @param rawArgsMap   The raw arguments for this command mapped to their node names. This is an ordered map
  * @param fullInput The command string a player has entered (including the /)
  */
+@NullMarked
 @SuppressWarnings("unchecked")
 public record CommandArguments(
 
@@ -90,112 +92,125 @@ public record CommandArguments(
 	// https://kotlinlang.org/docs/operator-overloading.html
 
 	/**
-	 * Returns an argument by its position
+	 * Returns an argument by its index
 	 *
-	 * @param index The position of this argument
-	 * @return An argument which is placed at the given index, or {@code null} if the provided index does not point to an argument.
+	 * @param index The index of the argument
+	 * @param <T> The expected type of the argument
+	 * @return The argument at the given index
+	 * @throws NullPointerException If no argument is found for the index
 	 */
-	@Nullable
-	public Object get(int index) {
-		if (args.length <= index) {
-			return null;
-		} else {
-			return args[index];
+	public <T> T get(int index) {
+		if (index < 0 || index >= args.length) {
+			throw new NullPointerException("No argument found at index " + index);
 		}
+
+		return (T) args[index];
 	}
 
 	/**
 	 * Returns an argument by its node name
 	 *
-	 * @param nodeName The node name of this argument. This was set when initializing an argument
-	 * @return An argument which has the given node name. Can be {@code null} if <code>nodeName</code> was not found.
+	 * @param nodeName The node name of the argument
+	 * @param <T> The expected type of the argument
+	 * @return The argument with given node name
+	 * @throws NullPointerException If no argument is found for the given node name
 	 */
-	@Nullable
-	public Object get(String nodeName) {
-		return argsMap.get(nodeName);
+	public <T> T get(String nodeName) {
+		return Objects.requireNonNull(
+			(T) argsMap.get(nodeName),
+			"No argument found for name " + nodeName
+		);
 	}
 
 	/**
 	 * Returns an argument by its index
 	 *
-	 * @param index The position of this argument
-	 * @param defaultValue The Object returned if the argument is not existent
-	 * @return An argument which is placed at the given index, or the provided default value
+	 * @param index The index of the argument
+	 * @param <T> The expected type of the argument
+	 * @param defaultValue The value returned when no argument is found for the index
+	 * @return The argument at the given index, or the default value
 	 */
-	public Object getOrDefault(int index, Object defaultValue) {
-		if (args.length <= index) {
+	@Contract("_, !null -> !null")
+	public <T> @Nullable T getOrDefault(int index, @Nullable T defaultValue) {
+		if (index < 0 || index >= args.length) {
 			return defaultValue;
-		} else {
-			return args[index];
 		}
+
+		return (T) args[index];
 	}
 
 	/**
 	 * Returns an argument by its node name
 	 *
-	 * @param nodeName     The node name of this argument. This was set when initializing an argument
-	 * @param defaultValue The Object returned if the argument was not found.
-	 * @return The argument with the specified node name or the provided default value
+	 * @param nodeName The node name of the argument
+	 * @param <T> The expected type of the argument
+	 * @param defaultValue The value returned when no argument is found for the node name
+	 * @return The argument with given node name, or the default value
 	 */
-	public Object getOrDefault(String nodeName, Object defaultValue) {
-		return argsMap.getOrDefault(nodeName, defaultValue);
+	@Contract("_, !null -> !null")
+	public <T> @Nullable T getOrDefault(String nodeName, @Nullable T defaultValue) {
+		T value = (T) argsMap.get(nodeName);
+		return value != null ? value : defaultValue;
 	}
 
 	/**
 	 * Returns an argument by its index
 	 *
-	 * @param index The position of this argument
-	 * @param defaultValue The Object returned if the argument is not existent
-	 * @return An argument which is placed at the given index, or the provided default value
+	 * @param index The index of the argument
+	 * @param <T> The expected type of the argument
+	 * @param defaultValue The value returned when no argument is found for the index
+	 * @return The argument at the given index, or the default value
 	 */
-	public Object getOrDefault(int index, Supplier<?> defaultValue) {
-		if (args.length <= index) {
+	public <T> @Nullable T getOrDefault(int index, Supplier<@Nullable T> defaultValue) {
+		if (index < 0 || index >= args.length) {
 			return defaultValue.get();
-		} else {
-			return args[index];
 		}
+
+		return (T) args[index];
 	}
 
 	/**
 	 * Returns an argument by its node name
 	 *
-	 * @param nodeName     The node name of this argument. This was set when initializing an argument
-	 * @param defaultValue The Object returned if the argument was not found.
-	 * @return The argument with the specified node name or the provided default value
+	 * @param nodeName The node name of the argument
+	 * @param <T> The expected type of the argument
+	 * @param defaultValue The value returned when no argument is found for the node name
+	 * @return The argument with the given node name, or the default value
 	 */
-	public Object getOrDefault(String nodeName, Supplier<?> defaultValue) {
-		return argsMap.getOrDefault(nodeName, defaultValue.get());
+	public <T> @Nullable T getOrDefault(String nodeName, Supplier<@Nullable T> defaultValue) {
+		T value = (T) argsMap.get(nodeName);
+		return value != null ? value : defaultValue.get();
 	}
 
 	/**
-	 * Returns an <code>Optional</code> holding the argument by its index
+	 * Returns an {@link Optional} holding the argument by its index
 	 *
-	 * @param index The position of this argument
-	 * @return An optional holding the argument which is placed at the given index, or an empty optional if index is invalid
+	 * @param index The index of the argument
+	 * @param <T> The expected type of the argument
+	 * @return An optional holding the argument at the given index, or an empty optional if no argument was found
 	 */
-	public Optional<Object> getOptional(int index) {
-		if (args.length <= index) {
-			return Optional.empty();
-		} else {
-			return Optional.of(args[index]);
-		}
-	}
-
-	/**
-	 * Returns an argument by its node name
-	 *
-	 * @param nodeName     The node name of this argument. This was set when initializing an argument
-	 * @return An optional holding the argument with the specified node name or an empty optional if the node name was not found
-	 */
-	public Optional<Object> getOptional(String nodeName) {
-		if (!argsMap.containsKey(nodeName)) {
+	public <T> Optional<T> getOptional(int index) {
+		if (index < 0 || index >= args.length) {
 			return Optional.empty();
 		}
-		return Optional.of(argsMap.get(nodeName));
+
+		return Optional.of((T) args[index]);
 	}
 
 	/**
-	 * Returns a raw argument by its position
+	 * Returns an {@link Optional} holding the argument by its node name
+	 *
+	 * @param nodeName The node name of the argument
+	 * @param <T> The expected type of the argument
+	 * @return An optional holding the argument with the given node name, or an empty optional if no argument was found
+	 */
+	public <T> Optional<T> getOptional(String nodeName) {
+		return Optional.ofNullable((T) argsMap.get(nodeName));
+	}
+
+	/**
+	 * Returns a raw argument by its index
+	 *
 	 * <p>
 	 * A raw argument is the {@link String} form of an argument as written in a command. For example take this command:
 	 * <p>
@@ -203,20 +218,20 @@ public record CommandArguments(
 	 * <p>
 	 * When using this method to access these arguments, {@code @e} and {@code 15.3} will be available as {@link String}s and not as a {@link Collection} and {@link Double}
 	 *
-	 * @param index The position of this argument
-	 * @return An argument which is placed at the given index, or {@code null} if the provided index does not point to an argument.
+	 * @return The raw argument at the given index
+	 * @throws NullPointerException If no argument is found for the index
 	 */
-	@Nullable
 	public String getRaw(int index) {
-		if (rawArgs.length <= index) {
-			return null;
-		} else {
-			return rawArgs[index];
+		if (index < 0 || index >= args.length) {
+			throw new NullPointerException("No argument found at index " + index);
 		}
+
+		return rawArgs[index];
 	}
 
 	/**
 	 * Returns a raw argument by its node name
+	 *
 	 * <p>
 	 * A raw argument is the {@link String} form of an argument as written in a command. For example take this command:
 	 * <p>
@@ -224,16 +239,20 @@ public record CommandArguments(
 	 * <p>
 	 * When using this method to access these arguments, {@code @e} and {@code 15.3} will be available as {@link String}s and not as a {@link Collection} and {@link Double}
 	 *
-	 * @param nodeName The node name of this argument. This was set when initializing an argument
-	 * @return A raw argument which has the given node name. Can be {@code null} if <code>nodeName</code> was not found.
+	 * @param nodeName The node name of the argument
+	 * @return The raw argument with given node name
+	 * @throws NullPointerException If no argument is found for the given node name
 	 */
-	@Nullable
 	public String getRaw(String nodeName) {
-		return rawArgsMap.get(nodeName);
+		return Objects.requireNonNull(
+			rawArgsMap.get(nodeName),
+			"No argument found for name " + nodeName
+		);
 	}
 
 	/**
 	 * Returns a raw argument by its index
+	 *
 	 * <p>
 	 * A raw argument is the {@link String} form of an argument as written in a command. For example take this command:
 	 * <p>
@@ -241,20 +260,22 @@ public record CommandArguments(
 	 * <p>
 	 * When using this method to access these arguments, {@code @e} and {@code 15.3} will be available as {@link String}s and not as a {@link Collection} and {@link Double}
 	 *
-	 * @param index The position of this argument
-	 * @param defaultValue The String returned if the raw argument is not existent
-	 * @return A raw argument which is placed at the given index, or the provided default value
+	 * @param index The index of the argument
+	 * @param defaultValue The value returned when no argument is found for the index
+	 * @return The raw argument at the given index, or the default value
 	 */
-	public String getOrDefaultRaw(int index, String defaultValue) {
-		if (rawArgs.length <= index) {
+	@Contract("_, !null -> !null")
+	public @Nullable String getOrDefaultRaw(int index, @Nullable String defaultValue) {
+		if (index < 0 || index >= rawArgs.length) {
 			return defaultValue;
-		} else {
-			return rawArgs[index];
 		}
+
+		return rawArgs[index];
 	}
 
 	/**
 	 * Returns a raw argument by its node name
+	 *
 	 * <p>
 	 * A raw argument is the {@link String} form of an argument as written in a command. For example take this command:
 	 * <p>
@@ -262,16 +283,19 @@ public record CommandArguments(
 	 * <p>
 	 * When using this method to access these arguments, {@code @e} and {@code 15.3} will be available as {@link String}s and not as a {@link Collection} and {@link Double}
 	 *
-	 * @param nodeName     The node name of this argument. This was set when initializing an argument
-	 * @param defaultValue The String returned if the raw argument was not found.
-	 * @return A raw argument with the specified node name or the provided default value
+	 * @param nodeName The node name of the argument
+	 * @param defaultValue The value returned when no argument is found for the node name
+	 * @return The raw argument with given node name, or the default value
 	 */
-	public String getOrDefaultRaw(String nodeName, String defaultValue) {
-		return rawArgsMap.getOrDefault(nodeName, defaultValue);
+	@Contract("_, !null -> !null")
+	public @Nullable String getOrDefaultRaw(String nodeName, @Nullable String defaultValue) {
+		String value = rawArgsMap.get(nodeName);
+		return value != null ? value : defaultValue;
 	}
 
 	/**
 	 * Returns a raw argument by its index
+	 *
 	 * <p>
 	 * A raw argument is the {@link String} form of an argument as written in a command. For example take this command:
 	 * <p>
@@ -279,20 +303,21 @@ public record CommandArguments(
 	 * <p>
 	 * When using this method to access these arguments, {@code @e} and {@code 15.3} will be available as {@link String}s and not as a {@link Collection} and {@link Double}
 	 *
-	 * @param index The position of this argument
-	 * @param defaultValue The String returned if the raw argument is not existent
-	 * @return A raw argument which is placed at the given index, or the provided default value
+	 * @param index The index of the argument
+	 * @param defaultValue The value returned when no argument is found for the index
+	 * @return The raw argument at the given index, or the default value
 	 */
-	public String getOrDefaultRaw(int index, Supplier<String> defaultValue) {
-		if (rawArgs.length <= index) {
+	public @Nullable String getOrDefaultRaw(int index, Supplier<@Nullable String> defaultValue) {
+		if (index < 0 || index >= rawArgs.length) {
 			return defaultValue.get();
-		} else {
-			return rawArgs[index];
 		}
+
+		return rawArgs[index];
 	}
 
 	/**
 	 * Returns a raw argument by its node name
+	 *
 	 * <p>
 	 * A raw argument is the {@link String} form of an argument as written in a command. For example take this command:
 	 * <p>
@@ -300,16 +325,18 @@ public record CommandArguments(
 	 * <p>
 	 * When using this method to access these arguments, {@code @e} and {@code 15.3} will be available as {@link String}s and not as a {@link Collection} and {@link Double}
 	 *
-	 * @param nodeName     The node name of this raw argument. This was set when initializing an argument
-	 * @param defaultValue The String returned if the raw argument was not found.
-	 * @return A raw argument with the specified node name or the provided default value
+	 * @param nodeName The node name of the argument
+	 * @param defaultValue The value returned when no argument is found for the node name
+	 * @return The raw argument with the given node name, or the default value
 	 */
-	public String getOrDefaultRaw(String nodeName, Supplier<String> defaultValue) {
-		return rawArgsMap.getOrDefault(nodeName, defaultValue.get());
+	public @Nullable String getOrDefaultRaw(String nodeName, Supplier<@Nullable String> defaultValue) {
+		String value = rawArgsMap.get(nodeName);
+		return value != null ? value : defaultValue.get();
 	}
 
 	/**
 	 * Returns an {@link Optional} holding the raw argument by its index
+	 *
 	 * <p>
 	 * A raw argument is the {@link String} form of an argument as written in a command. For example take this command:
 	 * <p>
@@ -317,19 +344,20 @@ public record CommandArguments(
 	 * <p>
 	 * When using this method to access these arguments, {@code @e} and {@code 15.3} will be available as {@link String}s and not as a {@link Collection} and {@link Double}
 	 *
-	 * @param index The position of this argument
-	 * @return An optional holding the raw argument which is placed at the given index, or an empty optional if index is invalid
+	 * @param index The index of the argument
+	 * @return An optional holding the raw argument at the given index, or an empty optional if no argument was found
 	 */
 	public Optional<String> getRawOptional(int index) {
-		if (rawArgs.length <= index) {
+		if (index < 0 || index >= args.length) {
 			return Optional.empty();
-		} else {
-			return Optional.of(rawArgs[index]);
 		}
+
+		return Optional.of(rawArgs[index]);
 	}
 
 	/**
-	 * Returns an  {@link Optional} holding the raw argument by its node name
+	 * Returns an {@link Optional} holding the raw argument by its node name
+	 *
 	 * <p>
 	 * A raw argument is the {@link String} form of an argument as written in a command. For example take this command:
 	 * <p>
@@ -337,114 +365,11 @@ public record CommandArguments(
 	 * <p>
 	 * When using this method to access these arguments, {@code @e} and {@code 15.3} will be available as {@link String}s and not as a {@link Collection} and {@link Double}
 	 *
-	 * @param nodeName     The node name of this argument. This was set when initializing an argument
-	 * @return An optional holding the argument with the specified node name or an empty optional if the node name was not found
+	 * @param nodeName The node name of the argument
+	 * @return An optional holding the raw argument with the given node name, or an empty optional if no argument was found
 	 */
 	public Optional<String> getRawOptional(String nodeName) {
-		if (!rawArgsMap.containsKey(nodeName)) {
-			return Optional.empty();
-		}
-		return Optional.of(rawArgsMap.get(nodeName));
-	}
-
-	/** Unchecked methods. These are the same as the methods above, but use
-	 * unchecked generics to conform to the type they are declared as. In Java,
-	 * the normal methods (checked) require casting:
-	 *
-	 *   CommandArguments args = ...;
-	 *   String myString = (String) args.get("target");
-	 *
-	 * However, these unchecked methods don't require casting:
-	 *
-	 *   CommandArguments args = ...;
-	 *   String myString = args.getUnchecked("target");
-	 *
-	 */
-
-	/**
-	 * Returns an argument by its position
-	 *
-	 * @param index The position of this argument
-	 * @return An argument which is placed at the given index, or {@code null} if the provided index does not point to an argument.
-	 */
-	@Nullable
-	public <T> T getUnchecked(int index) {
-		return (T) get(index);
-	}
-
-	/**
-	 * Returns an argument by its node name
-	 *
-	 * @param nodeName The node name of this argument. This was set when initializing an argument
-	 * @return An argument which has the given node name. Can be null if <code>nodeName</code> was not found.
-	 */
-	@Nullable
-	public <T> T getUnchecked(String nodeName) {
-		return (T) get(nodeName);
-	}
-
-	/**
-	 * Returns an argument by its index
-	 *
-	 * @param index The position of this argument
-	 * @param defaultValue The Object returned if the argument is not existent
-	 * @return An argument which is placed at the given index, or the provided default value
-	 */
-	public <T> T getOrDefaultUnchecked(int index, T defaultValue) {
-		return (T) getOrDefault(index, defaultValue);
-	}
-
-	/**
-	 * Returns an argument by its node name
-	 *
-	 * @param nodeName     The node name of this argument. This was set when initializing an argument
-	 * @param defaultValue The Object returned if the argument was not found.
-	 * @return The argument with the specified node name or the provided default value
-	 */
-	public <T> T getOrDefaultUnchecked(String nodeName, T defaultValue) {
-		return (T) getOrDefault(nodeName, defaultValue);
-	}
-
-	/**
-	 * Returns an argument by its index
-	 *
-	 * @param index The position of this argument
-	 * @param defaultValue The Object returned if the argument is not existent
-	 * @return An argument which is placed at the given index, or the provided default value
-	 */
-	public <T> T getOrDefaultUnchecked(int index, Supplier<T> defaultValue) {
-		return (T) getOrDefault(index, defaultValue);
-	}
-
-	/**
-	 * Returns an argument by its node name
-	 *
-	 * @param nodeName     The node name of this argument. This was set when initializing an argument
-	 * @param defaultValue The Object returned if the argument was not found.
-	 * @return The argument with the specified node name or the provided default value
-	 */
-	public <T> T getOrDefaultUnchecked(String nodeName, Supplier<T> defaultValue) {
-		return (T) getOrDefault(nodeName, defaultValue);
-	}
-
-	/**
-	 * Returns an <code>Optional</code> holding the argument at its index
-	 *
-	 * @param index The position of this argument
-	 * @return An optional holding the argument at its index, or an empty optional if the index was invalid
-	 */
-	public <T> Optional<T> getOptionalUnchecked(int index) {
-		return (Optional<T>) getOptional(index);
-	}
-
-	/**
-	 * Returns an <code>Optional</code> holding the argument by its node name
-	 *
-	 * @param nodeName     The node name of this argument. This was set when initializing an argument
-	 * @return An optional holding the argument with the specified node name, or an empty optional if the index was invalid
-	 */
-	public <T> Optional<T> getOptionalUnchecked(String nodeName) {
-		return (Optional<T>) getOptional(nodeName);
+		return Optional.ofNullable(rawArgsMap.get(nodeName));
 	}
 
 	/*****************************************
@@ -452,123 +377,113 @@ public record CommandArguments(
 	 *****************************************/
 
 	/**
-	 * Returns an argument purely based on its CommandAPI representation. This also attempts to directly cast the argument to the type represented by {@link dev.jorel.commandapi.arguments.AbstractArgument#getPrimitiveType()}
+	 * Returns an argument by its argument instance
 	 *
 	 * @param argumentType The argument instance used to create the argument
-	 * @return The argument represented by the CommandAPI argument, or null if the argument was not found.
+	 * @param <T> The expected type of the argument
+	 * @return The argument represented by the argument instance
+	 * @throws NullPointerException If no argument is found for the argument instance
 	 */
-	@Nullable
 	public <T> T getByArgument(AbstractArgument<T, ?, ?, ?> argumentType) {
 		return castArgument(get(argumentType.getNodeName()), argumentType.getPrimitiveType(), argumentType.getNodeName());
 	}
 
 	/**
-	 * Returns an argument purely based on its CommandAPI representation or a default value if the argument wasn't found.
-	 * <p>
-	 * If the argument was found, this also attempts to directly cast the argument to the type represented by {@link dev.jorel.commandapi.arguments.AbstractArgument#getPrimitiveType()}
+	 * Returns an argument by its argument instance
 	 *
 	 * @param argumentType The argument instance used to create the argument
-	 * @param defaultValue The default value to return if the argument wasn't found
-	 * @return The argument represented by the CommandAPI argument, or the default value if the argument was not found.
+	 * @param <T> The expected type of the argument
+	 * @param defaultValue The value returned when no argument is found for the argument instance
+	 * @return The argument represented by the argument instance, or the default value
 	 */
-	public <T> T getByArgumentOrDefault(AbstractArgument<T, ?, ?, ?> argumentType, T defaultValue) {
-		T argument = getByArgument(argumentType);
-		return (argument != null) ? argument : defaultValue;
+	@Contract("_, !null -> !null")
+	public <T> @Nullable T getByArgumentOrDefault(AbstractArgument<T, ?, ?, ?> argumentType, @Nullable T defaultValue) {
+		return castArgument(getOrDefault(argumentType.getNodeName(), defaultValue), argumentType.getPrimitiveType(), argumentType.getNodeName());
 	}
 
 	/**
-	 * Returns an <code>Optional</code> holding the provided argument. This <code>Optional</code> can be empty if the argument was not given when running the command.
-	 * <p>
-	 * This attempts to directly cast the argument to the type represented by {@link dev.jorel.commandapi.arguments.AbstractArgument#getPrimitiveType()}
+	 * Returns an {@link Optional} holding the argument by its argument instance
 	 *
 	 * @param argumentType The argument instance used to create the argument
-	 * @return An <code>Optional</code> holding the argument, or an empty <code>Optional</code> if the argument was not found.
+	 * @param <T> The expected type of the argument
+	 * @return An optional holding the argument represented by the argument instance, or an empty optional if no argument was found
 	 */
 	public <T> Optional<T> getOptionalByArgument(AbstractArgument<T, ?, ?, ?> argumentType) {
-		return Optional.ofNullable(getByArgument(argumentType));
+		return Optional.ofNullable(getByArgumentOrDefault(argumentType, null));
 	}
 
 	/**
-	 * Returns an argument based on its node name. This also attempts to directly cast the argument to the type represented by the {@code argumentType} parameter.
+	 * Returns an argument by its node name and type
 	 *
 	 * @param nodeName The node name of the argument
-	 * @param argumentType The class that represents the argument
-	 * @return The argument with the given node name, or null if the argument was not found.
+	 * @param argumentType The expected type of the argument
+	 * @return The argument with given node name
 	 */
-	@Nullable
 	public <T> T getByClass(String nodeName, Class<T> argumentType) {
 		return castArgument(get(nodeName), argumentType, nodeName);
 	}
 
 	/**
-	 * Returns an argument based on its node name or a default value if the argument wasn't found.
-	 * <p>
-	 * If the argument was found, this method attempts to directly cast the argument to the type represented by the {@code argumentType} parameter.
+	 * Returns an argument by its node name and type
 	 *
 	 * @param nodeName The node name of the argument
-	 * @param argumentType The class that represents the argument
-	 * @param defaultValue The default value to return if the argument wasn't found
-	 * @return The argument with the given node name, or the default value if the argument was not found.
+	 * @param argumentType The expected type of the argument
+	 * @param defaultValue The value returned when no argument is found for the node name
+	 * @return The argument with given node name, or the default value
 	 */
-	public <T> T getByClassOrDefault(String nodeName, Class<T> argumentType, T defaultValue) {
-		T argument = getByClass(nodeName, argumentType);
-		return (argument != null) ? argument : defaultValue;
+	@Contract("_, _, !null -> !null")
+	public <T> @Nullable T getByClassOrDefault(String nodeName, Class<T> argumentType, @Nullable T defaultValue) {
+		return castArgument(getOrDefault(nodeName, defaultValue), argumentType, nodeName);
 	}
 
 	/**
-	 * Returns an <code>Optional</code> holding the argument with the given node name. This <code>Optional</code> can be empty if the argument was not given when running the command.
-	 * <p>
-	 * This attempts to directly cast the argument to the type represented by the {@code argumentType} parameter.
+	 * Returns an {@link Optional} holding the argument by its node name and type
 	 *
 	 * @param nodeName The node name of the argument
-	 * @param argumentType The class that represents the argument
-	 * @return An <code>Optional</code> holding the argument, or an empty <code>Optional</code> if the argument was not found.
+	 * @param argumentType The expected type of the argument
+	 * @return An optional holding the argument with the given node name, or an empty optional if no argument was found
 	 */
 	public <T> Optional<T> getOptionalByClass(String nodeName, Class<T> argumentType) {
-		return Optional.ofNullable(getByClass(nodeName, argumentType));
+		return Optional.ofNullable(getByClassOrDefault(nodeName, argumentType, null));
 	}
 
 	/**
-	 * Returns an argument based on its index. This also attempts to directly cast the argument to the type represented by the {@code argumentType} parameter.
+	 * Returns an argument by its index and type
 	 *
 	 * @param index The index of the argument
-	 * @param argumentType The class that represents the argument
-	 * @return The argument at the given index, or null if the argument was not found.
+	 * @param argumentType The expected type of the argument
+	 * @return The argument at the given index
 	 */
-	@Nullable
 	public <T> T getByClass(int index, Class<T> argumentType) {
 		return castArgument(get(index), argumentType, index);
 	}
 
 	/**
-	 * Returns an argument based on its index or a default value if the argument wasn't found.
-	 * <p>
-	 * If the argument was found, this method attempts to directly cast the argument to the type represented by the {@code argumentType} parameter.
+	 * Returns an argument by its index and type
 	 *
 	 * @param index The index of the argument
-	 * @param argumentType The class that represents the argument
-	 * @param defaultValue The default value to return if the argument wasn't found
-	 * @return The argument at the given index, or the default value if the argument was not found.
+	 * @param argumentType The expected type of the argument
+	 * @param defaultValue The value returned when no argument is found for the index
+	 * @return The argument at the given index, or the default value
 	 */
-	public <T> T getByClassOrDefault(int index, Class<T> argumentType, T defaultValue) {
-		T argument = getByClass(index, argumentType);
-		return (argument != null) ? argument : defaultValue;
+	@Contract("_, _, !null -> !null")
+	public <T> @Nullable T getByClassOrDefault(int index, Class<T> argumentType, @Nullable T defaultValue) {
+		return castArgument(getOrDefault(index, defaultValue), argumentType, index);
 	}
 
 	/**
-	 * Returns an <code>Optional</code> holding the argument at the given index. This <code>Optional</code> can be empty if the argument was not given when running the command.
-	 * <p>
-	 * This attempts to directly cast the argument to the type represented by the {@code argumentType} parameter.
+	 * Returns an {@link Optional} holding the argument by its index and type
 	 *
 	 * @param index The index of the argument
-	 * @param argumentType The class that represents the argument
-	 * @return An <code>Optional</code> holding the argument, or an empty <code>Optional</code> if the argument was not found.
+	 * @param argumentType The expected type of the argument
+	 * @return An optional holding the argument at the given index, or an empty optional if no argument was found
 	 */
 	public <T> Optional<T> getOptionalByClass(int index, Class<T> argumentType) {
-		return Optional.ofNullable(getByClass(index, argumentType));
+		return Optional.ofNullable(getByClassOrDefault(index, argumentType, null));
 	}
 
-	private <T> T castArgument(Object argument, Class<T> argumentType, Object argumentNameOrIndex) {
+	@Contract("!null, _, _ -> !null")
+	private <T> @Nullable T castArgument(@Nullable Object argument, Class<T> argumentType, Object argumentNameOrIndex) {
 		if (argument == null) {
 			return null;
 		}
