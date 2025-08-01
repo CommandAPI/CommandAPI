@@ -97,11 +97,11 @@ public record CommandArguments(
 	 * @param index The index of the argument
 	 * @param <T> The expected type of the argument
 	 * @return The argument at the given index
-	 * @throws NullPointerException If no argument is found for the index
+	 * @throws IllegalArgumentException If no argument is found for the index
 	 */
 	public <T> T get(int index) {
 		if (index < 0 || index >= args.length) {
-			throw new NullPointerException("No argument found at index " + index);
+			throw new IllegalArgumentException("No argument found at index " + index);
 		}
 
 		return (T) args[index];
@@ -113,13 +113,15 @@ public record CommandArguments(
 	 * @param nodeName The node name of the argument
 	 * @param <T> The expected type of the argument
 	 * @return The argument with given node name
-	 * @throws NullPointerException If no argument is found for the given node name
+	 * @throws IllegalArgumentException If no argument is found for the given node name
 	 */
 	public <T> T get(String nodeName) {
-		return Objects.requireNonNull(
-			(T) argsMap.get(nodeName),
-			"No argument found for name " + nodeName
-		);
+		T value = (T) argsMap.get(nodeName);
+		if (value == null) {
+			throw new IllegalArgumentException("No argument found for name " + nodeName);
+		}
+
+		return value;
 	}
 
 	/**
@@ -149,8 +151,7 @@ public record CommandArguments(
 	 */
 	@Contract("_, !null -> !null")
 	public <T> @Nullable T getOrDefault(String nodeName, @Nullable T defaultValue) {
-		T value = (T) argsMap.get(nodeName);
-		return value != null ? value : defaultValue;
+		return (T) argsMap.getOrDefault(nodeName, defaultValue);
 	}
 
 	/**
@@ -219,11 +220,11 @@ public record CommandArguments(
 	 * When using this method to access these arguments, {@code @e} and {@code 15.3} will be available as {@link String}s and not as a {@link Collection} and {@link Double}
 	 *
 	 * @return The raw argument at the given index
-	 * @throws NullPointerException If no argument is found for the index
+	 * @throws IllegalArgumentException If no argument is found for the index
 	 */
 	public String getRaw(int index) {
 		if (index < 0 || index >= args.length) {
-			throw new NullPointerException("No argument found at index " + index);
+			throw new IllegalArgumentException("No argument found at index " + index);
 		}
 
 		return rawArgs[index];
@@ -244,10 +245,12 @@ public record CommandArguments(
 	 * @throws NullPointerException If no argument is found for the given node name
 	 */
 	public String getRaw(String nodeName) {
-		return Objects.requireNonNull(
-			rawArgsMap.get(nodeName),
-			"No argument found for name " + nodeName
-		);
+		String value = rawArgsMap.get(nodeName);
+		if (value == null) {
+			throw new IllegalArgumentException("No argument found for name " + nodeName);
+		}
+
+		return value;
 	}
 
 	/**
@@ -261,7 +264,7 @@ public record CommandArguments(
 	 * When using this method to access these arguments, {@code @e} and {@code 15.3} will be available as {@link String}s and not as a {@link Collection} and {@link Double}
 	 *
 	 * @param index The index of the argument
-	 * @param defaultValue The value returned when no argument is found for the index
+	 * @param defaultValue The String returned when no argument is found for the index
 	 * @return The raw argument at the given index, or the default value
 	 */
 	@Contract("_, !null -> !null")
@@ -284,13 +287,12 @@ public record CommandArguments(
 	 * When using this method to access these arguments, {@code @e} and {@code 15.3} will be available as {@link String}s and not as a {@link Collection} and {@link Double}
 	 *
 	 * @param nodeName The node name of the argument
-	 * @param defaultValue The value returned when no argument is found for the node name
+	 * @param defaultValue The String returned when no argument is found for the node name
 	 * @return The raw argument with given node name, or the default value
 	 */
 	@Contract("_, !null -> !null")
 	public @Nullable String getOrDefaultRaw(String nodeName, @Nullable String defaultValue) {
-		String value = rawArgsMap.get(nodeName);
-		return value != null ? value : defaultValue;
+		return rawArgsMap.getOrDefault(nodeName, defaultValue);
 	}
 
 	/**
@@ -304,7 +306,7 @@ public record CommandArguments(
 	 * When using this method to access these arguments, {@code @e} and {@code 15.3} will be available as {@link String}s and not as a {@link Collection} and {@link Double}
 	 *
 	 * @param index The index of the argument
-	 * @param defaultValue The value returned when no argument is found for the index
+	 * @param defaultValue The String returned when no argument is found for the index
 	 * @return The raw argument at the given index, or the default value
 	 */
 	public @Nullable String getOrDefaultRaw(int index, Supplier<@Nullable String> defaultValue) {
@@ -326,7 +328,7 @@ public record CommandArguments(
 	 * When using this method to access these arguments, {@code @e} and {@code 15.3} will be available as {@link String}s and not as a {@link Collection} and {@link Double}
 	 *
 	 * @param nodeName The node name of the argument
-	 * @param defaultValue The value returned when no argument is found for the node name
+	 * @param defaultValue The String returned when no argument is found for the node name
 	 * @return The raw argument with the given node name, or the default value
 	 */
 	public @Nullable String getOrDefaultRaw(String nodeName, Supplier<@Nullable String> defaultValue) {
