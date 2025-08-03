@@ -381,12 +381,23 @@ public class Annotations extends AbstractProcessor {
 		return indent;
 	}
 	
-	private void emitPermission(PrintWriter out, Element classElement, int indent) {
-		if (classElement.getAnnotation(Permission.class) != null) {
-			out.print(indent(indent) + ".withPermission(\"");
-			out.print(classElement.getAnnotation(Permission.class).value());
-			out.println("\")");
-		}
+	private void emitClassPermission(PrintWriter out, Element classElement, int indent) {
+		if (classElement.getAnnotation(Permission.class) == null)
+			return;
+
+		out.print(indent(indent) + ".withPermission(\"");
+		out.print(classElement.getAnnotation(Permission.class).value());
+		out.println("\")");
+	}
+
+	private boolean emitMethodPermission(PrintWriter out, Element methodElement, int indent) {
+		if (methodElement.getAnnotation(Permission.class) == null)
+			return false;
+
+		out.print(indent(indent) + ".withPermission(\"");
+		out.print(methodElement.getAnnotation(Permission.class).value());
+		out.println("\")");
+		return true;
 	}
 	
 	private void emitAlias(PrintWriter out, Element classElement, int indent) {
@@ -452,11 +463,12 @@ public class Annotations extends AbstractProcessor {
 					out.println("\")");
 					indent++;
 
-					indent = emitSubcommand(out, methodElement, indent); // @Subcommand (Also handle @Alias for @Subcommand)
-					emitNeedsOp(out, classElement, indent);    // @NeedsOp
-					emitPermission(out, classElement, indent); // @Permission
-					emitAlias(out, classElement, indent);      // @Alias
-					emitHelp(out, classElement, indent);       // @Help
+					indent = emitSubcommand(out, methodElement, indent);   // @Subcommand (Also handle @Alias for @Subcommand)
+					emitNeedsOp(out, classElement, indent);                // @NeedsOp
+					if (!emitMethodPermission(out, methodElement, indent)) // @Permission provided by method
+						emitClassPermission(out, classElement, indent);    // @Permission provided by class (only if method does not have Permission annotation)
+					emitAlias(out, classElement, indent);                  // @Alias
+					emitHelp(out, classElement, indent);                   // @Help
 					
 					//Maps parameter index to argument's primitive type
 					Map<Integer, String> argumentMapping = null;
