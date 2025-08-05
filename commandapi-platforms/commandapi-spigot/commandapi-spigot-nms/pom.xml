@@ -25,7 +25,6 @@
 		<module>commandapi-spigot-1.20</module>
 
 		<module>commandapi-spigot-nms-dependency</module>
-		<module>commandapi-spigot-nms-dependency-mojang-mapped</module>
 	</modules>
 
 </project>
