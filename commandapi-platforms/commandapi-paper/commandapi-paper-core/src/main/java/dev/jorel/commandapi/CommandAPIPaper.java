@@ -43,8 +43,9 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 	private final BundledNMS<Source> nms;
 
 	@SuppressWarnings("unchecked")
-	protected CommandAPIPaper() {
+	protected CommandAPIPaper(InternalPaperConfig config) {
 		CommandAPIPaper.paper = this;
+		setInternalConfig(config);
 
 		VersionContext context = (VersionContext) CommandAPIVersionHandler.getVersion();
 		context.context().run();

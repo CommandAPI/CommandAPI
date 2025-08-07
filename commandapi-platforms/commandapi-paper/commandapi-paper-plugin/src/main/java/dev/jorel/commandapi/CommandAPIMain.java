@@ -50,10 +50,9 @@ public class CommandAPIMain extends JavaPlugin {
 		CommandAPIPaperConfig<CommandAPIMain> config = new CommandAPIPaperConfig<>(this.getPluginMeta(), this)
 			.verboseOutput(fileConfig.getBoolean("verbose-outputs"))
 			.silentLogs(fileConfig.getBoolean("silent-logs"))
-			.useLatestNMSVersion(fileConfig.getBoolean("use-latest-nms-version"))
+			.fallbackToLatestNMS(fileConfig.getBoolean("fallback-to-latest-nms"))
 			.missingExecutorImplementationMessage(fileConfig.getString("messages.missing-executor-implementation"))
 			.dispatcherFile(fileConfig.getBoolean("create-dispatcher-json") ? new File(getDataFolder(), "command_registration.json") : null)
-			.beLenientForMinorVersions(fileConfig.getBoolean("be-lenient-for-minor-versions"))
 			.isCommandAPIPlugin();
 
 		for (String pluginName : fileConfig.getStringList("skip-sender-proxy")) {

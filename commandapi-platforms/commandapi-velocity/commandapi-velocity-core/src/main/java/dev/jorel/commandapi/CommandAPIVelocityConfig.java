@@ -28,9 +28,12 @@ public class CommandAPIVelocityConfig extends CommandAPIConfig<CommandAPIVelocit
 	}
 
 	/**
+	 * Sets whether the CommandAPI should use the plugin's name as the default namespace
+	 * <p>
+	 * If called, any call to {@link CommandAPIConfig#setNamespace(String)} will be ignored
+	 *
 	 * @return this CommandAPIVelocityConfig
 	 */
-	@Override
 	public CommandAPIVelocityConfig usePluginNamespace() {
 		Optional<PluginContainer> pluginContainerOptional = server.getPluginManager().fromInstance(plugin);
 		if (pluginContainerOptional.isEmpty()) {

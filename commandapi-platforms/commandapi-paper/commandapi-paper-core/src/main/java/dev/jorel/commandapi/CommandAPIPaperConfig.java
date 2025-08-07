@@ -21,6 +21,7 @@ public class CommandAPIPaperConfig<T extends LifecycleEventOwner> extends Comman
 		super(pluginMeta.getName());
 		this.pluginMeta = pluginMeta;
 		this.lifecycleEventOwner = lifecycleEventOwner;
+		fallbackToLatestNMS(true);
 	}
 
 	CommandAPIPaperConfig<T> isCommandAPIPlugin() {
