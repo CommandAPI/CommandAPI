@@ -43,11 +43,13 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 	private final BundledNMS<Source> nms;
 
 	@SuppressWarnings("unchecked")
-	protected CommandAPIPaper() {
+	protected CommandAPIPaper(InternalPaperConfig config) {
 		CommandAPIPaper.paper = this;
+		setInternalConfig(config);
 
 		VersionContext context = (VersionContext) CommandAPIVersionHandler.getVersion();
-		context.context().run();
+		context.context().accept(getLogger());
+		context.additionalContext().accept(getLogger());
 		this.nms = (BundledNMS<Source>) context.nms();
 		super.nms = this.nms;
 
@@ -73,7 +75,7 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 		if (paper != null) {
 			return (CommandAPIPaper<Source>) paper;
 		}
-		throw new IllegalStateException("Tried to access CommandAPIBukkit instance, but it was null! Are you using CommandAPI features before calling CommandAPI#onLoad?");
+		throw new IllegalStateException("Tried to access CommandAPIPaper instance, but it was null! Are you using CommandAPI features before calling CommandAPI#onLoad?");
 	}
 
 	public static InternalPaperConfig getConfiguration() {
@@ -102,8 +104,8 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 			CommandAPIPaper.setInternalConfig(new InternalPaperConfig(paperConfig));
 			this.lifecycleEventOwner = paperConfig.lifecycleEventOwner;
 		} else {
-			CommandAPI.logError("CommandAPIBukkit was loaded with non-Bukkit config!");
-			CommandAPI.logError("Attempts to access Bukkit-specific config variables will fail!");
+			CommandAPI.logError("CommandAPIPaper was loaded with non-Paper config!");
+			CommandAPI.logError("Attempts to access Paper-specific config variables will fail!");
 		}
 		super.onLoad();
 		checkPaperDependencies();
@@ -139,22 +141,12 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 			Bukkit.getServer().getPluginManager().registerEvents(new Listener() {
 				@EventHandler
 				public void onServerReloadResources(ServerResourcesReloadedEvent event) {
-					// This event is called after Paper is done with everything command related
-					// which means we can put commands back
 					CommandAPIBukkit.get().getCommandRegistrationStrategy().preReloadDataPacks();
 
-					// Normally, the reloadDataPacks() method is responsible for updating commands for
-					// online players. If, however, datapacks aren't supposed to be reloaded upon /minecraft:reload
-					// we have to do this manually here. This won't have any effect on Spigot and Paper version prior to
-					// paper-1.20.6-65
-					if (!CommandAPIPaper.getConfiguration().shouldHookPaperReload()) {
-						for (Player player : Bukkit.getOnlinePlayers()) {
-							player.updateCommands();
-						}
-						return;
+					if (getConfiguration().isCommandAPIPlugin()) {
+						CommandAPI.logNormal("/minecraft:reload detected. Reloading CommandAPI commands!");
+						CommandAPIBukkit.get().reloadDataPacks();
 					}
-					CommandAPI.logNormal("/minecraft:reload detected. Reloading CommandAPI commands!");
-					CommandAPIBukkit.get().reloadDataPacks();
 				}
 			}, plugin);
 			CommandAPI.logNormal("Hooked into Paper ServerResourcesReloadedEvent");

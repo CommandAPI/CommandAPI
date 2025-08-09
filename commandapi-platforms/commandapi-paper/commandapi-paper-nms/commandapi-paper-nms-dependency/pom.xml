@@ -19,6 +19,7 @@
 			<groupId>dev.jorel</groupId>
 			<artifactId>commandapi-bukkit-nms-common</artifactId>
 			<version>${project.version}</version>
+			<classifier>mojang-mapped</classifier>
 		</dependency>
 
 		<!-- API types -->
@@ -63,43 +64,39 @@
 		<!-- NMS-specific implementations -->
 		<dependency>
 			<groupId>dev.jorel</groupId>
+			<artifactId>commandapi-bukkit-1.21.6</artifactId>
+			<version>${project.version}</version>
+			<classifier>mojang-mapped</classifier>
+		</dependency>
+		<dependency>
+			<groupId>dev.jorel</groupId>
 			<artifactId>commandapi-bukkit-1.21.5</artifactId>
 			<version>${project.version}</version>
+			<classifier>mojang-mapped</classifier>
 		</dependency>
 		<dependency>
 			<groupId>dev.jorel</groupId>
 			<artifactId>commandapi-bukkit-1.21.4</artifactId>
 			<version>${project.version}</version>
+			<classifier>mojang-mapped</classifier>
 		</dependency>
 		<dependency>
 			<groupId>dev.jorel</groupId>
 			<artifactId>commandapi-bukkit-1.21.2</artifactId>
 			<version>${project.version}</version>
+			<classifier>mojang-mapped</classifier>
 		</dependency>
 		<dependency>
 			<groupId>dev.jorel</groupId>
 			<artifactId>commandapi-bukkit-1.21</artifactId>
 			<version>${project.version}</version>
+			<classifier>mojang-mapped</classifier>
 		</dependency>
 		<dependency>
 			<groupId>dev.jorel</groupId>
 			<artifactId>commandapi-bukkit-1.20.5</artifactId>
 			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>dev.jorel</groupId>
-			<artifactId>commandapi-bukkit-1.20.3</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>dev.jorel</groupId>
-			<artifactId>commandapi-bukkit-1.20.2</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>dev.jorel</groupId>
-			<artifactId>commandapi-bukkit-1.20</artifactId>
-			<version>${project.version}</version>
+			<classifier>mojang-mapped</classifier>
 		</dependency>
 	</dependencies>
 

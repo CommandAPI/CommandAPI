@@ -128,8 +128,8 @@ public abstract class CommandAPIBukkit<Source> implements BukkitPlatform<Source>
 
 	private void checkDependencies() {
 		// Log successful hooks
-		Class<?> nbtContainerClass = CommandAPI.getConfiguration().getNBTContainerClass();
-		if (nbtContainerClass != null && CommandAPI.getConfiguration().getNBTContainerConstructor() != null) {
+		Class<?> nbtContainerClass = CommandAPIBukkit.getConfiguration().getNBTContainerClass();
+		if (nbtContainerClass != null && CommandAPIBukkit.getConfiguration().getNBTContainerConstructor() != null) {
 			CommandAPI.logNormal("Hooked into an NBT API with class " + nbtContainerClass.getName());
 		}
 		// We don't need to log if no NBT was found, constructing an NBTCompoundArgument without one will do that for us

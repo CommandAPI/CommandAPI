@@ -108,9 +108,10 @@ public class CommandAPI {
 
 			// Setup variables
 			CommandAPI.config = new InternalConfig(config);
+			InternalConfig platformConfig = CommandAPIVersionHandler.getConfig(config);
 
 			// Initialize handlers
-			LoadContext loadContext = CommandAPIVersionHandler.getPlatform();
+			LoadContext loadContext = CommandAPIVersionHandler.getPlatform(platformConfig);
 			CommandAPIPlatform<?, ?, ?> platform = loadContext.platform();
 			new CommandAPIHandler<>(platform);
 			loadContext.context().run();

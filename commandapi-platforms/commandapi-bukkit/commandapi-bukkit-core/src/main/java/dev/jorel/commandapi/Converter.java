@@ -200,7 +200,7 @@ public final class Converter {
 						.getCommand(commandName);
 			}
 
-			CommandSender proxiedSender = CommandAPI.getConfiguration().shouldSkipSenderProxy(plugin.getName())
+			CommandSender proxiedSender = CommandAPIBukkit.getConfiguration().shouldSkipSenderProxy(plugin.getName())
 					? sender.getCallee()
 					: mergeProxySender(sender);
 

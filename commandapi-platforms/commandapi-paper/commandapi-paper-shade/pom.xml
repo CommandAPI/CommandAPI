@@ -30,6 +30,11 @@
 			<version>${project.version}</version>
 			<type>pom</type>
 		</dependency>
+		<dependency>
+			<groupId>dev.jorel</groupId>
+			<artifactId>commandapi-paper-mojang-mapped</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -56,7 +61,39 @@
 										<exclude>dev/jorel/commandapi/CommandAPIVersionHandler**</exclude>
 									</excludes>
 								</filter>
+								<filter>
+									<artifact>dev.jorel:commandapi-core</artifact>
+									<excludes>
+										<exclude>dev/jorel/commandapi/MojangMappedVersionHandler**</exclude>
+									</excludes>
+								</filter>
 							</filters>
+							<relocations>
+								<relocation>
+									<pattern>org.bukkit.craftbukkit.v1_20_R4</pattern>
+									<shadedPattern>org.bukkit.craftbukkit</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>org.bukkit.craftbukkit.v1_21_R1</pattern>
+									<shadedPattern>org.bukkit.craftbukkit</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>org.bukkit.craftbukkit.v1_21_R2</pattern>
+									<shadedPattern>org.bukkit.craftbukkit</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>org.bukkit.craftbukkit.v1_21_R3</pattern>
+									<shadedPattern>org.bukkit.craftbukkit</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>org.bukkit.craftbukkit.v1_21_R4</pattern>
+									<shadedPattern>org.bukkit.craftbukkit</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>org.bukkit.craftbukkit.v1_21_R5</pattern>
+									<shadedPattern>org.bukkit.craftbukkit</shadedPattern>
+								</relocation>
+							</relocations>
 						</configuration>
 					</execution>
 				</executions>

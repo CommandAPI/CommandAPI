@@ -41,7 +41,7 @@ public class NBTCompoundArgument<NBTContainer> extends SafeOverrideableArgument<
 	 */
 	public NBTCompoundArgument(String nodeName) {
 		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentNBTCompound(), NBTContainer::toString);
-		if (CommandAPI.getConfiguration().getNBTContainerClass() == null || CommandAPI.getConfiguration().getNBTContainerConstructor() == null) {
+		if (CommandAPIBukkit.getConfiguration().getNBTContainerClass() == null || CommandAPIBukkit.getConfiguration().getNBTContainerConstructor() == null) {
 			throw new NullPointerException(
 					"The NBTCompoundArgument hasn't been initialized properly! Use CommandAPIConfig.initializeNBTAPI() in your onLoad() method");
 		}
@@ -50,7 +50,7 @@ public class NBTCompoundArgument<NBTContainer> extends SafeOverrideableArgument<
 	@SuppressWarnings("unchecked")
 	@Override
 	public Class<NBTContainer> getPrimitiveType() {
-		return (Class<NBTContainer>) CommandAPI.getConfiguration().getNBTContainerClass();
+		return (Class<NBTContainer>) CommandAPIBukkit.getConfiguration().getNBTContainerClass();
 	}
 
 	@Override
@@ -62,6 +62,6 @@ public class NBTCompoundArgument<NBTContainer> extends SafeOverrideableArgument<
 	@Override
 	public <CommandSourceStack> NBTContainer parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs)
 			throws CommandSyntaxException {
-		return (NBTContainer) CommandAPIBukkit.<CommandSourceStack>get().getNMS().getNBTCompound(cmdCtx, key, CommandAPI.getConfiguration().getNBTContainerConstructor());
+		return (NBTContainer) CommandAPIBukkit.<CommandSourceStack>get().getNMS().getNBTCompound(cmdCtx, key, CommandAPIBukkit.getConfiguration().getNBTContainerConstructor());
 	}
 }
