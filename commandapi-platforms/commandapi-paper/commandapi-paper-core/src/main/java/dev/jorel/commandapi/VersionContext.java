@@ -2,10 +2,16 @@ package dev.jorel.commandapi;
 
 import dev.jorel.commandapi.nms.BundledNMS;
 
-public record VersionContext(BundledNMS<?> nms, Runnable context) {
+import java.util.function.Consumer;
+
+public record VersionContext(BundledNMS<?> nms, Consumer<CommandAPILogger> context, Consumer<CommandAPILogger> additionalContext) {
+
+	public VersionContext(BundledNMS<?> nms, Consumer<CommandAPILogger> context) {
+		this(nms, context, (logger) -> {});
+	}
 
 	public VersionContext(BundledNMS<?> nms) {
-		this(nms, () -> {});
+		this(nms, (logger) -> {});
 	}
 
 }

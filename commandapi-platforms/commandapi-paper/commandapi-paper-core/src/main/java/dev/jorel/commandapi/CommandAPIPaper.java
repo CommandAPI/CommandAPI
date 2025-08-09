@@ -48,7 +48,8 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 		setInternalConfig(config);
 
 		VersionContext context = (VersionContext) CommandAPIVersionHandler.getVersion();
-		context.context().run();
+		context.context().accept(getLogger());
+		context.additionalContext().accept(getLogger());
 		this.nms = (BundledNMS<Source>) context.nms();
 		super.nms = this.nms;
 
