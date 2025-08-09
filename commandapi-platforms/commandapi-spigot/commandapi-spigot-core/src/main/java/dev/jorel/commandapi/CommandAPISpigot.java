@@ -42,7 +42,7 @@ public abstract class CommandAPISpigot<Source> extends CommandAPIBukkit<Source> 
 		if (spigot != null) {
 			return (CommandAPISpigot<Source>) spigot;
 		}
-		throw new IllegalStateException("Tried to access CommandAPIBukkit instance, but it was null! Are you using CommandAPI features before calling CommandAPI#onLoad?");
+		throw new IllegalStateException("Tried to access CommandAPISpigot instance, but it was null! Are you using CommandAPI features before calling CommandAPI#onLoad?");
 	}
 
 	public static InternalSpigotConfig getConfiguration() {
@@ -58,8 +58,8 @@ public abstract class CommandAPISpigot<Source> extends CommandAPIBukkit<Source> 
 		if (config instanceof CommandAPISpigotConfig spigotConfig) {
 			CommandAPISpigot.setInternalConfig(new InternalSpigotConfig(spigotConfig));
 		} else {
-			CommandAPI.logError("CommandAPIBukkit was loaded with non-Bukkit config!");
-			CommandAPI.logError("Attempts to access Bukkit-specific config variables will fail!");
+			CommandAPI.logError("CommandAPISpigot was loaded with non-Spigot config!");
+			CommandAPI.logError("Attempts to access Spigot-specific config variables will fail!");
 		}
 		super.onLoad();
 	}

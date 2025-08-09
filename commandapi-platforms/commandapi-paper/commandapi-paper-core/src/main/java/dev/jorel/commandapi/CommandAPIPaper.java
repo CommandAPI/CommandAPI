@@ -74,7 +74,7 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 		if (paper != null) {
 			return (CommandAPIPaper<Source>) paper;
 		}
-		throw new IllegalStateException("Tried to access CommandAPIBukkit instance, but it was null! Are you using CommandAPI features before calling CommandAPI#onLoad?");
+		throw new IllegalStateException("Tried to access CommandAPIPaper instance, but it was null! Are you using CommandAPI features before calling CommandAPI#onLoad?");
 	}
 
 	public static InternalPaperConfig getConfiguration() {
@@ -103,8 +103,8 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 			CommandAPIPaper.setInternalConfig(new InternalPaperConfig(paperConfig));
 			this.lifecycleEventOwner = paperConfig.lifecycleEventOwner;
 		} else {
-			CommandAPI.logError("CommandAPIBukkit was loaded with non-Bukkit config!");
-			CommandAPI.logError("Attempts to access Bukkit-specific config variables will fail!");
+			CommandAPI.logError("CommandAPIPaper was loaded with non-Paper config!");
+			CommandAPI.logError("Attempts to access Paper-specific config variables will fail!");
 		}
 		super.onLoad();
 		checkPaperDependencies();
