@@ -1,16 +1,20 @@
 package dev.jorel.commandapi.arguments;
 
-import org.mockbukkit.mockbukkit.command.ConsoleCommandSenderMock;
-import org.mockbukkit.mockbukkit.entity.PlayerMock;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.CommandTestBase;
 import dev.jorel.commandapi.MockCommandSource;
+import org.bukkit.entity.Player;
+import org.bukkit.profile.PlayerProfile;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.api.Test;
+import org.mockbukkit.mockbukkit.command.ConsoleCommandSenderMock;
+import org.mockbukkit.mockbukkit.entity.PlayerMock;
+
+import java.util.ArrayList;
+import java.util.List;
 
 class ProfileArgumentTypeTests extends CommandTestBase {
 	// Setup
@@ -24,23 +28,26 @@ class ProfileArgumentTypeTests extends CommandTestBase {
 		super.tearDown();
 	}
 
-	private void registerCommand(boolean offlinePlayer) {
-		// Both arguments reference ProfileArgumentType
+	private void registerCommand() {
 		new CommandAPICommand("test")
-			.withArguments(
-				offlinePlayer ?
-					new OfflinePlayerArgument("offline") :
-					new PlayerProfileArgument("player")
-			)
+			.withArguments(new PlayerProfileArgument("player"))
 			.executes(DEFAULT_EXECUTOR)
 			.register();
 	}
 
+	private List<PlayerProfile> profileList(Player... players) {
+		List<PlayerProfile> profileList = new ArrayList<>(players.length);
+		for (Player player : players) {
+			profileList.add(player.getPlayerProfile());
+		}
+
+		return profileList;
+	}
+
 	// Test
-	@ParameterizedTest
-	@ValueSource(booleans = {false, true})
-	void testEmptyInputs(boolean offlinePlayer) throws CommandSyntaxException {
-		registerCommand(offlinePlayer);
+	@Test
+	void testEmptyInputs() throws CommandSyntaxException {
+		registerCommand();
 
 		PlayerMock player = server.addPlayer();
 
@@ -65,10 +72,9 @@ class ProfileArgumentTypeTests extends CommandTestBase {
 		);
 	}
 
-	@ParameterizedTest
-	@ValueSource(booleans = {false, true})
-	void testDefaultSuggestions(boolean offlinePlayer) {
-		registerCommand(offlinePlayer);
+	@Test
+	void testDefaultSuggestions() {
+		registerCommand();
 
 		server.addPlayer("Player1");
 		server.addPlayer("Player2");
@@ -88,10 +94,9 @@ class ProfileArgumentTypeTests extends CommandTestBase {
 		);
 	}
 
-	@ParameterizedTest
-	@ValueSource(booleans = {false, true})
-	void testEntitySelectorErrors(boolean offlinePlayer) {
-		registerCommand(offlinePlayer);
+	@Test
+	void testEntitySelectorErrors() {
+		registerCommand();
 		ConsoleCommandSenderMock console = server.getConsoleSender();
 
 		assertCommandFails(
@@ -110,10 +115,9 @@ class ProfileArgumentTypeTests extends CommandTestBase {
 		);
 	}
 
-	@ParameterizedTest
-	@ValueSource(booleans = {false, true})
-	void testEntitySelectorSuccess(boolean offlinePlayer) {
-		registerCommand(offlinePlayer);
+	@Test
+	void testEntitySelectorSuccess() {
+		registerCommand();
 
 		// Layout: p1  p2
 		PlayerMock p1 = server.addPlayer();
@@ -122,32 +126,30 @@ class ProfileArgumentTypeTests extends CommandTestBase {
 		PlayerMock p2 = server.addPlayer();
 		p2.teleport(p2.getLocation().set(1, 0, 0));
 
-		// When multiple are selected, defaults to first in order
-		// Arbitrary order ends up selecting first player, since it references a LinkedHashSet
+		// Arbitrary order uses creation order, since it references a LinkedHashSet
 		assertCommandSucceedsWithArguments(
 			p1, "test @a",
-			p1
+			profileList(p1, p2)
 		);
 		assertCommandSucceedsWithArguments(
 			p2, "test @a",
-			p1
+			profileList(p1, p2)
 		);
 
 		// @p selects nearest
 		assertCommandSucceedsWithArguments(
 			p1, "test @p",
-			p1
+			profileList(p1)
 		);
 		assertCommandSucceedsWithArguments(
 			p2, "test @p",
-			p2
+			profileList(p2)
 		);
 	}
 
-	@ParameterizedTest
-	@ValueSource(booleans = {false, true})
-	void testEntitySelectorSuggestions(boolean offlinePlayer) {
-		registerCommand(offlinePlayer);
+	@Test
+	void testEntitySelectorSuggestions() {
+		registerCommand();
 
 		server.addPlayer("Player1");
 		server.addPlayer("Player2");
@@ -165,10 +167,9 @@ class ProfileArgumentTypeTests extends CommandTestBase {
 		);
 	}
 
-	@ParameterizedTest
-	@ValueSource(booleans = {false, true})
-	void testNameSelectorErrors(boolean offlinePlayer) {
-		registerCommand(offlinePlayer);
+	@Test
+	void testNameSelectorErrors() {
+		registerCommand();
 
 		PlayerMock playerA = server.addPlayer("PlayerA");
 
@@ -178,10 +179,9 @@ class ProfileArgumentTypeTests extends CommandTestBase {
 		);
 	}
 
-	@ParameterizedTest
-	@ValueSource(booleans = {false, true})
-	void testNameSelectorSuccess(boolean offlinePlayer) {
-		registerCommand(offlinePlayer);
+	@Test
+	void testNameSelectorSuccess() {
+		registerCommand();
 
 		PlayerMock playerA = server.addPlayer("PlayerA");
 		PlayerMock playerB = server.addPlayer("PlayerB");
@@ -190,24 +190,23 @@ class ProfileArgumentTypeTests extends CommandTestBase {
 
 		assertCommandSucceedsWithArguments(
 			console, "test PlayerA",
-			playerA
+			profileList(playerA)
 		);
 		assertCommandSucceedsWithArguments(
 			console, "test PlayerB",
-			playerB
+			profileList(playerB)
 		);
 
 		// Not case-sensitive
 		assertCommandSucceedsWithArguments(
 			console, "test pLAyeRa",
-			playerA
+			profileList(playerA)
 		);
 	}
 
-	@ParameterizedTest
-	@ValueSource(booleans = {false, true})
-	void testNameSuggestions(boolean offlinePlayer) {
-		registerCommand(offlinePlayer);
+	@Test
+	void testNameSuggestions() {
+		registerCommand();
 
 		server.addPlayer("alice");
 		server.addPlayer("allan");

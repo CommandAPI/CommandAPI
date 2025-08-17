@@ -1,6 +1,5 @@
 package dev.jorel.commandapi;
 
-import io.papermc.paper.plugin.lifecycle.event.LifecycleEventOwner;
 import org.mockbukkit.mockbukkit.MockBukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -12,7 +11,7 @@ import java.util.function.Consumer;
 public class MockCommandAPIPlugin extends JavaPlugin {
 	// Allow loading with settings,
 	//  Default to none if `MockBukkit.load(MockCommandAPIPlugin.class)` is used directly
-	private static Consumer<CommandAPIPaperConfig<MockCommandAPIPlugin>> configureSettings = null;
+	private static Consumer<CommandAPISpigotConfig> configureSettings = null;
 
 	/**
 	 * Loads the CommandAPI plugin using {@link MockBukkit#load(Class)}.
@@ -26,18 +25,18 @@ public class MockCommandAPIPlugin extends JavaPlugin {
 	/**
 	 * Loads the CommandAPI plugin using {@link MockBukkit#load(Class)}.
 	 *
-	 * @param configureSettings A {@link Consumer} that can configure the settings of the {@link dev.jorel.commandapi.CommandAPIPaperConfig}
+	 * @param configureSettings A {@link Consumer} that can configure the settings of the {@link CommandAPISpigotConfig}
 	 *                          before it is used to load the CommandAPI plugin.
 	 * @return The {@link MockCommandAPIPlugin} instance that was loaded.
 	 */
-	public static MockCommandAPIPlugin load(Consumer<CommandAPIPaperConfig<MockCommandAPIPlugin>> configureSettings) {
+	public static MockCommandAPIPlugin load(Consumer<CommandAPISpigotConfig> configureSettings) {
 		MockCommandAPIPlugin.configureSettings = configureSettings;
 		return MockBukkit.load(MockCommandAPIPlugin.class);
 	}
 
 	@Override
 	public void onLoad() {
-		CommandAPIPaperConfig<MockCommandAPIPlugin> config = new CommandAPIPaperConfig<>(this.getPluginMeta(), this);
+		CommandAPISpigotConfig config = new CommandAPISpigotConfig(this);
 
 		if (configureSettings != null) {
 			configureSettings.accept(config);
@@ -49,7 +48,7 @@ public class MockCommandAPIPlugin extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-		CommandAPIPaper.onEnable(this);
+		CommandAPI.onEnable();
 	}
 
 	@Override

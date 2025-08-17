@@ -83,4 +83,13 @@ public class MockCommandAPI {
 	public MockCommandRegistrationStrategy getCommandRegistrationStrategy() {
 		return commandRegistrationStrategy;
 	}
+
+	// Logging
+	/**
+	 * A global toggle for whether the default logger returned by {@link CommandAPIBukkit#getLogger()} should print
+	 * messages to the console. This is {@code false} by default, so not messages will appear. If you don't provide
+	 * your own logger using {@link CommandAPI#setLogger(CommandAPILogger)} and set this to {@code true} before calling
+	 * {@link CommandAPI#onLoad(CommandAPIConfig)}, then the CommandAPI will write messages into the test log.
+	 */
+	public static boolean ENABLE_LOGGING = false;
 }

@@ -5,12 +5,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>dev.jorel</groupId>
-		<artifactId>commandapi-bukkit</artifactId>
+		<artifactId>commandapi-spigot</artifactId>
 		<version>11.0.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>commandapi-bukkit-test-toolkit</artifactId>
-	<name>Bukkit support testing toolkit</name>
+	<artifactId>commandapi-spigot-test-toolkit</artifactId>
+	<name>Spigot support testing toolkit</name>
 
 	<properties>
 		<maven.compiler.source>21</maven.compiler.source>
@@ -30,73 +30,66 @@
 		</repository>
 	</repositories>
 
+
+
 	<dependencies>
 		<!-- Compatibility with MockBukkit API -->
 		<!-- This provides transitive access to spigot-api and paper-api
-		      If we listed our own dependency for those, we could put a different version, which often causes problems
-		      Since we aren't just using MockBukkit for tests, we can rely on this dependency for the Spigot/Paper api -->
+			  If we listed our own dependency for those, we could put a different version, which often causes problems
+			  Since we aren't just using MockBukkit for tests, we can rely on this dependency for the Spigot/Paper api -->
 		<dependency>
 			<groupId>org.mockbukkit.mockbukkit</groupId>
 			<artifactId>mockbukkit-v1.21</artifactId>
 			<version>4.45.1</version>
 			<scope>provided</scope>
 		</dependency>
-
-		<!-- Compatibility with CommandAPI Bukkit API -->
 		<dependency>
 			<groupId>dev.jorel</groupId>
-			<artifactId>commandapi-bukkit-core</artifactId>
+			<artifactId>commandapi-bukkit-test-toolkit</artifactId>
+			<version>${project.version}</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<!-- Compatibility with CommandAPI Spigot API -->
+		<dependency>
+			<groupId>dev.jorel</groupId>
+			<artifactId>commandapi-spigot-core</artifactId>
 			<version>${project.version}</version>
 			<scope>provided</scope>
-		</dependency>
-
-		<!-- Use Mockito, pass to dependents if they don't provide it themselves -->
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
-			<version>5.11.0</version>
-			<scope>compile</scope>
-		</dependency>
-
-		<!-- Pass Brigadier to our dependents -->
-		<dependency>
-			<groupId>com.mojang</groupId>
-			<artifactId>brigadier</artifactId>
-			<version>1.0.18</version>
-			<scope>compile</scope>
-		</dependency>
-
-		<!-- Passing this to dependents gets rid of a `SLF4J: No SLF4J providers were found` warning -->
-		<!-- https://stackoverflow.com/questions/54652836/found-slf4j-api-dependency-but-no-providers-were-found -->
-		<!-- This version matches the slf4j-api declared by our dependency on paper-api through MockBukkit-1.21 -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-nop</artifactId>
-			<version>2.0.9</version>
-			<scope>compile</scope>
-		</dependency>
-
-		<!-- Run our own tests with JUnit API -->
-		<!-- Note: This version matches the artifactId `junit-jupiter` dependency transitively inherited
-		     from `MockBukkit-v1.21`. If it doesn't match, the tests might fail with class not found errors. -->
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-engine</artifactId>
-			<version>5.11.0</version>
-			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
 	<build>
-		<!-- Fill ${project.version} in plugin.yml -->
-		<resources>
-			<resource>
-				<directory>src/main/resources</directory>
-				<filtering>true</filtering>
-			</resource>
-		</resources>
-
 		<plugins>
+			<!-- Remove commandapi-core's VersionHandler in favor of ours -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<filters>
+								<filter>
+									<artifact>dev.jorel:commandapi-core</artifact>
+									<excludes>
+										<exclude>dev/jorel/commandapi/CommandAPIVersionHandler**</exclude>
+									</excludes>
+								</filter>
+							</filters>
+							<transformers>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+									<resource>LICENSE</resource>
+								</transformer>
+							</transformers>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
 			<!-- Run our own tests -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -107,9 +100,9 @@
 					<!-- To help with debugging tests, you can specify an include
 					 to limit a build to only run a certain test file. Uncomment
 					 here if you want to do that: -->
-<!--					<includes>-->
-<!--						<include>**/DispatchCommandUtilitiesTests.java</include>-->
-<!--					</includes>-->
+					<!--					<includes>-->
+					<!--						<include>**/DispatchCommandUtilitiesTests.java</include>-->
+					<!--					</includes>-->
 				</configuration>
 			</plugin>
 

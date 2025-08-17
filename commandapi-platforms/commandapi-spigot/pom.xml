@@ -20,8 +20,9 @@
         <module>commandapi-spigot-vh</module>
 		<module>commandapi-spigot-plugin</module>
 		<module>commandapi-spigot-shade</module>
+		<module>commandapi-spigot-test-toolkit</module>
 
-		<!-- Do not compile, I only need the code for when I do the documentation -->
+        <!-- Do not compile, I only need the code for when I do the documentation -->
 		<!--<module>commandapi-spigot-documentation-code</module> -->
 
 		<!-- Tests do not compile
