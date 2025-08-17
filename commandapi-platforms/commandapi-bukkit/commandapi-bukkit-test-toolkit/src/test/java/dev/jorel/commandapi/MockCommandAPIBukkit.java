@@ -1,6 +1,7 @@
 package dev.jorel.commandapi;
 
 import dev.jorel.commandapi.commandsenders.*;
+import dev.jorel.commandapi.nms.MockNMS;
 import dev.jorel.commandapi.wrappers.NativeProxyCommandSender;
 import org.bukkit.Bukkit;
 import org.bukkit.command.*;
@@ -11,7 +12,7 @@ import org.bukkit.entity.Player;
  * Does not rely on any version-specific Minecraft code to (ideally) support testing in any version.
  */
 public class MockCommandAPIBukkit extends CommandAPIBukkit<MockCommandSource> {
-	// Instance
+	// References to utility classes
 	private final MockCommandAPI mockCommandAPI;
 
 	public MockCommandAPIBukkit(MockInternalBukkitConfig config) {
@@ -51,13 +52,9 @@ public class MockCommandAPIBukkit extends CommandAPIBukkit<MockCommandSource> {
 		return mockCommandAPI.getCommandRegistrationStrategy();
 	}
 
-	public static boolean ENABLE_LOGGING = false;
-
 	@Override
 	public CommandAPILogger getLogger() {
-		return ENABLE_LOGGING ?
-			super.getLogger() :
-			CommandAPILogger.bindToMethods(msg -> {}, msg -> {}, msg -> {}, (msg, ex) -> {});
+		return MockCommandAPI.ENABLE_LOGGING ? super.getLogger() : CommandAPILogger.silent();
 	}
 
 	// This logic copied from CommandAPISpigot

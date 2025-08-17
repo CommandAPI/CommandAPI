@@ -1,4 +1,4 @@
-package dev.jorel.commandapi;
+package dev.jorel.commandapi.nms;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.Message;
@@ -6,12 +6,14 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
+import dev.jorel.commandapi.CommandAPIBukkit;
+import dev.jorel.commandapi.MockCommandSource;
+import dev.jorel.commandapi.UnimplementedMethodException;
 import dev.jorel.commandapi.arguments.*;
 import dev.jorel.commandapi.arguments.parser.EntitySelectorParser;
 import dev.jorel.commandapi.arguments.parser.RegistryParser;
 import dev.jorel.commandapi.commandsenders.AbstractCommandSender;
 import dev.jorel.commandapi.commandsenders.BukkitCommandSender;
-import dev.jorel.commandapi.nms.NMS;
 import dev.jorel.commandapi.wrappers.*;
 import dev.jorel.commandapi.wrappers.Rotation;
 import net.kyori.adventure.text.Component;
