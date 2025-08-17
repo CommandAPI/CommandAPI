@@ -3,7 +3,6 @@ package dev.jorel.commandapi.testing;
 import com.mojang.brigadier.tree.CommandNode;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
-import dev.jorel.commandapi.CommandAPIPaper;
 import dev.jorel.commandapi.CommandAPIPaperConfig;
 import dev.jorel.commandapi.arguments.AdvancementArgument;
 import dev.jorel.commandapi.arguments.AngleArgument;
@@ -91,7 +90,7 @@ public class TestPlugin extends JavaPlugin {
 
 	@Override
 	public void onLoad() {
-		CommandAPI.onLoad(new CommandAPIPaperConfig<>(this.getPluginMeta(), this));
+		CommandAPI.onLoad(new CommandAPIPaperConfig(this));
 
 		register(new AdvancementArgument("advancementtype"), Advancement.class, advancement -> advancement.key().asString());
 		register(new AngleArgument("angletype"), float.class, Object::toString);

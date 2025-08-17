@@ -4,7 +4,7 @@ A simple example showcasing testing CommandAPI commands with [MockBukkit](https:
 
 Key points:
 
-- The MockBukkit and `commandapi-bukkit-test-toolkit` dependencies are listed with the `test` scope before the normal dependencies for `commandapi-bukkit-shade` and `spigot-api`. This ensures that when running tests, certain classes that are compatible with the testing environment override the regular classes. There is also a dependency for the [JUnit](https://junit.org/junit5/) API, which helps when writing the tests.
+- The MockBukkit and `commandapi-spigot-test-toolkit` dependencies are listed with the `test` scope before the normal dependencies for `commandapi-spigot-shade` and `spigot-api`. This ensures that when running tests, certain classes that are compatible with the testing environment override the regular classes. There is also a dependency for the [JUnit](https://junit.org/junit5/) API, which helps when writing the tests.
 
 ```xml
 <dependencies>
@@ -29,7 +29,6 @@ Key points:
 		<scope>compile</scope>
 	</dependency>
 
-	<!-- Can also be paper-api -->
 	<dependency>
 		<groupId>org.spigotmc</groupId>
 		<artifactId>spigot-api</artifactId>
@@ -52,7 +51,7 @@ Key points:
 public class Main extends JavaPlugin {
 	@Override
 	public void onLoad() {
-		CommandAPI.onLoad(new CommandAPIBukkitConfig(this));
+		CommandAPI.onLoad(new CommandAPISpigotConfig(this));
 	}
 
 	@Override

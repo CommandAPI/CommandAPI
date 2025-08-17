@@ -1,37 +1,27 @@
 package dev.jorel.commandapi;
 
-import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.builder.RequiredArgumentBuilder;
-import com.mojang.brigadier.suggestion.SuggestionProvider;
-import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import com.mojang.brigadier.tree.RootCommandNode;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
-import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.bootstrap.BootstrapContext;
 import io.papermc.paper.plugin.lifecycle.event.LifecycleEventManager;
-import io.papermc.paper.plugin.lifecycle.event.LifecycleEventOwner;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import org.bukkit.Bukkit;
 import org.bukkit.help.HelpTopic;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 /**
  * Handles logic for registering commands after Paper build 65, where <a href="https://github.com/PaperMC/Paper/pull/8235">https://github.com/PaperMC/Paper/pull/8235</a>
  * changed a bunch of the behind-the-scenes logic.
  */
+@SuppressWarnings("UnstableApiUsage") // We know we are using new Paper Command API stuff
 public class PaperCommandRegistration<Source> extends CommandRegistrationStrategy<Source> {
 	// References to necessary methods
 	private final Supplier<CommandDispatcher<Source>> getBrigadierDispatcher;
@@ -79,6 +69,7 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 	}
 
 	@Override
+	@SuppressWarnings("ConstantValue") // `getServer` actually is `null` when we are in bootstrap
 	public LiteralCommandNode<Source> registerCommandNode(LiteralArgumentBuilder<Source> node, String namespace) {
 		LiteralCommandNode<Source> built = node.build();
 		if (Bukkit.getServer() == null) {
@@ -108,7 +99,7 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 		CommandAPIBukkit.get().updateHelpForCommands(CommandAPI.getRegisteredCommands());
 	}
 
-	@SuppressWarnings("ConstantValue")
+	@SuppressWarnings("ConstantValue") // `getServer` actually is `null` when we are in bootstrap
 	void registerLifecycleEvent() {
 		boolean bootstrap = Bukkit.getServer() == null;
 		if (bootstrap && !lifecycleEventRegistered[0]) {

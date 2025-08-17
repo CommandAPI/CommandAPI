@@ -16,11 +16,11 @@ repositories {
 	mavenCentral()
 	// This adds the Spigot Maven repository to the build
 	maven {
-		url 'https://papermc.io/repo/repository/maven-public/'
+		url = 'https://repo.papermc.io/repository/maven-public/'
 	}
 	// CodeMC repository for the NBT API
 	maven {
-		url 'https://repo.codemc.org/repository/maven-public/'
+		url = 'https://repo.codemc.org/repository/maven-public/'
 	}
 }
 
