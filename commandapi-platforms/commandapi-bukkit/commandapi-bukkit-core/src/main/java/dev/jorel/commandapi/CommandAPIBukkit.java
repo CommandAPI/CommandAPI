@@ -449,7 +449,7 @@ public abstract class CommandAPIBukkit<Source> implements BukkitPlatform<Source>
 	/**
 	 * Initializes the CommandAPI's implementation of an NBT API. If you are shading
 	 * the CommandAPI, you should be using
-	 * {@link CommandAPIConfig#initializeNBTAPI(Class, Function)} in your
+	 * {@link CommandAPIBukkitConfig#initializeNBTAPI(Class, Function)} in your
 	 * {@code onLoad} method instead of calling this method.
 	 *
 	 * @param <T>                     the type that the NBT compound container class
