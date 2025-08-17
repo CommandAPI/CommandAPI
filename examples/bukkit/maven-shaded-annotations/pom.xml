@@ -12,7 +12,7 @@
 		<!-- This adds the Paper Maven repository to the build -->
 		<repository>
 			<id>papermc</id>
-			<url>https://papermc.io/repo/repository/maven-public/</url>
+			<url>https://repo.papermc.io/repository/maven-public/</url>
 		</repository>
 
 		<!-- CodeMC repository for the NBT API -->
@@ -34,7 +34,7 @@
 		<!-- The CommandAPI dependency used for building commands with annotations -->
 		<dependency>
 			<groupId>dev.jorel</groupId>
-			<artifactId>commandapi-annotations</artifactId>
+			<artifactId>commandapi-paper-annotations</artifactId>
 			<version>11.0.0-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
@@ -43,7 +43,7 @@
 		<dependency>
 			<groupId>io.papermc.paper</groupId>
 			<artifactId>paper-api</artifactId>
-			<version>1.20.1-R0.1-SNAPSHOT</version>
+			<version>1.21.8-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>

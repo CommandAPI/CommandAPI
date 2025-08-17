@@ -2,7 +2,6 @@ package dev.jorel.commandapi;
 
 import io.papermc.paper.plugin.configuration.PluginMeta;
 import io.papermc.paper.plugin.lifecycle.event.LifecycleEventOwner;
-import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 
 @SuppressWarnings("UnstableApiUsage")
 public class InternalPaperConfig extends InternalBukkitConfig {
@@ -11,7 +10,7 @@ public class InternalPaperConfig extends InternalBukkitConfig {
 	private final LifecycleEventOwner lifecycleEventOwner;
 	private final boolean isCommandAPIPlugin;
 
-	public InternalPaperConfig(CommandAPIPaperConfig<? extends LifecycleEventOwner> config) {
+	public InternalPaperConfig(CommandAPIPaperConfig config) {
 		super(config);
 		this.pluginMeta = config.pluginMeta;
 		this.lifecycleEventOwner = config.lifecycleEventOwner;
