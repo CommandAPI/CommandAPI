@@ -22,7 +22,7 @@ class CommandAPIVersionHandlerOverridingTests {
 		MockBukkit.unmock();
 	}
 
-	private static class CustomMockCommandAPIBukkit extends MockCommandAPIBukkit {
+	private static class CustomMockCommandAPIBukkit extends MockCommandAPI {
 
 	}
 
@@ -31,7 +31,7 @@ class CommandAPIVersionHandlerOverridingTests {
 	void testDefaultPlatform() {
 		MockCommandAPIPlugin.load();
 
-		assertEquals(MockCommandAPIBukkit.class, CommandAPITestUtilities.getCommandAPIPlatform().getClass());
+		assertEquals(MockCommandAPI.class, CommandAPITestUtilities.getMockCommandAPI().getClass());
 	}
 
 	@Test
@@ -39,7 +39,7 @@ class CommandAPIVersionHandlerOverridingTests {
 		CommandAPIVersionHandler.usePlatformImplementation(new CustomMockCommandAPIBukkit());
 		MockCommandAPIPlugin.load();
 
-		assertEquals(CustomMockCommandAPIBukkit.class, CommandAPITestUtilities.getCommandAPIPlatform().getClass());
+		assertEquals(CustomMockCommandAPIBukkit.class, CommandAPITestUtilities.getMockCommandAPI().getClass());
 	}
 
 	@Test
@@ -47,12 +47,12 @@ class CommandAPIVersionHandlerOverridingTests {
 		CommandAPIVersionHandler.usePlatformImplementation(new CustomMockCommandAPIBukkit());
 		MockCommandAPIPlugin.load();
 
-		assertEquals(CustomMockCommandAPIBukkit.class, CommandAPITestUtilities.getCommandAPIPlatform().getClass());
+		assertEquals(CustomMockCommandAPIBukkit.class, CommandAPITestUtilities.getMockCommandAPI().getClass());
 
 		MockBukkit.unmock();
 		MockBukkit.mock();
 
 		MockCommandAPIPlugin.load();
-		assertEquals(MockCommandAPIBukkit.class, CommandAPITestUtilities.getCommandAPIPlatform().getClass());
+		assertEquals(MockCommandAPI.class, CommandAPITestUtilities.getMockCommandAPI().getClass());
 	}
 }

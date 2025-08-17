@@ -7,11 +7,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.function.Consumer;
 
 /**
- * A {@link JavaPlugin} that loads the CommandAPI in a testing environment. If your plugin depends on the CommandAPI
- * plugin when running on a server (you aren't shading the CommandAPI), load this class before loading your own plugin
- * with {@link MockBukkit}. You can do this directly using {@code MockBukkit.load(MockCommandAPIPlugin.class);}, or with
- * {@link MockCommandAPIPlugin#load()}. If you need to configure settings usually located in the CommandAPI's plugin.yml,
- * use {@link MockCommandAPIPlugin#load(Consumer)}.
+ * Loads the CommandAPI in this abstract Bukkit environment.
  */
 public class MockCommandAPIPlugin extends JavaPlugin {
 	// Allow loading with settings,

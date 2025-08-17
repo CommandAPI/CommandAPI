@@ -15,7 +15,6 @@ import dev.jorel.commandapi.commandsenders.AbstractPlayer;
 import dev.jorel.commandapi.commandsenders.BukkitCommandSender;
 import dev.jorel.commandapi.network.BukkitCommandAPIMessenger;
 import dev.jorel.commandapi.nms.NMS;
-import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Keyed;
@@ -80,14 +79,6 @@ public abstract class CommandAPIBukkit<Source> implements BukkitPlatform<Source>
 		throw new IllegalStateException("Tried to access CommandAPIBukkit instance, but it was null! Are you using CommandAPI features before calling CommandAPI#onLoad?");
 	}
 
-	@SuppressWarnings("unchecked")
-	public static <T extends BukkitPlatform<?>> T platform() {
-		if (CommandAPIBukkit.bukkit != null) {
-			return (T) bukkit;
-		}
-		throw new IllegalStateException("Tried to access the Bukkit platform, but it was null! Are you using CommandAPI features before calling CommandPAI#onLoad?");
-	}
-
 	public JavaPlugin getPlugin() {
 		return plugin;
 	}
@@ -143,7 +134,7 @@ public abstract class CommandAPIBukkit<Source> implements BukkitPlatform<Source>
 			}
 		}
 
-		commandRegistrationStrategy = ((BukkitPlatform<Source>) bukkit).createCommandRegistrationStrategy();
+		commandRegistrationStrategy = createCommandRegistrationStrategy();
 	}
 
 	/*
@@ -406,6 +397,7 @@ public abstract class CommandAPIBukkit<Source> implements BukkitPlatform<Source>
 		return commandRegistrationStrategy.getBrigadierDispatcher();
 	}
 
+	@Override
 	public CommandAPILogger getLogger() {
 		if (logger == null) {
 			logger = new DefaultLogger();

@@ -8,7 +8,6 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
-import dev.jorel.commandapi.BukkitTooltip;
 import dev.jorel.commandapi.CommandRegistrationStrategy;
 import dev.jorel.commandapi.arguments.ArgumentSubType;
 import dev.jorel.commandapi.arguments.SuggestionProviders;
@@ -58,7 +57,6 @@ import org.bukkit.Axis;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.Registry;
 import org.bukkit.Sound;
 import org.bukkit.World;
@@ -103,7 +101,6 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 
 	private final SimpleCommandExceptionType noEntitiesFound;
 	private final SimpleCommandExceptionType noPlayersFound;
-	private final SimpleCommandExceptionType unknownPlayer;
 
 	public APITypeProvider(PaperNMS<?> paperNMS) {
 		this.paperNMS = (PaperNMS<CommandSourceStack>) paperNMS;
@@ -112,7 +109,6 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 		GsonComponentSerializer gson = GsonComponentSerializer.gson();
 		this.noEntitiesFound = new SimpleCommandExceptionType(paperNMS.bukkitNMS().generateMessageFromJson(gson.serialize(Component.translatable("argument.entity.notfound.entity"))));
 		this.noPlayersFound = new SimpleCommandExceptionType(paperNMS.bukkitNMS().generateMessageFromJson(gson.serialize(Component.translatable("argument.entity.notfound.player"))));
-		this.unknownPlayer = new SimpleCommandExceptionType(paperNMS.bukkitNMS().generateMessageFromJson(gson.serialize(Component.translatable("argument.player.unknown"))));
 	}
 
 	private ArgumentType<?> getArgumentType(ThrowingSupplier<ArgumentType<?>> paper, Supplier<ArgumentType<?>> nms) {
@@ -639,23 +635,6 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	}
 
 	@Override
-	public OfflinePlayer getOfflinePlayer(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		return parseT(cmdCtx, key,
-			(ctx, name) -> Bukkit.getOfflinePlayer(getIdFromProfile(ctx, name)),
-			(ctx, name) -> paperNMS.bukkitNMS().getOfflinePlayer(ctx, name)
-		);
-	}
-
-	private UUID getIdFromProfile(CommandContext<CommandSourceStack> ctx, String name) throws CommandSyntaxException {
-		Collection<PlayerProfile> playerProfiles = ctx.getArgument(name, PlayerProfileListResolver.class).resolve(ctx.getSource());
-		UUID id = playerProfiles.iterator().next().getId();
-		if (id == null) {
-			throw unknownPlayer.create();
-		}
-		return id;
-	}
-
-	@Override
 	public RegistryParser<PotionEffectType> getPotionEffect(CommandContext<CommandSourceStack> cmdCtx, String key) {
 		return new RegistryParser<>(
 			() -> cmdCtx.getArgument(key, PotionEffectType.class),
@@ -783,7 +762,7 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	}
 
 	@Override
-	public <Source> BukkitCommandSender<? extends CommandSender> getCommandSenderFromCommandSource(Source css) {
+	public BukkitCommandSender<? extends CommandSender> getCommandSenderFromCommandSource(CommandSourceStack css) {
 		return paperNMS.bukkitNMS().getCommandSenderFromCommandSource(css);
 	}
 
