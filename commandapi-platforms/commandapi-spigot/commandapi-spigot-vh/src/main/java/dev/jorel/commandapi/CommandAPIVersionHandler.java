@@ -14,27 +14,32 @@ import org.bukkit.Bukkit;
 
 public abstract class CommandAPIVersionHandler {
 
-	static LoadContext getPlatform(InternalConfig config) {
-		InternalSpigotConfig spigotConfig = (InternalSpigotConfig) config;
+	static LoadContext getPlatform(CommandAPIConfig<?> config) {
+		InternalSpigotConfig internalSpigotConfig;
+		if (config instanceof CommandAPISpigotConfig spigotConfig) {
+			internalSpigotConfig = new InternalSpigotConfig(spigotConfig);
+		} else {
+			throw new IllegalArgumentException("CommandAPISpigot was loaded with non-Spigot config!");
+		}
 		try {
 			String version = Bukkit.getBukkitVersion().split("-")[0];
 			CommandAPIPlatform<?, ?, ?> platform = switch (version) {
-				case "1.20", "1.20.1" -> new SpigotNMS_1_20_R1();
-				case "1.20.2" -> new SpigotNMS_1_20_R2();
-				case "1.20.3", "1.20.4" -> new SpigotNMS_1_20_R3();
-				case "1.20.5", "1.20.6" -> new SpigotNMS_1_20_R4();
-				case "1.21", "1.21.1" -> new SpigotNMS_1_21_R1();
-				case "1.21.2", "1.21.3" -> new SpigotNMS_1_21_R2();
-				case "1.21.4" -> new SpigotNMS_1_21_R3();
-				case "1.21.5" -> new SpigotNMS_1_21_R4();
-				case "1.21.6", "1.21.7", "1.21.8" -> new SpigotNMS_1_21_R5();
+				case "1.20", "1.20.1" -> new SpigotNMS_1_20_R1(internalSpigotConfig);
+				case "1.20.2" -> new SpigotNMS_1_20_R2(internalSpigotConfig);
+				case "1.20.3", "1.20.4" -> new SpigotNMS_1_20_R3(internalSpigotConfig);
+				case "1.20.5", "1.20.6" -> new SpigotNMS_1_20_R4(internalSpigotConfig);
+				case "1.21", "1.21.1" -> new SpigotNMS_1_21_R1(internalSpigotConfig);
+				case "1.21.2", "1.21.3" -> new SpigotNMS_1_21_R2(internalSpigotConfig);
+				case "1.21.4" -> new SpigotNMS_1_21_R3(internalSpigotConfig);
+				case "1.21.5" -> new SpigotNMS_1_21_R4(internalSpigotConfig);
+				case "1.21.6", "1.21.7", "1.21.8" -> new SpigotNMS_1_21_R5(internalSpigotConfig);
 				default -> null;
 			};
 			if (platform != null) {
 				return new LoadContext(platform);
 			}
-			if (spigotConfig.fallbackToLatestNMS()) {
-				return new LoadContext(new SpigotNMS_1_21_R5(), () -> {
+			if (internalSpigotConfig.fallbackToLatestNMS()) {
+				return new LoadContext(new SpigotNMS_1_21_R5(internalSpigotConfig), () -> {
 					CommandAPI.logWarning("Loading the CommandAPI with the latest and potentially incompatible NMS implementation.");
 					CommandAPI.logWarning("While you may find success with this, further updates might be necessary to fully support the version you are using.");
 				});
@@ -49,11 +54,6 @@ public abstract class CommandAPIVersionHandler {
 				(MojangMappedVersionHandler.isMojangMapped() ? "Mojang" : "Spigot") + "-mapped. Have you checked that " +
 				"you are using a CommandAPI version that matches the mappings that your plugin is using?", error);
 		}
-	}
-
-	static InternalConfig getConfig(CommandAPIConfig<?> config) {
-		// This should never be a casting error since only the Spigot module has this version handler and the CommandAPISpigotConfig
-		return new InternalSpigotConfig((CommandAPISpigotConfig) config);
 	}
 
 }

@@ -94,9 +94,16 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 
 	private final PaperNMS<CommandSourceStack> paperNMS;
 
+	private final SimpleCommandExceptionType noEntitiesFound;
+	private final SimpleCommandExceptionType noPlayersFound;
+
 	public APITypeProvider(PaperNMS<?> paperNMS) {
 		this.paperNMS = (PaperNMS<CommandSourceStack>) paperNMS;
 		bukkitNMS();
+
+		GsonComponentSerializer gson = GsonComponentSerializer.gson();
+		this.noEntitiesFound = new SimpleCommandExceptionType(paperNMS.bukkitNMS().generateMessageFromJson(gson.serialize(Component.translatable("argument.entity.notfound.entity"))));
+		this.noPlayersFound = new SimpleCommandExceptionType(paperNMS.bukkitNMS().generateMessageFromJson(gson.serialize(Component.translatable("argument.entity.notfound.player"))));
 	}
 
 	private ArgumentType<?> getArgumentType(ThrowingSupplier<ArgumentType<?>> paper, Supplier<ArgumentType<?>> nms) {
@@ -452,23 +459,20 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 
 	@Override
 	public EntitySelectorParser getEntitySelector(CommandContext<CommandSourceStack> cmdCtx, String key) {
-		GsonComponentSerializer gson = GsonComponentSerializer.gson();
-		SimpleCommandExceptionType NO_ENTITIES_FOUND = new SimpleCommandExceptionType(paperNMS.bukkitNMS().generateMessageFromJson(gson.serialize(Component.translatable("argument.entity.notfound.entity"))));
-		SimpleCommandExceptionType NO_PLAYERS_FOUND = new SimpleCommandExceptionType(paperNMS.bukkitNMS().generateMessageFromJson(gson.serialize(Component.translatable("argument.entity.notfound.player"))));
 		return new EntitySelectorParser(
 			() -> cmdCtx.getArgument(key, PlayerSelectorArgumentResolver.class).resolve(cmdCtx.getSource()).getFirst(),
 			() -> cmdCtx.getArgument(key, EntitySelectorArgumentResolver.class).resolve(cmdCtx.getSource()).getFirst(),
 			(allowEmpty) -> {
 				List<Player> players = cmdCtx.getArgument(key, PlayerSelectorArgumentResolver.class).resolve(cmdCtx.getSource());
 				if (players.isEmpty() && !allowEmpty) {
-					throw NO_PLAYERS_FOUND.create();
+					throw noPlayersFound.create();
 				}
 				return players;
 			},
 			(allowEmpty) -> {
 				List<Entity> entities = cmdCtx.getArgument(key, EntitySelectorArgumentResolver.class).resolve(cmdCtx.getSource());
 				if (entities.isEmpty() && !allowEmpty) {
-					throw NO_ENTITIES_FOUND.create();
+					throw noEntitiesFound.create();
 				}
 				return entities;
 			}
@@ -609,7 +613,7 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	}
 
 	private UUID getIdFromProfile(CommandContext<CommandSourceStack> ctx, String name) throws CommandSyntaxException {
-		Collection<PlayerProfile> playerProfiles = ctx.getArgument(name, PlayerProfileListResolver.class).resolve((CommandSourceStack) ctx.getSource());
+		Collection<PlayerProfile> playerProfiles = ctx.getArgument(name, PlayerProfileListResolver.class).resolve(ctx.getSource());
 		UUID id = playerProfiles.iterator().next().getId();
 		if (id == null) {
 			throw new SimpleCommandExceptionType(BukkitTooltip.messageFromAdventureComponent(Component.translatable("argument.player.unknown"))).create();
@@ -636,7 +640,7 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	public Rotation getRotation(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
 		return parseT(cmdCtx, key,
 			(ctx, name) -> {
-				io.papermc.paper.math.Rotation rotation = ctx.getArgument(name, RotationResolver.class).resolve((CommandSourceStack) ctx.getSource());
+				io.papermc.paper.math.Rotation rotation = ctx.getArgument(name, RotationResolver.class).resolve(ctx.getSource());
 				return new Rotation(rotation.yaw(), rotation.pitch());
 			},
 			(ctx, name) -> paperNMS.bukkitNMS().getRotation(ctx, name)
@@ -791,11 +795,11 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 
 	@Override
 	public NMS<CommandSourceStack> bukkitNMS() {
-		return ((PaperNMS<CommandSourceStack>) paperNMS).bukkitNMS();
+		return paperNMS.bukkitNMS();
 	}
 
 	@Override
 	public CommandRegistrationStrategy<CommandSourceStack> createCommandRegistrationStrategy() {
-		return ((PaperNMS<CommandSourceStack>) paperNMS).createCommandRegistrationStrategy();
+		return paperNMS.createCommandRegistrationStrategy();
 	}
 }

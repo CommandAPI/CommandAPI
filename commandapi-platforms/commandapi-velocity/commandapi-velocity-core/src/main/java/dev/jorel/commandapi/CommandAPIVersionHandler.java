@@ -1,12 +1,13 @@
 package dev.jorel.commandapi;
 
 public abstract class CommandAPIVersionHandler {
-	static LoadContext getPlatform(InternalConfig config) {
-		return new LoadContext(new CommandAPIVelocity());
-	}
-
-	static InternalConfig getConfig(CommandAPIConfig<?> config) {
-		// This should never be a casting error since only the Velocity module has this version handler and the CommandAPIVelocityConfig
-		return new InternalVelocityConfig((CommandAPIVelocityConfig) config);
+	static LoadContext getPlatform(CommandAPIConfig<?> config) {
+		InternalVelocityConfig internalVelocityConfig;
+		if (config instanceof CommandAPIVelocityConfig velocityConfig) {
+			internalVelocityConfig = new InternalVelocityConfig(velocityConfig);
+		} else {
+			throw new IllegalArgumentException("CommandAPIVelocity was loaded with non-Velocity config!");
+		}
+		return new LoadContext(new CommandAPIVelocity(internalVelocityConfig));
 	}
 }

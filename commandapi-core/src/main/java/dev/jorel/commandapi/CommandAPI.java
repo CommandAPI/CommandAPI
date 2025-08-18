@@ -108,31 +108,18 @@ public class CommandAPI {
 
 			// Setup variables
 			CommandAPI.config = new InternalConfig(config);
-			InternalConfig platformConfig = CommandAPIVersionHandler.getConfig(config);
 
 			// Initialize handlers
-			LoadContext loadContext = CommandAPIVersionHandler.getPlatform(platformConfig);
+			LoadContext loadContext = CommandAPIVersionHandler.getPlatform(config);
 			CommandAPIPlatform<?, ?, ?> platform = loadContext.platform();
 			new CommandAPIHandler<>(platform);
 			loadContext.context().run();
 
 			// Load the platform
-			CommandAPIHandler.getInstance().onLoad(config);
+			CommandAPIHandler.getInstance().onLoad();
 
 			// Log platform load
-			final String platformClassHierarchy;
-			{
-				List<String> platformClassHierarchyList = new ArrayList<>();
-				Class<?> platformClass = platform.getClass();
-				// Goes up through class inheritance only (ending at Object, but we don't want to include that)
-				// CommandAPIPlatform is an interface, so it is not included
-				while (platformClass != null && platformClass != Object.class) {
-					platformClassHierarchyList.add(platformClass.getSimpleName());
-					platformClass = platformClass.getSuperclass();
-				}
-				platformClassHierarchy = String.join(" > ", platformClassHierarchyList);
-			}
-			logNormal("Loaded platform " + platformClassHierarchy);
+			logNormal("Loaded platform " + getPlatformMessage(platform));
 
 			loaded = true;
 		} else {
@@ -146,6 +133,22 @@ public class CommandAPI {
 				"\n\nBut it is now being loaded here:\n\n" + currentStack.toString());
 			
 		}
+	}
+
+	static String getPlatformMessage(Object platform) {
+		final String platformClassHierarchy;
+		{
+			List<String> platformClassHierarchyList = new ArrayList<>();
+			Class<?> platformClass = platform.getClass();
+			// Goes up through class inheritance only (ending at Object, but we don't want to include that)
+			// CommandAPIPlatform is an interface, so it is not included
+			while (platformClass != null && platformClass != Object.class) {
+				platformClassHierarchyList.add(platformClass.getSimpleName());
+				platformClass = platformClass.getSuperclass();
+			}
+			platformClassHierarchy = String.join(" > ", platformClassHierarchyList);
+		}
+		return platformClassHierarchy;
 	}
 
 	/**

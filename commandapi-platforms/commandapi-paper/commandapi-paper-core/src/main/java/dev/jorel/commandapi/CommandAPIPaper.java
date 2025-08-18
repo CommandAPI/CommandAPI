@@ -40,18 +40,14 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 	private CommandAPILogger bootstrapLogger;
 
 	private LifecycleEventOwner lifecycleEventOwner;
-	private final BundledNMS<Source> nms;
 
 	@SuppressWarnings("unchecked")
-	protected CommandAPIPaper(InternalPaperConfig config) {
+	protected CommandAPIPaper(InternalPaperConfig config, BundledNMS<Source> nms) {
 		CommandAPIPaper.paper = this;
 		setInternalConfig(config);
+		this.lifecycleEventOwner = config.getLifecycleEventOwner();
 
-		VersionContext context = (VersionContext) CommandAPIVersionHandler.getVersion();
-		context.context().accept(getLogger());
-		context.additionalContext().accept(getLogger());
-		this.nms = (BundledNMS<Source>) context.nms();
-		super.nms = this.nms;
+		super.nms = nms;
 
 		Class<? extends CommandSender> tempFeedbackForwardingCommandSender = null;
 		Class<? extends CommandSender> tempNullCommandSender = null;
@@ -93,20 +89,13 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 	@Override
 	public BundledNMS<Source> getNMS() {
 		if (nms != null) {
-			return this.nms;
+			return (BundledNMS<Source>) this.nms;
 		}
 		throw new IllegalStateException("Tried to access NMS instance, but it was null! Are you using CommandAPI features before calling CommandAPI#onLoad?");
 	}
 
 	@Override
-	public void onLoad(CommandAPIConfig<?> config) {
-		if (config instanceof CommandAPIPaperConfig<? extends LifecycleEventOwner> paperConfig) {
-			CommandAPIPaper.setInternalConfig(new InternalPaperConfig(paperConfig));
-			this.lifecycleEventOwner = paperConfig.lifecycleEventOwner;
-		} else {
-			CommandAPI.logError("CommandAPIPaper was loaded with non-Paper config!");
-			CommandAPI.logError("Attempts to access Paper-specific config variables will fail!");
-		}
+	public void onLoad() {
 		super.onLoad();
 		checkPaperDependencies();
 		PaperCommandRegistration registration = (PaperCommandRegistration) CommandAPIBukkit.get().getCommandRegistrationStrategy();
@@ -120,7 +109,7 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 	@Override
 	public void onEnable() {
 		super.plugin = (JavaPlugin) Bukkit.getPluginManager().getPlugin(getConfiguration().getPluginName());
-		CommandAPIPaper.getPaper().lifecycleEventOwner = super.plugin;
+		this.lifecycleEventOwner = super.plugin;
 
 		new Schedulers(paper.isFoliaPresent).scheduleSyncDelayed(plugin, () -> {
 			CommandAPIBukkit.get().getCommandRegistrationStrategy().runTasksAfterServerStart();
@@ -204,7 +193,7 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 
 	@Override
 	public CommandRegistrationStrategy<Source> createCommandRegistrationStrategy() {
-		return nms.createCommandRegistrationStrategy();
+		return getNMS().createCommandRegistrationStrategy();
 	}
 
 	@Override

@@ -5,6 +5,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.jorel.commandapi.CommandAPISpigot;
 import dev.jorel.commandapi.CommandRegistrationStrategy;
+import dev.jorel.commandapi.InternalSpigotConfig;
 import dev.jorel.commandapi.SpigotCommandRegistration;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
@@ -40,6 +41,10 @@ public class SpigotNMS_1_21_R4 extends CommandAPISpigot<CommandSourceStack> {
 		} else {
 			COMMAND_BUILD_CONTEXT = null;
 		}
+	}
+
+	public SpigotNMS_1_21_R4(InternalSpigotConfig config) {
+		super(config);
 	}
 
 	@Override

@@ -32,8 +32,9 @@ public abstract class CommandAPISpigot<Source> extends CommandAPIBukkit<Source> 
 	private static CommandAPISpigot<?> spigot;
 
 	@SuppressWarnings("unchecked")
-	protected CommandAPISpigot() {
+	protected CommandAPISpigot(InternalSpigotConfig config) {
 		this.nms = bukkitNMS();
+		CommandAPIBukkit.config = config;
 		CommandAPISpigot.spigot = this;
 	}
 
@@ -47,21 +48,6 @@ public abstract class CommandAPISpigot<Source> extends CommandAPIBukkit<Source> 
 
 	public static InternalSpigotConfig getConfiguration() {
 		return (InternalSpigotConfig) CommandAPIBukkit.getConfiguration();
-	}
-
-	private static void setInternalConfig(InternalSpigotConfig config) {
-		CommandAPIBukkit.config = config;
-	}
-
-	@Override
-	public void onLoad(CommandAPIConfig<?> config) {
-		if (config instanceof CommandAPISpigotConfig spigotConfig) {
-			CommandAPISpigot.setInternalConfig(new InternalSpigotConfig(spigotConfig));
-		} else {
-			CommandAPI.logError("CommandAPISpigot was loaded with non-Spigot config!");
-			CommandAPI.logError("Attempts to access Spigot-specific config variables will fail!");
-		}
-		super.onLoad();
 	}
 
 	/**

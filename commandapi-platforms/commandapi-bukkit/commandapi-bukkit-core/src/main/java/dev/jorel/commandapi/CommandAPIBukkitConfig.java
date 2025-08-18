@@ -79,6 +79,8 @@ public abstract class CommandAPIBukkitConfig<T extends CommandAPIBukkitConfig<T>
 
 	/**
 	 * Sets the default namespace to use when register commands
+	 * <p>
+	 * This namespace can't be {@code null} or empty and has to match the regex: {@code [0-9a-z_.-]+}
 	 *
 	 * @param namespace the namespace to use when register commands
 	 * @return this CommandAPIConfig

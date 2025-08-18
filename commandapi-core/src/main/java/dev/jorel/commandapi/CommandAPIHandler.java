@@ -134,9 +134,9 @@ extends AbstractArgument<?, ?, Argument, CommandSender>
 		CommandAPIHandler.instance = this;
 	}
 
-	public void onLoad(CommandAPIConfig<?> config) {
+	public void onLoad() {
 		checkDependencies();
-		platform.onLoad(config);
+		platform.onLoad();
 	}
 
 	private void checkDependencies() {

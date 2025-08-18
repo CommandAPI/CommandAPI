@@ -8,16 +8,25 @@ import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 public class InternalPaperConfig extends InternalBukkitConfig {
 
 	private final PluginMeta pluginMeta;
+	private final LifecycleEventOwner lifecycleEventOwner;
 	private final boolean isCommandAPIPlugin;
 
 	public InternalPaperConfig(CommandAPIPaperConfig<? extends LifecycleEventOwner> config) {
 		super(config);
 		this.pluginMeta = config.pluginMeta;
+		this.lifecycleEventOwner = config.lifecycleEventOwner;
 		this.isCommandAPIPlugin = config.isCommandAPIPlugin;
 	}
 
 	boolean isCommandAPIPlugin() {
 		return isCommandAPIPlugin;
+	}
+
+	/**
+	 * @return the {@link LifecycleEventOwner} loading the CommandAPI
+	 */
+	public LifecycleEventOwner getLifecycleEventOwner() {
+		return lifecycleEventOwner;
 	}
 
 	/**
