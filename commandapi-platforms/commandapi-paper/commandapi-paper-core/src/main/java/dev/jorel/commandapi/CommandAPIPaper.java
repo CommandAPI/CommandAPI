@@ -44,7 +44,7 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 	@SuppressWarnings("unchecked")
 	protected CommandAPIPaper(InternalPaperConfig config, BundledNMS<Source> nms) {
 		CommandAPIPaper.paper = this;
-		setInternalConfig(config);
+		CommandAPIBukkit.config = config;
 		this.lifecycleEventOwner = config.getLifecycleEventOwner();
 
 		super.nms = nms;
@@ -80,10 +80,6 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 
 	public LifecycleEventOwner getLifecycleEventOwner() {
 		return lifecycleEventOwner;
-	}
-
-	private static void setInternalConfig(InternalPaperConfig config) {
-		CommandAPIBukkit.config = config;
 	}
 
 	@Override

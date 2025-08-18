@@ -419,7 +419,7 @@ This is the current roadmap for the CommandAPI (as of 1st April 2025):
                             <li>Changes and updates a few arguments:
                                 <ul>
                                     <li>The <code>FloatRangeArgument</code> has been renamed to <code>DoubleRangeArgument</code> and now returns a <code>DoubleRange</code></li>
-                                    <li>The <code>PlayerArgument</code> and <code>OfflinePlayerArgument</code> have been replaced by the <code>PlayerProfileArgument</code> which returns a <code>List&lt;PlayerProfile&gt;</code>. The <code>PlayerProfile</code> class changes depending on if you are on Paper or on Spigot.</li>
+                                    <li>The <code>PlayerArgument</code> and <code>OfflinePlayerArgument</code> have been replaced by the <code>PlayerProfileArgument</code> which returns a <code>List&lt;PlayerProfile&gt;</code>. The <code>PlayerProfile</code> class changes depending on if you are on Paper or on Spigot. Use the <code>EntitySelectorArgument.OnePlayer</code> if you want a <code>Player</code> object.</li>
                                     <li>The <code>AsyncOfflinePlayerArgument</code> has been replaced by the <code>AsyncPlayerProfileArgument</code></li>
                                     <li>The <code>ChatArgument</code>, <code>ChatComponentArgument</code> and <code>ChatColorArgument</code> do no longer have any <code>Adventure</code> prefixes and return different types depending on the platform.</li>
                                     <li>The <code>ChatArgument</code> returns a <code>SignedMessage</code> object on Paper</li>

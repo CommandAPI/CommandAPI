@@ -96,6 +96,7 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 
 	private final SimpleCommandExceptionType noEntitiesFound;
 	private final SimpleCommandExceptionType noPlayersFound;
+	private final SimpleCommandExceptionType unknownPlayer;
 
 	public APITypeProvider(PaperNMS<?> paperNMS) {
 		this.paperNMS = (PaperNMS<CommandSourceStack>) paperNMS;
@@ -104,6 +105,7 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 		GsonComponentSerializer gson = GsonComponentSerializer.gson();
 		this.noEntitiesFound = new SimpleCommandExceptionType(paperNMS.bukkitNMS().generateMessageFromJson(gson.serialize(Component.translatable("argument.entity.notfound.entity"))));
 		this.noPlayersFound = new SimpleCommandExceptionType(paperNMS.bukkitNMS().generateMessageFromJson(gson.serialize(Component.translatable("argument.entity.notfound.player"))));
+		this.unknownPlayer = new SimpleCommandExceptionType(BukkitTooltip.messageFromAdventureComponent(Component.translatable("argument.player.unknown")));
 	}
 
 	private ArgumentType<?> getArgumentType(ThrowingSupplier<ArgumentType<?>> paper, Supplier<ArgumentType<?>> nms) {
@@ -616,7 +618,7 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 		Collection<PlayerProfile> playerProfiles = ctx.getArgument(name, PlayerProfileListResolver.class).resolve(ctx.getSource());
 		UUID id = playerProfiles.iterator().next().getId();
 		if (id == null) {
-			throw new SimpleCommandExceptionType(BukkitTooltip.messageFromAdventureComponent(Component.translatable("argument.player.unknown"))).create();
+			throw unknownPlayer.create();
 		}
 		return id;
 	}
