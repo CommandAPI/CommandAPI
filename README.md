@@ -403,7 +403,7 @@ This is the current roadmap for the CommandAPI (as of 1st April 2025):
                         <ul>
                             <li>Removes the <code>commandapi-bukkit-shade</code> module and the <code>commandapi-bukkit-shade-mojang-mapped</code> module</li>
                             <li>Adds the <code>commandapi-paper-core</code>, <code>commandapi-paper-shade</code> and the <code>commandapi-paper-shade-mojang-mapped</code> modules which are made to work on Paper</li>
-                            <li>Adds the <code>commandapi-spigot-core</code>, <code>commandapi-spigot-shade</code> and the <code>commandapi-spigot-shade-mojang-mapped</code> modules which do not include the logic required for Paper</li>
+                            <li>Adds the <code>commandapi-spigot-core</code>, <code>commandapi-spigot-shade</code> and the <code>commandapi-spigot-shade-mojang-mapped</code> modules which are made to work on Spigot</li>
                             <li>Changed the <code>CommandAPIBukkitConfig</code> class into an abstract one in favour of the newly added <code>CommandAPIPaperConfig</code> or <code>CommandAPISpigotConfig</code> classes, depending on the modules you use</li>
                             <li>Moves and adds a few Kotlin DSL modules:
                                 <ul>
@@ -412,6 +412,18 @@ This is the current roadmap for the CommandAPI (as of 1st April 2025):
                                     <li><code>commandapi-velocity-kotlin -> commandapi-kotlin-velocity</code></li>
                                     <li>Newly added: <code>commandapi-kotlin-paper</code></li>
                                     <li>Newly added: <code>commandapi-kotlin-spigot</code></li>
+                                </ul>
+                            </li>
+                            <li>On Paper it is now possible to register commands at bootstrap</li>
+                            <li>Drops support for 1.20.5 and below on Paper</li>
+                            <li>Changes and updates a few arguments:
+                                <ul>
+                                    <li>The <code>FloatRangeArgument</code> has been renamed to <code>DoubleRangeArgument</code> and now returns a <code>DoubleRange</code></li>
+                                    <li>The <code>PlayerArgument</code> and <code>OfflinePlayerArgument</code> have been replaced by the <code>PlayerProfileArgument</code> which returns a <code>List&lt;PlayerProfile&gt;</code>. The <code>PlayerProfile</code> class changes depending on if you are on Paper or on Spigot.</li>
+                                    <li>The <code>AsyncOfflinePlayerArgument</code> has been replaced by the <code>AsyncPlayerProfileArgument</code></li>
+                                    <li>The <code>ChatArgument</code>, <code>ChatComponentArgument</code> and <code>ChatColorArgument</code> do no longer have any <code>Adventure</code> prefixes and return different types depending on the platform.</li>
+                                    <li>The <code>ChatArgument</code> returns a <code>SignedMessage</code> object on Paper</li>
+                                    <li>The <code>BlockStateArgument</code> now returns a <code>BlockState</code> object instead of a <code>BlockData</code> object</li>
                                 </ul>
                             </li>
                         </ul>
