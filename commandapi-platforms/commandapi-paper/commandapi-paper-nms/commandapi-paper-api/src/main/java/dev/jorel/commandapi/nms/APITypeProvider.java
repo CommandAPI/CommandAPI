@@ -105,7 +105,7 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 		GsonComponentSerializer gson = GsonComponentSerializer.gson();
 		this.noEntitiesFound = new SimpleCommandExceptionType(paperNMS.bukkitNMS().generateMessageFromJson(gson.serialize(Component.translatable("argument.entity.notfound.entity"))));
 		this.noPlayersFound = new SimpleCommandExceptionType(paperNMS.bukkitNMS().generateMessageFromJson(gson.serialize(Component.translatable("argument.entity.notfound.player"))));
-		this.unknownPlayer = new SimpleCommandExceptionType(BukkitTooltip.messageFromAdventureComponent(Component.translatable("argument.player.unknown")));
+		this.unknownPlayer = new SimpleCommandExceptionType(paperNMS.bukkitNMS().generateMessageFromJson(gson.serialize(Component.translatable("argument.player.unknown"))));
 	}
 
 	private ArgumentType<?> getArgumentType(ThrowingSupplier<ArgumentType<?>> paper, Supplier<ArgumentType<?>> nms) {
