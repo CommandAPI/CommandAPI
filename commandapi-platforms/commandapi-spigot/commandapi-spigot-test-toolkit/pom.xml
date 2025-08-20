@@ -31,7 +31,6 @@
 	</repositories>
 
 
-
 	<dependencies>
 		<!-- Compatibility with MockBukkit API -->
 		<!-- This provides transitive access to spigot-api and paper-api
@@ -40,8 +39,6 @@
 		<dependency>
 			<groupId>org.mockbukkit.mockbukkit</groupId>
 			<artifactId>mockbukkit-v1.21</artifactId>
-			<version>4.45.1</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>dev.jorel</groupId>
@@ -100,9 +97,9 @@
 					<!-- To help with debugging tests, you can specify an include
 					 to limit a build to only run a certain test file. Uncomment
 					 here if you want to do that: -->
-					<!--					<includes>-->
-					<!--						<include>**/DispatchCommandUtilitiesTests.java</include>-->
-					<!--					</includes>-->
+<!--					<includes>-->
+<!--						<include>**/DispatchCommandUtilitiesTests.java</include>-->
+<!--					</includes>-->
 				</configuration>
 			</plugin>
 

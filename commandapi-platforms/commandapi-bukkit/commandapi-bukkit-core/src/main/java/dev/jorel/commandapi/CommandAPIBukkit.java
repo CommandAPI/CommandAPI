@@ -117,7 +117,7 @@ public abstract class CommandAPIBukkit<Source> implements BukkitPlatform<Source>
 		}, plugin);
 	}
 
-	private void checkDependencies() {
+	protected void checkDependencies() {
 		// Log successful hooks
 		Class<?> nbtContainerClass = CommandAPIBukkit.getConfiguration().getNBTContainerClass();
 		if (nbtContainerClass != null && CommandAPIBukkit.getConfiguration().getNBTContainerConstructor() != null) {
