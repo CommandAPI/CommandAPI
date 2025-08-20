@@ -399,7 +399,7 @@ This is the current roadmap for the CommandAPI (as of 1st April 2025):
             <td valign="top">???</td>
             <td valign="top">
                 <ul>
-                    <li>https://github.com/JorelAli/CommandAPI/pull/517 Splits up the CommandAPI into modules specific for Paper and Spigot:
+                    <li>https://github.com/CommandAPI/CommandAPI/pull/517 Splits up the CommandAPI into modules specific for Paper and Spigot:
                         <ul>
                             <li>Removes the <code>commandapi-bukkit-shade</code> module and the <code>commandapi-bukkit-shade-mojang-mapped</code> module</li>
                             <li>Adds the <code>commandapi-paper-core</code>, <code>commandapi-paper-shade</code> and the <code>commandapi-paper-shade-mojang-mapped</code> modules which are made to work on Paper</li>
@@ -424,6 +424,13 @@ This is the current roadmap for the CommandAPI (as of 1st April 2025):
                                     <li>The <code>ChatArgument</code>, <code>ChatComponentArgument</code> and <code>ChatColorArgument</code> do no longer have any <code>Adventure</code> prefixes and return different types depending on the platform.</li>
                                     <li>The <code>ChatArgument</code> returns a <code>SignedMessage</code> object on Paper</li>
                                     <li>The <code>BlockStateArgument</code> now returns a <code>BlockState</code> object instead of a <code>BlockData</code> object</li>
+                                </ul>
+                            </li>
+                            <li>Replaces the <code>use-latest-nms-version</code> and <code>be-lenient-for-minor-versions</code> config options with a <code>fallback-to-latest-nms</code> config option:
+                                <ul>
+                                    <li>When loading the CommandAPI and this config option is set to <code>true</code> it will first check if the current version is supported and chooses that</li>
+                                    <li>In case the current version isn't a supported version, the CommandAPI will choose the latest nms version available which might or might not work correctly</li>
+                                    <li>This config option is set to <code>true</code> by default on Paper and <code>false</code> on Spigot</li>
                                 </ul>
                             </li>
                         </ul>
