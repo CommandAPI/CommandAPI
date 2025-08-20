@@ -241,7 +241,7 @@ public class NMS_1_21_R5 extends NMS_Common {
 		// itemInput = SafeVarHandle.ofOrNull(ItemInput.class, "c", "tag", CompoundTag.class);
 		// For some reason, MethodHandles fails for this field, but Field works okay
 		serverFunctionLibraryDispatcher = CommandAPIHandler.getField(ServerFunctionLibrary.class, "h", "dispatcher");
-		blockInputTag = SafeVarHandle.ofOrNull(BlockInput.class, "c", "tag", CompoundTag.class);
+		blockInputTag = SafeVarHandle.ofOrNull(BlockInput.class, "d", "tag", CompoundTag.class);
 
 		MethodHandles.Lookup lookup = MethodHandles.lookup();
 		MethodHandle setSelected;

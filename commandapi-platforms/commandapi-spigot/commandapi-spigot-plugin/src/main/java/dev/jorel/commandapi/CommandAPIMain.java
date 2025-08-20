@@ -49,11 +49,10 @@ public class CommandAPIMain extends JavaPlugin {
 		CommandAPISpigotConfig config = new CommandAPISpigotConfig(this)
 			.verboseOutput(fileConfig.getBoolean("verbose-outputs"))
 			.silentLogs(fileConfig.getBoolean("silent-logs"))
-			.useLatestNMSVersion(fileConfig.getBoolean("use-latest-nms-version"))
+			.fallbackToLatestNMS(fileConfig.getBoolean("fallback-to-latest-nms"))
 			.missingExecutorImplementationMessage(fileConfig.getString("messages.missing-executor-implementation"))
 			.dispatcherFile(fileConfig.getBoolean("create-dispatcher-json") ? new File(getDataFolder(), "command_registration.json") : null)
-			.skipReloadDatapacks(fileConfig.getBoolean("skip-initial-datapack-reload"))
-			.beLenientForMinorVersions(fileConfig.getBoolean("be-lenient-for-minor-versions"));
+			.skipReloadDatapacks(fileConfig.getBoolean("skip-initial-datapack-reload"));
 
 		for (String pluginName : fileConfig.getStringList("skip-sender-proxy")) {
 			if (Bukkit.getPluginManager().getPlugin(pluginName) != null) {

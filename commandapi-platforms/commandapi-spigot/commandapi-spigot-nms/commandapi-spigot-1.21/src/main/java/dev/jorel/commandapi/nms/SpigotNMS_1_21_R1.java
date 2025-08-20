@@ -5,6 +5,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.jorel.commandapi.CommandAPISpigot;
 import dev.jorel.commandapi.CommandRegistrationStrategy;
+import dev.jorel.commandapi.InternalSpigotConfig;
 import dev.jorel.commandapi.SpigotCommandRegistration;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
@@ -42,6 +43,10 @@ public class SpigotNMS_1_21_R1 extends CommandAPISpigot<CommandSourceStack> {
 		}
 	}
 
+	public SpigotNMS_1_21_R1(InternalSpigotConfig config) {
+		super(config);
+	}
+
 	@Override
 	public BaseComponent[] getChat(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
 		return ComponentSerializer.parse(Component.Serializer.toJson(MessageArgument.getMessage(cmdCtx, key), COMMAND_BUILD_CONTEXT));
@@ -66,7 +71,7 @@ public class SpigotNMS_1_21_R1 extends CommandAPISpigot<CommandSourceStack> {
 	}
 
 	@Override
-	public NMS<?> bukkitNMS() {
+	public NMS<CommandSourceStack> bukkitNMS() {
 		if (bukkitNMS == null) {
 			this.bukkitNMS = new NMS_1_21_R1(() -> COMMAND_BUILD_CONTEXT);
 		}

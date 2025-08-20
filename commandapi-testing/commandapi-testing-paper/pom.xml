@@ -37,7 +37,7 @@
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
-				<filtering>true</filtering> <!-- Fill ${project.version} in plugin.yml -->
+				<filtering>true</filtering> <!-- Fill ${project.version} in paper-plugin.yml -->
 			</resource>
 		</resources>
 		<plugins>

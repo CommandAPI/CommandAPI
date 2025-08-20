@@ -5,6 +5,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.jorel.commandapi.CommandAPISpigot;
 import dev.jorel.commandapi.CommandRegistrationStrategy;
+import dev.jorel.commandapi.InternalSpigotConfig;
 import dev.jorel.commandapi.SpigotCommandRegistration;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
@@ -14,7 +15,6 @@ import net.minecraft.commands.arguments.ColorArgument;
 import net.minecraft.commands.arguments.ComponentArgument;
 import net.minecraft.commands.arguments.GameProfileArgument;
 import net.minecraft.commands.arguments.MessageArgument;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -42,6 +42,10 @@ public class SpigotNMS_1_21_R5 extends CommandAPISpigot<CommandSourceStack> {
 		}
 	}
 
+	public SpigotNMS_1_21_R5(InternalSpigotConfig config) {
+		super(config);
+	}
+
 	@Override
 	public BaseComponent[] getChat(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
 		return ComponentSerializer.parse(bukkitNMS.toJson(MessageArgument.getMessage(cmdCtx, key)));
@@ -66,7 +70,7 @@ public class SpigotNMS_1_21_R5 extends CommandAPISpigot<CommandSourceStack> {
 	}
 
 	@Override
-	public NMS<?> bukkitNMS() {
+	public NMS<CommandSourceStack> bukkitNMS() {
 		if (bukkitNMS == null) {
 			this.bukkitNMS = new NMS_1_21_R5(() -> COMMAND_BUILD_CONTEXT);
 		}

@@ -9,7 +9,7 @@ import org.bukkit.command.CommandSender;
 public interface BukkitPlatform<Source> extends CommandAPIPlatform<Argument<?>, CommandSender, Source> {
 
 	@Override
-	void onLoad(CommandAPIConfig<?> config);
+	void onLoad();
 
 	CommandMap getCommandMap();
 

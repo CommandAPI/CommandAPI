@@ -30,10 +30,8 @@ extends AbstractArgument<?, ?, Argument, CommandSender>
 	/**
 	 * Platform-specific stuff that should happen when the CommandAPI is loaded,
 	 * such as checking dependencies and initializing helper classes.
-	 *
-	 * @param config the configuration to use for the CommandAPI.
 	 */
-	void onLoad(CommandAPIConfig<?> config);
+	void onLoad();
 
 	/**
 	 * Platform-specific stuff that should happen when the CommandAPI is enabled

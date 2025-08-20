@@ -32,8 +32,9 @@ public abstract class CommandAPISpigot<Source> extends CommandAPIBukkit<Source> 
 	private static CommandAPISpigot<?> spigot;
 
 	@SuppressWarnings("unchecked")
-	protected CommandAPISpigot() {
-		this.nms = (NMS<Source>) bukkitNMS();
+	protected CommandAPISpigot(InternalSpigotConfig config) {
+		this.nms = bukkitNMS();
+		CommandAPIBukkit.config = config;
 		CommandAPISpigot.spigot = this;
 	}
 
@@ -42,26 +43,11 @@ public abstract class CommandAPISpigot<Source> extends CommandAPIBukkit<Source> 
 		if (spigot != null) {
 			return (CommandAPISpigot<Source>) spigot;
 		}
-		throw new IllegalStateException("Tried to access CommandAPIBukkit instance, but it was null! Are you using CommandAPI features before calling CommandAPI#onLoad?");
+		throw new IllegalStateException("Tried to access CommandAPISpigot instance, but it was null! Are you using CommandAPI features before calling CommandAPI#onLoad?");
 	}
 
 	public static InternalSpigotConfig getConfiguration() {
 		return (InternalSpigotConfig) CommandAPIBukkit.getConfiguration();
-	}
-
-	private static void setInternalConfig(InternalSpigotConfig config) {
-		CommandAPIBukkit.config = config;
-	}
-
-	@Override
-	public void onLoad(CommandAPIConfig<?> config) {
-		if (config instanceof CommandAPISpigotConfig spigotConfig) {
-			CommandAPISpigot.setInternalConfig(new InternalSpigotConfig(spigotConfig));
-		} else {
-			CommandAPI.logError("CommandAPIBukkit was loaded with non-Bukkit config!");
-			CommandAPI.logError("Attempts to access Bukkit-specific config variables will fail!");
-		}
-		super.onLoad();
 	}
 
 	/**

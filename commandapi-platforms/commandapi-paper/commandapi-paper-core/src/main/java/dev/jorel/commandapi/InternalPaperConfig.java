@@ -1,20 +1,32 @@
 package dev.jorel.commandapi;
 
 import io.papermc.paper.plugin.configuration.PluginMeta;
+import io.papermc.paper.plugin.lifecycle.event.LifecycleEventOwner;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 
 @SuppressWarnings("UnstableApiUsage")
 public class InternalPaperConfig extends InternalBukkitConfig {
 
 	private final PluginMeta pluginMeta;
+	private final LifecycleEventOwner lifecycleEventOwner;
+	private final boolean isCommandAPIPlugin;
 
-	// Whether to hook into paper's reload event to reload datapacks when /minecraft:reload is run
-	private final boolean shouldHookPaperReload;
-
-	public InternalPaperConfig(CommandAPIPaperConfig config) {
+	public InternalPaperConfig(CommandAPIPaperConfig<? extends LifecycleEventOwner> config) {
 		super(config);
 		this.pluginMeta = config.pluginMeta;
-		this.shouldHookPaperReload = config.shouldHookPaperReload;
+		this.lifecycleEventOwner = config.lifecycleEventOwner;
+		this.isCommandAPIPlugin = config.isCommandAPIPlugin;
+	}
+
+	boolean isCommandAPIPlugin() {
+		return isCommandAPIPlugin;
+	}
+
+	/**
+	 * @return the {@link LifecycleEventOwner} loading the CommandAPI
+	 */
+	public LifecycleEventOwner getLifecycleEventOwner() {
+		return lifecycleEventOwner;
 	}
 
 	/**
@@ -22,15 +34,6 @@ public class InternalPaperConfig extends InternalBukkitConfig {
 	 */
 	public PluginMeta getPluginMeta() {
 		return pluginMeta;
-	}
-
-	/**
-	 * @return Whether the CommandAPI should hook into Paper's {@link io.papermc.paper.event.server.ServerResourcesReloadedEvent}
-	 * when available to perform the CommandAPI's custom datapack reload when {@code /minecraft:reload}
-	 * is run.
-	 */
-	public boolean shouldHookPaperReload() {
-		return shouldHookPaperReload;
 	}
 
 }

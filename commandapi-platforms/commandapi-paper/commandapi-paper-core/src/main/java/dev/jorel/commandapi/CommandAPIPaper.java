@@ -40,16 +40,14 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 	private CommandAPILogger bootstrapLogger;
 
 	private LifecycleEventOwner lifecycleEventOwner;
-	private final BundledNMS<Source> nms;
 
 	@SuppressWarnings("unchecked")
-	protected CommandAPIPaper() {
+	protected CommandAPIPaper(InternalPaperConfig config, BundledNMS<Source> nms) {
 		CommandAPIPaper.paper = this;
+		CommandAPIBukkit.config = config;
+		this.lifecycleEventOwner = config.getLifecycleEventOwner();
 
-		VersionContext context = (VersionContext) CommandAPIVersionHandler.getVersion();
-		context.context().run();
-		this.nms = (BundledNMS<Source>) context.nms();
-		super.nms = this.nms;
+		super.nms = nms;
 
 		Class<? extends CommandSender> tempFeedbackForwardingCommandSender = null;
 		Class<? extends CommandSender> tempNullCommandSender = null;
@@ -73,7 +71,7 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 		if (paper != null) {
 			return (CommandAPIPaper<Source>) paper;
 		}
-		throw new IllegalStateException("Tried to access CommandAPIBukkit instance, but it was null! Are you using CommandAPI features before calling CommandAPI#onLoad?");
+		throw new IllegalStateException("Tried to access CommandAPIPaper instance, but it was null! Are you using CommandAPI features before calling CommandAPI#onLoad?");
 	}
 
 	public static InternalPaperConfig getConfiguration() {
@@ -84,27 +82,16 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 		return lifecycleEventOwner;
 	}
 
-	private static void setInternalConfig(InternalPaperConfig config) {
-		CommandAPIBukkit.config = config;
-	}
-
 	@Override
 	public BundledNMS<Source> getNMS() {
 		if (nms != null) {
-			return this.nms;
+			return (BundledNMS<Source>) this.nms;
 		}
 		throw new IllegalStateException("Tried to access NMS instance, but it was null! Are you using CommandAPI features before calling CommandAPI#onLoad?");
 	}
 
 	@Override
-	public void onLoad(CommandAPIConfig<?> config) {
-		if (config instanceof CommandAPIPaperConfig<? extends LifecycleEventOwner> paperConfig) {
-			CommandAPIPaper.setInternalConfig(new InternalPaperConfig(paperConfig));
-			this.lifecycleEventOwner = paperConfig.lifecycleEventOwner;
-		} else {
-			CommandAPI.logError("CommandAPIBukkit was loaded with non-Bukkit config!");
-			CommandAPI.logError("Attempts to access Bukkit-specific config variables will fail!");
-		}
+	public void onLoad() {
 		super.onLoad();
 		checkPaperDependencies();
 		PaperCommandRegistration registration = (PaperCommandRegistration) CommandAPIBukkit.get().getCommandRegistrationStrategy();
@@ -118,7 +105,7 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 	@Override
 	public void onEnable() {
 		super.plugin = (JavaPlugin) Bukkit.getPluginManager().getPlugin(getConfiguration().getPluginName());
-		CommandAPIPaper.getPaper().lifecycleEventOwner = super.plugin;
+		this.lifecycleEventOwner = super.plugin;
 
 		new Schedulers(paper.isFoliaPresent).scheduleSyncDelayed(plugin, () -> {
 			CommandAPIBukkit.get().getCommandRegistrationStrategy().runTasksAfterServerStart();
@@ -139,22 +126,12 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 			Bukkit.getServer().getPluginManager().registerEvents(new Listener() {
 				@EventHandler
 				public void onServerReloadResources(ServerResourcesReloadedEvent event) {
-					// This event is called after Paper is done with everything command related
-					// which means we can put commands back
 					CommandAPIBukkit.get().getCommandRegistrationStrategy().preReloadDataPacks();
 
-					// Normally, the reloadDataPacks() method is responsible for updating commands for
-					// online players. If, however, datapacks aren't supposed to be reloaded upon /minecraft:reload
-					// we have to do this manually here. This won't have any effect on Spigot and Paper version prior to
-					// paper-1.20.6-65
-					if (!CommandAPIPaper.getConfiguration().shouldHookPaperReload()) {
-						for (Player player : Bukkit.getOnlinePlayers()) {
-							player.updateCommands();
-						}
-						return;
+					if (getConfiguration().isCommandAPIPlugin()) {
+						CommandAPI.logNormal("/minecraft:reload detected. Reloading CommandAPI commands!");
+						CommandAPIBukkit.get().reloadDataPacks();
 					}
-					CommandAPI.logNormal("/minecraft:reload detected. Reloading CommandAPI commands!");
-					CommandAPIBukkit.get().reloadDataPacks();
 				}
 			}, plugin);
 			CommandAPI.logNormal("Hooked into Paper ServerResourcesReloadedEvent");
@@ -212,7 +189,7 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 
 	@Override
 	public CommandRegistrationStrategy<Source> createCommandRegistrationStrategy() {
-		return nms.createCommandRegistrationStrategy();
+		return getNMS().createCommandRegistrationStrategy();
 	}
 
 	@Override

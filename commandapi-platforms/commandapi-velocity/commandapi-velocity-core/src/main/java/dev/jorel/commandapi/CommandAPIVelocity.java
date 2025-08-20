@@ -46,7 +46,8 @@ public class CommandAPIVelocity implements CommandAPIPlatform<Argument<?>, Comma
 	private CommandManager commandManager;
 	private CommandDispatcher<CommandSource> dispatcher;
 
-	public CommandAPIVelocity() {
+	public CommandAPIVelocity(InternalVelocityConfig config) {
+		CommandAPIVelocity.config = config;
 		CommandAPIVelocity.instance = this;
 	}
 
@@ -67,14 +68,7 @@ public class CommandAPIVelocity implements CommandAPIPlatform<Argument<?>, Comma
 	}
 
 	@Override
-	public void onLoad(CommandAPIConfig<?> config) {
-		if (config instanceof CommandAPIVelocityConfig velocityConfig) {
-			CommandAPIVelocity.setInternalConfig(new InternalVelocityConfig(velocityConfig));
-		} else {
-			CommandAPI.logError("CommandAPIVelocity was loaded with non-Velocity config!");
-			CommandAPI.logError("Attempts to access Velocity-specific config variables will fail!");
-		}
-
+	public void onLoad() {
 		commandManager = getConfiguration().getServer().getCommandManager();
 
 		// We can't use a SafeVarHandle here because we don't have direct access to the
@@ -87,10 +81,6 @@ public class CommandAPIVelocity implements CommandAPIPlatform<Argument<?>, Comma
 		} catch (Exception ignored) {
 			CommandAPI.logError("Could not access Velocity's Brigadier CommandDispatcher");
 		}
-	}
-
-	private static void setInternalConfig(InternalVelocityConfig internalVelocityConfig) {
-		CommandAPIVelocity.config = internalVelocityConfig;
 	}
 
 	@Override
