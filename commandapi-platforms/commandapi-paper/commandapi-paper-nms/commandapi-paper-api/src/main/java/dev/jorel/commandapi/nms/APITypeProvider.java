@@ -95,7 +95,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 @SuppressWarnings("UnstableApiUsage")
-public class APITypeProvider extends BundledNMS<CommandSourceStack> {
+public class APITypeProvider implements BundledNMS<CommandSourceStack> {
 
 	private final PaperNMS<CommandSourceStack> paperNMS;
 

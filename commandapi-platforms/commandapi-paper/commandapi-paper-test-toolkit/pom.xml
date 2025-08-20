@@ -10,6 +10,7 @@
 	</parent>
 
 	<artifactId>commandapi-paper-test-toolkit</artifactId>
+	<name>Paper support testing toolkit</name>
 
 	<properties>
 		<maven.compiler.source>21</maven.compiler.source>
@@ -17,4 +18,114 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
+	<repositories>
+		<repository>
+			<id>minecraft-libraries</id>
+			<name>Minecraft Libraries</name>
+			<url>https://libraries.minecraft.net</url>
+		</repository>
+		<repository>
+			<id>papermc</id>
+			<url>https://repo.papermc.io/repository/maven-public/</url>
+		</repository>
+	</repositories>
+
+
+	<dependencies>
+		<!-- Compatibility with MockBukkit API -->
+		<!-- This provides transitive access to spigot-api and paper-api
+			  If we listed our own dependency for those, we could put a different version, which often causes problems
+			  Since we aren't just using MockBukkit for tests, we can rely on this dependency for the Spigot/Paper api -->
+		<dependency>
+			<groupId>org.mockbukkit.mockbukkit</groupId>
+			<artifactId>mockbukkit-v1.21</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>dev.jorel</groupId>
+			<artifactId>commandapi-bukkit-test-toolkit</artifactId>
+			<version>${project.version}</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<!-- Compatibility with CommandAPI Paper API -->
+		<dependency>
+			<groupId>dev.jorel</groupId>
+			<artifactId>commandapi-paper-core</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<!-- Remove commandapi-core's VersionHandler in favor of ours -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<filters>
+								<filter>
+									<artifact>dev.jorel:commandapi-core</artifact>
+									<excludes>
+										<exclude>dev/jorel/commandapi/CommandAPIVersionHandler**</exclude>
+									</excludes>
+								</filter>
+							</filters>
+							<transformers>
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+									<resource>LICENSE</resource>
+								</transformer>
+							</transformers>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- Run our own tests -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.3.0</version>
+				<configuration>
+					<trimStackTrace>false</trimStackTrace>
+					<!-- To help with debugging tests, you can specify an include
+					 to limit a build to only run a certain test file. Uncomment
+					 here if you want to do that: -->
+<!--					<includes>-->
+<!--						<include>**/DispatchCommandUtilitiesTests.java</include>-->
+<!--					</includes>-->
+				</configuration>
+			</plugin>
+
+			<!-- Run code coverage report -->
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<executions>
+					<!-- to avoid bugs in some situations -->
+					<execution>
+						<id>default-prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<!-- create report during maven verify phase -->
+					<execution>
+						<id>report</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>

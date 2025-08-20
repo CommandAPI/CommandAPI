@@ -90,7 +90,7 @@ public class ProfileArgumentType implements ArgumentType<ProfileArgumentType.Pro
 		return EntitySelectorParser.parser.listSuggestions(context, builder);
 	}
 
-	public static List<PlayerProfile> getProfiles(CommandContext<MockCommandSource> cmdCtx, String key) throws CommandSyntaxException {
+	public static List<? extends PlayerProfile> getProfiles(CommandContext<MockCommandSource> cmdCtx, String key) throws CommandSyntaxException {
 		return cmdCtx.getArgument(key, ProfileSelector.class).getProfiles(cmdCtx.getSource());
 	}
 }

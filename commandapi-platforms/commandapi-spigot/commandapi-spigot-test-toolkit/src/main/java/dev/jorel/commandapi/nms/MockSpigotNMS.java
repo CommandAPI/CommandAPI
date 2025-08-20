@@ -15,7 +15,7 @@ public interface MockSpigotNMS extends SpigotNMS<MockCommandSource> {
 	// Arguments
 	@Override
 	default List<PlayerProfile> getProfile(CommandContext<MockCommandSource> cmdCtx, String key) throws CommandSyntaxException {
-		return ProfileArgumentType.getProfiles(cmdCtx, key);
+		return (List<PlayerProfile>) ProfileArgumentType.getProfiles(cmdCtx, key);
 	}
 
 	///////////////////////////
