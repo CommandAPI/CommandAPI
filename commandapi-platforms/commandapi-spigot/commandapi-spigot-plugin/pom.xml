@@ -27,20 +27,8 @@
 	<dependencies>
 		<dependency>
 			<groupId>dev.jorel</groupId>
-			<artifactId>commandapi-spigot-core</artifactId>
+			<artifactId>commandapi-spigot-shade</artifactId>
 			<version>${project.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>dev.jorel</groupId>
-			<artifactId>commandapi-spigot-vh</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>dev.jorel</groupId>
-			<artifactId>commandapi-spigot-nms-dependency</artifactId>
-			<version>${project.version}</version>
-			<type>pom</type>
 		</dependency>
 		<dependency>
 			<groupId>dev.jorel</groupId>
