@@ -7,7 +7,7 @@ class SayHelloCommand {
 
 	fun register() {
 		commandTree("sayhello") {
-			playerArgument("target") {
+			entitySelectorArgumentOnePlayer("target") {
 				playerExecutor { player, args ->
 					val target: Player = args[0] as Player
 					target.sendMessage("§6${player.name} says hello to you!")

@@ -9,14 +9,14 @@ import net.kyori.adventure.text.format.NamedTextColor;
 
 import java.util.List;
 
-public abstract class BundledNMS<Source> implements NMS<Source>, PaperNMS<Source> {
+public interface BundledNMS<Source> extends NMS<Source>, PaperNMS<Source> {
 
-	public abstract SignedMessage getChat(CommandContext<Source> cmdCtx, String key) throws CommandSyntaxException;
+	SignedMessage getChat(CommandContext<Source> cmdCtx, String key) throws CommandSyntaxException;
 
-	public abstract NamedTextColor getChatColor(CommandContext<Source> cmdCtx, String key);
+	NamedTextColor getChatColor(CommandContext<Source> cmdCtx, String key);
 
-	public abstract Component getChatComponent(CommandContext<Source> cmdCtx, String key) throws CommandSyntaxException;
+	Component getChatComponent(CommandContext<Source> cmdCtx, String key) throws CommandSyntaxException;
 
-	public abstract List<PlayerProfile> getProfile(CommandContext<Source> cmdCtx, String key) throws CommandSyntaxException;
+	List<PlayerProfile> getProfile(CommandContext<Source> cmdCtx, String key) throws CommandSyntaxException;
 
 }

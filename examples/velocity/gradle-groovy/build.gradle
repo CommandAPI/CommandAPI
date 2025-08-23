@@ -16,7 +16,7 @@ repositories {
 	mavenCentral()
 	// This adds the Velocity Maven repository to the build
 	maven {
-		url 'https://repo.papermc.io/repository/maven-public/'
+		url = 'https://repo.papermc.io/repository/maven-public/'
 	}
 }
 

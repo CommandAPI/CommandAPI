@@ -57,7 +57,7 @@ public abstract class CommandTestBase extends CommandAPITestUtilities {
 	public <T> CommandContext<MockCommandSource> createContextWithParser(
 		CommandSender source, String key, Parser<T> parser, String input
 	) throws CommandSyntaxException {
-		CommandDispatcher<MockCommandSource> dispatcher = getCommandAPIPlatform().getBrigadierDispatcher();
+		CommandDispatcher<MockCommandSource> dispatcher = getMockCommandAPI().getCommandAPIBukkit().getBrigadierDispatcher();
 		CommandContextBuilder<MockCommandSource> contextBuilder = new CommandContextBuilder<>(
 			dispatcher,
 			new MockCommandSource(source),

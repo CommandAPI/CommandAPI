@@ -1,10 +1,12 @@
 package dev.jorel.commandapi;
 
+import io.papermc.paper.plugin.bootstrap.BootstrapContext;
 import io.papermc.paper.plugin.configuration.PluginMeta;
 import io.papermc.paper.plugin.lifecycle.event.LifecycleEventOwner;
+import org.bukkit.plugin.java.JavaPlugin;
 
 @SuppressWarnings("UnstableApiUsage")
-public class CommandAPIPaperConfig<T extends LifecycleEventOwner> extends CommandAPIBukkitConfig<CommandAPIPaperConfig<T>> {
+public class CommandAPIPaperConfig extends CommandAPIBukkitConfig<CommandAPIPaperConfig> {
 
 	PluginMeta pluginMeta;
 	LifecycleEventOwner lifecycleEventOwner;
@@ -13,24 +15,23 @@ public class CommandAPIPaperConfig<T extends LifecycleEventOwner> extends Comman
 	/**
 	 * Creates a new {@code CommandAPIPaperConfig} object
 	 *
-	 * @param pluginMeta the {@link io.papermc.paper.plugin.configuration.PluginMeta} of the plugin loading the CommandAPI
-	 * @param lifecycleEventOwner a {@link io.papermc.paper.plugin.lifecycle.event.LifecycleEventOwner}.
-	 *                           Can be a {@link org.bukkit.plugin.java.JavaPlugin} or a {@link io.papermc.paper.plugin.bootstrap.BootstrapContext}
+	 * @param lifecycleEventOwner The {@link LifecycleEventOwner} loading the CommandAPI.
+	 *                            Can be a {@link JavaPlugin} or a {@link BootstrapContext}.
 	 */
-	public CommandAPIPaperConfig(PluginMeta pluginMeta, T lifecycleEventOwner) {
-		super(pluginMeta.getName());
-		this.pluginMeta = pluginMeta;
+	public CommandAPIPaperConfig(LifecycleEventOwner lifecycleEventOwner) {
+		super(lifecycleEventOwner.getPluginMeta().getName());
+		this.pluginMeta = lifecycleEventOwner.getPluginMeta();
 		this.lifecycleEventOwner = lifecycleEventOwner;
 		fallbackToLatestNMS(true);
 	}
 
-	CommandAPIPaperConfig<T> isCommandAPIPlugin() {
+	CommandAPIPaperConfig isCommandAPIPlugin() {
 		this.isCommandAPIPlugin = true;
 		return this;
 	}
 
 	@Override
-	public CommandAPIPaperConfig<T> instance() {
+	public CommandAPIPaperConfig instance() {
 		return this;
 	}
 }

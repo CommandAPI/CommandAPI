@@ -23,6 +23,10 @@ public interface CommandAPILogger {
 		return bindToMethods(logger::info, logger::warn, logger::error, logger::error);
 	}
 
+	static CommandAPILogger silent() {
+		return bindToMethods(msg -> {}, msg -> {}, msg -> {}, (msg, ex) -> {});
+	}
+
 	static CommandAPILogger bindToMethods(Consumer<String> info, Consumer<String> warning, Consumer<String> severe, BiConsumer<String, Throwable> severeException) {
 		return new CommandAPILogger() {
 			@Override

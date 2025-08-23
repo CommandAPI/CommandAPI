@@ -1,15 +1,19 @@
 package io.github.jorelali;
 
-import be.seeseemelk.mockbukkit.MockBukkit;
-import be.seeseemelk.mockbukkit.ServerMock;
-import be.seeseemelk.mockbukkit.entity.PlayerMock;
 import dev.jorel.commandapi.MockCommandAPIPlugin;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockbukkit.mockbukkit.MockBukkit;
+import org.mockbukkit.mockbukkit.ServerMock;
+import org.mockbukkit.mockbukkit.entity.PlayerMock;
 
 // Import helper methods from CommandAPITestUtilities
 import static dev.jorel.commandapi.CommandAPITestUtilities.assertCommandSucceeds;
+
+// Import MockBukkit assertions
+import static org.mockbukkit.mockbukkit.matcher.command.MessageTargetReceivedAnyMessageMatcher.hasNotReceivedAny;
+import static org.mockbukkit.mockbukkit.matcher.command.MessageTargetReceivedMessageMatcher.hasReceived;
 
 class PingPongCommandTests {
 	// Setup
@@ -40,7 +44,7 @@ class PingPongCommandTests {
 
 		assertCommandSucceeds(player, "ping");
 
-		player.assertSaid("pong!");
-		player.assertNoMoreSaid();
+		hasReceived("pong!").matches(player);
+		hasNotReceivedAny().matches(player);
 	}
 }

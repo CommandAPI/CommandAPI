@@ -1,14 +1,12 @@
 package io.github.jorelali;
 
-import java.io.File;
-
 import de.tr7zw.changeme.nbtapi.NBTContainer;
-import dev.jorel.commandapi.CommandAPIPaperConfig;
+import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPILogger;
+import dev.jorel.commandapi.CommandAPIPaperConfig;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import dev.jorel.commandapi.CommandAPI;
-import dev.jorel.commandapi.CommandAPIConfig;
+import java.io.File;
 
 public class Main extends JavaPlugin {
 	@Override

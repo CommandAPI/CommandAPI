@@ -9,7 +9,6 @@ import dev.jorel.commandapi.commandsenders.BukkitPlayer;
 import dev.jorel.commandapi.commandsenders.BukkitProxiedCommandSender;
 import dev.jorel.commandapi.commandsenders.BukkitRemoteConsoleCommandSender;
 import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
-import dev.jorel.commandapi.nms.NMS;
 import dev.jorel.commandapi.nms.SpigotNMS;
 import dev.jorel.commandapi.wrappers.NativeProxyCommandSender;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -21,17 +20,10 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.ProxiedCommandSender;
 import org.bukkit.command.RemoteConsoleCommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.server.ServerLoadEvent;
-import org.bukkit.plugin.java.JavaPlugin;
 
 public abstract class CommandAPISpigot<Source> extends CommandAPIBukkit<Source> implements SpigotNMS<Source> {
-
 	private static CommandAPISpigot<?> spigot;
 
-	@SuppressWarnings("unchecked")
 	protected CommandAPISpigot(InternalSpigotConfig config) {
 		this.nms = bukkitNMS();
 		CommandAPIBukkit.config = config;
