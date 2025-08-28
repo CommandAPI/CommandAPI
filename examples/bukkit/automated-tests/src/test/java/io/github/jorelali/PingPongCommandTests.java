@@ -12,6 +12,7 @@ import org.mockbukkit.mockbukkit.entity.PlayerMock;
 import static dev.jorel.commandapi.CommandAPITestUtilities.assertCommandSucceeds;
 
 // Import MockBukkit assertions
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockbukkit.mockbukkit.matcher.command.MessageTargetReceivedAnyMessageMatcher.hasNotReceivedAny;
 import static org.mockbukkit.mockbukkit.matcher.command.MessageTargetReceivedMessageMatcher.hasReceived;
 
@@ -44,7 +45,7 @@ class PingPongCommandTests {
 
 		assertCommandSucceeds(player, "ping");
 
-		hasReceived("pong!").matches(player);
-		hasNotReceivedAny().matches(player);
+		assertThat(player, hasReceived("pong!"));
+		assertThat(player, hasNotReceivedAny());
 	}
 }

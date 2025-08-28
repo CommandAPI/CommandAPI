@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 // Import MockBukkit assertions
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockbukkit.mockbukkit.matcher.command.MessageTargetReceivedAnyMessageMatcher.hasNotReceivedAny;
 import static org.mockbukkit.mockbukkit.matcher.command.MessageTargetReceivedMessageMatcher.hasReceived;
 
@@ -47,14 +48,14 @@ public class RangeCheckTests extends CommandAPITestUtilities {
 	void testCommandExecution() {
 		// Testing successful usage of command
 		assertCommandSucceeds(player, "rangecheck 10..15 13");
-		hasReceived("Number 13 is within range 10..15").matches(player);
+		assertThat(player, hasReceived("Number 13 is within range 10..15"));
 
 		assertCommandSucceedsWithArguments(
 			player, "rangecheck 10..15 10",
 			// Verifying argument array
 			new IntegerRange(10, 15), 10
 		);
-		hasReceived("Number 10 is within range 10..15").matches(player);
+		assertThat(player, hasReceived("Number 10 is within range 10..15"));
 
 		assertCommandSucceedsWithArguments(
 			player, "rangecheck -3..-3 -3",
@@ -64,7 +65,7 @@ public class RangeCheckTests extends CommandAPITestUtilities {
 				"number", -3
 			)
 		);
-		hasReceived("Number -3 is within range -3..-3").matches(player);
+		assertThat(player, hasReceived("Number -3 is within range -3..-3"));
 
 		// Test unsuccessful usage of command
 		assertCommandFails(
@@ -90,7 +91,7 @@ public class RangeCheckTests extends CommandAPITestUtilities {
 		);
 
 		// Make sure no extra messages were sent
-		hasNotReceivedAny().matches(player);
+		assertThat(player, hasNotReceivedAny());
 	}
 
 	@Test
