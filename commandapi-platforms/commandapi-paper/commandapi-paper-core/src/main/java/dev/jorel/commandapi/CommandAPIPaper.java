@@ -169,7 +169,7 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 		isFoliaPresent = false;
 
 		try {
-			Class.forName("io.papermc.paper.threadedregions.RegionizedServerInitEvent");
+			Class.forName("io.papermc.paper.threadedregions.RegionizedServer");
 			isFoliaPresent = true;
 			CommandAPI.logNormal("Hooked into Folia for folia-specific API implementations");
 			CommandAPI.logNormal("Folia support is still in development. Please report any issues to the CommandAPI developers!");
