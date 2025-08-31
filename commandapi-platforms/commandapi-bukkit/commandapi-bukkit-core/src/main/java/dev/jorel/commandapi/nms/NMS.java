@@ -300,7 +300,7 @@ public interface NMS<CommandListenerWrapper> {
 
 	Advancement getAdvancement(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException;
 
-	float getAngle(CommandContext<CommandListenerWrapper> cmdCtx, String key);
+	float getAngle(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException;
 
 	EnumSet<Axis> getAxis(CommandContext<CommandListenerWrapper> cmdCtx, String key);
 

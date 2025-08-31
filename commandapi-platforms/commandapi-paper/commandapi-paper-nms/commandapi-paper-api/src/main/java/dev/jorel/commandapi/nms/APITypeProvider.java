@@ -30,11 +30,18 @@ import dev.jorel.commandapi.wrappers.ScoreboardSlot;
 import dev.jorel.commandapi.wrappers.SimpleFunctionWrapper;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
+import io.papermc.paper.command.brigadier.argument.AxisSet;
 import io.papermc.paper.command.brigadier.argument.SignedMessageResolver;
+import io.papermc.paper.command.brigadier.argument.position.ColumnBlockPosition;
+import io.papermc.paper.command.brigadier.argument.position.ColumnFinePosition;
+import io.papermc.paper.command.brigadier.argument.predicate.BlockInWorldPredicate;
 import io.papermc.paper.command.brigadier.argument.predicate.ItemStackPredicate;
 import io.papermc.paper.command.brigadier.argument.range.DoubleRangeProvider;
 import io.papermc.paper.command.brigadier.argument.range.IntegerRangeProvider;
+import io.papermc.paper.command.brigadier.argument.resolvers.AngleResolver;
 import io.papermc.paper.command.brigadier.argument.resolvers.BlockPositionResolver;
+import io.papermc.paper.command.brigadier.argument.resolvers.ColumnBlockPositionResolver;
+import io.papermc.paper.command.brigadier.argument.resolvers.ColumnFinePositionResolver;
 import io.papermc.paper.command.brigadier.argument.resolvers.FinePositionResolver;
 import io.papermc.paper.command.brigadier.argument.resolvers.PlayerProfileListResolver;
 import io.papermc.paper.command.brigadier.argument.resolvers.RotationResolver;
@@ -168,6 +175,7 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	@Override
 	public ArgumentType<?> _ArgumentAngle() {
 		return getArgumentType(
+			() -> ArgumentTypes.angle(), // Since 1.21.8
 			() -> paperNMS.bukkitNMS()._ArgumentAngle()
 		);
 	}
@@ -175,6 +183,7 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	@Override
 	public ArgumentType<?> _ArgumentAxis() {
 		return getArgumentType(
+			() -> ArgumentTypes.axes(), // Since 1.21.8
 			() -> paperNMS.bukkitNMS()._ArgumentAxis()
 		);
 	}
@@ -182,6 +191,7 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	@Override
 	public ArgumentType<?> _ArgumentBlockPredicate() {
 		return getArgumentType(
+			() -> ArgumentTypes.blockInWorldPredicate(), // Since 1.21.8
 			() -> paperNMS.bukkitNMS()._ArgumentBlockPredicate()
 		);
 	}
@@ -291,6 +301,7 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	@Override
 	public ArgumentType<?> _ArgumentPosition2D() {
 		return getArgumentType(
+			() -> ArgumentTypes.columnBlockPosition(), // Since 1.21.8
 			() -> paperNMS.bukkitNMS()._ArgumentPosition2D()
 		);
 	}
@@ -366,6 +377,7 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	@Override
 	public ArgumentType<?> _ArgumentVec2(boolean centerPosition) {
 		return getArgumentType(
+			() -> ArgumentTypes.columnFinePosition(centerPosition), // Since 1.21.8
 			() -> paperNMS.bukkitNMS()._ArgumentVec2(centerPosition)
 		);
 	}
@@ -416,8 +428,12 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	}
 
 	@Override
-	public float getAngle(CommandContext<CommandSourceStack> cmdCtx, String key) {
-		return parse(cmdCtx, key,
+	public float getAngle(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
+		return parseT(cmdCtx, key,
+			(ctx, name) -> {
+				AngleResolver resolver = ctx.getArgument(name, AngleResolver.class);
+				return resolver.resolve(ctx.getSource());
+			},
 			(ctx, name) -> paperNMS.bukkitNMS().getAngle(ctx, name)
 		);
 	}
@@ -425,6 +441,10 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	@Override
 	public EnumSet<Axis> getAxis(CommandContext<CommandSourceStack> cmdCtx, String key) {
 		return parse(cmdCtx, key,
+			(ctx, name) -> {
+				AxisSet axisSet = ctx.getArgument(name, AxisSet.class);
+				return EnumSet.copyOf(axisSet);
+			},
 			(ctx, name) -> paperNMS.bukkitNMS().getAxis(ctx, name)
 		);
 	}
@@ -440,6 +460,10 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	@Override
 	public Predicate<Block> getBlockPredicate(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
 		return parseT(cmdCtx, key,
+			(ctx, name) -> {
+				BlockInWorldPredicate predicate = ctx.getArgument(key, BlockInWorldPredicate.class);
+				return block -> predicate.testBlock(block).asBoolean();
+			},
 			(ctx, name) -> paperNMS.bukkitNMS().getBlockPredicate(ctx, name)
 		);
 	}
@@ -532,6 +556,10 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	@Override
 	public Location2D getLocation2DBlock(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
 		return parseT(cmdCtx, key,
+			(ctx, name) -> {
+				ColumnBlockPosition resolver = ctx.getArgument(key, ColumnBlockPositionResolver.class).resolve(ctx.getSource());
+				return new Location2D(getWorldForCSS(ctx.getSource()), resolver.blockX(), resolver.blockZ());
+			},
 			(ctx, name) -> paperNMS.bukkitNMS().getLocation2DBlock(ctx, name)
 		);
 	}
@@ -539,6 +567,10 @@ public class APITypeProvider extends BundledNMS<CommandSourceStack> {
 	@Override
 	public Location2D getLocation2DPrecise(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
 		return parseT(cmdCtx, key,
+			(ctx, name) -> {
+				ColumnFinePosition columnFinePosition = ctx.getArgument(key, ColumnFinePositionResolver.class).resolve(ctx.getSource());
+				return new Location2D(getWorldForCSS(ctx.getSource()), columnFinePosition.x(), columnFinePosition.z());
+			},
 			(ctx, name) -> paperNMS.bukkitNMS().getLocation2DPrecise(ctx, name)
 		);
 	}

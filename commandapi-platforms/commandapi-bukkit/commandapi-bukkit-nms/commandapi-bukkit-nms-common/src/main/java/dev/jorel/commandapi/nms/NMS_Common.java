@@ -288,7 +288,7 @@ public abstract class NMS_Common implements NMS<CommandSourceStack> {
 	}
 
 	@Override
-	public final float getAngle(CommandContext<CommandSourceStack> cmdCtx, String key) {
+	public final float getAngle(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
 		return AngleArgument.getAngle(cmdCtx, key);
 	}
 
