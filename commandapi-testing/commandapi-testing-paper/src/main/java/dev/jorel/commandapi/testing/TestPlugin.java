@@ -1,5 +1,6 @@
 package dev.jorel.commandapi.testing;
 
+import com.mojang.brigadier.tree.CommandNode;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.CommandAPIPaper;
@@ -7,6 +8,7 @@ import dev.jorel.commandapi.CommandAPIPaperConfig;
 import dev.jorel.commandapi.arguments.AdvancementArgument;
 import dev.jorel.commandapi.arguments.AngleArgument;
 import dev.jorel.commandapi.arguments.Argument;
+import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.jorel.commandapi.arguments.AxisArgument;
 import dev.jorel.commandapi.arguments.BiomeArgument;
 import dev.jorel.commandapi.arguments.BlockPredicateArgument;
@@ -14,10 +16,10 @@ import dev.jorel.commandapi.arguments.BlockStateArgument;
 import dev.jorel.commandapi.arguments.ChatArgument;
 import dev.jorel.commandapi.arguments.ChatColorArgument;
 import dev.jorel.commandapi.arguments.ChatComponentArgument;
+import dev.jorel.commandapi.arguments.DoubleRangeArgument;
 import dev.jorel.commandapi.arguments.EnchantmentArgument;
 import dev.jorel.commandapi.arguments.EntitySelectorArgument;
 import dev.jorel.commandapi.arguments.EntityTypeArgument;
-import dev.jorel.commandapi.arguments.DoubleRangeArgument;
 import dev.jorel.commandapi.arguments.FunctionArgument;
 import dev.jorel.commandapi.arguments.IntegerRangeArgument;
 import dev.jorel.commandapi.arguments.ItemStackArgument;
@@ -38,6 +40,7 @@ import dev.jorel.commandapi.arguments.RotationArgument;
 import dev.jorel.commandapi.arguments.ScoreHolderArgument;
 import dev.jorel.commandapi.arguments.ScoreboardSlotArgument;
 import dev.jorel.commandapi.arguments.SoundArgument;
+import dev.jorel.commandapi.arguments.StringArgument;
 import dev.jorel.commandapi.arguments.TeamArgument;
 import dev.jorel.commandapi.arguments.TimeArgument;
 import dev.jorel.commandapi.arguments.UUIDArgument;
@@ -50,7 +53,6 @@ import dev.jorel.commandapi.wrappers.MathOperation;
 import dev.jorel.commandapi.wrappers.ParticleData;
 import dev.jorel.commandapi.wrappers.Rotation;
 import dev.jorel.commandapi.wrappers.ScoreboardSlot;
-import io.papermc.paper.plugin.lifecycle.event.LifecycleEventOwner;
 import net.kyori.adventure.chat.ChatType;
 import net.kyori.adventure.chat.SignedMessage;
 import net.kyori.adventure.text.Component;
@@ -75,6 +77,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Team;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
@@ -135,6 +138,35 @@ public class TestPlugin extends JavaPlugin {
 		register(new TimeArgument("timetype"), int.class, Object::toString);
 		register(new UUIDArgument("uuidtype"), UUID.class, UUID::toString);
 		register(new WorldArgument("worldtype"), World.class, World::getName);
+
+		// Unregistration/Registration test commands
+		registerExecutor(new StringArgument("register"), String.class, (name, sender) -> {
+			new CommandAPICommand(name)
+				.executes(info -> {
+					info.sender().sendMessage(Component.text().content("Command /" + name + " was registered and executed successfully!"));
+				})
+				.register();
+		});
+		registerExecutor(new StringArgument("unregister")
+				.replaceSuggestions(ArgumentSuggestions.strings(info -> CommandAPIPaper.getPaper()
+					.getBrigadierDispatcher()
+					.getRoot()
+					.getChildren()
+					.stream()
+					.map(CommandNode::getName)
+					.filter(name -> !fixedCommandNames.contains(name))
+					.toArray(String[]::new)
+				)),
+			String.class,
+			(name, sender) -> {
+				if (fixedCommandNames.contains(name)) {
+					sender.sendMessage(Component.text("Sorry, the command /" + name + " cannot be unregistered!", NamedTextColor.RED));
+					return;
+				}
+				CommandAPI.unregister(name, true);
+				sender.sendMessage(Component.text("Command " + name + " was unregistered successfully!", NamedTextColor.GREEN));
+			}
+		);
 	}
 
 	@Override
@@ -142,7 +174,10 @@ public class TestPlugin extends JavaPlugin {
 		CommandAPI.onEnable();
 	}
 
+	private final List<String> fixedCommandNames = new ArrayList<>();
+
 	private <T> void register(Argument<T> argument, Class<T> castType, Function<T, String> toString) {
+		fixedCommandNames.add(argument.getNodeName());
 		new CommandAPICommand(argument.getNodeName())
 			.withArguments(argument)
 			.executes(info -> {
@@ -152,6 +187,7 @@ public class TestPlugin extends JavaPlugin {
 	}
 
 	private <T> void register(Argument<T> argument, Function<T, Component> toString, Class<T> castType) {
+		fixedCommandNames.add(argument.getNodeName());
 		new CommandAPICommand(argument.getNodeName())
 			.withArguments(argument)
 			.executes(info -> {
@@ -161,11 +197,22 @@ public class TestPlugin extends JavaPlugin {
 	}
 
 	private <T> void register(Argument<T> argument, Class<T> castType, BiConsumer<T, CommandSender> action) {
+		fixedCommandNames.add(argument.getNodeName());
 		new CommandAPICommand(argument.getNodeName())
 			.withArguments(argument)
 			.executes(info -> {
 				T argumentType = info.args().getByClass(argument.getNodeName(), castType);
 				action.accept(argumentType, info.sender());
+			})
+			.register();
+	}
+
+	private <T> void registerExecutor(Argument<T> argument, Class<T> castType, BiConsumer<T, CommandSender> executor) {
+		fixedCommandNames.add(argument.getNodeName());
+		new CommandAPICommand(argument.getNodeName())
+			.withArguments(argument)
+			.executes(info -> {
+				executor.accept(info.args().getByClass(argument.getNodeName(), castType), info.sender());
 			})
 			.register();
 	}
