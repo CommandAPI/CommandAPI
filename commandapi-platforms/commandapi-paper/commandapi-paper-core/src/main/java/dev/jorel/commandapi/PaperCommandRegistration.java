@@ -42,6 +42,8 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 	private final CommandDispatcher<CommandSourceStack> bootstrapDispatcher = new CommandDispatcher<>();
 	private final CommandDispatcher<CommandSourceStack> pluginDispatcher = new CommandDispatcher<>();
 
+	private final List<UnregisterInformation> unregisterInformationList = new ArrayList<>();
+
 	public PaperCommandRegistration(Supplier<CommandDispatcher<Source>> getBrigadierDispatcher, Runnable reloadHelpTopics, Predicate<CommandNode<Source>> isBukkitCommand) {
 		this.getBrigadierDispatcher = getBrigadierDispatcher;
 		this.reloadHelpTopics = reloadHelpTopics;
@@ -84,19 +86,20 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 		} else {
 			pluginDispatcher.getRoot().addChild((CommandNode<CommandSourceStack>) built);
 		}
+		if (!CommandAPI.canRegister()) {
+			// Since we register commands into our dispatchers, we need to run the lifecycle events again
+			// This can happen when using /minecraft:reload or this method
+			Bukkit.reloadData();
+		}
 		return built;
 	}
 
 	@Override
 	public void unregister(String commandName, boolean unregisterNamespaces, boolean unregisterBukkit) {
-		// Remove nodes from the dispatcher
-		removeBrigadierCommands(getBrigadierDispatcher().getRoot(), commandName, unregisterNamespaces,
-			// If we are unregistering a Bukkit command, ONLY unregister BukkitCommandNodes
-			// If we are unregistering a Vanilla command, DO NOT unregister BukkitCommandNodes
-			c -> !unregisterBukkit ^ isBukkitCommand.test(c));
-
-		// Update the dispatcher file
-		CommandAPIHandler.getInstance().writeDispatcherToFile();
+		unregisterInformationList.add(new UnregisterInformation(commandName, unregisterNamespaces, unregisterBukkit));
+		if (!CommandAPI.canRegister()) {
+			Bukkit.reloadData();
+		}
 	}
 
 	@Override
@@ -118,6 +121,33 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 			JavaPlugin plugin = (JavaPlugin) CommandAPIPaper.getPaper().getLifecycleEventOwner();
 			lifecycleEventRegistered[1] = true;
 			registerLifecycleEvent(plugin.getLifecycleManager(), pluginDispatcher);
+
+			plugin.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS.newHandler(event -> {
+				if (!unregisterInformationList.isEmpty()) {
+					for (UnregisterInformation unregisterInformation : unregisterInformationList) {
+						// Remove nodes from the dispatcher
+						removeBrigadierCommands(getBrigadierDispatcher().getRoot(), unregisterInformation.commandName(), unregisterInformation.unregisterNamespaces(),
+							// If we are unregistering a Bukkit command, ONLY unregister BukkitCommandNodes
+							// If we are unregistering a Vanilla command, DO NOT unregister BukkitCommandNodes
+							c -> !unregisterInformation.unregisterBukkit() ^ isBukkitCommand.test(c));
+
+						// Remove nodes from our dispatchers
+						removeBrigadierCommands((RootCommandNode<Source>) bootstrapDispatcher.getRoot(),
+							unregisterInformation.commandName(),
+							unregisterInformation.unregisterNamespaces(),
+							c -> !unregisterInformation.unregisterBukkit() ^ isBukkitCommand.test(c)
+						);
+						removeBrigadierCommands((RootCommandNode<Source>) pluginDispatcher.getRoot(),
+							unregisterInformation.commandName(),
+							unregisterInformation.unregisterNamespaces(),
+							c -> !unregisterInformation.unregisterBukkit() ^ isBukkitCommand.test(c)
+						);
+					}
+
+					// Update the dispatcher file
+					CommandAPIHandler.getInstance().writeDispatcherToFile();
+				}
+			}).priority(1));
 		}
 	}
 
@@ -149,5 +179,7 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 		}
 		return "";
 	}
+
+	private record UnregisterInformation(String commandName, boolean unregisterNamespaces, boolean unregisterBukkit) {}
 
 }
