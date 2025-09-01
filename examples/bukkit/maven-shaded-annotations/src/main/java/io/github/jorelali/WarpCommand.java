@@ -1,20 +1,14 @@
 package io.github.jorelali;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import dev.jorel.commandapi.annotations.*;
+import dev.jorel.commandapi.annotations.arguments.AEntitySelectorArgument;
+import dev.jorel.commandapi.annotations.arguments.AStringArgument;
 import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import dev.jorel.commandapi.annotations.Command;
-import dev.jorel.commandapi.annotations.Default;
-import dev.jorel.commandapi.annotations.Help;
-import dev.jorel.commandapi.annotations.Permission;
-import dev.jorel.commandapi.annotations.Subcommand;
-import dev.jorel.commandapi.annotations.arguments.APlayerArgument;
-import dev.jorel.commandapi.annotations.arguments.AStringArgument;
+import java.util.HashMap;
+import java.util.Map;
 
 @Command("warp")
 @Help(value = "Manages all warps on the server", shortDescription = "Manages warps")
@@ -43,12 +37,10 @@ public class WarpCommand {
 		warps.put(warpName, player.getLocation());
 	}
 
-	@Subcommand("create")
-	@Permission("warps.create")
-	public static void tpWarp(CommandSender sender, @APlayerArgument OfflinePlayer target, @AStringArgument String warpName) {
-		if (target.isOnline() && target instanceof Player onlineTarget) {
-			onlineTarget.teleport(warps.get(warpName));
-		}
+	@Subcommand("tp")
+	@Permission("warps.tp")
+	public static void tpWarp(CommandSender sender, @AEntitySelectorArgument.OnePlayer Player target, @AStringArgument String warpName) {
+		target.teleport(warps.get(warpName));
 	}
 
 }

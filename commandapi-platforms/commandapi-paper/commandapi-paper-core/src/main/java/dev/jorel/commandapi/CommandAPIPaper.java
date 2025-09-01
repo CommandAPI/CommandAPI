@@ -94,7 +94,7 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 	public void onLoad() {
 		super.onLoad();
 		checkPaperDependencies();
-		PaperCommandRegistration registration = (PaperCommandRegistration) CommandAPIBukkit.get().getCommandRegistrationStrategy();
+		PaperCommandRegistration<Source> registration = (PaperCommandRegistration<Source>) getCommandRegistrationStrategy();
 		registration.registerLifecycleEvent();
 	}
 
@@ -139,7 +139,7 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 			CommandAPI.logNormal("Did not hook into Paper ServerResourcesReloadedEvent while using commandapi-paper. Are you actually using Paper?");
 		}
 
-		PaperCommandRegistration registration = (PaperCommandRegistration) super.getCommandRegistrationStrategy();
+		PaperCommandRegistration<Source> registration = (PaperCommandRegistration<Source>) getCommandRegistrationStrategy();
 		registration.registerLifecycleEvent();
 	}
 

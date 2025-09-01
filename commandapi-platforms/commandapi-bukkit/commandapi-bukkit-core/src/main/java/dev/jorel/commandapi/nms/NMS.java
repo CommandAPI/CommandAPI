@@ -362,9 +362,6 @@ public interface NMS<CommandListenerWrapper> {
 
 	ParticleData<?> getParticle(CommandContext<CommandListenerWrapper> cmdCtx, String key);
 
-	OfflinePlayer getOfflinePlayer(CommandContext<CommandListenerWrapper> cmdCtx, String key)
-		throws CommandSyntaxException;
-
 	RegistryParser<PotionEffectType> getPotionEffect(CommandContext<CommandListenerWrapper> cmdCtx, String key);
 
 	Recipe getRecipe(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException;
@@ -423,7 +420,7 @@ public interface NMS<CommandListenerWrapper> {
 	BukkitCommandSender<? extends CommandSender> getSenderForCommand(CommandContext<CommandListenerWrapper> cmdCtx, boolean forceNative);
 
 	@Unimplemented(because = REQUIRES_CSS)
-	<Source> BukkitCommandSender<? extends CommandSender> getCommandSenderFromCommandSource(Source css);
+	BukkitCommandSender<? extends CommandSender> getCommandSenderFromCommandSource(CommandListenerWrapper css);
 
 	@Unimplemented(because = REQUIRES_CRAFTBUKKIT)
 	CommandListenerWrapper getBrigadierSourceFromCommandSender(AbstractCommandSender<? extends CommandSender> sender);

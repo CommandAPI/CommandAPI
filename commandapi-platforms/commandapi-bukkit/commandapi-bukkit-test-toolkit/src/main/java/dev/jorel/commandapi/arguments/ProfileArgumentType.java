@@ -13,8 +13,10 @@ import dev.jorel.commandapi.arguments.parser.ParserArgument;
 import dev.jorel.commandapi.arguments.parser.Result;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.profile.PlayerProfile;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class ProfileArgumentType implements ArgumentType<ProfileArgumentType.ProfileSelector> {
@@ -28,7 +30,7 @@ public class ProfileArgumentType implements ArgumentType<ProfileArgumentType.Pro
 	// ArgumentType implementation
 	@FunctionalInterface
 	public interface ProfileSelector {
-		Collection<UUID> getProfiles(MockCommandSource source) throws CommandSyntaxException;
+		List<PlayerProfile> getProfiles(MockCommandSource source) throws CommandSyntaxException;
 	}
 
 	public static final SimpleCommandExceptionType ERROR_UNKNOWN_PLAYER = new SimpleCommandExceptionType(
@@ -52,9 +54,9 @@ public class ProfileArgumentType implements ArgumentType<ProfileArgumentType.Pro
 							throw EntitySelectorArgumentType.NO_PLAYERS_FOUND.create();
 						}
 
-						List<UUID> profiles = new ArrayList<>(players.size());
+						List<PlayerProfile> profiles = new ArrayList<>(players.size());
 						for (Player player : players) {
-							profiles.add(player.getUniqueId());
+							profiles.add(player.getPlayerProfile());
 						}
 						return profiles;
 					};
@@ -72,7 +74,7 @@ public class ProfileArgumentType implements ArgumentType<ProfileArgumentType.Pro
 				if (player == null) {
 					throw ERROR_UNKNOWN_PLAYER.create();
 				}
-				return Collections.singleton(player.getUniqueId());
+				return List.of(player.getPlayerProfile());
 			})
 			// Name was not parsed, pass error unchanged
 		);
@@ -88,7 +90,7 @@ public class ProfileArgumentType implements ArgumentType<ProfileArgumentType.Pro
 		return EntitySelectorParser.parser.listSuggestions(context, builder);
 	}
 
-	public static Collection<UUID> getProfiles(CommandContext<MockCommandSource> cmdCtx, String key) throws CommandSyntaxException {
+	public static List<? extends PlayerProfile> getProfiles(CommandContext<MockCommandSource> cmdCtx, String key) throws CommandSyntaxException {
 		return cmdCtx.getArgument(key, ProfileSelector.class).getProfiles(cmdCtx.getSource());
 	}
 }

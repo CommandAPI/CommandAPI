@@ -12,7 +12,7 @@
 		<!-- This adds the Paper Maven repository to the build -->
 		<repository>
 			<id>papermc</id>
-			<url>https://papermc.io/repo/repository/maven-public/</url>
+			<url>https://repo.papermc.io/repository/maven-public/</url>
 		</repository>
 	</repositories>
 

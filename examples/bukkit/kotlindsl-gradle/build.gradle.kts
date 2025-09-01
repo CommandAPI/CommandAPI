@@ -1,5 +1,5 @@
 plugins {
-	kotlin("jvm") version "1.8.20"
+	kotlin("jvm") version "2.2.10"
 }
 
 kotlin {
@@ -12,7 +12,7 @@ repositories {
 	// Use Maven Central for resolving dependencies.
 	mavenCentral()
 	// This adds the Paper Maven repository to the build
-	maven("https://papermc.io/repo/repository/maven-public/")
+	maven("https://repo.papermc.io/repository/maven-public/")
 }
 
 dependencies {

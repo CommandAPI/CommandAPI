@@ -23,6 +23,7 @@ import org.bukkit.craftbukkit.v1_20_R2.command.VanillaCommandWrapper;
 import org.bukkit.craftbukkit.v1_20_R2.profile.CraftPlayerProfile;
 import org.bukkit.profile.PlayerProfile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SpigotNMS_1_20_R2 extends CommandAPISpigot<CommandSourceStack> {
@@ -51,9 +52,7 @@ public class SpigotNMS_1_20_R2 extends CommandAPISpigot<CommandSourceStack> {
 	@Override
 	public final List<PlayerProfile> getProfile(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
 		GameProfileArgument.Result result = cmdCtx.getArgument(key, GameProfileArgument.Result.class);
-		return result instanceof GameProfileArgument.SelectorResult selectorResult
-			? List.of(Collections2.transform(selectorResult.getNames(cmdCtx.getSource()), CraftPlayerProfile::new).toArray(new PlayerProfile[0]))
-			: List.of(Collections2.transform(result.getNames(cmdCtx.getSource()), CraftPlayerProfile::new).toArray(new PlayerProfile[0]));
+		return new ArrayList<>(Collections2.transform(result.getNames(cmdCtx.getSource()), CraftPlayerProfile::new));
 	}
 
 	@Override

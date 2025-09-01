@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>dev.jorel</groupId>
 		<artifactId>commandapi-bukkit</artifactId>
-		<version>10.2.0-SNAPSHOT</version>
+		<version>11.0.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>commandapi-bukkit-test-toolkit</artifactId>
@@ -38,14 +38,12 @@
 		<dependency>
 			<groupId>org.mockbukkit.mockbukkit</groupId>
 			<artifactId>mockbukkit-v1.21</artifactId>
-			<version>4.45.1</version>
-			<scope>provided</scope>
 		</dependency>
 
 		<!-- Compatibility with CommandAPI Bukkit API -->
 		<dependency>
 			<groupId>dev.jorel</groupId>
-			<artifactId>commandapi-paper-core</artifactId>
+			<artifactId>commandapi-bukkit-core</artifactId>
 			<version>${project.version}</version>
 			<scope>provided</scope>
 		</dependency>
@@ -56,13 +54,6 @@
 			<artifactId>mockito-core</artifactId>
 			<version>5.11.0</version>
 			<scope>compile</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>io.papermc.paper</groupId>
-			<artifactId>paper-api</artifactId>
-			<version>1.20.6-R0.1-SNAPSHOT</version>
-			<scope>provided</scope>
 		</dependency>
 
 		<!-- Pass Brigadier to our dependents -->
@@ -79,17 +70,23 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-nop</artifactId>
-			<version>2.0.9</version>
+			<version>2.0.16</version>
 			<scope>compile</scope>
 		</dependency>
 
 		<!-- Run our own tests with JUnit API -->
-		<!-- Note: This version matches the artifactId `junit-jupiter` dependency transitively inherited
+		<!-- Note: These versions match the artifactId `junit-jupiter-api` dependency transitively inherited
 		     from `MockBukkit-v1.21`. If it doesn't match, the tests might fail with class not found errors. -->
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-params</artifactId>
+			<version>5.13.3</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-engine</artifactId>
-			<version>5.11.0</version>
+			<version>5.13.3</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -103,36 +100,7 @@
 			</resource>
 		</resources>
 
-		<!-- Remove commandapi-core's VersionHandler in favor of ours -->
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-shade-plugin</artifactId>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>shade</goal>
-						</goals>
-						<configuration>
-							<filters>
-								<filter>
-									<artifact>dev.jorel:commandapi-core</artifact>
-									<excludes>
-										<exclude>dev/jorel/commandapi/CommandAPIVersionHandler**</exclude>
-									</excludes>
-								</filter>
-							</filters>
-							<transformers>
-								<transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-									<resource>LICENSE</resource>
-								</transformer>
-							</transformers>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-
 			<!-- Run our own tests -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

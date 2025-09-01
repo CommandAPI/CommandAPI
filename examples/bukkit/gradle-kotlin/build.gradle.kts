@@ -15,7 +15,7 @@ repositories {
 	// Use Maven Central for resolving dependencies.
 	mavenCentral()
 	// This adds the Paper Maven repository to the build
-	maven("https://papermc.io/repo/repository/maven-public/")
+	maven("https://repo.papermc.io/repository/maven-public/")
 	// CodeMC repository for the NBT API
 	maven("https://repo.codemc.org/repository/maven-public/")
 }

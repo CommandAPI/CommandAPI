@@ -10,16 +10,11 @@ import dev.jorel.commandapi.nms.PaperNMS_1_21_R3;
 import dev.jorel.commandapi.nms.PaperNMS_1_21_R4;
 import dev.jorel.commandapi.nms.PaperNMS_1_21_R5;
 import io.papermc.paper.ServerBuildInfo;
-import io.papermc.paper.plugin.lifecycle.event.LifecycleEventOwner;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public abstract class CommandAPIVersionHandler {
-
 	static LoadContext getPlatform(CommandAPIConfig<?> config) {
 		InternalPaperConfig internalPaperConfig;
-		if (config instanceof CommandAPIPaperConfig<?> paperConfig) {
+		if (config instanceof CommandAPIPaperConfig paperConfig) {
 			internalPaperConfig = new InternalPaperConfig(paperConfig);
 		} else {
 			throw new IllegalArgumentException("CommandAPIPaper was loaded with non-Paper config!");
@@ -66,5 +61,4 @@ public abstract class CommandAPIVersionHandler {
 			}
 		}
 	}
-
 }

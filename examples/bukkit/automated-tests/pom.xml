@@ -21,9 +21,9 @@
 		<!-- This has to go before spigot-api so MockBukkit's dependencies can have priority while testing -->
 		<!-- Otherwise, MockBukkit can get pretty cranky -->
 		<dependency>
-			<groupId>com.github.seeseemelk</groupId>
-			<artifactId>MockBukkit-v1.21</artifactId>
-			<version>3.133.2</version>
+			<groupId>org.mockbukkit.mockbukkit</groupId>
+			<artifactId>mockbukkit-v1.21</artifactId>
+			<version>4.45.1</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -31,7 +31,7 @@
 		<!-- This has to go before the main CommandAPI dependency so the test-specific implementations get priority -->
 		<dependency>
 			<groupId>dev.jorel</groupId>
-			<artifactId>commandapi-bukkit-test-toolkit</artifactId>
+			<artifactId>commandapi-spigot-test-toolkit</artifactId>
 			<version>11.0.0-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
@@ -39,13 +39,12 @@
 		<!-- Main CommandAPI dependency for writing the plugin -->
 		<dependency>
 			<groupId>dev.jorel</groupId>
-			<artifactId>commandapi-bukkit-core</artifactId>
+			<artifactId>commandapi-spigot-core</artifactId>
 			<version>11.0.0-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 
 		<!-- Adds the Spigot API to write the plugin -->
-		<!-- If your plugin focuses on Paper, putting that dependency instead works as well -->
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot-api</artifactId>

@@ -314,9 +314,9 @@ public abstract class NMS_Common implements NMS<CommandSourceStack> {
 	}
 
 	@Override
-	public final <Source> BukkitCommandSender<? extends CommandSender> getCommandSenderFromCommandSource(Source css) {
+	public final BukkitCommandSender<? extends CommandSender> getCommandSenderFromCommandSource(CommandSourceStack css) {
 		try {
-			return CommandAPIBukkit.get().wrapCommandSender(((CommandSourceStack) css).getBukkitSender());
+			return CommandAPIBukkit.get().wrapCommandSender(css.getBukkitSender());
 		} catch (UnsupportedOperationException e) {
 			return null;
 		}
@@ -362,11 +362,6 @@ public abstract class NMS_Common implements NMS<CommandSourceStack> {
 	@Override
 	public final String getObjectiveCriteria(CommandContext<CommandSourceStack> cmdCtx, String key) {
 		return ObjectiveCriteriaArgument.getCriteria(cmdCtx, key).getName();
-	}
-
-	@Override
-	public final OfflinePlayer getOfflinePlayer(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		return Bukkit.getOfflinePlayer(GameProfileArgument.getGameProfiles(cmdCtx, key).iterator().next().getId());
 	}
 
 	@Override

@@ -6,12 +6,12 @@ Key points:
 
 - You do not need to use the `.register()` method
 - You do not need to initialise any arguments.
-- Add the `commandapi-kotlin-bukkit` dependency to your project:
+- Add the `commandapi-kotlin-paper` dependency to your project:
 
   ```xml
   <dependency>
     <groupId>dev.jorel</groupId>
-    <artifactId>commandapi-kotlin-bukkit</artifactId>
+    <artifactId>commandapi-kotlin-paper</artifactId>
     <version>11.0.0-SNAPSHOT</version>
   </dependency>
   ```

@@ -12,7 +12,7 @@
 		<!-- This adds the Paper Maven repository to the build -->
 		<repository>
 			<id>papermc</id>
-			<url>https://papermc.io/repo/repository/maven-public/</url>
+			<url>https://repo.papermc.io/repository/maven-public/</url>
 		</repository>
 
 		<!-- CodeMC repository for the NBT API -->
@@ -44,7 +44,7 @@
 		<dependency>
 			<groupId>de.tr7zw</groupId>
 			<artifactId>item-nbt-api-plugin</artifactId>
-			<version>2.12.4</version>
+			<version>2.15.1</version>
 		</dependency>
 	</dependencies>
 
