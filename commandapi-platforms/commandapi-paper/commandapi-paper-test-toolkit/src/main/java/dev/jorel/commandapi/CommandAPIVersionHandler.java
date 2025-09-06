@@ -5,7 +5,7 @@ import dev.jorel.commandapi.nms.*;
 import java.util.function.Function;
 
 public abstract class CommandAPIVersionHandler {
-	// Allow loading a different platform implementation (most likely to implement something `MockCommandAPISpigot` doesn't)
+	// Allow loading a different platform implementation (most likely to implement something `MockCommandAPIPaper` doesn't)
 	private static Function<InternalPaperConfig, CommandAPIPlatform<?, ?, ?>> alternativePlatform = null;
 
 	/**
@@ -28,7 +28,7 @@ public abstract class CommandAPIVersionHandler {
 			throw new IllegalArgumentException("CommandAPIPaper was loaded with non-Paper config!");
 		}
 
-		// Default to MockCommandAPIBukkit if not given
+		// Default to MockCommandAPIPaper if not given
 		CommandAPIPlatform<?, ?, ?> platform = alternativePlatform == null ?
 			new MockCommandAPIPaper(internalPaperConfig, new MockPaperNMS()) :
 			alternativePlatform.apply(internalPaperConfig);
