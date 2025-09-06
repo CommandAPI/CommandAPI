@@ -6,9 +6,8 @@ import org.bukkit.command.CommandSender;
 
 import java.lang.reflect.Field;
 
-// TODO: Update javadocs
 /**
- * An implementation of {@link CommandAPIBukkit} that is compatible with a MockBukkit testing environment.
+ * Additional logic that helps the CommandAPI run in a MockBukkit testing environment.
  * Does not rely on any version-specific Minecraft code to (ideally) support testing in any version.
  */
 public class MockCommandAPI {
@@ -23,13 +22,16 @@ public class MockCommandAPI {
 	}
 
 	/**
-	 * @return The {@link MockCommandAPI} instance currently loaded. This is the same object as is returned by
-	 * {@link CommandAPIBukkit#get()}, but explicitly using the {@link MockCommandAPI} class.
+	 * @return The {@link MockCommandAPI} instance currently loaded.
 	 */
 	public static MockCommandAPI getInstance() {
 		return instance;
 	}
 
+	/**
+	 * @return The implementation of {@link CommandAPIBukkit} which is currently loaded. This is the same object
+	 * as is returned by {@link CommandAPIBukkit#get()}, but explicitly using the {@link MockCommandSource} class.
+	 */
 	public CommandAPIBukkit<MockCommandSource> getCommandAPIBukkit() {
 		return commandAPIBukkit;
 	}
