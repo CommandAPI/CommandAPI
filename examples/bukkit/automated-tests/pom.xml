@@ -18,12 +18,12 @@
 
 	<dependencies>
 		<!-- MockBukkit for general testing utilities https://github.com/MockBukkit/MockBukkit -->
-		<!-- This has to go before spigot-api so MockBukkit's dependencies can have priority while testing -->
+		<!-- This has to go before paper-api so MockBukkit's dependencies can have priority while testing -->
 		<!-- Otherwise, MockBukkit can get pretty cranky -->
 		<dependency>
 			<groupId>org.mockbukkit.mockbukkit</groupId>
 			<artifactId>mockbukkit-v1.21</artifactId>
-			<version>4.45.1</version>
+			<version>4.76.0</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -31,7 +31,7 @@
 		<!-- This has to go before the main CommandAPI dependency so the test-specific implementations get priority -->
 		<dependency>
 			<groupId>dev.jorel</groupId>
-			<artifactId>commandapi-spigot-test-toolkit</artifactId>
+			<artifactId>commandapi-paper-test-toolkit</artifactId>
 			<version>11.0.0-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
@@ -39,16 +39,16 @@
 		<!-- Main CommandAPI dependency for writing the plugin -->
 		<dependency>
 			<groupId>dev.jorel</groupId>
-			<artifactId>commandapi-spigot-core</artifactId>
+			<artifactId>commandapi-paper-core</artifactId>
 			<version>11.0.0-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 
-		<!-- Adds the Spigot API to write the plugin -->
+		<!-- Adds the Paper API to write the plugin -->
 		<dependency>
-			<groupId>org.spigotmc</groupId>
-			<artifactId>spigot-api</artifactId>
-			<version>1.21.1-R0.1-SNAPSHOT</version>
+			<groupId>io.papermc.paper</groupId>
+			<artifactId>paper-api</artifactId>
+			<version>1.21.8-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -56,7 +56,7 @@
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-engine</artifactId>
-			<version>5.8.2</version>
+			<version>5.13.3</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

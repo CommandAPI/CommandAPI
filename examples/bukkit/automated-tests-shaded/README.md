@@ -4,42 +4,42 @@ A simple example showcasing testing CommandAPI commands with [MockBukkit](https:
 
 Key points:
 
-- The MockBukkit and `commandapi-spigot-test-toolkit` dependencies are listed with the `test` scope before the normal dependencies for `commandapi-spigot-shade` and `spigot-api`. This ensures that when running tests, certain classes that are compatible with the testing environment override the regular classes. There is also a dependency for the [JUnit](https://junit.org/junit5/) API, which helps when writing the tests.
+- The MockBukkit and `commandapi-paper-test-toolkit` dependencies are listed with the `test` scope before the normal dependencies for `commandapi-paper-shade` and `paper-api`. This ensures that when running tests, certain classes that are compatible with the testing environment override the regular classes. There is also a dependency for the [JUnit](https://junit.org/junit5/) API, which helps when writing the tests.
 
 ```xml
 <dependencies>
 	<dependency>
-		<groupId>com.github.seeseemelk</groupId>
-		<artifactId>MockBukkit-v1.21</artifactId>
-		<version>3.128.0</version>
+		<groupId>org.mockbukkit.mockbukkit</groupId>
+		<artifactId>mockbukkit-v1.21</artifactId>
+		<version>4.76.0</version>
 		<scope>test</scope>
 	</dependency>
 
 	<dependency>
 		<groupId>dev.jorel</groupId>
-		<artifactId>commandapi-bukkit-test-toolkit</artifactId>
+		<artifactId>commandapi-paper-test-toolkit</artifactId>
 		<version>11.0.0-SNAPSHOT</version>
 		<scope>test</scope>
 	</dependency>
 
 	<dependency>
 		<groupId>dev.jorel</groupId>
-		<artifactId>commandapi-bukkit-shade</artifactId>
+		<artifactId>commandapi-paper-shade</artifactId>
 		<version>11.0.0-SNAPSHOT</version>
 		<scope>compile</scope>
 	</dependency>
 
 	<dependency>
-		<groupId>org.spigotmc</groupId>
-		<artifactId>spigot-api</artifactId>
-		<version>1.21.1-R0.1-SNAPSHOT</version>
+		<groupId>io.papermc.paper</groupId>
+		<artifactId>paper-api</artifactId>
+		<version>1.21.8-R0.1-SNAPSHOT</version>
 		<scope>provided</scope>
 	</dependency>
 
 	<dependency>
 		<groupId>org.junit.jupiter</groupId>
 		<artifactId>junit-jupiter-engine</artifactId>
-		<version>5.8.2</version>
+		<version>5.13.3</version>
 		<scope>test</scope>
 	</dependency>
 </dependencies>
