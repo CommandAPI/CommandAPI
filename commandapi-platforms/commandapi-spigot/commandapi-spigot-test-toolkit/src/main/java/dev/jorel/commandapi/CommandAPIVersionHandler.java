@@ -26,7 +26,7 @@ public abstract class CommandAPIVersionHandler {
 			throw new IllegalArgumentException("CommandAPISpigot was loaded with non-Spigot config!");
 		}
 
-		// Default to MockCommandAPIBukkit if not given
+		// Default to MockCommandAPISpigot if not given
 		CommandAPIPlatform<?, ?, ?> platform = alternativePlatform == null ?
 			new MockCommandAPISpigot(internalSpigotConfig) :
 			alternativePlatform.apply(internalSpigotConfig);
