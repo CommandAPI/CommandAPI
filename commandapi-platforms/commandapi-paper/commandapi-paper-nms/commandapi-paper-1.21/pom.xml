@@ -53,6 +53,12 @@
 			<artifactId>paper-nms</artifactId>
 			<version>1.21-SNAPSHOT</version>
 			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>me.lucko</groupId>
+					<artifactId>spark-paper</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<!-- CommandAPI core -->
