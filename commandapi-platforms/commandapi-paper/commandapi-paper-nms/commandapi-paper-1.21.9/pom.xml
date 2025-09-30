@@ -9,13 +9,12 @@
 		<version>11.0.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>commandapi-paper-1.20.5</artifactId>
-	<name>Paper support for 1.20.6</name>
+	<artifactId>commandapi-paper-1.21.9</artifactId>
+	<name>Paper support for 1.21.9</name>
 
 	<properties>
-		<minecraft.mappings>1.20.6-R0.1-SNAPSHOT</minecraft.mappings>
-		<spigot.version>1.20.6-R0.1-SNAPSHOT</spigot.version>
-		<paper.version>1.20.6-R0.1-SNAPSHOT</paper.version>
+		<minecraft.mappings>1.21.9-R0.1-SNAPSHOT</minecraft.mappings>
+		<paper.version>1.21.9-R0.1-SNAPSHOT</paper.version>
 	</properties>
 
 	<repositories>
@@ -23,10 +22,10 @@
 			<id>minecraft-libraries</id>
 			<url>https://libraries.minecraft.net</url>
 		</repository>
-<!--		<repository>-->
-<!--			<id>codemc-repo</id>-->
-<!--			<url>https://repo.codemc.io/repository/nms/</url>-->
-<!--		</repository>-->
+		<repository>
+			<id>codemc-repo</id>
+			<url>https://repo.codemc.io/repository/nms/</url>
+		</repository>
 		<repository>
 			<id>papermc</id>
 			<url>https://repo.papermc.io/repository/maven-public/</url>
@@ -41,16 +40,17 @@
 	</pluginRepositories>
 
 	<dependencies>
+		<!-- Libraries -->
+		<dependency>
+			<groupId>ca.bkaw</groupId>
+			<artifactId>paper-nms</artifactId>
+			<version>1.21.9-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>io.papermc.paper</groupId>
 			<artifactId>paper-api</artifactId>
 			<version>${paper.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>ca.bkaw</groupId>
-			<artifactId>paper-nms</artifactId>
-			<version>1.20.6-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -59,14 +59,16 @@
 			<groupId>dev.jorel</groupId>
 			<artifactId>commandapi-paper-core</artifactId>
 			<version>${project.version}</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>dev.jorel</groupId>
-			<artifactId>commandapi-bukkit-1.20.5</artifactId>
+			<artifactId>commandapi-bukkit-1.21.9</artifactId>
 			<version>${project.version}</version>
 			<classifier>mojang-mapped</classifier>
 			<scope>provided</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>dev.jorel</groupId>
 			<artifactId>commandapi-bukkit-nms-common</artifactId>

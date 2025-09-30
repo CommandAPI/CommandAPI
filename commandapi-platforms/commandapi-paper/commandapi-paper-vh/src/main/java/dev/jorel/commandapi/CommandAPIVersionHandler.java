@@ -9,6 +9,7 @@ import dev.jorel.commandapi.nms.PaperNMS_1_21_R2;
 import dev.jorel.commandapi.nms.PaperNMS_1_21_R3;
 import dev.jorel.commandapi.nms.PaperNMS_1_21_R4;
 import dev.jorel.commandapi.nms.PaperNMS_1_21_R5;
+import dev.jorel.commandapi.nms.PaperNMS_1_21_R6;
 import io.papermc.paper.ServerBuildInfo;
 
 public abstract class CommandAPIVersionHandler {
@@ -30,6 +31,7 @@ public abstract class CommandAPIVersionHandler {
 				case "1.21.4" -> new PaperNMS_1_21_R3();
 				case "1.21.5" -> new PaperNMS_1_21_R4();
 				case "1.21.6", "1.21.7", "1.21.8" -> new PaperNMS_1_21_R5();
+				case "1.21.9" -> new PaperNMS_1_21_R6();
 				default -> null;
 			};
 			if (versionAdapter != null) {
@@ -39,7 +41,7 @@ public abstract class CommandAPIVersionHandler {
 				);
 			}
 			if (CommandAPIPaper.getConfiguration().fallbackToLatestNMS()) {
-				PaperNMS<?> paperNMS = new PaperNMS_1_21_R5();
+				PaperNMS<?> paperNMS = new PaperNMS_1_21_R6();
 				return new LoadContext(
 					new CommandAPIPaper<>(internalPaperConfig, new APITypeProvider(paperNMS)),
 					() -> {

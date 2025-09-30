@@ -93,6 +93,10 @@
 									<pattern>org.bukkit.craftbukkit.v1_21_R5</pattern>
 									<shadedPattern>org.bukkit.craftbukkit</shadedPattern>
 								</relocation>
+								<relocation>
+									<pattern>org.bukkit.craftbukkit.v1_21_R6</pattern>
+									<shadedPattern>org.bukkit.craftbukkit</shadedPattern>
+								</relocation>
 							</relocations>
 						</configuration>
 					</execution>

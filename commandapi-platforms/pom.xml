@@ -48,12 +48,12 @@
 				<module>../commandapi-kotlin/commandapi-kotlin-spigot</module>
 			</modules>
 		</profile>
-		<profile>
-			<id>Platform.Sponge</id>
-			<modules>
-				<module>commandapi-sponge</module>
-			</modules>
-		</profile>
+<!--		<profile>-->
+<!--			<id>Platform.Sponge</id>-->
+<!--			<modules>-->
+<!--				<module>commandapi-sponge</module>-->
+<!--			</modules>-->
+<!--		</profile>-->
 		<profile>
 			<id>Platform.Velocity</id>
 			<modules>
