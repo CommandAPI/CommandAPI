@@ -135,6 +135,17 @@
 
 	<profiles>
 		<profile>
+			<id>Spigot_1_21_R6</id>
+			<properties>
+				<minecraft.mappings>1.21.9-R0.1-SNAPSHOT</minecraft.mappings>
+				<spigot.version>1.21.9-R0.1-SNAPSHOT</spigot.version>
+				<paper.version>1.21.9-R0.1-SNAPSHOT</paper.version>
+			</properties>
+			<build>
+				<directory>${project.basedir}/target/1.21.9</directory>
+			</build>
+		</profile>
+		<profile>
 			<id>Spigot_1_21_R5</id>
 			<properties>
 				<minecraft.mappings>1.21.6-R0.1-SNAPSHOT</minecraft.mappings>

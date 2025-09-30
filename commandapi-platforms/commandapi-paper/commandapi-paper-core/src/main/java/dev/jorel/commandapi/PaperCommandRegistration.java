@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import com.mojang.brigadier.tree.RootCommandNode;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.plugin.bootstrap.BootstrapContext;
 import io.papermc.paper.plugin.lifecycle.event.LifecycleEventManager;
@@ -12,6 +13,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.help.HelpTopic;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;

@@ -3,6 +3,7 @@ package dev.jorel.commandapi.testing;
 import com.mojang.brigadier.tree.CommandNode;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
+import dev.jorel.commandapi.CommandAPIPaper;
 import dev.jorel.commandapi.CommandAPIPaperConfig;
 import dev.jorel.commandapi.arguments.AdvancementArgument;
 import dev.jorel.commandapi.arguments.AngleArgument;
