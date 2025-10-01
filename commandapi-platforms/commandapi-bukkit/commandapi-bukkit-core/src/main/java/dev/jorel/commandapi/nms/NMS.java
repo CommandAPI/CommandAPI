@@ -27,6 +27,7 @@ import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -364,7 +365,7 @@ public interface NMS<CommandListenerWrapper> {
 
 	RegistryParser<PotionEffectType> getPotionEffect(CommandContext<CommandListenerWrapper> cmdCtx, String key);
 
-	Recipe getRecipe(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException;
+	<T extends Recipe> T getRecipe(CommandContext<CommandListenerWrapper> cmdCtx, String key, BiFunction<NamespacedKey, Recipe, T> result) throws CommandSyntaxException;
 
 	Rotation getRotation(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException;
 

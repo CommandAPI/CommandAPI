@@ -643,9 +643,9 @@ public class APITypeProvider implements BundledNMS<CommandSourceStack> {
 	}
 
 	@Override
-	public Recipe getRecipe(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
+	public <T extends Recipe> T getRecipe(CommandContext<CommandSourceStack> cmdCtx, String key, BiFunction<NamespacedKey, Recipe, T> result) throws CommandSyntaxException {
 		return parseT(cmdCtx, key,
-			(ctx, name) -> paperNMS.bukkitNMS().getRecipe(ctx, name)
+			(ctx, name) -> paperNMS.bukkitNMS().getRecipe(ctx, name, result)
 		);
 	}
 

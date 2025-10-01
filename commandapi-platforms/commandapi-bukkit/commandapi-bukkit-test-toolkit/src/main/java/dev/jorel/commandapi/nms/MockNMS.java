@@ -39,6 +39,7 @@ import org.bukkit.scoreboard.Team;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -446,7 +447,7 @@ public class MockNMS implements NMS<MockCommandSource> {
 	}
 
 	@Override
-	public Recipe getRecipe(CommandContext<MockCommandSource> cmdCtx, String key) throws CommandSyntaxException {
+	public <T extends Recipe> T getRecipe(CommandContext<MockCommandSource> cmdCtx, String key, BiFunction<NamespacedKey, Recipe, T> result) throws CommandSyntaxException {
 		throw new UnimplementedMethodException();
 	}
 

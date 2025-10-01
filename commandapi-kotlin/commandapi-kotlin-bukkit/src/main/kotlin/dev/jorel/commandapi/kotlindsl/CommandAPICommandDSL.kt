@@ -81,7 +81,6 @@ inline fun CommandAPICommand.namespacedKeyArgument(nodeName: String, optional: B
 inline fun CommandAPICommand.particleArgument(nodeName: String, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): CommandAPICommand = withArguments(ParticleArgument(nodeName).setOptional(optional).apply(block))
 inline fun CommandAPICommand.potionEffectArgument(nodeName: String, useNamespacedKey: Boolean = false, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): CommandAPICommand =
 	if (useNamespacedKey) withArguments(PotionEffectArgument.NamespacedKey(nodeName).setOptional(optional).apply(block)) else withArguments(PotionEffectArgument(nodeName).setOptional(optional).apply(block))
-inline fun CommandAPICommand.recipeArgument(nodeName: String, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): CommandAPICommand = withArguments(RecipeArgument(nodeName).setOptional(optional).apply(block))
 
 inline fun CommandAPICommand.soundArgument(nodeName: String, useNamespacedKey: Boolean = false, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): CommandAPICommand =
 	if (useNamespacedKey) withArguments(SoundArgument.NamespacedKey(nodeName).setOptional(optional).apply(block)) else withArguments(SoundArgument(nodeName).setOptional(optional).apply(block))

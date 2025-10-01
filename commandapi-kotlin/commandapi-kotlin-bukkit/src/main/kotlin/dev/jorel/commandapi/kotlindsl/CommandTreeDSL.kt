@@ -89,7 +89,6 @@ inline fun CommandTree.namespacedKeyArgument(nodeName: String, optional: Boolean
 inline fun CommandTree.particleArgument(nodeName: String, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): CommandTree = then(ParticleArgument(nodeName).setOptional(optional).apply(block))
 inline fun CommandTree.potionEffectArgument(nodeName: String, useNamespacedKey: Boolean = false, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): CommandTree =
 	if (useNamespacedKey) then(PotionEffectArgument.NamespacedKey(nodeName).setOptional(optional).apply(block)) else then(PotionEffectArgument(nodeName).setOptional(optional).apply(block))
-inline fun CommandTree.recipeArgument(nodeName: String, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): CommandTree = then(RecipeArgument(nodeName).setOptional(optional).apply(block))
 
 inline fun CommandTree.soundArgument(nodeName: String, useNamespacedKey: Boolean = false, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): CommandTree =
 	if (useNamespacedKey) then(SoundArgument.NamespacedKey(nodeName).setOptional(optional).apply(block)) else then(SoundArgument(nodeName).setOptional(optional).apply(block))
@@ -192,7 +191,6 @@ inline fun Argument<*>.namespacedKeyArgument(nodeName: String, optional: Boolean
 inline fun Argument<*>.particleArgument(nodeName: String, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): Argument<*> = then(ParticleArgument(nodeName).setOptional(optional).apply(block))
 inline fun Argument<*>.potionEffectArgument(nodeName: String, useNamespacedKey: Boolean = false, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): Argument<*> =
 	if (useNamespacedKey) then(PotionEffectArgument.NamespacedKey(nodeName).setOptional(optional).apply(block)) else then(PotionEffectArgument(nodeName).setOptional(optional).apply(block))
-inline fun Argument<*>.recipeArgument(nodeName: String, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): Argument<*> = then(RecipeArgument(nodeName).setOptional(optional).apply(block))
 
 inline fun Argument<*>.soundArgument(nodeName: String, useNamespacedKey: Boolean = false, optional: Boolean = false, block: Argument<*>.() -> Unit = {}): Argument<*> =
 	if (useNamespacedKey) then(SoundArgument.NamespacedKey(nodeName).setOptional(optional).apply(block)) else then(SoundArgument(nodeName).setOptional(optional).apply(block))
