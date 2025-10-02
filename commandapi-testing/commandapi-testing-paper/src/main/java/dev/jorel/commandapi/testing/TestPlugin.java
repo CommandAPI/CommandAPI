@@ -91,8 +91,6 @@ public class TestPlugin extends JavaPlugin {
 
 	@Override
 	public void onLoad() {
-		CommandAPI.onLoad(new CommandAPIPaperConfig(this));
-
 		register(new AdvancementArgument("advancementtype"), Advancement.class, advancement -> advancement.key().asString());
 		register(new AngleArgument("angletype"), float.class, Object::toString);
 		register(new AxisArgument("axistype"), EnumSet.class, Object::toString);

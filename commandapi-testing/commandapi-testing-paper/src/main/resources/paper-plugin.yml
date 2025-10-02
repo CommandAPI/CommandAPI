@@ -1,6 +1,7 @@
 name: PaperTestPlugin
 main: dev.jorel.commandapi.testing.TestPlugin
+bootstrapper: dev.jorel.commandapi.testing.TestBootstrap
 version: ${project.version}
 description: A plugin to test all arguments the CommandAPI offers.
 author: DerEchtePilz
-api-version: '1.20'
+api-version: '1.20.6'

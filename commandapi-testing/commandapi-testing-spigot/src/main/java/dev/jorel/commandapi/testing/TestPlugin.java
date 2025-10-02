@@ -89,7 +89,7 @@ public class TestPlugin extends JavaPlugin {
 
 	@Override
 	public void onLoad() {
-		CommandAPI.onLoad(new CommandAPISpigotConfig(this));
+		CommandAPI.onLoad(new CommandAPISpigotConfig(this).verboseOutput(true));
 
 		register(new AdvancementArgument("advancementtype"), Advancement.class, advancement -> advancement.getKey().toString());
 		register(new AngleArgument("angletype"), float.class, Object::toString);
