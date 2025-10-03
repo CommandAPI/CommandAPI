@@ -7,7 +7,7 @@
 	<parent>
 		<artifactId>commandapi-sponge</artifactId>
 		<groupId>dev.jorel</groupId>
-		<version>11.0.0-SNAPSHOT</version>
+		<version>11.0.0</version>
 	</parent>
 
 	<artifactId>commandapi-sponge-shade</artifactId>

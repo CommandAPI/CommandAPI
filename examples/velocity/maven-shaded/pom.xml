@@ -21,7 +21,7 @@
 		<dependency>
 			<groupId>dev.jorel</groupId>
 			<artifactId>commandapi-velocity-shade</artifactId>
-			<version>11.0.0-SNAPSHOT</version>
+			<version>11.0.0</version>
 		</dependency>
 
 		<!-- This adds the Velocity API artifact to the build -->
