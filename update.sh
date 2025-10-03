@@ -36,9 +36,6 @@ sed -i "s/<version>$oldVer<\/version>/<version>$newVer<\/version>/" examples/buk
 sed -i "s/<version>$oldVer<\/version>/<version>$newVer<\/version>/" examples/bukkit/maven-shaded-annotations/README.md
 sed -i "s/<version>$oldVer<\/version>/<version>$newVer<\/version>/" examples/bukkit/maven-shaded-annotations/pom.xml
 
-# maven-shaded-tests README dose not reference a dependency version
-sed -i "s/<version>$oldVer<\/version>/<version>$newVer<\/version>/" examples/bukkit/maven-shaded-tests/pom.xml
-
 ############
 # Velocity #
 ############
