@@ -104,7 +104,8 @@
 		<spigot.version.common>1.20.1-R0.1-20230921.165347-11</spigot.version.common>
 		<spigot.api.version.common>1.20.1-R0.1-20230921.165251-11</spigot.api.version.common>
 		<folia.version.common>1.20.1-R0.1-20230911.182805-18</folia.version.common>
-		<paper.version.common>1.20.1-R0.1-20230921.165944-178</paper.version.common>
+		<paper.version.bukkit.common>1.20.1-R0.1-20230921.165944-178</paper.version.bukkit.common>
+		<paper.version.common>1.20.6-R0.1-20241030.191541-127</paper.version.common>
 		<velocity.version.common>3.3.0-20240916.013244-136</velocity.version.common>
 
 		<!-- API versions. Because Maven Central doesn't allow SNAPSHOT versions

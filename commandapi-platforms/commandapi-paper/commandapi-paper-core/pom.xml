@@ -29,6 +29,14 @@
 	</repositories>
 
 	<dependencies>
+		<!-- Has to be declared before commandapi-bukkit-core because we're using
+		 Paper's JavaPlugin that has different interfaces -->
+		<dependency>
+			<groupId>io.papermc.paper</groupId>
+			<artifactId>paper-api</artifactId>
+			<version>${paper.version.common}</version>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>dev.jorel</groupId>
 			<artifactId>commandapi-bukkit-core</artifactId>
@@ -44,12 +52,6 @@
 			<groupId>dev.folia</groupId>
 			<artifactId>folia-api</artifactId>
 			<version>${folia.version.common}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>io.papermc.paper</groupId>
-			<artifactId>paper-api</artifactId>
-			<version>${paper.version.common}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
