@@ -28,7 +28,6 @@
 
 	<properties>
 		<minecraft.mappings>1.20.1-R0.1-SNAPSHOT</minecraft.mappings>
-		<spigot.version>1.20.1-R0.1-SNAPSHOT</spigot.version>
 	</properties>
 
 	<repositories>
@@ -51,14 +50,14 @@
 		<!-- <dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot</artifactId>
-			<version>${spigot.version}</version>
+			<version>${spigot.version.common}</version>
 			<scope>test</scope>
 		</dependency> -->
 		<!-- Spigot compilation -->
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot</artifactId>
-			<version>${spigot.version}</version>
+			<version>${spigot.version.common}</version>
 			<scope>provided</scope>
 			<classifier>remapped-mojang</classifier>
 		</dependency>
@@ -67,7 +66,7 @@
 		<dependency>
 			<groupId>io.papermc.paper</groupId>
 			<artifactId>paper-api</artifactId>
-			<version>${paper.version}</version>
+			<version>${paper.version.common}</version>
 			<scope>provided</scope>
 		</dependency>
 

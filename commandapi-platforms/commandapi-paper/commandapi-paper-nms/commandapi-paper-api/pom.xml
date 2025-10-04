@@ -12,10 +12,6 @@
 	<artifactId>commandapi-paper-api</artifactId>
 	<name>Paper API support</name>
 
-	<properties>
-		<paper.version>1.21.9-R0.1-SNAPSHOT</paper.version>
-	</properties>
-
 	<repositories>
 		<repository>
 			<id>papermc</id>
@@ -27,7 +23,8 @@
 		<dependency>
 			<groupId>io.papermc.paper</groupId>
 			<artifactId>paper-api</artifactId>
-			<version>${paper.version}</version>
+			<!-- TODO: We could use something like paper.version.latest or something here -->
+			<version>${paper.version.1.21.9}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

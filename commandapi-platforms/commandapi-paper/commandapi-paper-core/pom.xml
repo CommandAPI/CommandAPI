@@ -43,13 +43,13 @@
 		<dependency>
 			<groupId>dev.folia</groupId>
 			<artifactId>folia-api</artifactId>
-			<version>${paper.version}</version>
+			<version>${folia.version.common}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.papermc.paper</groupId>
 			<artifactId>paper-api</artifactId>
-			<version>${paper.version}</version>
+			<version>${paper.version.common}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

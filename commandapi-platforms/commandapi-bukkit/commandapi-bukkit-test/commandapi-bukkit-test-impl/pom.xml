@@ -72,13 +72,13 @@
 		<dependency>
 			<groupId>io.papermc.paper</groupId>
 			<artifactId>paper-api</artifactId>
-			<version>${spigot.version}</version>
+			<version>${paper.version.common}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot</artifactId>
-			<version>${spigot.version}</version>
+			<version>${spigot.version.common}</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>

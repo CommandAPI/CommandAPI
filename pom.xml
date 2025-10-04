@@ -98,10 +98,51 @@
 		<java.version>17</java.version>
 		<kotlin.version>1.9.0</kotlin.version>
 
-		<!-- Shared libraries. These are declared here so they can be updated easily. 
-			These are present in each module to prevent accidentally "leaking" these 
-			dependencies to dependents of commandapi-core. -->
-		<paper.version>1.20.1-R0.1-SNAPSHOT</paper.version>
+		<!-- Shared versions. This is used by things such as the networking
+			plugin which doesn't need a dedicated NMS version. This should be
+			(ideally) the lowest version amongst versions -->
+		<spigot.version.common>1.20.1-R0.1-SNAPSHOT</spigot.version.common>
+		<folia.version.common>1.20.1-R0.1-SNAPSHOT</folia.version.common>
+		<paper.version.common>1.20.1-R0.1-SNAPSHOT</paper.version.common>
+
+		<!-- API versions. Because Maven Central doesn't allow SNAPSHOT versions
+			in pom.xml files anymore, we need to get specific versions of SNAPSHOT
+			builds Instead of declaring this in every pom.xml, we'll just have a
+			mega chungus list here instead. -->
+		<spigot.version.1.20.1>1.20.1-R0.1-SNAPSHOT</spigot.version.1.20.1>
+		<spigot.version.1.20.2>1.20.2-R0.1-SNAPSHOT</spigot.version.1.20.2>
+		<spigot.version.1.20.3>1.20.3-R0.1-SNAPSHOT</spigot.version.1.20.3>
+		<spigot.version.1.20.4>1.20.4-R0.1-SNAPSHOT</spigot.version.1.20.4>
+		<spigot.version.1.20.5>1.20.5-R0.1-SNAPSHOT</spigot.version.1.20.5>
+		<spigot.version.1.20.6>1.20.6-R0.1-SNAPSHOT</spigot.version.1.20.6>
+		<spigot.version.1.21>1.21-R0.1-SNAPSHOT</spigot.version.1.21>
+		<spigot.version.1.21.1>1.21.1-R0.1-SNAPSHOT</spigot.version.1.21.1>
+		<spigot.version.1.21.2>1.21.2-R0.1-SNAPSHOT</spigot.version.1.21.2>
+		<spigot.version.1.21.3>1.21.3-R0.1-SNAPSHOT</spigot.version.1.21.3>
+		<spigot.version.1.21.4>1.21.4-R0.1-SNAPSHOT</spigot.version.1.21.4>
+		<spigot.version.1.21.5>1.21.5-R0.1-SNAPSHOT</spigot.version.1.21.5>
+		<spigot.version.1.21.6>1.21.6-R0.1-SNAPSHOT</spigot.version.1.21.6>
+		<spigot.version.1.21.7>1.21.7-R0.1-SNAPSHOT</spigot.version.1.21.7>
+		<spigot.version.1.21.8>1.21.8-R0.1-SNAPSHOT</spigot.version.1.21.8>
+		<spigot.version.1.21.9>1.21.9-R0.1-SNAPSHOT</spigot.version.1.21.9>
+
+		<paper.version.1.20.1>1.20.1-R0.1-SNAPSHOT</paper.version.1.20.1>
+		<paper.version.1.20.2>1.20.2-R0.1-SNAPSHOT</paper.version.1.20.2>
+		<paper.version.1.20.3>1.20.3-R0.1-SNAPSHOT</paper.version.1.20.3>
+		<paper.version.1.20.4>1.20.4-R0.1-SNAPSHOT</paper.version.1.20.4>
+		<paper.version.1.20.5>1.20.5-R0.1-SNAPSHOT</paper.version.1.20.5>
+		<paper.version.1.20.6>1.20.6-R0.1-SNAPSHOT</paper.version.1.20.6>
+		<paper.version.1.21>1.21-R0.1-SNAPSHOT</paper.version.1.21>
+		<paper.version.1.21.1>1.21.1-R0.1-SNAPSHOT</paper.version.1.21.1>
+		<paper.version.1.21.2>1.21.2-R0.1-SNAPSHOT</paper.version.1.21.2>
+		<paper.version.1.21.3>1.21.3-R0.1-SNAPSHOT</paper.version.1.21.3>
+		<paper.version.1.21.4>1.21.4-R0.1-SNAPSHOT</paper.version.1.21.4>
+		<paper.version.1.21.5>1.21.5-R0.1-SNAPSHOT</paper.version.1.21.5>
+		<paper.version.1.21.6>1.21.6-R0.1-SNAPSHOT</paper.version.1.21.6>
+		<paper.version.1.21.7>1.21.7-R0.1-SNAPSHOT</paper.version.1.21.7>
+		<paper.version.1.21.8>1.21.8-R0.1-SNAPSHOT</paper.version.1.21.8>
+		<paper.version.1.21.9>1.21.9-R0.1-SNAPSHOT</paper.version.1.21.9>
+
 		<auto-service.version>1.0.1</auto-service.version>
 
 		<!-- sonarcloud CI -->

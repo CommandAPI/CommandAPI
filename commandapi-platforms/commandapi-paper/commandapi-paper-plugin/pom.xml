@@ -38,7 +38,7 @@
 		<dependency>
 			<groupId>io.papermc.paper</groupId>
 			<artifactId>paper-api</artifactId>
-			<version>${paper.version}</version>
+			<version>${paper.version.common}</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>

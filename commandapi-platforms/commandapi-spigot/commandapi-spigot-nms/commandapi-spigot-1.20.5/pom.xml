@@ -14,7 +14,6 @@
 
 	<properties>
 		<minecraft.mappings>1.20.6-R0.1-SNAPSHOT</minecraft.mappings>
-		<spigot.version>1.20.6-R0.1-SNAPSHOT</spigot.version>
 	</properties>
 
 	<repositories>
@@ -37,14 +36,14 @@
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot</artifactId>
-			<version>${spigot.version}</version>
+			<version>${spigot.version.1.20.6}</version>
 			<scope>test</scope>
 		</dependency>
 		<!-- Spigot compilation -->
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot</artifactId>
-			<version>${spigot.version}</version>
+			<version>${spigot.version.1.20.6}</version>
 			<classifier>remapped-mojang</classifier>
 			<scope>provided</scope>
 		</dependency>

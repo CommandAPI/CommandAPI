@@ -30,14 +30,14 @@
 		<dependency>
 			<groupId>io.papermc.paper</groupId>
 			<artifactId>paper-api</artifactId>
-			<version>${paper.version}</version>
+			<version>${paper.version.common}</version>
 			<scope>provided</scope>
 		</dependency>
 		<!-- Implementation of CommandSourceStack -->
 <!--		<dependency>-->
 <!--			<groupId>org.spigotmc</groupId>-->
 <!--			<artifactId>spigot</artifactId>-->
-<!--			<version>${paper.version}</version>-->
+<!--			<version>${paper.version.common}</version>-->
 <!--			<classifier>remapped-mojang</classifier>-->
 <!--			<scope>provided</scope>-->
 <!--		</dependency>-->

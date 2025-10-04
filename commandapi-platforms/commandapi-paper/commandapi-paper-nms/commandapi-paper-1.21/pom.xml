@@ -14,8 +14,6 @@
 
 	<properties>
 		<minecraft.mappings>1.21-R0.1-SNAPSHOT</minecraft.mappings>
-		<spigot.version>1.21-R0.1-SNAPSHOT</spigot.version>
-		<paper.version>1.21-R0.1-SNAPSHOT</paper.version>
 	</properties>
 
 	<repositories>
@@ -45,7 +43,7 @@
 		<dependency>
 			<groupId>io.papermc.paper</groupId>
 			<artifactId>paper-api</artifactId>
-			<version>${paper.version}</version>
+			<version>${paper.version.1.21}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
