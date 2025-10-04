@@ -24,6 +24,7 @@
 	</parent>
 
 	<artifactId>commandapi-codecov</artifactId>
+	<name>CommandAPI - Code Coverage Utility</name>
 
 	<properties>
 		<maven.deploy.skip>true</maven.deploy.skip>
