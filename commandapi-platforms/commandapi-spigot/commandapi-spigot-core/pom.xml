@@ -37,7 +37,7 @@
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot-api</artifactId>
-			<version>${spigot.version.common}</version>
+			<version>${spigot.api.version.common}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

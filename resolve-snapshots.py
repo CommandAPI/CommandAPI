@@ -7,9 +7,8 @@
 #   Resolves snapshot versions in the root pom.xml file. To have
 #   a snapshot resolve, add a <spigot.version.blah> entry, give
 #   it a version with -SNAPSHOT, and then run this script. This
-#   script will update the pom.xml file accordingly. This script
-#   will also remove all comments, but I CBA to fix that right
-#   now.
+#   script will then dump the resolved versions to the terminal
+#   for you to update the pom.xml file manually.
 
 import re
 import sys
@@ -26,8 +25,12 @@ PAPER_SNAP  = "https://repo.papermc.io/repository/maven-public"
 def coord_for_property(prop_name: str):
     if prop_name.startswith("spigot.version."):
         return ("org.spigotmc", "spigot-api", SPIGOT_SNAP)
+    if prop_name.startswith("spigot.api.version."):
+        return ("org.spigotmc", "spigot", SPIGOT_SNAP)
     if prop_name.startswith("paper.version."):
         return ("io.papermc.paper", "paper-api", PAPER_SNAP)
+    if prop_name.startswith("velocity.version."):
+        return ("com.velocitypowered", "velocity-api", PAPER_SNAP)
     return None
 
 def fetch_text(url: str, timeout=8, retries=3, verbose=False) -> str:
@@ -126,11 +129,12 @@ def resolve_properties(pom_path: Path, verbose=False):
         print("No snapshot properties needed updates.")
         return
 
-    backup = pom_path.with_suffix(".xml.bak")
-    pom_path.rename(backup)
-    tree.write(pom_path, encoding="utf-8", xml_declaration=True)
+    # backup = pom_path.with_suffix(".xml.bak")
+    # pom_path.rename(backup)
+    # tree.write(pom_path, encoding="utf-8", xml_declaration=True)
 
-    print(f"\nUpdated {pom_path.name}. Backup: {backup.name}")
+    # print(f"\nUpdated {pom_path.name}. Backup: {backup.name}")
+    print("Completed resolving. Resolution:")
     for tag, old, new in changes:
         print(f" - {tag}: {old} -> {new}")
 
