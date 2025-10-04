@@ -101,8 +101,8 @@
 		<!-- Shared versions. This is used by things such as the networking
 			plugin which doesn't need a dedicated NMS version. This should be
 			(ideally) the lowest version amongst versions -->
-		<spigot.version.common>1.20.1-R0.1-20230921.165251-11</spigot.version.common>
-		<spigot.api.version.common>1.20.1-R0.1-20230921.165347-11</spigot.api.version.common>
+		<spigot.version.common>1.20.1-R0.1-20230921.165347-11</spigot.version.common>
+		<spigot.api.version.common>1.20.1-R0.1-20230921.165251-11</spigot.api.version.common>
 		<folia.version.common>1.20.1-R0.1-20230911.182805-18</folia.version.common>
 		<paper.version.common>1.20.1-R0.1-20230921.165944-178</paper.version.common>
 		<velocity.version.common>3.3.0-20240916.013244-136</velocity.version.common>
@@ -111,34 +111,34 @@
 			in pom.xml files anymore, we need to get specific versions of SNAPSHOT
 			builds Instead of declaring this in every pom.xml, we'll just have a
 			mega chungus list here instead. -->
-		<spigot.version.1.20.1>1.20.1-R0.1-20230921.165251-11</spigot.version.1.20.1>
-		<spigot.version.1.20.2>1.20.2-R0.1-20231205.170307-10</spigot.version.1.20.2>
-		<spigot.version.1.20.3>1.20.3-R0.1-20231207.200753-2</spigot.version.1.20.3>
-		<spigot.version.1.20.4>1.20.4-R0.1-20240423.154232-27</spigot.version.1.20.4>
+		<spigot.version.1.20.1>1.20.1-R0.1-20230921.165347-11</spigot.version.1.20.1>
+		<spigot.version.1.20.2>1.20.2-R0.1-20231205.170413-10</spigot.version.1.20.2>
+		<spigot.version.1.20.3>1.20.3-R0.1-20231207.200858-2</spigot.version.1.20.3>
+		<spigot.version.1.20.4>1.20.4-R0.1-20240423.154326-27</spigot.version.1.20.4>
 		<spigot.version.1.20.5>1.20.5-R0.1-20240429.203257-8</spigot.version.1.20.5>
 		<spigot.version.1.20.6>1.20.6-R0.1-20240613.152322-4</spigot.version.1.20.6>
 		<spigot.version.1.21.1>1.21.1-R0.1-20241120.105205-27</spigot.version.1.21.1>
-		<spigot.version.1.21.3>1.21.3-R0.1-20250116.085943-60</spigot.version.1.21.3>
-		<spigot.version.1.21.4>1.21.4-R0.1-20250425.052153-78</spigot.version.1.21.4>
-		<spigot.version.1.21.5>1.21.5-R0.1-20250723.090352-41</spigot.version.1.21.5>
+		<spigot.version.1.21.3>1.21.3-R0.1-20250116.085943-59</spigot.version.1.21.3>
+		<spigot.version.1.21.4>1.21.4-R0.1-20250425.052153-76</spigot.version.1.21.4>
+		<spigot.version.1.21.5>1.21.5-R0.1-20250723.090352-40</spigot.version.1.21.5>
 		<spigot.version.1.21.6>1.21.6-R0.1-20250617.185834-1</spigot.version.1.21.6>
 		<spigot.version.1.21.7>1.21.7-R0.1-20250630.172254-1</spigot.version.1.21.7>
-		<spigot.version.1.21.8>1.21.8-R0.1-20251003.231743-18</spigot.version.1.21.8>
+		<spigot.version.1.21.8>1.21.8-R0.1-20251003.231743-17</spigot.version.1.21.8>
 		<spigot.version.1.21.9>1.21.9-R0.1-20250930.202015-1</spigot.version.1.21.9>
 
-		<spigot.api.version.1.20.1>1.20.1-R0.1-20230921.165347-11</spigot.api.version.1.20.1>
-		<spigot.api.version.1.20.2>1.20.2-R0.1-20231205.170413-10</spigot.api.version.1.20.2>
-		<spigot.api.version.1.20.3>1.20.3-R0.1-20231207.200858-2</spigot.api.version.1.20.3>
-		<spigot.api.version.1.20.4>1.20.4-R0.1-20240423.154326-27</spigot.api.version.1.20.4>
+		<spigot.api.version.1.20.1>1.20.1-R0.1-20230921.165251-11</spigot.api.version.1.20.1>
+		<spigot.api.version.1.20.2>1.20.2-R0.1-20231205.170307-10</spigot.api.version.1.20.2>
+		<spigot.api.version.1.20.3>1.20.3-R0.1-20231207.200753-2</spigot.api.version.1.20.3>
+		<spigot.api.version.1.20.4>1.20.4-R0.1-20240423.154232-27</spigot.api.version.1.20.4>
 		<spigot.api.version.1.20.5>1.20.5-R0.1-20240429.203257-8</spigot.api.version.1.20.5>
 		<spigot.api.version.1.20.6>1.20.6-R0.1-20240613.152322-4</spigot.api.version.1.20.6>
 		<spigot.api.version.1.21.1>1.21.1-R0.1-20241120.105205-27</spigot.api.version.1.21.1>
-		<spigot.api.version.1.21.3>1.21.3-R0.1-20250116.085943-59</spigot.api.version.1.21.3>
-		<spigot.api.version.1.21.4>1.21.4-R0.1-20250425.052153-76</spigot.api.version.1.21.4>
-		<spigot.api.version.1.21.5>1.21.5-R0.1-20250723.090352-40</spigot.api.version.1.21.5>
+		<spigot.api.version.1.21.3>1.21.3-R0.1-20250116.085943-60</spigot.api.version.1.21.3>
+		<spigot.api.version.1.21.4>1.21.4-R0.1-20250425.052153-78</spigot.api.version.1.21.4>
+		<spigot.api.version.1.21.5>1.21.5-R0.1-20250723.090352-41</spigot.api.version.1.21.5>
 		<spigot.api.version.1.21.6>1.21.6-R0.1-20250617.185834-1</spigot.api.version.1.21.6>
 		<spigot.api.version.1.21.7>1.21.7-R0.1-20250630.172254-1</spigot.api.version.1.21.7>
-		<spigot.api.version.1.21.8>1.21.8-R0.1-20251003.231743-17</spigot.api.version.1.21.8>
+		<spigot.api.version.1.21.8>1.21.8-R0.1-20251003.231743-18</spigot.api.version.1.21.8>
 		<spigot.api.version.1.21.9>1.21.9-R0.1-20250930.202015-1</spigot.api.version.1.21.9>
 
 		<paper.version.1.20.1>1.20.1-R0.1-20230921.165944-178</paper.version.1.20.1>

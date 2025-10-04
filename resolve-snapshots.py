@@ -24,9 +24,9 @@ PAPER_SNAP  = "https://repo.papermc.io/repository/maven-public"
 
 def coord_for_property(prop_name: str):
     if prop_name.startswith("spigot.version."):
-        return ("org.spigotmc", "spigot-api", SPIGOT_SNAP)
-    if prop_name.startswith("spigot.api.version."):
         return ("org.spigotmc", "spigot", SPIGOT_SNAP)
+    if prop_name.startswith("spigot.api.version."):
+        return ("org.spigotmc", "spigot-api", SPIGOT_SNAP)
     if prop_name.startswith("paper.version."):
         return ("io.papermc.paper", "paper-api", PAPER_SNAP)
     if prop_name.startswith("velocity.version."):
