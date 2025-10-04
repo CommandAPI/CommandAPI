@@ -49,7 +49,7 @@
 		<dependency>
 			<groupId>ca.bkaw</groupId>
 			<artifactId>paper-nms</artifactId>
-			<version>1.21-SNAPSHOT</version>
+			<version>1.21</version>
 			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
