@@ -447,7 +447,7 @@ This is the current roadmap for the CommandAPI (as of 3rd October 2025):
                 <ul>
                     <li>https://github.com/CommandAPI/CommandAPI/issues/631 Fixes unregistered commands reappearing after a <code>minecraft:reload</code>. This comes with some other notable changes around command registrations and unregistrations. You can read about these on the command unregistration page in the documentation.</li>
                     <li>https://github.com/CommandAPI/CommandAPI/issues/608 The <code>RecipeArgument</code> no longer throws any exceptions on Spigot</li>
-                    <li>https://github.com/CommandAPI/CommandAPI/issues/494, https://github.com/CommandAPI/CommandAPI/isues/503 Fixes the <code>ConcurrentModificationException</code> from happening when registering/unregistering commands at runtime</li>
+                    <li>https://github.com/CommandAPI/CommandAPI/issues/494, https://github.com/CommandAPI/CommandAPI/issues/503 Fixes the <code>ConcurrentModificationException</code> from happening when registering/unregistering commands at runtime</li>
                 </ul>
            </td>
         </tr>
