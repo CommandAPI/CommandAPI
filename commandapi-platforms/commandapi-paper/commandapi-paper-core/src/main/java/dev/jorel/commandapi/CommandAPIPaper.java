@@ -128,7 +128,7 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 				public void onServerReloadResources(ServerResourcesReloadedEvent event) {
 					CommandAPIBukkit.get().getCommandRegistrationStrategy().preReloadDataPacks();
 
-					if (getConfiguration().isCommandAPIPlugin()) {
+					if (getConfiguration().hookPaperReload()) {
 						CommandAPI.logNormal("/minecraft:reload detected. Reloading CommandAPI commands!");
 						CommandAPIBukkit.get().reloadDataPacks();
 					}

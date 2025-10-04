@@ -10,7 +10,7 @@ public class CommandAPIPaperConfig extends CommandAPIBukkitConfig<CommandAPIPape
 
 	PluginMeta pluginMeta;
 	LifecycleEventOwner lifecycleEventOwner;
-	boolean isCommandAPIPlugin = false;
+	boolean hookPaperReload = false;
 
 	/**
 	 * Creates a new {@code CommandAPIPaperConfig} object
@@ -25,8 +25,13 @@ public class CommandAPIPaperConfig extends CommandAPIBukkitConfig<CommandAPIPape
 		fallbackToLatestNMS(true);
 	}
 
-	CommandAPIPaperConfig isCommandAPIPlugin() {
-		this.isCommandAPIPlugin = true;
+	CommandAPIPaperConfig hookPaperReload(boolean hookPaperReload) {
+		this.hookPaperReload = hookPaperReload;
+		return this;
+	}
+
+	CommandAPIPaperConfig skipInitialDatapackReload(boolean skipInitialDatapackReload) {
+		this.skipReloadDatapacks = skipInitialDatapackReload;
 		return this;
 	}
 

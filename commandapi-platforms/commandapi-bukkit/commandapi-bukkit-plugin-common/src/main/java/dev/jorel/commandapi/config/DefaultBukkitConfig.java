@@ -27,6 +27,15 @@ public class DefaultBukkitConfig extends DefaultConfig {
 		}, true
 	);
 
+	public static final CommentedConfigOption<Boolean> HOOK_PAPER_RELOAD = new CommentedConfigOption<>(
+		new String[] {
+			"Hook into Paper's ServerResourcesReloadedEvent (default: false)",
+			"If \"true\", the CommandAPI will hook into Paper's ServerResourcesReloadedEvent to detect when",
+			"/minecraft:reload is run. This allows the CommandAPI to automatically call its custom datapack-reloading",
+			"function which allows CommandAPI commands to be used in datapacks."
+		}, false
+	);
+
 	public static final CommentedConfigOption<List<?>> PLUGINS_TO_CONVERT = new CommentedConfigOption<>(
 		new String[] {
 			"Plugins to convert (default: [])",
@@ -61,6 +70,8 @@ public class DefaultBukkitConfig extends DefaultConfig {
 		options.put("messages.missing-executor-implementation", MISSING_EXECUTOR_IMPLEMENTATION);
 		options.put("create-dispatcher-json", CREATE_DISPATCHER_JSON);
 		options.put("fallback-to-latest-nms", FALLBACK_TO_LATEST_NMS(true));
+		options.put("skip-initial-datapack-reload", SKIP_RELOAD_DATAPACKS); // TODO: Remove once the Paper plugin utilizes the bootstrapper
+		options.put("hook-paper-reload", HOOK_PAPER_RELOAD); // TODO: Remove once the Paper plugin utilizes the bootstrapper
 		options.put("plugins-to-convert", PLUGINS_TO_CONVERT);
 		options.put("other-commands-to-convert", OTHER_COMMANDS_TO_CONVERT);
 		options.put("skip-sender-proxy", SKIP_SENDER_PROXY);

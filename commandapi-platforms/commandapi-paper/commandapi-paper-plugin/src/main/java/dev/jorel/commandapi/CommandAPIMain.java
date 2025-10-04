@@ -52,7 +52,8 @@ public class CommandAPIMain extends JavaPlugin {
 			.fallbackToLatestNMS(fileConfig.getBoolean("fallback-to-latest-nms"))
 			.missingExecutorImplementationMessage(fileConfig.getString("messages.missing-executor-implementation"))
 			.dispatcherFile(fileConfig.getBoolean("create-dispatcher-json") ? new File(getDataFolder(), "command_registration.json") : null)
-			.isCommandAPIPlugin();
+			.hookPaperReload(fileConfig.getBoolean("hook-paper-reload")) // TODO: Remove once this utilizes the bootstrapper
+			.skipInitialDatapackReload(fileConfig.getBoolean("skip-initial-datapack-reload")); // TODO: Remove once this utilizes the bootstrapper
 
 		for (String pluginName : fileConfig.getStringList("skip-sender-proxy")) {
 			if (Bukkit.getPluginManager().getPlugin(pluginName) != null) {

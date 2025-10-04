@@ -8,17 +8,17 @@ public class InternalPaperConfig extends InternalBukkitConfig {
 
 	private final PluginMeta pluginMeta;
 	private final LifecycleEventOwner lifecycleEventOwner;
-	private final boolean isCommandAPIPlugin;
+	private final boolean hookPaperReload;
 
 	public InternalPaperConfig(CommandAPIPaperConfig config) {
 		super(config);
 		this.pluginMeta = config.pluginMeta;
 		this.lifecycleEventOwner = config.lifecycleEventOwner;
-		this.isCommandAPIPlugin = config.isCommandAPIPlugin;
+		this.hookPaperReload = config.hookPaperReload;
 	}
 
-	boolean isCommandAPIPlugin() {
-		return isCommandAPIPlugin;
+	boolean hookPaperReload() {
+		return hookPaperReload;
 	}
 
 	/**
