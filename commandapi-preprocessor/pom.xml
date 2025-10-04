@@ -25,12 +25,12 @@
 	<parent>
 		<groupId>dev.jorel</groupId>
 		<artifactId>commandapi</artifactId>
-		<version>10.1.2</version>
+		<version>11.0.0</version>
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>commandapi-preprocessor</artifactId>
-    <name>CommandAPI - Development Maven preprocessor</name>
+    <name>Development Maven preprocessor</name>
 
 </project>

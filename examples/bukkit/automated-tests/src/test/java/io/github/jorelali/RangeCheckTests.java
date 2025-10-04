@@ -1,17 +1,22 @@
 package io.github.jorelali;
 
-import be.seeseemelk.mockbukkit.MockBukkit;
-import be.seeseemelk.mockbukkit.ServerMock;
-import be.seeseemelk.mockbukkit.entity.PlayerMock;
 import dev.jorel.commandapi.CommandAPITestUtilities;
 import dev.jorel.commandapi.MockCommandAPIPlugin;
 import dev.jorel.commandapi.wrappers.IntegerRange;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockbukkit.mockbukkit.MockBukkit;
+import org.mockbukkit.mockbukkit.ServerMock;
+import org.mockbukkit.mockbukkit.entity.PlayerMock;
 
 import java.util.List;
 import java.util.Map;
+
+// Import MockBukkit assertions
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockbukkit.mockbukkit.matcher.command.MessageTargetReceivedAnyMessageMatcher.hasNotReceivedAny;
+import static org.mockbukkit.mockbukkit.matcher.command.MessageTargetReceivedMessageMatcher.hasReceived;
 
 // Access helper methods by extending CommandAPITestUtilities
 public class RangeCheckTests extends CommandAPITestUtilities {
@@ -43,14 +48,14 @@ public class RangeCheckTests extends CommandAPITestUtilities {
 	void testCommandExecution() {
 		// Testing successful usage of command
 		assertCommandSucceeds(player, "rangecheck 10..15 13");
-		player.assertSaid("Number 13 is within range 10..15");
+		assertThat(player, hasReceived("Number 13 is within range 10..15"));
 
 		assertCommandSucceedsWithArguments(
 			player, "rangecheck 10..15 10",
 			// Verifying argument array
 			new IntegerRange(10, 15), 10
 		);
-		player.assertSaid("Number 10 is within range 10..15");
+		assertThat(player, hasReceived("Number 10 is within range 10..15"));
 
 		assertCommandSucceedsWithArguments(
 			player, "rangecheck -3..-3 -3",
@@ -60,7 +65,7 @@ public class RangeCheckTests extends CommandAPITestUtilities {
 				"number", -3
 			)
 		);
-		player.assertSaid("Number -3 is within range -3..-3");
+		assertThat(player, hasReceived("Number -3 is within range -3..-3"));
 
 		// Test unsuccessful usage of command
 		assertCommandFails(
@@ -84,6 +89,9 @@ public class RangeCheckTests extends CommandAPITestUtilities {
 				"number", 10
 			)
 		);
+
+		// Make sure no extra messages were sent
+		assertThat(player, hasNotReceivedAny());
 	}
 
 	@Test

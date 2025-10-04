@@ -4,13 +4,13 @@ A simple example of shading the CommandAPI with Maven.
 
 Key points:
 
-- The `commandapi-bukit-shade` dependency is used:
+- The `commandapi-paper-shade` dependency is used:
 
   ```xml
   <dependency>
       <groupId>dev.jorel</groupId>
-      <artifactId>commandapi-bukkit-shade</artifactId>
-      <version>10.1.2</version>
+      <artifactId>commandapi-paper-shade</artifactId>
+      <version>11.0.0</version>
   </dependency>
   ```
 

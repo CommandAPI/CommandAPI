@@ -36,9 +36,6 @@ sed -i "s/<version>$oldVer<\/version>/<version>$newVer<\/version>/" examples/buk
 sed -i "s/<version>$oldVer<\/version>/<version>$newVer<\/version>/" examples/bukkit/maven-shaded-annotations/README.md
 sed -i "s/<version>$oldVer<\/version>/<version>$newVer<\/version>/" examples/bukkit/maven-shaded-annotations/pom.xml
 
-# maven-shaded-tests README dose not reference a dependency version
-sed -i "s/<version>$oldVer<\/version>/<version>$newVer<\/version>/" examples/bukkit/maven-shaded-tests/pom.xml
-
 ############
 # Velocity #
 ############
@@ -53,20 +50,21 @@ sed -i "s/<version>$oldVer<\/version>/<version>$newVer<\/version>/" examples/vel
 # Gradle example projects #
 ###########################
 
-##########
-# Bukkit #
-##########
+#########
+# Paper #
+#########
 
-sed -i "s/dev\.jorel:commandapi-bukkit-plugin:$oldVer/dev\.jorel:commandapi-bukkit-plugin:$newVer/" examples/bukkit/gradle-groovy/README.md
-sed -i "s/dev\.jorel:commandapi-bukkit-plugin:$oldVer/dev\.jorel:commandapi-bukkit-plugin:$newVer/" examples/bukkit/gradle-groovy/build.gradle
+# We're using Paper as the example dependency for example projects
+sed -i "s/dev\.jorel:commandapi-paper-plugin:$oldVer/dev\.jorel:commandapi-paper-plugin:$newVer/" examples/bukkit/gradle-groovy/README.md
+sed -i "s/dev\.jorel:commandapi-paper-plugin:$oldVer/dev\.jorel:commandapi-paper-plugin:$newVer/" examples/bukkit/gradle-groovy/build.gradle
 
-sed -i "s/dev\.jorel:commandapi-bukkit-plugin:$oldVer/dev\.jorel:commandapi-bukkit-plugin:$newVer/" examples/bukkit/gradle-kotlin/README.md
-sed -i "s/dev\.jorel:commandapi-bukkit-plugin:$oldVer/dev\.jorel:commandapi-bukkit-plugin:$newVer/" examples/bukkit/gradle-kotlin/build.gradle.kts
+sed -i "s/dev\.jorel:commandapi-paper-plugin:$oldVer/dev\.jorel:commandapi-paper-plugin:$newVer/" examples/bukkit/gradle-kotlin/README.md
+sed -i "s/dev\.jorel:commandapi-paper-plugin:$oldVer/dev\.jorel:commandapi-paper-plugin:$newVer/" examples/bukkit/gradle-kotlin/build.gradle.kts
 
-sed -i "s/dev\.jorel:commandapi-bukkit-core:$oldVer/dev\.jorel:commandapi-bukkit-core:$newVer/" examples/bukkit/kotlindsl-gradle/README.md
-sed -i "s/dev\.jorel:commandapi-bukkit-core:$oldVer/dev\.jorel:commandapi-bukkit-core:$newVer/" examples/bukkit/kotlindsl-gradle/build.gradle.kts
-sed -i "s/dev\.jorel:commandapi-bukkit-kotlin:$oldVer/dev\.jorel:commandapi-bukkit-kotlin:$newVer/" examples/bukkit/kotlindsl-gradle/README.md
-sed -i "s/dev\.jorel:commandapi-bukkit-kotlin:$oldVer/dev\.jorel:commandapi-bukkit-kotlin:$newVer/" examples/bukkit/kotlindsl-gradle/build.gradle.kts
+sed -i "s/dev\.jorel:commandapi-paper-core:$oldVer/dev\.jorel:commandapi-paper-core:$newVer/" examples/bukkit/kotlindsl-gradle/README.md
+sed -i "s/dev\.jorel:commandapi-paper-core:$oldVer/dev\.jorel:commandapi-paper-core:$newVer/" examples/bukkit/kotlindsl-gradle/build.gradle.kts
+sed -i "s/dev\.jorel:commandapi-kotlin-paper:$oldVer/dev\.jorel:commandapi-kotlin-paper:$newVer/" examples/bukkit/kotlindsl-gradle/README.md
+sed -i "s/dev\.jorel:commandapi-kotlin-paper:$oldVer/dev\.jorel:commandapi-kotlin-paper:$newVer/" examples/bukkit/kotlindsl-gradle/build.gradle.kts
 
 ############
 # Velocity #

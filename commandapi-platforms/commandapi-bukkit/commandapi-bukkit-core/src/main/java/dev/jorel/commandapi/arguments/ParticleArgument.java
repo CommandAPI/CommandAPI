@@ -39,7 +39,7 @@ public class ParticleArgument extends SafeOverrideableArgument<ParticleData, Par
 	 * @param nodeName the name of the node for this argument
 	 */
 	public ParticleArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get()._ArgumentParticle(), CommandAPIBukkit.get()::convert);
+		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentParticle(), CommandAPIBukkit.get().getNMS()::convert);
 	}
 
 	@Override
@@ -54,6 +54,6 @@ public class ParticleArgument extends SafeOverrideableArgument<ParticleData, Par
 	
 	@Override
 	public <CommandSourceStack> ParticleData<?> parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-		return CommandAPIBukkit.<CommandSourceStack>get().getParticle(cmdCtx, key);
+		return CommandAPIBukkit.<CommandSourceStack>get().getNMS().getParticle(cmdCtx, key);
 	}
 }

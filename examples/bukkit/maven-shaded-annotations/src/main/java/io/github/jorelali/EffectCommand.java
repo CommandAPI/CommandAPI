@@ -2,7 +2,7 @@ package io.github.jorelali;
 
 import dev.jorel.commandapi.annotations.Command;
 import dev.jorel.commandapi.annotations.Default;
-import dev.jorel.commandapi.annotations.arguments.APlayerArgument;
+import dev.jorel.commandapi.annotations.arguments.AEntitySelectorArgument;
 import dev.jorel.commandapi.annotations.arguments.APotionEffectArgument;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -17,7 +17,7 @@ public class EffectCommand {
 	}
 
 	@Default
-	public static void applyEffect(CommandSender sender, @APotionEffectArgument PotionEffectType effectType, @APlayerArgument Player player) {
+	public static void applyEffect(CommandSender sender, @APotionEffectArgument PotionEffectType effectType, @AEntitySelectorArgument.OnePlayer Player player) {
 		player.addPotionEffect(new PotionEffect(effectType, 300 * 20, 1));
 	}
 }

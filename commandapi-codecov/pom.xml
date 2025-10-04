@@ -14,27 +14,30 @@
 	ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 	DEALINGS IN THE SOFTWARE. -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>dev.jorel</groupId>
 		<artifactId>commandapi</artifactId>
-		<version>10.0.0</version>
+		<version>11.0.0</version>
 	</parent>
 
 	<artifactId>commandapi-codecov</artifactId>
+	<name>CommandAPI - Code Coverage Utility</name>
 
 	<properties>
 		<maven.deploy.skip>true</maven.deploy.skip>
 	</properties>
 
 	<dependencies>
+		<!-- Modules to analyze -->
 		<dependency>
 			<groupId>dev.jorel</groupId>
 			<artifactId>commandapi-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+
 		<dependency>
 			<groupId>dev.jorel</groupId>
 			<artifactId>commandapi-bukkit-core</artifactId>
@@ -42,45 +45,39 @@
 		</dependency>
 		<dependency>
 			<groupId>dev.jorel</groupId>
-			<artifactId>commandapi-plugin</artifactId>
+			<artifactId>commandapi-spigot-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>dev.jorel</groupId>
-			<artifactId>commandapi-bukkit-plugin-common</artifactId>
+			<artifactId>commandapi-paper-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		
-		<!-- Code coverage the tests -->
-		<dependency>
+
+		<!-- Include NMS tests -->
+		<!-- <dependency>
 			<groupId>dev.jorel</groupId>
 			<artifactId>commandapi-bukkit-test-tests</artifactId>
 			<version>${project.version}</version>
 			<scope>test</scope>
-		</dependency>
+		</dependency> -->
+
+		<!-- Include test toolkit tests -->
+		<!-- These should not have the test scope because they also have classes we want to analyze -->
 		<dependency>
 			<groupId>dev.jorel</groupId>
 			<artifactId>commandapi-bukkit-test-toolkit</artifactId>
 			<version>${project.version}</version>
-			<!-- This should not have the test scope because it contains classes whose coverage we want to analyze -->
 		</dependency>
-		
-		<!-- From commandapi-bukkit-nms-dependency-mojang-mapped -->
-		
-		<!-- Common NMS for 1.17+ -->
 		<dependency>
 			<groupId>dev.jorel</groupId>
-			<artifactId>commandapi-bukkit-nms-common</artifactId>
+			<artifactId>commandapi-spigot-test-toolkit</artifactId>
 			<version>${project.version}</version>
-			<classifier>mojang-mapped</classifier>
 		</dependency>
-
-		<!-- NMS-specific implementations -->
 		<dependency>
 			<groupId>dev.jorel</groupId>
-			<artifactId>commandapi-bukkit-1.20</artifactId>
+			<artifactId>commandapi-paper-test-toolkit</artifactId>
 			<version>${project.version}</version>
-			<classifier>mojang-mapped</classifier>
 		</dependency>
 	</dependencies>
 

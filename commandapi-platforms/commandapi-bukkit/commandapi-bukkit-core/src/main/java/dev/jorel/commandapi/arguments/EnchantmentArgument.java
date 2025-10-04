@@ -40,7 +40,7 @@ public class EnchantmentArgument extends SafeOverrideableArgument<Enchantment, E
 	 * @param nodeName the name of the node for this argument 
 	 */
 	public EnchantmentArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get()._ArgumentEnchantment(), fromKey(Enchantment::getKey));
+		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentEnchantment(), fromKey(Enchantment::getKey));
 	}
 
 	@Override
@@ -55,6 +55,6 @@ public class EnchantmentArgument extends SafeOverrideableArgument<Enchantment, E
 	
 	@Override
 	public <CommandSourceStack> Enchantment parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-		return CommandAPIBukkit.<CommandSourceStack>get().getEnchantment(cmdCtx, key);
+		return CommandAPIBukkit.<CommandSourceStack>get().getNMS().getEnchantment(cmdCtx, key);
 	}
 }

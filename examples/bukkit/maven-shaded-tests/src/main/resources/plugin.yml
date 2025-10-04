@@ -1,6 +1,0 @@
-name: ExamplePlugin
-main: io.github.jorelali.MyMain
-version: 0.0.1
-author: Skepter
-website: https://www.jorel.dev/CommandAPI/
-api-version: 1.13

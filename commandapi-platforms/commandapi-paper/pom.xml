@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>dev.jorel</groupId>
+		<artifactId>commandapi-platforms</artifactId>
+		<version>11.0.0</version>
+	</parent>
+
+	<artifactId>commandapi-paper</artifactId>
+	<name>Paper support</name>
+	<packaging>pom</packaging>
+
+	<properties>
+		<paper.version>1.20.6-R0.1-SNAPSHOT</paper.version>
+	</properties>
+
+	<modules>
+        <module>commandapi-paper-annotations</module>
+		<module>commandapi-paper-core</module>
+        <module>commandapi-paper-vh</module>
+		<module>commandapi-paper-mojang-mapped</module>
+		<module>commandapi-paper-nms</module>
+		<module>commandapi-paper-shade</module>
+		<module>commandapi-paper-plugin</module>
+        <module>commandapi-paper-test-toolkit</module>
+
+        <!-- Do not compile, I only need the code for when I do the documentation -->
+		<!--<module>commandapi-paper-documentation-code</module> -->
+
+		<!-- Tests do not compile
+		<module>../../commandapi-test/commandapi-test-paper</module> -->
+    </modules>
+
+</project>

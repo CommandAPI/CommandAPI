@@ -1,9 +1,6 @@
 package io.github.jorelali;
 
-import dev.jorel.commandapi.CommandAPI;
-import dev.jorel.commandapi.CommandAPIBukkitConfig;
-import dev.jorel.commandapi.CommandAPICommand;
-import dev.jorel.commandapi.Tooltip;
+import dev.jorel.commandapi.*;
 import dev.jorel.commandapi.arguments.IntegerArgument;
 import dev.jorel.commandapi.arguments.IntegerRangeArgument;
 import dev.jorel.commandapi.arguments.SafeSuggestions;
@@ -14,7 +11,7 @@ public class Main extends JavaPlugin {
 	@Override
 	public void onLoad() {
 		// Load CommandAPI as usual
-		CommandAPI.onLoad(new CommandAPIBukkitConfig(this));
+		CommandAPI.onLoad(new CommandAPIPaperConfig(this));
 	}
 
 	@Override

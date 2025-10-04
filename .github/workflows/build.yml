@@ -49,6 +49,9 @@ jobs:
 
       ### Compilation ###
 
+      - name: Setup Paper NMS for all applicable versions
+        run: ./setupPaperNMS.sh
+
       - name: Build the CommandAPI (Bukkit+Velocity) using maven
         run: mvn clean install --batch-mode -P Platform.Bukkit,Platform.Velocity
 
@@ -77,6 +80,12 @@ jobs:
 
       - name: Compile NMS_Common for 1.21.5
         run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_21_R4
+
+      - name: Compile NMS_Common for 1.21.6 and 1.21.7 and 1.21.8
+        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_21_R5
+
+      - name: Compile NMS_Common for 1.21.9
+        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_21_R6
 
       - name: Copy BytecodeAnalyser to nms-common target folder
         run: mv BytecodeAnalyser/build/libs/BytecodeAnalyser*.jar commandapi-platforms/commandapi-bukkit/commandapi-bukkit-nms/commandapi-bukkit-nms-common/target
@@ -140,15 +149,25 @@ jobs:
 
       ### Upload .jar artifacts ###
 
-      - name: Upload CommandAPI (Bukkit) plugin artifact
+      - name: Upload CommandAPI (Spigot) plugin artifact
         if: ${{ runner.os == 'Linux' && matrix.java == '21' }} # Only upload artifacts built from latest java on one OS
         uses: actions/upload-artifact@v4
         with:
-          name: CommandAPI (Bukkit plugin)
+          name: CommandAPI (Spigot plugin)
           path: |
-            commandapi-platforms/commandapi-bukkit/commandapi-bukkit-plugin/target/CommandAPI*.jar
-            !commandapi-platforms/commandapi-bukkit/commandapi-bukkit-plugin/target/*sources.jar
-            !commandapi-platforms/commandapi-bukkit/commandapi-bukkit-plugin/target/*javadoc.jar
+            commandapi-platforms/commandapi-spigot/commandapi-spigot-plugin/target/CommandAPI*.jar
+            !commandapi-platforms/commandapi-spigot/commandapi-spigot-plugin/target/*sources.jar
+            !commandapi-platforms/commandapi-spigot/commandapi-spigot-plugin/target/*javadoc.jar
+
+      - name: Upload CommandAPI (Paper) plugin artifact
+        if: ${{ runner.os == 'Linux' && matrix.java == '21' }} # Only upload artifacts built from latest java on one OS
+        uses: actions/upload-artifact@v4
+        with:
+            name: CommandAPI (Paper plugin)
+            path: |
+                commandapi-platforms/commandapi-paper/commandapi-paper-plugin/target/CommandAPI*.jar
+                !commandapi-platforms/commandapi-paper/commandapi-paper-plugin/target/*sources.jar
+                !commandapi-platforms/commandapi-paper/commandapi-paper-plugin/target/*javadoc.jar
 
       - name: Upload CommandAPI (Velocity) plugin artifact
         if: ${{ runner.os == 'Linux' && matrix.java == '21' }} # Only upload artifacts built from latest java on one OS

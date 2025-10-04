@@ -6,11 +6,11 @@
 	<parent>
 		<groupId>dev.jorel</groupId>
 		<artifactId>commandapi-bukkit</artifactId>
-		<version>10.1.2</version>
+		<version>11.0.0</version>
 	</parent>
 
 	<artifactId>commandapi-bukkit-test-toolkit</artifactId>
-	<name>CommandAPI - Bukkit support testing toolkit</name>
+	<name>Bukkit support testing toolkit</name>
 
 	<properties>
 		<maven.compiler.source>21</maven.compiler.source>
@@ -32,13 +32,16 @@
 
 	<dependencies>
 		<!-- Compatibility with MockBukkit API -->
-		<!-- This provides transitive access to spigot-api and paper-api
-		      If we listed our own dependency for those, we could put a different version, which often causes problems
-		      Since we aren't just using MockBukkit for tests, we can rely on this dependency for the Spigot/Paper api -->
 		<dependency>
 			<groupId>org.mockbukkit.mockbukkit</groupId>
 			<artifactId>mockbukkit-v1.21</artifactId>
-			<version>4.45.1</version>
+		</dependency>
+
+		<!-- Paper API version matching what MockBukkit uses -->
+		<dependency>
+			<groupId>io.papermc.paper</groupId>
+			<artifactId>paper-api</artifactId>
+			<version>${paper.version.1.21.8}</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -72,17 +75,23 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-nop</artifactId>
-			<version>2.0.9</version>
+			<version>2.0.16</version>
 			<scope>compile</scope>
 		</dependency>
 
 		<!-- Run our own tests with JUnit API -->
-		<!-- Note: This version matches the artifactId `junit-jupiter` dependency transitively inherited
+		<!-- Note: These versions match the artifactId `junit-jupiter-api` dependency transitively inherited
 		     from `MockBukkit-v1.21`. If it doesn't match, the tests might fail with class not found errors. -->
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-params</artifactId>
+			<version>5.13.3</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-engine</artifactId>
-			<version>5.11.0</version>
+			<version>5.13.3</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -96,36 +105,7 @@
 			</resource>
 		</resources>
 
-		<!-- Remove commandapi-core's VersionHandler in favor of ours -->
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-shade-plugin</artifactId>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>shade</goal>
-						</goals>
-						<configuration>
-							<filters>
-								<filter>
-									<artifact>dev.jorel:commandapi-core</artifact>
-									<excludes>
-										<exclude>dev/jorel/commandapi/CommandAPIVersionHandler**</exclude>
-									</excludes>
-								</filter>
-							</filters>
-							<transformers>
-								<transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-									<resource>LICENSE</resource>
-								</transformer>
-							</transformers>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-
 			<!-- Run our own tests -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

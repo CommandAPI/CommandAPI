@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>dev.jorel</groupId>
+		<artifactId>commandapi-spigot</artifactId>
+		<version>11.0.0</version>
+	</parent>
+
+	<artifactId>commandapi-spigot-nms</artifactId>
+	<name>Paper support NMS library</name>
+	<packaging>pom</packaging>
+
+	<modules>
+		<module>commandapi-spigot-1.21.9</module>
+		<module>commandapi-spigot-1.21.6</module>
+		<module>commandapi-spigot-1.21.5</module>
+		<module>commandapi-spigot-1.21.4</module>
+		<module>commandapi-spigot-1.21.2</module>
+		<module>commandapi-spigot-1.21</module>
+		<module>commandapi-spigot-1.20.5</module>
+		<module>commandapi-spigot-1.20.3</module>
+		<module>commandapi-spigot-1.20.2</module>
+		<module>commandapi-spigot-1.20</module>
+
+		<module>commandapi-spigot-nms-dependency</module>
+	</modules>
+
+</project>

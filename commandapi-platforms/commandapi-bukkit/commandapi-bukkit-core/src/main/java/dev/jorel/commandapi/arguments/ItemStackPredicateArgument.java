@@ -41,7 +41,7 @@ public class ItemStackPredicateArgument extends Argument<Predicate> {
 	 * @param nodeName the name of the node for this argument 
 	 */
 	public ItemStackPredicateArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get()._ArgumentItemPredicate());
+		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentItemPredicate());
 	}
 
 	@Override
@@ -56,6 +56,6 @@ public class ItemStackPredicateArgument extends Argument<Predicate> {
 	
 	@Override
 	public <CommandSourceStack> Predicate<ItemStack> parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-		return CommandAPIBukkit.<CommandSourceStack>get().getItemStackPredicate(cmdCtx, key);
+		return CommandAPIBukkit.<CommandSourceStack>get().getNMS().getItemStackPredicate(cmdCtx, key);
 	}
 }

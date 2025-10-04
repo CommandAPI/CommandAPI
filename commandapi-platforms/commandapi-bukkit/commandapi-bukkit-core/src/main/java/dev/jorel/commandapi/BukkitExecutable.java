@@ -1,6 +1,7 @@
 package dev.jorel.commandapi;
 
 import dev.jorel.commandapi.commandsenders.BukkitCommandSender;
+import dev.jorel.commandapi.exceptions.PlatformException;
 import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
 import dev.jorel.commandapi.executors.*;
 import org.bukkit.command.CommandSender;
@@ -462,6 +463,10 @@ extends BukkitExecutable<Impl>
 	 * @return this command builder
 	 */
 	default Impl executesFeedbackForwarding(FeedbackForwardingCommandExecutor executor) {
+		Platform platform = CommandAPIBukkit.get().activePlatform();
+		if (platform != Platform.PAPER) {
+			throw new PlatformException("Attempted to use a FeedbackForwardingCommandExecutor on a non-paper platform (" + platform.name() + ")!");
+		}
 		getExecutor().addNormalExecutor(executor);
 		return instance();
 	}
@@ -473,6 +478,10 @@ extends BukkitExecutable<Impl>
 	 * @return this command builder
 	 */
 	default Impl executesFeedbackForwarding(FeedbackForwardingExecutionInfo info) {
+		Platform platform = CommandAPIBukkit.get().activePlatform();
+		if (platform != Platform.PAPER) {
+			throw new PlatformException("Attempted to use a FeedbackForwardingExecutionInfo on a non-paper platform (" + platform.name() + ")!");
+		}
 		getExecutor().addNormalExecutor(info);
 		return instance();
 	}
@@ -484,6 +493,10 @@ extends BukkitExecutable<Impl>
 	 * @return this command builder
 	 */
 	default Impl executesFeedbackForwarding(FeedbackForwardingResultingCommandExecutor executor) {
+		Platform platform = CommandAPIBukkit.get().activePlatform();
+		if (platform != Platform.PAPER) {
+			throw new PlatformException("Attempted to use a FeedbackForwardingResultingCommandExecutor on a non-paper platform (" + platform.name() + ")!");
+		}
 		getExecutor().addResultingExecutor(executor);
 		return instance();
 	}
@@ -495,6 +508,10 @@ extends BukkitExecutable<Impl>
 	 * @return this command builder
 	 */
 	default Impl executesFeedbackForwarding(FeedbackForwardingResultingExecutionInfo info) {
+		Platform platform = CommandAPIBukkit.get().activePlatform();
+		if (platform != Platform.PAPER) {
+			throw new PlatformException("Attempted to use a FeedbackForwardingResultingExecutionInfo on a non-paper platform (" + platform.name() + ")!");
+		}
 		getExecutor().addResultingExecutor(info);
 		return instance();
 	}

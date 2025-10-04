@@ -40,10 +40,10 @@ public class CommandAPITestUtilities {
 	///////////////////////
 
 	/**
-	 * @return The {@link MockCommandAPIBukkit} platform class currently loaded.
+	 * @return The {@link MockCommandAPI} class currently loaded.
 	 */
-	public static MockCommandAPIBukkit getCommandAPIPlatform() {
-		return MockCommandAPIBukkit.getInstance();
+	public static MockCommandAPI getMockCommandAPI() {
+		return MockCommandAPI.getInstance();
 	}
 
 	//////////////////////
@@ -60,7 +60,7 @@ public class CommandAPITestUtilities {
 	 * @see #assertCommandFails(CommandSender, String, String)
 	 */
 	public static void dispatchCommand(CommandSender sender, String command) throws CommandSyntaxException {
-		getCommandAPIPlatform().getBrigadierDispatcher().execute(command, new MockCommandSource(sender));
+		getMockCommandAPI().getCommandAPIBukkit().getBrigadierDispatcher().execute(command, new MockCommandSource(sender));
 	}
 
 	/**
@@ -112,7 +112,7 @@ public class CommandAPITestUtilities {
 	/////////////////////////
 	private static ExecutionInfo<CommandSender, AbstractCommandSender<? extends CommandSender>>
 	getExecutionInfo(Runnable executeCommand) {
-		ExecutionQueue executions = getCommandAPIPlatform().getCommandAPIHandlerSpy().getExecutionQueue();
+		ExecutionQueue executions = getMockCommandAPI().getCommandAPIHandlerSpy().getExecutionQueue();
 		executions.clear();
 
 		executeCommand.run();
@@ -257,7 +257,7 @@ public class CommandAPITestUtilities {
 	 * @see #assertCommandSuggestsTooltips(CommandSender, String, int, Suggestion...)
 	 */
 	public static Suggestions getSuggestions(CommandSender sender, String command) {
-		CommandDispatcher<MockCommandSource> dispatcher = getCommandAPIPlatform().getBrigadierDispatcher();
+		CommandDispatcher<MockCommandSource> dispatcher = getMockCommandAPI().getCommandAPIBukkit().getBrigadierDispatcher();
 		ParseResults<MockCommandSource> parse = dispatcher.parse(command, new MockCommandSource(sender));
 		return dispatcher.getCompletionSuggestions(parse).join();
 	}

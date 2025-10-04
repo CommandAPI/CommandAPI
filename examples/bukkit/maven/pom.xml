@@ -9,10 +9,10 @@
 	</properties>
 
 	<repositories>
-		<!-- This adds the Spigot Maven repository to the build -->
+		<!-- This adds the Paper Maven repository to the build -->
 		<repository>
-			<id>spigot-repo</id>
-			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+			<id>papermc</id>
+			<url>https://repo.papermc.io/repository/maven-public/</url>
 		</repository>
 
 		<!-- CodeMC repository for the NBT API -->
@@ -27,15 +27,15 @@
 		<!-- The CommandAPI dependency used for Bukkit and it's forks -->
 		<dependency>
 			<groupId>dev.jorel</groupId>
-			<artifactId>commandapi-bukkit-plugin</artifactId>
-			<version>10.1.2</version>
+			<artifactId>commandapi-paper-plugin</artifactId>
+			<version>11.0.0</version>
 			<scope>provided</scope>
 		</dependency>
 
-		<!-- This adds the Spigot API artifact to the build -->
+		<!-- This adds the Paper API artifact to the build -->
 		<dependency>
-			<groupId>org.spigotmc</groupId>
-			<artifactId>spigot-api</artifactId>
+			<groupId>io.papermc.paper</groupId>
+			<artifactId>paper-api</artifactId>
 			<version>1.20.1-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
@@ -44,7 +44,7 @@
 		<dependency>
 			<groupId>de.tr7zw</groupId>
 			<artifactId>item-nbt-api-plugin</artifactId>
-			<version>2.12.4</version>
+			<version>2.15.1</version>
 		</dependency>
 	</dependencies>
 

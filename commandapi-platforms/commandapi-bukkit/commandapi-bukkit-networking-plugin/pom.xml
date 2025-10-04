@@ -6,11 +6,18 @@
 	<parent>
 		<artifactId>commandapi-bukkit</artifactId>
 		<groupId>dev.jorel</groupId>
-		<version>10.1.2</version>
+		<version>11.0.0</version>
 	</parent>
 
 	<artifactId>commandapi-bukkit-networking-plugin</artifactId>
-	<name>CommandAPI - Bukkit support Velocity networking plugin</name>
+	<name>Bukkit support Velocity networking plugin</name>
+
+	<repositories>
+		<repository>
+			<id>codemc-repo</id>
+			<url>https://repo.codemc.io/repository/nms/</url>
+		</repository>
+	</repositories>
 
 	<dependencies>
 		<dependency>
@@ -22,7 +29,7 @@
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot-api</artifactId>
-			<version>${paper.version}</version>
+			<version>${spigot.api.version.common}</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>

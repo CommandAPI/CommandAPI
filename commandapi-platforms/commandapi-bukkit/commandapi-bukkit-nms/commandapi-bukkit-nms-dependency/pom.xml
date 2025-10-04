@@ -19,12 +19,12 @@
 	<parent>
 		<artifactId>commandapi-bukkit-nms</artifactId>
 		<groupId>dev.jorel</groupId>
-		<version>10.1.2</version>
+		<version>11.0.0</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>commandapi-bukkit-nms-dependency</artifactId>
-	<name>CommandAPI - Bukkit support Spigot-mapped NMS dependency</name>
+	<name>Bukkit support Spigot-mapped NMS dependency</name>
 	<packaging>pom</packaging>
 
 	<dependencies>
@@ -36,6 +36,11 @@
 		</dependency>
 
 		<!-- NMS-specific implementations -->
+		<dependency>
+			<groupId>dev.jorel</groupId>
+			<artifactId>commandapi-bukkit-1.21.9</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>dev.jorel</groupId>
 			<artifactId>commandapi-bukkit-1.21.6</artifactId>

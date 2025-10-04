@@ -6,11 +6,11 @@
 	<parent>
 		<groupId>dev.jorel</groupId>
 		<artifactId>commandapi</artifactId>
-		<version>10.1.2</version>
+		<version>11.0.0</version>
 	</parent>
 
 	<artifactId>commandapi-kotlin</artifactId>
-	<name>CommandAPI - Kotlin support</name>
+	<name>Kotlin support</name>
 	<packaging>pom</packaging>
 
 </project>

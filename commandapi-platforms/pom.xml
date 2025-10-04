@@ -7,11 +7,11 @@
 	<parent>
 		<artifactId>commandapi</artifactId>
 		<groupId>dev.jorel</groupId>
-		<version>10.1.2</version>
+		<version>11.0.0</version>
 	</parent>
 
 	<artifactId>commandapi-platforms</artifactId>
-	<name>CommandAPI - Multi-platform support</name>
+	<name>Multi-platform support</name>
 	<packaging>pom</packaging>
 
 	<profiles>
@@ -20,22 +20,46 @@
 			<id>Platform.Bukkit</id>
 			<modules>
 				<module>commandapi-bukkit</module>
-				<module>../commandapi-kotlin/commandapi-core-kotlin</module>
-				<module>../commandapi-kotlin/commandapi-bukkit-kotlin</module>
+				<module>commandapi-paper</module>
+				<module>commandapi-spigot</module>
+				<module>../commandapi-kotlin/commandapi-kotlin-core</module>
+				<module>../commandapi-kotlin/commandapi-kotlin-bukkit</module>
+				<module>../commandapi-kotlin/commandapi-kotlin-paper</module>
+				<module>../commandapi-kotlin/commandapi-kotlin-spigot</module>
 			</modules>
 		</profile>
 		<profile>
-			<id>Platform.Sponge</id>
+			<id>Platform.Paper</id>
 			<modules>
-				<module>commandapi-sponge</module>
+				<module>commandapi-bukkit</module>
+				<module>commandapi-paper</module>
+				<module>../commandapi-kotlin/commandapi-kotlin-core</module>
+				<module>../commandapi-kotlin/commandapi-kotlin-bukkit</module>
+				<module>../commandapi-kotlin/commandapi-kotlin-paper</module>
 			</modules>
 		</profile>
+		<profile>
+			<id>Platform.Spigot</id>
+			<modules>
+				<module>commandapi-bukkit</module>
+				<module>commandapi-spigot</module>
+				<module>../commandapi-kotlin/commandapi-kotlin-core</module>
+				<module>../commandapi-kotlin/commandapi-kotlin-bukkit</module>
+				<module>../commandapi-kotlin/commandapi-kotlin-spigot</module>
+			</modules>
+		</profile>
+<!--		<profile>-->
+<!--			<id>Platform.Sponge</id>-->
+<!--			<modules>-->
+<!--				<module>commandapi-sponge</module>-->
+<!--			</modules>-->
+<!--		</profile>-->
 		<profile>
 			<id>Platform.Velocity</id>
 			<modules>
 				<module>commandapi-velocity</module>
-				<module>../commandapi-kotlin/commandapi-core-kotlin</module>
-				<module>../commandapi-kotlin/commandapi-velocity-kotlin</module>
+				<module>../commandapi-kotlin/commandapi-kotlin-core</module>
+				<module>../commandapi-kotlin/commandapi-kotlin-velocity</module>
 			</modules>
 		</profile>
 	</profiles>

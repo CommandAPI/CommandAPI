@@ -88,6 +88,8 @@ jobs:
                   restore-keys: ${{ runner.os }}-m2
 
             # Apply SonarCloud
+            - name: Setup Paper NMS for all applicable versions
+              run: ./setupPaperNMS.sh
             - name: SonarCloud Analyze
               run: mvn -B test-compile org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=JorelAli_CommandAPI -P Platform.Bukkit,Platform.Velocity -Dmaven.javadoc.skip=true
               env:

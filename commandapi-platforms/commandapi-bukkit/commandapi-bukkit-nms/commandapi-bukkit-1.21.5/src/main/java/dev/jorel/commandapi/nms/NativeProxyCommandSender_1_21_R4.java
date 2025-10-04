@@ -19,7 +19,7 @@ public class NativeProxyCommandSender_1_21_R4 extends ProxiedNativeCommandSender
 
 		Vec3 pos = css.getPosition();
 		Vec2 rot = css.getRotation();
-		this.world = CommandAPIBukkit.get().getWorldForCSS(css);
+		this.world = CommandAPIBukkit.get().getNMS().getWorldForCSS(css);
 		this.location = new Location(this.world, pos.x(), pos.y(), pos.z(), rot.y, rot.x);
 	}
 

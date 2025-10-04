@@ -25,7 +25,7 @@
 	<parent>
 		<artifactId>commandapi-bukkit-test</artifactId>
 		<groupId>dev.jorel</groupId>
-		<version>10.1.2</version>
+		<version>11.0.0</version>
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
@@ -35,8 +35,6 @@
 
 	<properties>
 		<minecraft.mappings>1.20.4-R0.1-SNAPSHOT</minecraft.mappings>
-		<spigot.version>1.20.4-R0.1-SNAPSHOT</spigot.version>
-		<paper.version>1.20.4-R0.1-SNAPSHOT</paper.version>
 	</properties>
 
 	<repositories>
@@ -50,10 +48,6 @@
 			<id>codemc-repo</id>
 			<url>https://repo.codemc.io/repository/nms/</url>
 			<layout>default</layout>
-		</repository>
-		<repository>
-			<id>spigot-repo</id>
-			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
 		</repository>
 		<repository>
 			<id>papermc</id>
@@ -106,7 +100,7 @@
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot</artifactId>
-			<version>${spigot.version}</version>
+			<version>${spigot.version.1.20.4}</version>
 			<classifier>remapped-mojang</classifier>
 			<scope>provided</scope>
 		</dependency>
@@ -118,7 +112,7 @@
 		<!-- <dependency>
 			<groupId>io.papermc.paper</groupId>
 			<artifactId>paper-api</artifactId>
-			<version>${paper.version}</version>
+			<version>${paper.version.1.20.4}</version>
 		</dependency> -->
 	</dependencies>
 

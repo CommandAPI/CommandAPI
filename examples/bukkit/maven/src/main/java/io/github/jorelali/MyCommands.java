@@ -9,10 +9,10 @@ import org.bukkit.potion.PotionEffectType;
 import de.tr7zw.nbtapi.NBTContainer;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.CommandTree;
+import dev.jorel.commandapi.arguments.EntitySelectorArgument;
 import dev.jorel.commandapi.arguments.LocationArgument;
 import dev.jorel.commandapi.arguments.LocationType;
 import dev.jorel.commandapi.arguments.NBTCompoundArgument;
-import dev.jorel.commandapi.arguments.PlayerArgument;
 import dev.jorel.commandapi.arguments.PotionEffectArgument;
 
 public class MyCommands {
@@ -41,7 +41,7 @@ public class MyCommands {
 		// the /effect command. The potion effect with be a level 1 potion
 		// effect and the duration will be 5 minutes (300 seconds x 20 ticks)
 		new CommandAPICommand("myeffect")
-			.withArguments(new PlayerArgument("target"))
+			.withArguments(new EntitySelectorArgument.OnePlayer("target"))
 			.withArguments(new PotionEffectArgument("potion"))
 			.executes((sender, args) -> {
 				Player target = (Player) args.get(0);
@@ -89,7 +89,7 @@ public class MyCommands {
 					PotionEffectType potionEffectType = (PotionEffectType) args.get(0);
 					player.addPotionEffect(new PotionEffect(potionEffectType, 300 * 20, 1));
 				})
-				.then(new PlayerArgument("target")
+				.then(new EntitySelectorArgument.OnePlayer("target")
 					.executes((sender, args) -> {
 						// Register /myeffect <potion effect> <player>
 						// This command works exactly the same as the example

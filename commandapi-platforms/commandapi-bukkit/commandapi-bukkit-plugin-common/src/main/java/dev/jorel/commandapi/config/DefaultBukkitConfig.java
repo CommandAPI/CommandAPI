@@ -5,38 +5,18 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings("DuplicatedCode")
 public class DefaultBukkitConfig extends DefaultConfig {
 
-	public static final CommentedConfigOption<Boolean> USE_LATEST_NMS_VERSION = new CommentedConfigOption<>(
-		new String[] {
-			"Use latest version (default: false)",
-			"If \"true\", the CommandAPI will use the latest available NMS implementation",
-			"when the CommandAPI is used. This avoids all checks to see if the latest NMS",
-			"implementation is actually compatible with the current Minecraft version."
-		}, false
-	);
-
-	public static final CommentedConfigOption<Boolean> BE_LENIENT_FOR_MINOR_VERSIONS = new CommentedConfigOption<>(
-		new String[] {
-			"Be lenient with version checks when loading for new minor Minecraft versions (default: false)",
-			"If \"true\", the CommandAPI loads NMS implementations for potentially unsupported Minecraft versions.",
-			"For example, this setting may allow updating from 1.21.1 to 1.21.2 as only the minor version is changing",
-			"but will not allow an update from 1.21.2 to 1.22.",
-			"Keep in mind that implementations may vary and actually updating the CommandAPI might be necessary."
-		}, false
-	);
-
-	public static final CommentedConfigOption<Boolean> SHOULD_HOOK_PAPER_RELOAD = new CommentedConfigOption<>(
-		new String[] {
-			"Hook into Paper's ServerResourcesReloadedEvent (default: false)",
-			"If \"true\", and the CommandAPI detects it is running on a Paper server, it will",
-			"hook into Paper's ServerResourcesReloadedEvent to detect when /minecraft:reload is run.",
-			"This allows the CommandAPI to automatically call its custom datapack-reloading",
-			"function which allows CommandAPI commands to be used in datapacks.",
-			"If you set this to false, CommandAPI commands may not work inside datapacks after",
-			"reloading datapacks."
-		}, false
-	);
+	public static CommentedConfigOption<Boolean> FALLBACK_TO_LATEST_NMS(boolean paper) {
+		return new CommentedConfigOption<>(new String[]{
+				"Fallback to latest version (default: " + (paper ? "true" : "false") + ")",
+				"If \"true\", the CommandAPI will fall back to the latest available NMS",
+				"implementation when the CommandAPI is used and no implementation for the",
+				"current Minecraft version was found."
+			}, paper
+		);
+	}
 
 	public static final CommentedConfigOption<Boolean> SKIP_RELOAD_DATAPACKS = new CommentedConfigOption<>(
 		new String[] {
@@ -45,6 +25,15 @@ public class DefaultBukkitConfig extends DefaultConfig {
 			"loading. Datapacks will still be reloaded if performed manually when \"hook-paper-reload\"",
 			"is set to \"true\" and /minecraft:reload is run."
 		}, true
+	);
+
+	public static final CommentedConfigOption<Boolean> HOOK_PAPER_RELOAD = new CommentedConfigOption<>(
+		new String[] {
+			"Hook into Paper's ServerResourcesReloadedEvent (default: false)",
+			"If \"true\", the CommandAPI will hook into Paper's ServerResourcesReloadedEvent to detect when",
+			"/minecraft:reload is run. This allows the CommandAPI to automatically call its custom datapack-reloading",
+			"function which allows CommandAPI commands to be used in datapacks."
+		}, false
 	);
 
 	public static final CommentedConfigOption<List<?>> PLUGINS_TO_CONVERT = new CommentedConfigOption<>(
@@ -74,15 +63,32 @@ public class DefaultBukkitConfig extends DefaultConfig {
 	private DefaultBukkitConfig() {
 	}
 
-	public static DefaultBukkitConfig createDefault() {
+	public static DefaultBukkitConfig createDefaultPaperConfig() {
 		Map<String, CommentedConfigOption<?>> options = new LinkedHashMap<>();
 		options.put("verbose-outputs", VERBOSE_OUTPUTS);
 		options.put("silent-logs", SILENT_LOGS);
 		options.put("messages.missing-executor-implementation", MISSING_EXECUTOR_IMPLEMENTATION);
 		options.put("create-dispatcher-json", CREATE_DISPATCHER_JSON);
-		options.put("use-latest-nms-version", USE_LATEST_NMS_VERSION);
-		options.put("be-lenient-for-minor-versions", BE_LENIENT_FOR_MINOR_VERSIONS);
-		options.put("hook-paper-reload", SHOULD_HOOK_PAPER_RELOAD);
+		options.put("fallback-to-latest-nms", FALLBACK_TO_LATEST_NMS(true));
+		options.put("skip-initial-datapack-reload", SKIP_RELOAD_DATAPACKS); // TODO: Remove once the Paper plugin utilizes the bootstrapper
+		options.put("hook-paper-reload", HOOK_PAPER_RELOAD); // TODO: Remove once the Paper plugin utilizes the bootstrapper
+		options.put("plugins-to-convert", PLUGINS_TO_CONVERT);
+		options.put("other-commands-to-convert", OTHER_COMMANDS_TO_CONVERT);
+		options.put("skip-sender-proxy", SKIP_SENDER_PROXY);
+
+		Map<String, CommentedSection> sections = new LinkedHashMap<>();
+		sections.put("messages", SECTION_MESSAGE);
+
+		return DefaultBukkitConfig.create(options, sections);
+	}
+
+	public static DefaultBukkitConfig createDefaultSpigotConfig() {
+		Map<String, CommentedConfigOption<?>> options = new LinkedHashMap<>();
+		options.put("verbose-outputs", VERBOSE_OUTPUTS);
+		options.put("silent-logs", SILENT_LOGS);
+		options.put("messages.missing-executor-implementation", MISSING_EXECUTOR_IMPLEMENTATION);
+		options.put("create-dispatcher-json", CREATE_DISPATCHER_JSON);
+		options.put("fallback-to-latest-nms", FALLBACK_TO_LATEST_NMS(false));
 		options.put("skip-initial-datapack-reload", SKIP_RELOAD_DATAPACKS);
 		options.put("plugins-to-convert", PLUGINS_TO_CONVERT);
 		options.put("other-commands-to-convert", OTHER_COMMANDS_TO_CONVERT);

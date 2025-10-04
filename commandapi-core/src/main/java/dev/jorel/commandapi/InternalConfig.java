@@ -37,23 +37,11 @@ public class InternalConfig {
 	// Whether we should suppress all logs
 	private final boolean silentLogs;
 
-	// Whether we should use the latest NMS version (which may not be compatible)
-	private final boolean useLatestNMSVersion;
-
-	private final boolean beLenientForMinorVersions;
-
 	// The message to display when an executor implementation is missing
 	private final String messageMissingExecutorImplementation;
 
 	// Create a command_registration.json file
 	private final File dispatcherFile;
-
-	// List of plugins which should ignore proxied senders
-	private final List<String> skipSenderProxy;
-
-	// NBT API configuration
-	private Class<?> nbtContainerClass;
-	private Function<Object, ?> nbtContainerConstructor;
 
 	// The default command namespace
 	private final String namespace;
@@ -66,13 +54,8 @@ public class InternalConfig {
 	public InternalConfig(CommandAPIConfig<?> config) {
 		this.verboseOutput = config.verboseOutput;
 		this.silentLogs = config.silentLogs;
-		this.useLatestNMSVersion = config.useLatestNMSVersion;
-		this.beLenientForMinorVersions = config.beLenientForMinorVersions;
 		this.messageMissingExecutorImplementation = config.missingExecutorImplementationMessage;
 		this.dispatcherFile = config.dispatcherFile;
-		this.skipSenderProxy = config.skipSenderProxy;
-		this.nbtContainerClass = config.nbtContainerClass;
-		this.nbtContainerConstructor = config.nbtContainerConstructor;
 		this.namespace = config.namespace;
 	}
 
@@ -91,20 +74,6 @@ public class InternalConfig {
 	}
 
 	/**
-	 * @return Whether the CommandAPI should use the latest available NMS version
-	 */
-	public boolean shouldUseLatestNMSVersion() {
-		return this.useLatestNMSVersion;
-	}
-
-	/**
-	 * @return Whether the CommandAPI should assume that minor versions of officially unsupported versions do not cause incompatibilities
-	 */
-	public boolean shouldBeLenientForMinorVersions() {
-		return this.beLenientForMinorVersions;
-	}
-
-	/**
 	 * @return The message to display if a command executor does not have an
 	 *         implementation for a given type
 	 */
@@ -118,34 +87,6 @@ public class InternalConfig {
 	 */
 	public File getDispatcherFile() {
 		return this.dispatcherFile;
-	}
-
-	/**
-	 * @param commandName A command where sender proxying should be skipped
-	 * @return Whether sender proxying should be skipped for a given command
-	 */
-	public boolean shouldSkipSenderProxy(String commandName) {
-		return this.skipSenderProxy.contains(commandName);
-	}
-
-	/**
-	 * @return The NBT Tag Compound implementation class
-	 */
-	public Class<?> getNBTContainerClass() {
-		return this.nbtContainerClass;
-	}
-
-	/**
-	 * @return A function that takes in an Object (NMS NBTTagCompound) and returns
-	 *         an implementation of an NBT Tag Compound
-	 */
-	public Function<Object, ?> getNBTContainerConstructor() {
-		return this.nbtContainerConstructor;
-	}
-	
-	public void lateInitializeNBT(Class<?> nbtContainerClass, Function<Object, ?> nbtContainerConstructor) {
-		this.nbtContainerClass = nbtContainerClass;
-		this.nbtContainerConstructor = nbtContainerConstructor;
 	}
 
 	/**

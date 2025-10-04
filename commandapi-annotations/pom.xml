@@ -18,16 +18,16 @@
 	<parent>
 		<groupId>dev.jorel</groupId>
 		<artifactId>commandapi</artifactId>
-		<version>10.1.2</version>
+		<version>11.0.0</version>
 	</parent>
 
 	<artifactId>commandapi-annotations</artifactId>
-	<name>CommandAPI - Annotations Library</name>
+	<name>Annotations Library</name>
 
 	<repositories>
 		<repository>
-			<id>spigot-repo</id>
-			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+			<id>codemc-repo</id>
+			<url>https://repo.codemc.io/repository/nms/</url>
 		</repository>
 	</repositories>
 
@@ -36,6 +36,7 @@
 			<groupId>dev.jorel</groupId>
 			<artifactId>commandapi-bukkit-core</artifactId>
 			<version>${project.version}</version>
+			<scope>provided</scope> <!-- Platform specific annotation modules implement their platform themselves -->
 		</dependency>
 		<dependency>
 			<groupId>com.google.auto.service</groupId>
@@ -46,29 +47,9 @@
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot-api</artifactId>
-			<version>${paper.version}</version>
+			<version>${spigot.api.version.common}</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>testCompile</goal>
-						</goals>
-						<configuration>
-							<annotationProcessors>
-								<annotationProcessor>dev.jorel.commandapi.annotations.Annotations</annotationProcessor>
-							</annotationProcessors>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
 
 </project>

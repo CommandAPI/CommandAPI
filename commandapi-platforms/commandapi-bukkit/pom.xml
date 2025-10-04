@@ -7,11 +7,11 @@
 	<parent>
 		<artifactId>commandapi-platforms</artifactId>
 		<groupId>dev.jorel</groupId>
-		<version>10.1.2</version>
+		<version>11.0.0</version>
 	</parent>
 
 	<artifactId>commandapi-bukkit</artifactId>
-	<name>CommandAPI - Bukkit support</name>
+	<name>Bukkit support</name>
 	<packaging>pom</packaging>
 
 	<modules>
@@ -21,23 +21,14 @@
 		<!-- NMS versions -->
 		<module>commandapi-bukkit-nms</module>
 
-		<!-- Version selectors -->
-		<module>commandapi-bukkit-vh</module>
-		<module>commandapi-bukkit-mojang-mapped</module>
-
 		<!-- Common Bukkit plugin classes -->
 		<module>commandapi-bukkit-plugin-common</module>
-
-		<!-- Outputs -->
-		<module>commandapi-bukkit-plugin</module>
-		<module>commandapi-bukkit-shade</module>
-		<module>commandapi-bukkit-plugin-mojang-mapped</module>
-		<module>commandapi-bukkit-shade-mojang-mapped</module>
-
-		<module>commandapi-bukkit-test-toolkit</module>
 		<module>commandapi-bukkit-networking-plugin</module>
 
-		<!-- Tests -->
-		<module>commandapi-bukkit-test</module>
+		<!-- Test toolkit -->
+		<module>commandapi-bukkit-test-toolkit</module>
+
+		<!-- Tests do not compile at this time. This is a big todo
+		<module>commandapi-bukkit-test</module>-->
 	</modules>
 </project>

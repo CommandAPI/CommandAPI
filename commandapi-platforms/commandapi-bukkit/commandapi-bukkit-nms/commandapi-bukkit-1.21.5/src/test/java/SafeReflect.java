@@ -18,19 +18,20 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-import java.util.Map;
-
-import org.bukkit.craftbukkit.v1_21_R4.help.SimpleHelpMap;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.datafixers.util.Either;
-
 import dev.jorel.commandapi.preprocessor.RequireField;
+import net.minecraft.commands.arguments.blocks.ArgumentTileLocation;
 import net.minecraft.commands.arguments.selector.EntitySelector;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.CustomFunctionManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.block.entity.FuelValues;
 import net.minecraft.world.level.gameevent.EntityPositionSource;
+import org.bukkit.craftbukkit.v1_21_R4.help.SimpleHelpMap;
+
+import java.util.Map;
 
 // Spigot-Mapped reflection
 @RequireField(in = CustomFunctionManager.class, name = "h", ofType = CommandDispatcher.class)
@@ -38,4 +39,5 @@ import net.minecraft.world.level.gameevent.EntityPositionSource;
 @RequireField(in = SimpleHelpMap.class, name = "helpTopics", ofType = Map.class)
 @RequireField(in = EntityPositionSource.class, name = "e", ofType = Either.class)
 @RequireField(in = MinecraftServer.class, name = "aE", ofType = FuelValues.class)
+@RequireField(in = ArgumentTileLocation.class, name = "c", ofType = NBTTagCompound.class)
 public class SafeReflect {}

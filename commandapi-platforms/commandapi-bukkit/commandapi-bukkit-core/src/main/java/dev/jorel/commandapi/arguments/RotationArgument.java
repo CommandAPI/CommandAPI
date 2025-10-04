@@ -38,7 +38,7 @@ public class RotationArgument extends SafeOverrideableArgument<Rotation, Rotatio
 	 * @param nodeName the name of the node for this argument
 	 */
 	public RotationArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get()._ArgumentRotation(), Rotation::toString);
+		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentRotation(), Rotation::toString);
 	}
 	
 	@Override
@@ -53,6 +53,6 @@ public class RotationArgument extends SafeOverrideableArgument<Rotation, Rotatio
 	
 	@Override
 	public <CommandSourceStack> Rotation parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-		return CommandAPIBukkit.<CommandSourceStack>get().getRotation(cmdCtx, key);
+		return CommandAPIBukkit.<CommandSourceStack>get().getNMS().getRotation(cmdCtx, key);
 	}
 }

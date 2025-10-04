@@ -4,19 +4,19 @@ A simple example of making a plugin that uses the CommandAPI with Maven.
 
 Key points:
 
-- The `commandapi-bukkit-shade` and `commandapi-annotations` dependencies are both added, with annotations having the provided scope:
+- The `commandapi-paper-shade` and `commandapi-paper-annotations` dependencies are both added, with annotations having the provided scope:
 
   ```xml
   <dependencies>
       <dependency>
           <groupId>dev.jorel</groupId>
-          <artifactId>commandapi-bukkit-shade</artifactId>
-          <version>10.1.2</version>
+          <artifactId>commandapi-paper-shade</artifactId>
+          <version>11.0.0</version>
       </dependency>
       <dependency>
           <groupId>dev.jorel</groupId>
-          <artifactId>commandapi-annotations</artifactId>
-          <version>10.1.2</version>
+          <artifactId>commandapi-paper-annotations</artifactId>
+          <version>11.0.0</version>
           <scope>provided</scope>
       </dependency>
   </dependencies>
@@ -36,7 +36,7 @@ Key points:
                       <path>
                           <groupId>dev.jorel</groupId>
                           <artifactId>commandapi-annotations</artifactId>
-                          <version>10.1.2</version>
+                          <version>11.0.0</version>
                       </path>
                   </annotationProcessorPaths>
               </configuration>

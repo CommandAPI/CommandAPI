@@ -4,10 +4,10 @@ A simple example of making a plugin that uses the CommandAPI with Maven.
 
 Key points:
 
-- The `commandapi-bukkit-plugin` dependency is used:
+- The `commandapi-paper-plugin` dependency is used:
 
   ```kotlin
-  implementation("dev.jorel:commandapi-bukkit-plugin:10.1.2")
+  implementation("dev.jorel:commandapi-paper-plugin:11.0.0")
   ```
 
 - In the plugin.yml, CommandAPI is listed as a depend:

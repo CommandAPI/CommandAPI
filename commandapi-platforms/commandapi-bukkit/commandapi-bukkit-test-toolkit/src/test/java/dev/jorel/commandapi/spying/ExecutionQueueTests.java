@@ -24,7 +24,7 @@ class ExecutionQueueTests extends CommandTestBase {
 	public void setUp() {
 		super.setUp();
 
-		queue = getCommandAPIPlatform().getCommandAPIHandlerSpy().getExecutionQueue();
+		queue = getMockCommandAPI().getCommandAPIHandlerSpy().getExecutionQueue();
 
 		new CommandAPICommand("test")
 			.withOptionalArguments(new BooleanArgument("shouldFail"))
