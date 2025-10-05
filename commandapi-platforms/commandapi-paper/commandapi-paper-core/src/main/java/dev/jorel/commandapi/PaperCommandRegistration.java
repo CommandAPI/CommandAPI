@@ -89,6 +89,17 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 
 	@Override
 	public void unregister(String commandName, boolean unregisterNamespaces, boolean unregisterBukkit) {
+		// Remove nodes from our dispatchers
+		removeBrigadierCommands(
+			(RootCommandNode<Source>) bootstrapDispatcher.getRoot(), commandName, unregisterNamespaces,
+			c -> !unregisterBukkit ^ isBukkitCommand.test(c)
+		);
+		removeBrigadierCommands(
+			(RootCommandNode<Source>) pluginDispatcher.getRoot(), commandName, unregisterNamespaces,
+			c -> !unregisterBukkit ^ isBukkitCommand.test(c)
+		);
+
+		// Remove from real dispatcher when rebuilding commands
 		unregisterInformationList.add(new UnregisterInformation(commandName, unregisterNamespaces, unregisterBukkit));
 		if (!CommandAPI.canRegister()) {
 			Bukkit.reloadData();
@@ -123,18 +134,6 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 							// If we are unregistering a Bukkit command, ONLY unregister BukkitCommandNodes
 							// If we are unregistering a Vanilla command, DO NOT unregister BukkitCommandNodes
 							c -> !unregisterInformation.unregisterBukkit() ^ isBukkitCommand.test(c));
-
-						// Remove nodes from our dispatchers
-						removeBrigadierCommands((RootCommandNode<Source>) bootstrapDispatcher.getRoot(),
-							unregisterInformation.commandName(),
-							unregisterInformation.unregisterNamespaces(),
-							c -> !unregisterInformation.unregisterBukkit() ^ isBukkitCommand.test(c)
-						);
-						removeBrigadierCommands((RootCommandNode<Source>) pluginDispatcher.getRoot(),
-							unregisterInformation.commandName(),
-							unregisterInformation.unregisterNamespaces(),
-							c -> !unregisterInformation.unregisterBukkit() ^ isBukkitCommand.test(c)
-						);
 					}
 
 					// Update the dispatcher file
