@@ -145,12 +145,12 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 	}
 
 	private void registerLifecycleEvent(LifecycleEventManager<?> lifecycleEventManager, CommandDispatcher<CommandSourceStack> dispatcher) {
-		lifecycleEventManager.registerEventHandler(LifecycleEvents.COMMANDS, event -> {
+		lifecycleEventManager.registerEventHandler(LifecycleEvents.COMMANDS.newHandler(event -> {
 			for (CommandNode<CommandSourceStack> commandNode : dispatcher.getRoot().getChildren()) {
 				LiteralCommandNode<CommandSourceStack> node = (LiteralCommandNode<CommandSourceStack>) commandNode;
 				event.registrar().register(node, getDescription(node.getLiteral()));
 			}
-		});
+		}).priority(2));
 	}
 
 	private String getDescription(String commandName) {
