@@ -15,7 +15,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -27,18 +29,17 @@ import java.util.function.Supplier;
 public class PaperCommandRegistration<Source> extends CommandRegistrationStrategy<Source> {
 	// References to necessary methods
 	private final Supplier<CommandDispatcher<Source>> getBrigadierDispatcher;
-	private final Runnable reloadHelpTopics;
 	private final Predicate<CommandNode<Source>> isBukkitCommand;
 
 	private final boolean[] lifecycleEventRegistered = new boolean[2];
 	private final CommandDispatcher<CommandSourceStack> bootstrapDispatcher = new CommandDispatcher<>();
 	private final CommandDispatcher<CommandSourceStack> pluginDispatcher = new CommandDispatcher<>();
+	private final Set<String> commandsToRemove = new HashSet<>();
 
 	private final List<UnregisterInformation> unregisterInformationList = new ArrayList<>();
 
-	public PaperCommandRegistration(Supplier<CommandDispatcher<Source>> getBrigadierDispatcher, Runnable reloadHelpTopics, Predicate<CommandNode<Source>> isBukkitCommand) {
+	public PaperCommandRegistration(Supplier<CommandDispatcher<Source>> getBrigadierDispatcher, Predicate<CommandNode<Source>> isBukkitCommand) {
 		this.getBrigadierDispatcher = getBrigadierDispatcher;
-		this.reloadHelpTopics = reloadHelpTopics;
 		this.isBukkitCommand = isBukkitCommand;
 	}
 
@@ -61,23 +62,17 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 	}
 
 	@Override
-	public void runTasksAfterServerStart() {
-		// Nothing to do
-	}
-
-	@Override
-	public void postCommandRegistration(RegisteredCommand registeredCommand, LiteralCommandNode<Source> resultantNode, List<LiteralCommandNode<Source>> aliasNodes) {
-		// Nothing to do
-	}
-
-	@Override
-	@SuppressWarnings("ConstantValue") // `getServer` actually is `null` when we are in bootstrap
 	public LiteralCommandNode<Source> registerCommandNode(LiteralArgumentBuilder<Source> node, String namespace) {
 		LiteralCommandNode<Source> built = node.build();
-		if (Bukkit.getServer() == null) {
-			bootstrapDispatcher.getRoot().addChild((CommandNode<CommandSourceStack>) built);
-		} else {
-			pluginDispatcher.getRoot().addChild((CommandNode<CommandSourceStack>) built);
+		addCommandToDispatcher((LiteralCommandNode<CommandSourceStack>) built);
+		if (!namespace.equals(CommandAPIPaper.getConfiguration().getPluginName().toLowerCase())) {
+			String pluginNameLower = CommandAPIPaper.getConfiguration().getPluginName().toLowerCase();
+			LiteralCommandNode<Source> builtNamespace = CommandAPIHandler.getInstance().namespaceNode(node.build(), namespace);
+			String pluginNamespacedWithoutNamespace = pluginNameLower + ":" + built.getName();
+			String pluginNamespacedWithNamespace = pluginNameLower + ":" + builtNamespace.getName();
+			commandsToRemove.add(pluginNamespacedWithoutNamespace);
+			commandsToRemove.add(pluginNamespacedWithNamespace);
+			addCommandToDispatcher((LiteralCommandNode<CommandSourceStack>) builtNamespace);
 		}
 		if (!CommandAPI.canRegister()) {
 			// Since we register commands into our dispatchers, we need to run the lifecycle events again
@@ -87,15 +82,22 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 		return built;
 	}
 
+	@SuppressWarnings("ConstantValue") // `getServer` actually is `null` when we are in bootstrap
+	private void addCommandToDispatcher(LiteralCommandNode<CommandSourceStack> node) {
+		if (Bukkit.getServer() == null) {
+			bootstrapDispatcher.getRoot().addChild(node);
+		} else {
+			pluginDispatcher.getRoot().addChild(node);
+		}
+	}
+
 	@Override
 	public void unregister(String commandName, boolean unregisterNamespaces, boolean unregisterBukkit) {
 		// Remove nodes from our dispatchers
-		removeBrigadierCommands(
-			(RootCommandNode<Source>) bootstrapDispatcher.getRoot(), commandName, unregisterNamespaces,
+		removeBrigadierCommands((RootCommandNode<Source>) bootstrapDispatcher.getRoot(), commandName, unregisterNamespaces,
 			c -> !unregisterBukkit ^ isBukkitCommand.test(c)
 		);
-		removeBrigadierCommands(
-			(RootCommandNode<Source>) pluginDispatcher.getRoot(), commandName, unregisterNamespaces,
+		removeBrigadierCommands((RootCommandNode<Source>) pluginDispatcher.getRoot(), commandName, unregisterNamespaces,
 			c -> !unregisterBukkit ^ isBukkitCommand.test(c)
 		);
 
@@ -108,7 +110,6 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 
 	@Override
 	public void preReloadDataPacks() {
-		reloadHelpTopics.run(); // TODO: Is this necessary
 		CommandAPIBukkit.get().updateHelpForCommands(CommandAPI.getRegisteredCommands());
 	}
 
@@ -149,6 +150,15 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 				LiteralCommandNode<CommandSourceStack> node = (LiteralCommandNode<CommandSourceStack>) commandNode;
 				event.registrar().register(node, getDescription(node.getLiteral()));
 			}
+			if (commandsToRemove.isEmpty()) {
+				return;
+			}
+			for (String commandName : commandsToRemove) {
+				removeBrigadierCommands(getBrigadierDispatcher().getRoot(), commandName, false, c -> true);
+			}
+
+			// Update the dispatcher file
+			CommandAPIHandler.getInstance().writeDispatcherToFile();
 		}).priority(2));
 	}
 

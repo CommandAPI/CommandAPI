@@ -43,12 +43,6 @@ public class PaperNMS_1_20_R4 implements PaperNMS<CommandSourceStack> {
 	public CommandRegistrationStrategy<CommandSourceStack> createCommandRegistrationStrategy() {
 		return new PaperCommandRegistration<>(
 			() -> bukkitNMS.<MinecraftServer>getMinecraftServer().getCommands().getDispatcher(),
-			() -> {
-				SimpleHelpMap helpMap = (SimpleHelpMap) Bukkit.getServer().getHelpMap();
-				helpMap.clear();
-				helpMap.initializeGeneralTopics();
-				helpMap.initializeCommands();
-			},
 			node -> {
 				Command<?> command = node.getCommand();
 				return command instanceof BukkitCommandNode.BukkitBrigCommand;
