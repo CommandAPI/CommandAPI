@@ -36,6 +36,7 @@
 				<module>../commandapi-kotlin/commandapi-kotlin-core</module>
 				<module>../commandapi-kotlin/commandapi-kotlin-bukkit</module>
 				<module>../commandapi-kotlin/commandapi-kotlin-paper</module>
+				<module>../commandapi-testing/commandapi-testing-paper</module>
 			</modules>
 		</profile>
 		<profile>
@@ -46,6 +47,7 @@
 				<module>../commandapi-kotlin/commandapi-kotlin-core</module>
 				<module>../commandapi-kotlin/commandapi-kotlin-bukkit</module>
 				<module>../commandapi-kotlin/commandapi-kotlin-spigot</module>
+				<module>../commandapi-testing/commandapi-testing-spigot</module>
 			</modules>
 		</profile>
 <!--		<profile>-->
