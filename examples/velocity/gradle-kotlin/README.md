@@ -7,7 +7,7 @@ Key points:
 - The `commandapi-velocity-core` dependency is used:
 
   ```kotlin
-  implementation("dev.jorel:commandapi-velocity-core:11.0.0")
+  implementation("dev.jorel:commandapi-velocity-core:11.0.1-SNAPSHOT")
   ```
 
 - In the `@Plugin` annotation, `commandapi` is listed as a dependency:

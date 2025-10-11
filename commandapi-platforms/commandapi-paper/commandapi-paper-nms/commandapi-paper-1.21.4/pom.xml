@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>dev.jorel</groupId>
 		<artifactId>commandapi-paper-nms</artifactId>
-		<version>11.0.0</version>
+		<version>11.0.1-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>commandapi-paper-1.21.4</artifactId>

@@ -7,7 +7,7 @@ Key points:
 - The `commandapi-paper-plugin` dependency is used:
 
   ```kotlin
-  implementation("dev.jorel:commandapi-paper-plugin:11.0.0")
+  implementation("dev.jorel:commandapi-paper-plugin:11.0.1-SNAPSHOT")
   ```
 
 - In the plugin.yml, CommandAPI is listed as a depend:
