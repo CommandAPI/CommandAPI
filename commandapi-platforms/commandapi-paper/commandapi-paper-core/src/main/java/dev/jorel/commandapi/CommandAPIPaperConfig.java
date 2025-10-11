@@ -12,17 +12,29 @@ public class CommandAPIPaperConfig extends CommandAPIBukkitConfig<CommandAPIPape
 	LifecycleEventOwner lifecycleEventOwner;
 	boolean hookPaperReload = false;
 
-	/**
-	 * Creates a new {@code CommandAPIPaperConfig} object
-	 *
-	 * @param lifecycleEventOwner The {@link LifecycleEventOwner} loading the CommandAPI.
-	 *                            Can be a {@link JavaPlugin} or a {@link BootstrapContext}.
-	 */
-	public CommandAPIPaperConfig(LifecycleEventOwner lifecycleEventOwner) {
+	protected CommandAPIPaperConfig(LifecycleEventOwner lifecycleEventOwner) {
 		super(lifecycleEventOwner.getPluginMeta().getName());
 		this.pluginMeta = lifecycleEventOwner.getPluginMeta();
 		this.lifecycleEventOwner = lifecycleEventOwner;
 		fallbackToLatestNMS(true);
+	}
+
+	/**
+	 * Creates a new {@code CommandAPIPaperConfig} object
+	 *
+	 * @param plugin The {@link JavaPlugin} loading the CommandAPI during `onLoad`
+	 */
+	public static CommandAPIPaperConfig forPlugin(JavaPlugin plugin) {
+		return new CommandAPIPaperConfig(plugin);
+	}
+
+	/**
+	 * Creates a new {@code CommandAPIPaperConfig} object
+	 *
+	 * @param bootstrapContext The {@link BootstrapContext} loading the CommandAPI during `bootstrap`
+	 */
+	public static CommandAPIPaperConfig forBootstrap(BootstrapContext bootstrapContext) {
+		return new CommandAPIPaperConfig(bootstrapContext);
 	}
 
 	CommandAPIPaperConfig hookPaperReload(boolean hookPaperReload) {

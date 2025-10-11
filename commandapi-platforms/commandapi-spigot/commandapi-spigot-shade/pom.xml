@@ -47,8 +47,8 @@
 						<configuration>
 							<promoteTransitiveDependencies>true</promoteTransitiveDependencies>
 							<createSourcesJar>true</createSourcesJar>
-							<!-- Remove commandapi-core's and commandapi-bukkit-core's VersionHandler in favor of ours which
-								loads CommandAPIPaper for the current version -->
+							<!-- Remove commandapi-core's VersionHandler in favor of ours which
+								 loads CommandAPISpigot for the current version -->
 							<filters>
 								<filter>
 									<artifact>dev.jorel:commandapi-core</artifact>

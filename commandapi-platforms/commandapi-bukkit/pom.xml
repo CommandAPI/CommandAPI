@@ -25,6 +25,9 @@
 		<module>commandapi-bukkit-plugin-common</module>
 		<module>commandapi-bukkit-networking-plugin</module>
 
+		<!-- Combined shade dependency -->
+		<module>commandapi-bukkit-shade-modules</module>
+
 		<!-- Test toolkit -->
 		<module>commandapi-bukkit-test-toolkit</module>
 

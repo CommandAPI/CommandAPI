@@ -36,7 +36,7 @@ public class MockCommandAPIPlugin extends JavaPlugin {
 
 	@Override
 	public void onLoad() {
-		CommandAPIPaperConfig config = new CommandAPIPaperConfig(this);
+		CommandAPIPaperConfig config = CommandAPIPaperConfig.forPlugin(this);
 
 		if (configureSettings != null) {
 			configureSettings.accept(config);

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>dev.jorel</groupId>
+		<artifactId>commandapi-bukkit-shade-modules</artifactId>
+		<version>11.0.0</version>
+	</parent>
+
+	<artifactId>commandapi-spigot-shade-relocated</artifactId>
+	<name>Spigot shade library relocated</name>
+
+	<repositories>
+		<repository>
+			<id>codemc-repo</id>
+			<url>https://repo.codemc.io/repository/nms/</url>
+		</repository>
+	</repositories>
+
+	<dependencies>
+		<!-- CommandAPI -->
+		<dependency>
+			<groupId>dev.jorel</groupId>
+			<artifactId>commandapi-spigot-shade</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<!-- Spigot API for checking the version -->
+		<dependency>
+			<groupId>org.spigotmc</groupId>
+			<artifactId>spigot-api</artifactId>
+			<version>${spigot.api.version.common}</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>normal</id>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<!-- By default, the transitive dependencies are included as well,
+							     which is weird because they define second copies of the classes.
+							     All the classes are included inside the commandapi-spigot-shade anyway. -->
+							<artifactSet>
+								<includes>
+									<include>dev.jorel:commandapi-spigot-shade</include>
+								</includes>
+							</artifactSet>
+							<relocations>
+								<!-- Relocate spigot-mapped version of Bukkit NMS classes so they
+									 don't conflict with mojang-mapped NMS classes -->
+								<relocation>
+									<pattern>dev.jorel.commandapi.nms</pattern>
+									<shadedPattern>dev.jorel.commandapi.nms.spigot</shadedPattern>
+									<includes>
+										<include>dev.jorel.commandapi.nms.NMS_**</include>
+										<include>dev.jorel.commandapi.nms.NativeProxyCommandSender_**</include>
+									</includes>
+								</relocation>
+							</relocations>
+							<!-- Remove the standard VersionHandlers in favor of ours which
+								loads CommandAPISpigot for the current version -->
+							<filters>
+								<filter>
+									<artifact>dev.jorel:commandapi-spigot-shade</artifact>
+									<excludes>
+										<exclude>dev/jorel/commandapi/CommandAPIVersionHandler**</exclude>
+										<exclude>dev/jorel/commandapi/MojangMappedVersionHandler**</exclude>
+									</excludes>
+								</filter>
+							</filters>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

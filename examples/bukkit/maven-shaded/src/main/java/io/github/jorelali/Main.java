@@ -17,7 +17,7 @@ public class Main extends JavaPlugin {
 		// Load the CommandAPI
 		CommandAPI.onLoad(
 			// Configure the CommandAPI
-			new CommandAPIPaperConfig(this)
+			CommandAPIPaperConfig.forPlugin(this)
 				// Turn on verbose output for command registration logs
 				.verboseOutput(true)
 				// Give file where Brigadier's command registration tree should be dumped

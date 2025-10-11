@@ -11,7 +11,7 @@ public class Main extends JavaPlugin {
 	@Override
 	public void onLoad() {
 		// Load CommandAPI as usual
-		CommandAPI.onLoad(new CommandAPIPaperConfig(this));
+		CommandAPI.onLoad(CommandAPIPaperConfig.forPlugin(this));
 	}
 
 	@Override

@@ -1,26 +1,12 @@
 package dev.jorel.commandapi;
 
 import dev.jorel.commandapi.exceptions.UnsupportedVersionException;
-import dev.jorel.commandapi.nms.APITypeProvider;
-import dev.jorel.commandapi.nms.PaperNMS;
-import dev.jorel.commandapi.nms.PaperNMS_1_20_R4;
-import dev.jorel.commandapi.nms.PaperNMS_1_21_R1;
-import dev.jorel.commandapi.nms.PaperNMS_1_21_R2;
-import dev.jorel.commandapi.nms.PaperNMS_1_21_R3;
-import dev.jorel.commandapi.nms.PaperNMS_1_21_R4;
-import dev.jorel.commandapi.nms.PaperNMS_1_21_R5;
-import dev.jorel.commandapi.nms.PaperNMS_1_21_R6;
+import dev.jorel.commandapi.nms.*;
 import io.papermc.paper.ServerBuildInfo;
 
-public abstract class CommandAPIVersionHandler {
-	static LoadContext getPlatform(CommandAPIConfig<?> config) {
-		InternalPaperConfig internalPaperConfig;
-		if (config instanceof CommandAPIPaperConfig paperConfig) {
-			internalPaperConfig = new InternalPaperConfig(paperConfig);
-		} else {
-			throw new IllegalArgumentException("CommandAPIPaper was loaded with non-Paper config!");
-		}
-
+public class CommandAPIPaperVersionHandler {
+	// Copied from commandapi-paper-vh
+	static LoadContext loadPaper(InternalPaperConfig internalPaperConfig) {
 		try {
 			ServerBuildInfo buildInfo = ServerBuildInfo.buildInfo();
 			String version = buildInfo.minecraftVersionId();
@@ -54,13 +40,13 @@ public abstract class CommandAPIVersionHandler {
 			version = buildInfo.asString(ServerBuildInfo.StringRepresentation.VERSION_SIMPLE);
 			throw new UnsupportedVersionException(version);
 		} catch (Throwable error) {
-			if (error instanceof ClassNotFoundException cnfe) {
-				// Thrown when users use versions before the ServerBuildInfo was added. We should inform them
-				// to update since Paper 1.20.6 was experimental then anyway
-				throw new IllegalStateException("The CommandAPI doesn't support any version before Paper 1.20.6 build 79. Please update your server!", cnfe);
-			} else {
-				throw error;
-			}
+			// Something went sideways when trying to load a platform. This probably means we're shading the wrong mappings.
+			// Because this is an error we'll just rethrow this (instead of piping it into logError, which we can't really
+			// do anyway since the CommandAPILogger isn't loaded), but include some helpful(?) logging that might point
+			// users in the right direction
+			throw new IllegalStateException("The CommandAPI's NMS hook failed to load! This version of the CommandAPI is " +
+				(MojangMappedVersionHandler.isMojangMapped() ? "Mojang" : "Spigot") + "-mapped. Have you checked that " +
+				"you are using a CommandAPI version that matches the mappings that your plugin is using?", error);
 		}
 	}
 }

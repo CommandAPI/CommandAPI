@@ -46,7 +46,7 @@ public class CommandAPIMain extends JavaPlugin {
 		// Read config file
 		saveDefaultConfig();
 		FileConfiguration fileConfig = getConfig();
-		CommandAPIPaperConfig config = new CommandAPIPaperConfig(this)
+		CommandAPIPaperConfig config = CommandAPIPaperConfig.forPlugin(this)
 			.verboseOutput(fileConfig.getBoolean("verbose-outputs"))
 			.silentLogs(fileConfig.getBoolean("silent-logs"))
 			.fallbackToLatestNMS(fileConfig.getBoolean("fallback-to-latest-nms"))

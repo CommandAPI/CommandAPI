@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>dev.jorel</groupId>
+		<artifactId>commandapi-bukkit-shade-collected</artifactId>
+		<version>11.0.0</version>
+	</parent>
+
+	<artifactId>commandapi-bukkit-shade</artifactId>
+	<name>Spigot and Paper shade library</name>
+
+	<repositories>
+		<repository>
+			<id>codemc-repo</id>
+			<url>https://repo.codemc.io/repository/nms/</url>
+		</repository>
+	</repositories>
+
+	<dependencies>
+		<!-- Relocated versions of the Spigot and Paper modules to avoid conflicts -->
+		<dependency>
+			<groupId>dev.jorel</groupId>
+			<artifactId>commandapi-paper-shade-relocated</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>dev.jorel</groupId>
+			<artifactId>commandapi-spigot-shade-relocated</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<!-- Spigot API for JavaPlugin -->
+		<dependency>
+			<groupId>org.spigotmc</groupId>
+			<artifactId>spigot-api</artifactId>
+			<version>${spigot.api.version.common}</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>normal</id>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<!-- By default, the transitive dependencies are included as well,
+							     which is weird because they define second copies of the classes.
+							     The only classes we want are inside the commandapi-paper-shade-relocated. -->
+							<artifactSet>
+								<includes>
+									<include>dev.jorel:commandapi-paper-shade-relocated</include>
+									<include>dev.jorel:commandapi-spigot-shade-relocated</include>
+								</includes>
+							</artifactSet>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

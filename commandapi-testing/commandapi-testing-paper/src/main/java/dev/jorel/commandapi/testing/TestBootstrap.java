@@ -13,7 +13,7 @@ public class TestBootstrap implements PluginBootstrap {
 
 	@Override
 	public void bootstrap(@NotNull BootstrapContext bootstrapContext) {
-		CommandAPI.onLoad(new CommandAPIPaperConfig(bootstrapContext).verboseOutput(true));
+		CommandAPI.onLoad(CommandAPIPaperConfig.forBootstrap(bootstrapContext).verboseOutput(true));
 
 		new CommandAPICommand("bootstrap")
 			.executes(info -> {
