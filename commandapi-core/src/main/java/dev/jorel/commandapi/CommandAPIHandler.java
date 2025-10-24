@@ -98,6 +98,16 @@ extends AbstractArgument<?, ?, Argument, CommandSender>
 	public static <CommandSource> String getRawArgumentInput(CommandContext<CommandSource> cmdCtx, String key) {
 		final ParsedArgument<?, ?> parsedArgument = commandContextArguments.get(cmdCtx).get(key);
 
+		// Hotfix for https://github.com/CommandAPI/CommandAPI/issues/673.
+		//  MultiLiteralArguments are converted into multiple literal nodes.
+		//  Literal nodes are stored in the commandContextArguments by their literal string,
+		//  not the MultiLiteralArgument's node name, so parsedArgument will be null.
+		//  This isn't really a problem, since the raw input string is the same as
+		//  the parsed result for literals. But, dev/command-build-rewrite should fix this.
+		if (parsedArgument == null) {
+			return "";
+		}
+
 		// Sanity check: See https://github.com/JorelAli/CommandAPI/wiki/Implementation-details#chatcomponentargument-raw-arguments
 		StringRange range = parsedArgument.getRange();
 		if (range.getEnd() > cmdCtx.getInput().length()) {
