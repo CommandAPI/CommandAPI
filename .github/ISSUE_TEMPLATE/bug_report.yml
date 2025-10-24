@@ -20,6 +20,12 @@ body:
       description: What version of Minecraft are you using? _(If using a minor version that isn't specified, such as 1.18.1, just select the latest version below it such as 1.18)_
       multiple: false
       options:
+        - "1.21.10"
+        - "1.21.9"
+        - "1.21.8"
+        - "1.21.7"
+        - "1.21.6"
+        - "1.21.5"
         - "1.21.4"
         - "1.21.3"
         - "1.21.2"
