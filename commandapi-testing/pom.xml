@@ -13,9 +13,4 @@
 	<name>Collection of testing plugins for different platforms</name>
 	<packaging>pom</packaging>
 
-	<modules>
-		<module>commandapi-testing-paper</module>
-		<module>commandapi-testing-spigot</module>
-	</modules>
-
 </project>
