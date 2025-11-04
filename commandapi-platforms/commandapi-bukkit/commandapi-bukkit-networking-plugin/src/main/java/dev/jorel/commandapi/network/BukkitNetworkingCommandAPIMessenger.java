@@ -1,8 +1,6 @@
 package dev.jorel.commandapi.network;
 
-import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPINetworkingMain;
-import dev.jorel.commandapi.exceptions.ProtocolVersionTooOldException;
 import dev.jorel.commandapi.network.packets.SetVersionPacket;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -102,20 +100,13 @@ public class BukkitNetworkingCommandAPIMessenger extends CommandAPIMessenger<Pla
 	}
 
 	@Override
-	public void sendPacket(Player target, CommandAPIPacket packet) {
-		try {
-			super.sendPacket(target, packet);
-		} catch (ProtocolVersionTooOldException exception) {
-			if (CommandAPI.getConfiguration().shouldErrorOnFailedPacketSends()) {
-				throw exception;
-			} else {
-				CommandAPI.logWarning(exception.getMessage());
-			}
-		}
+	public void sendRawBytes(CommandAPIProtocol protocol, Player target, byte[] bytes) {
+		target.sendPluginMessage(this.plugin, protocol.getChannelIdentifier(), bytes);
 	}
 
 	@Override
-	public void sendRawBytes(CommandAPIProtocol protocol, Player target, byte[] bytes) {
-		target.sendPluginMessage(this.plugin, protocol.getChannelIdentifier(), bytes);
+	protected void handlePacketException(RuntimeException exception) {
+		// No config file or logger yet for the networking plugin
+		throw exception;
 	}
 }
