@@ -59,28 +59,32 @@ public abstract class CommandAPIMessenger<InputChannel, OutputChannel> {
 
 		FriendlyByteBuffer buffer = new FriendlyByteBuffer(input);
 
-		int id;
-		CommandAPIPacket packet;
 		try {
-			// Read the id
-			id = buffer.readVarInt();
-			// Use the id and protocol to find and use the correct deserialize method
-			packet = protocol.createPacket(id, buffer);
-		} catch (IllegalStateException e) {
-			throw new IllegalStateException("Exception while reading packet", e);
-		}
-		if (packet == null) throw new IllegalStateException("Unknown packet id: " + id);
+			int id;
+			CommandAPIPacket packet;
+			try {
+				// Read the id
+				id = buffer.readVarInt();
+				// Use the id and protocol to find and use the correct deserialize method
+				packet = protocol.createPacket(id, buffer);
+			} catch (IllegalStateException e) {
+				throw new IllegalStateException("Exception while reading packet", e);
+			}
+			if (packet == null) throw new IllegalStateException("Unknown packet id: " + id);
 
-		if (buffer.countReadableBytes() != 0) {
-			// If the packet didn't read all the bytes it was given, we have a strange miscommunication
-			throw new IllegalStateException(
-				"Packet was larger than expected! " + buffer.countReadableBytes() + " extra byte(s) found after deserializing.\n" +
-					"Given: " + Arrays.toString(input) + ", Read: " + packet
-			);
-		}
+			if (buffer.countReadableBytes() != 0) {
+				// If the packet didn't read all the bytes it was given, we have a strange miscommunication
+				throw new IllegalStateException(
+					"Packet was larger than expected! " + buffer.countReadableBytes() + " extra byte(s) found after deserializing.\n" +
+						"Given: " + Arrays.toString(input) + ", Read: " + packet
+				);
+			}
 
-		// Handle the packet
-		packetHandlerProvider.getHandlerForProtocol(protocol).handlePacket(sender, packet);
+			// Handle the packet
+			packetHandlerProvider.getHandlerForProtocol(protocol).handlePacket(sender, packet);
+		} catch (RuntimeException exception) {
+			handlePacketException(exception);
+		}
 	}
 
 	/**
@@ -119,7 +123,8 @@ public abstract class CommandAPIMessenger<InputChannel, OutputChannel> {
 		} catch (ProtocolVersionTooOldException exception) {
 			// Send the exception to the other side too, so they know to update their protocol version
 			this.sendPacket(target, new ProtocolVersionTooOldPacket(CommandAPIProtocol.PROTOCOL_VERSION, exception.getReason()));
-			throw exception;
+			handlePacketException(exception);
+			return;
 		}
 
 		// Send the bytes
@@ -134,4 +139,12 @@ public abstract class CommandAPIMessenger<InputChannel, OutputChannel> {
 	 * @param bytes    The array of bytes to send.
 	 */
 	protected abstract void sendRawBytes(CommandAPIProtocol protocol, OutputChannel target, byte[] bytes);
+
+	/**
+	 * Called when there is an exception while sending or receiving a packet.
+	 * May rethrow the exception or log it in another manner.
+	 *
+	 * @param exception The exception that was thrown.
+	 */
+	protected abstract void handlePacketException(RuntimeException exception);
 }

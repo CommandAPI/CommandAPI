@@ -41,13 +41,14 @@ public abstract class DefaultConfig {
 		}, false
 	);
 
-	public static final CommentedConfigOption<Boolean> ERROR_ON_FAILED_PACKET_SENDS = new CommentedConfigOption<>(
+	public static final CommentedConfigOption<Boolean> MAKE_NETWORKING_EXCEPTIONS_WARNINGS = new CommentedConfigOption<>(
 		new String[]{
-			"Throw an error when a packet fails to send (default: true)",
-			"If \"true\", the CommandAPI will throw an exception if it tries to send a packet but cannot",
-			"(likely due to the receiver not having a new enough CommandAPI version to receive it). If",
-			"\"false\", failed attempts to send a packet will be logged as a warning."
-		}, true
+			"Turn exceptions while sending and receiving packets into warnings (default: false)",
+			"If \"false\", the CommandAPI will throw an exception when receiving malformed packets",
+			"or if it tries to send a packet but cannot. If \"true\", these problems will be logged",
+			"as a warning, which does not include the stacktrace. Additionally, warnings can be hidden",
+			"by setting silent logs to \"true\"."
+		}, false
 	);
 
 	public static final CommentedSection SECTION_MESSAGE = new CommentedSection(

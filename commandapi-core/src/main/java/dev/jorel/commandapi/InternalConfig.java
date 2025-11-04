@@ -21,8 +21,6 @@
 package dev.jorel.commandapi;
 
 import java.io.File;
-import java.util.List;
-import java.util.function.Function;
 
 /**
  * Configuration wrapper class. The config.yml file used by the CommandAPI is
@@ -46,8 +44,8 @@ public class InternalConfig {
 	// The default command namespace
 	private final String namespace;
 
-	// Whether we should throw an exception when a packet cannot be sent
-	private final boolean errorOnFailedPacketSends;
+	// Whether we should log networking exceptions as warnings
+	private final boolean makeNetworkingExceptionsWarnings;
 
 	/**
 	 * Creates an {@link InternalConfig} from a {@link CommandAPIConfig}
@@ -60,7 +58,7 @@ public class InternalConfig {
 		this.messageMissingExecutorImplementation = config.missingExecutorImplementationMessage;
 		this.dispatcherFile = config.dispatcherFile;
 		this.namespace = config.namespace;
-		this.errorOnFailedPacketSends = config.errorOnFailedPacketSends;
+		this.makeNetworkingExceptionsWarnings = config.makeNetworkingExceptionsWarnings;
 	}
 
 	/**
@@ -101,9 +99,9 @@ public class InternalConfig {
 	}
 
 	/**
-	 * @return Whether an exception is thrown when a packet cannot be sent
+	 * @return Whether networking exceptions are logged as warnings
 	 */
-	public boolean shouldErrorOnFailedPacketSends() {
-		return this.errorOnFailedPacketSends;
+	public boolean makeNetworkingExceptionsWarnings() {
+		return this.makeNetworkingExceptionsWarnings;
 	}
 }

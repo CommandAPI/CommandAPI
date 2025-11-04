@@ -10,7 +10,6 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.messages.*;
 import dev.jorel.commandapi.CommandAPI;
-import dev.jorel.commandapi.exceptions.ProtocolVersionTooOldException;
 import dev.jorel.commandapi.network.packets.SetVersionPacket;
 
 import java.util.HashMap;
@@ -146,20 +145,16 @@ public class VelocityCommandAPIMessenger extends CommandAPIMessenger<ChannelMess
 	}
 
 	@Override
-	public void sendPacket(ChannelMessageSink target, CommandAPIPacket packet) {
-		try {
-			super.sendPacket(target, packet);
-		} catch (ProtocolVersionTooOldException exception) {
-			if (CommandAPI.getConfiguration().shouldErrorOnFailedPacketSends()) {
-				throw exception;
-			} else {
-				CommandAPI.logWarning(exception.getMessage());
-			}
-		}
+	public void sendRawBytes(CommandAPIProtocol protocol, ChannelMessageSink target, byte[] bytes) {
+		target.sendPluginMessage(MinecraftChannelIdentifier.from(protocol.getChannelIdentifier()), bytes);
 	}
 
 	@Override
-	public void sendRawBytes(CommandAPIProtocol protocol, ChannelMessageSink target, byte[] bytes) {
-		target.sendPluginMessage(MinecraftChannelIdentifier.from(protocol.getChannelIdentifier()), bytes);
+	protected void handlePacketException(RuntimeException exception) {
+		if (CommandAPI.getConfiguration().makeNetworkingExceptionsWarnings()) {
+			CommandAPI.logWarning(exception.getMessage());
+		} else {
+			throw exception;
+		}
 	}
 }

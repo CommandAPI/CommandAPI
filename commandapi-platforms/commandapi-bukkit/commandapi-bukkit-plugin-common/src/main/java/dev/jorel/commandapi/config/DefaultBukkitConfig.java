@@ -72,6 +72,7 @@ public class DefaultBukkitConfig extends DefaultConfig {
 		options.put("fallback-to-latest-nms", FALLBACK_TO_LATEST_NMS(true));
 		options.put("skip-initial-datapack-reload", SKIP_RELOAD_DATAPACKS); // TODO: Remove once the Paper plugin utilizes the bootstrapper
 		options.put("hook-paper-reload", HOOK_PAPER_RELOAD); // TODO: Remove once the Paper plugin utilizes the bootstrapper
+		options.put("make-networking-exceptions-warnings", MAKE_NETWORKING_EXCEPTIONS_WARNINGS);
 		options.put("plugins-to-convert", PLUGINS_TO_CONVERT);
 		options.put("other-commands-to-convert", OTHER_COMMANDS_TO_CONVERT);
 		options.put("skip-sender-proxy", SKIP_SENDER_PROXY);
@@ -90,7 +91,7 @@ public class DefaultBukkitConfig extends DefaultConfig {
 		options.put("create-dispatcher-json", CREATE_DISPATCHER_JSON);
 		options.put("fallback-to-latest-nms", FALLBACK_TO_LATEST_NMS(false));
 		options.put("skip-initial-datapack-reload", SKIP_RELOAD_DATAPACKS);
-		options.put("error-on-failed-packet-sends", ERROR_ON_FAILED_PACKET_SENDS);
+		options.put("make-networking-exceptions-warnings", MAKE_NETWORKING_EXCEPTIONS_WARNINGS);
 		options.put("plugins-to-convert", PLUGINS_TO_CONVERT);
 		options.put("other-commands-to-convert", OTHER_COMMANDS_TO_CONVERT);
 		options.put("skip-sender-proxy", SKIP_SENDER_PROXY);

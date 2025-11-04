@@ -21,9 +21,6 @@
 package dev.jorel.commandapi;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Function;
 
 /**
  * A class to contain information about how to configure the CommandAPI during its loading step.
@@ -45,7 +42,7 @@ extends CommandAPIConfig<Impl>
 	boolean usePluginNamespace = false;
 	String namespace = null;
 
-	boolean errorOnFailedPacketSends;
+	boolean makeNetworkingExceptionsWarnings;
 
 	/**
 	 * Sets verbose output logging for the CommandAPI if true.
@@ -116,14 +113,14 @@ extends CommandAPIConfig<Impl>
 	}
 
 	/**
-	 * Sets whether the CommandAPI should throw an exception if it cannot send a packet.
-	 * If false, the problem will be logged as a warning instead.
+	 * Sets whether the CommandAPI should throw an exception if it cannot send or receive a packet.
+	 * If true, the problem will be logged as a warning instead.
 	 *
-	 * @param value Whether an exception should be thrown when a packet cannot be sent
+	 * @param value Whether networking exceptions should be logged as warnings.
 	 * @return this CommandAPIConfig
 	 */
-	public Impl errorOnFailedPacketSends(boolean value) {
-		this.errorOnFailedPacketSends = value;
+	public Impl makeNetworkingExceptionsWarnings(boolean value) {
+		this.makeNetworkingExceptionsWarnings = value;
 		return instance();
 	}
 }
