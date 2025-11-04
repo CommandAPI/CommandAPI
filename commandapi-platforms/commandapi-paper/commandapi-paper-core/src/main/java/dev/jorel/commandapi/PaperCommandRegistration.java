@@ -38,7 +38,7 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 
 	private final List<UnregisterInformation> unregisterInformationList = new ArrayList<>();
 
-	private boolean canRegisterTask = true;
+	private boolean scheduleReloadTask = true;
 
 	public PaperCommandRegistration(Supplier<CommandDispatcher<Source>> getBrigadierDispatcher, Predicate<CommandNode<Source>> isBukkitCommand) {
 		this.getBrigadierDispatcher = getBrigadierDispatcher;
@@ -68,19 +68,18 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 		LiteralCommandNode<Source> built = node.build();
 		addCommandToDispatcher((LiteralCommandNode<CommandSourceStack>) built);
 		if (!namespace.equals(CommandAPIPaper.getConfiguration().getPluginName().toLowerCase())) {
-			String pluginNameLower = CommandAPIPaper.getConfiguration().getPluginName().toLowerCase();
-			LiteralCommandNode<Source> builtNamespace = CommandAPIHandler.getInstance().namespaceNode(node.build(), namespace);
-			String pluginNamespacedWithoutNamespace = pluginNameLower + ":" + built.getName();
-			String pluginNamespacedWithNamespace = pluginNameLower + ":" + builtNamespace.getName();
+			// Register the namespace ourselves
+			String defaultNamespace = CommandAPIPaper.getConfiguration().getPluginName().toLowerCase();
+			LiteralCommandNode<Source> builtNamespace = CommandAPIHandler.getInstance().namespaceNode(built, namespace);
+			addCommandToDispatcher((LiteralCommandNode<CommandSourceStack>) builtNamespace);
+
+			// Paper will register commands using the plugin namespace, but we don't want that here
+			String pluginNamespacedWithoutNamespace = defaultNamespace + ":" + built.getName();
+			String pluginNamespacedWithNamespace = defaultNamespace + ":" + builtNamespace.getName();
 			commandsToRemove.add(pluginNamespacedWithoutNamespace);
 			commandsToRemove.add(pluginNamespacedWithNamespace);
-			addCommandToDispatcher((LiteralCommandNode<CommandSourceStack>) builtNamespace);
 		}
-		if (!CommandAPI.canRegister() && canRegisterTask) {
-			// Since we register commands into our dispatchers, we need to run the lifecycle events again
-			// This can happen when using /minecraft:reload or this method
-			registerTask();
-		}
+		scheduleReloadTask();
 		return built;
 	}
 
@@ -105,9 +104,7 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 
 		// Remove from real dispatcher when rebuilding commands
 		unregisterInformationList.add(new UnregisterInformation(commandName, unregisterNamespaces, unregisterBukkit));
-		if (!CommandAPI.canRegister() && canRegisterTask) {
-			registerTask();
-		}
+		scheduleReloadTask();
 	}
 
 	@Override
@@ -152,9 +149,6 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 				LiteralCommandNode<CommandSourceStack> node = (LiteralCommandNode<CommandSourceStack>) commandNode;
 				event.registrar().register(node, getDescription(node.getLiteral()));
 			}
-			if (commandsToRemove.isEmpty()) {
-				return;
-			}
 			for (String commandName : commandsToRemove) {
 				removeBrigadierCommands(getBrigadierDispatcher().getRoot(), commandName, false, c -> true);
 			}
@@ -164,11 +158,16 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 		}).priority(2));
 	}
 
-	private void registerTask() {
-		canRegisterTask = false;
+	private void scheduleReloadTask() {
+		if (CommandAPI.canRegister() || !scheduleReloadTask) {
+			// The server is currently starting or a task has already been scheduled
+			// Either way, we don't want to schedule the task now
+			return;
+		}
+		scheduleReloadTask = false;
 		Bukkit.getScheduler().scheduleSyncDelayedTask(CommandAPIPaper.getPaper().getPlugin(), () -> {
 			Bukkit.reloadData();
-			canRegisterTask = true;
+			scheduleReloadTask = true;
 		}, 1);
 	}
 
