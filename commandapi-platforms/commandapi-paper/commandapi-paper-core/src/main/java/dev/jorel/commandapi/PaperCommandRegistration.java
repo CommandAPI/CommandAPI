@@ -38,6 +38,8 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 
 	private final List<UnregisterInformation> unregisterInformationList = new ArrayList<>();
 
+	private boolean canRegisterTask = true;
+
 	public PaperCommandRegistration(Supplier<CommandDispatcher<Source>> getBrigadierDispatcher, Predicate<CommandNode<Source>> isBukkitCommand) {
 		this.getBrigadierDispatcher = getBrigadierDispatcher;
 		this.isBukkitCommand = isBukkitCommand;
@@ -74,10 +76,10 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 			commandsToRemove.add(pluginNamespacedWithNamespace);
 			addCommandToDispatcher((LiteralCommandNode<CommandSourceStack>) builtNamespace);
 		}
-		if (!CommandAPI.canRegister()) {
+		if (!CommandAPI.canRegister() && canRegisterTask) {
 			// Since we register commands into our dispatchers, we need to run the lifecycle events again
 			// This can happen when using /minecraft:reload or this method
-			Bukkit.reloadData();
+			registerTask();
 		}
 		return built;
 	}
@@ -103,8 +105,8 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 
 		// Remove from real dispatcher when rebuilding commands
 		unregisterInformationList.add(new UnregisterInformation(commandName, unregisterNamespaces, unregisterBukkit));
-		if (!CommandAPI.canRegister()) {
-			Bukkit.reloadData();
+		if (!CommandAPI.canRegister() && canRegisterTask) {
+			registerTask();
 		}
 	}
 
@@ -160,6 +162,14 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 			// Update the dispatcher file
 			CommandAPIHandler.getInstance().writeDispatcherToFile();
 		}).priority(2));
+	}
+
+	private void registerTask() {
+		canRegisterTask = false;
+		Bukkit.getScheduler().scheduleSyncDelayedTask(CommandAPIPaper.getPaper().getPlugin(), () -> {
+			Bukkit.reloadData();
+			canRegisterTask = true;
+		}, 1);
 	}
 
 	private String getDescription(String commandName) {
