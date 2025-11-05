@@ -42,7 +42,8 @@ extends CommandAPIConfig<Impl>
 	boolean usePluginNamespace = false;
 	String namespace = null;
 
-	boolean makeNetworkingExceptionsWarnings;
+	boolean enableNetworking = false;
+	boolean makeNetworkingExceptionsWarnings = false;
 
 	/**
 	 * Sets verbose output logging for the CommandAPI if true.
@@ -109,6 +110,18 @@ extends CommandAPIConfig<Impl>
 		if (!usePluginNamespace) {
 			this.namespace = namespace;
 		}
+		return instance();
+	}
+
+	/**
+	 * Sets whether the CommandAPI's networking functionality should be enabled.
+	 * This is currently only useful for allowing command requirements on Velocity.
+	 *
+	 * @param enabled whether networking should be enabled
+	 * @return this CommandAPIConfig
+	 */
+	public Impl enableNetworking(boolean enabled) {
+		this.enableNetworking = enabled;
 		return instance();
 	}
 

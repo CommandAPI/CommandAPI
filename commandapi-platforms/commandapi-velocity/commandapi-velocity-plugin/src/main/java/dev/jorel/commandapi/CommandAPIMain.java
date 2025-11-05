@@ -62,6 +62,7 @@ public class CommandAPIMain {
 			.silentLogs(configYAML.node("silent-logs").getBoolean())
 			.missingExecutorImplementationMessage(configYAML.node("messages", "missing-executor-implementation").getString())
 			.dispatcherFile(configYAML.node("create-dispatcher-json").getBoolean() ? new File(dataDirectory.toFile(), "command_registration.json") : null)
+			.enableNetworking(configYAML.node("enable-networking").getBoolean())
 			.makeNetworkingExceptionsWarnings(configYAML.node("make-networking-exceptions-warnings").getBoolean());
 
 		// Load

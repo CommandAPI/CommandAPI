@@ -44,6 +44,9 @@ public class InternalConfig {
 	// The default command namespace
 	private final String namespace;
 
+	// Whether we should turn on networking
+	private final boolean enableNetworking;
+
 	// Whether we should log networking exceptions as warnings
 	private final boolean makeNetworkingExceptionsWarnings;
 
@@ -58,6 +61,7 @@ public class InternalConfig {
 		this.messageMissingExecutorImplementation = config.missingExecutorImplementationMessage;
 		this.dispatcherFile = config.dispatcherFile;
 		this.namespace = config.namespace;
+		this.enableNetworking = config.enableNetworking;
 		this.makeNetworkingExceptionsWarnings = config.makeNetworkingExceptionsWarnings;
 	}
 
@@ -96,6 +100,13 @@ public class InternalConfig {
 	 */
 	public String getNamespace() {
 		return namespace;
+	}
+
+	/**
+	 * @return Whether networking should be enabled
+	 */
+	public boolean isNetworkingEnabled() {
+		return enableNetworking;
 	}
 
 	/**
