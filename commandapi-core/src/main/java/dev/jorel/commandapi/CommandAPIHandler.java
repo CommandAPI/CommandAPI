@@ -122,7 +122,7 @@ extends AbstractArgument<?, ?, Argument, CommandSender>
 	private static final Map<ClassCache, Field> FIELDS = new HashMap<>();
 
 	final CommandAPIPlatform<Argument, CommandSender, Source> platform;
-	private CommandAPIMessenger<?, ?> messenger;
+	private CommandAPIMessenger<?, ?> messenger = null;
 
 	final TreeMap<String, CommandPermission> registeredPermissions = new TreeMap<>();
 	final List<RegisteredCommand> registeredCommands; // Keep track of what has been registered for type checking
@@ -154,13 +154,17 @@ extends AbstractArgument<?, ?, Argument, CommandSender>
 
 	public void onEnable() {
 		platform.onEnable();
-		// Setting up the network messenger usually requires registering
-		//  events, which often does not work until onEnable
-		messenger = platform.setupMessenger();
+
+		if (CommandAPI.getConfiguration().isNetworkingEnabled()) {
+			// Setting up the network messenger usually requires registering
+			//  events, which often does not work until onEnable
+			messenger = platform.setupMessenger();
+		}
 	}
 
 	public void onDisable() {
-		messenger.close();
+		if (messenger != null) messenger.close();
+
 		platform.onDisable();
 		CommandAPIHandler.resetInstance();
 	}

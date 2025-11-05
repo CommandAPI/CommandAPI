@@ -54,6 +54,7 @@ public class CommandAPIMain extends JavaPlugin {
 			.dispatcherFile(fileConfig.getBoolean("create-dispatcher-json") ? new File(getDataFolder(), "command_registration.json") : null)
 			.hookPaperReload(fileConfig.getBoolean("hook-paper-reload")) // TODO: Remove once this utilizes the bootstrapper
 			.skipInitialDatapackReload(fileConfig.getBoolean("skip-initial-datapack-reload")) // TODO: Remove once this utilizes the bootstrapper
+			.enableNetworking(fileConfig.getBoolean("enable-networking"))
 			.makeNetworkingExceptionsWarnings(fileConfig.getBoolean("make-networking-exceptions-warnings"));
 
 		for (String pluginName : fileConfig.getStringList("skip-sender-proxy")) {

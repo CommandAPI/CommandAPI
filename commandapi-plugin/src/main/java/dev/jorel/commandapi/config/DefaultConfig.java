@@ -41,6 +41,16 @@ public abstract class DefaultConfig {
 		}, false
 	);
 
+	public static final CommentedConfigOption<Boolean> ENABLE_NETWORKING = new CommentedConfigOption<>(
+		new String[]{
+			"Turn on the CommandAPI's plugin messaging functionality (default: false)",
+			"If \"false\", the CommandAPI will not listen to incoming plugin messages",
+			"and attempts to send plugin messages will fail. Enabling networking by",
+			"setting this to \"true\" is currently only useful for allowing command",
+			"requirements on Velocity."
+		}, false
+	);
+
 	public static final CommentedConfigOption<Boolean> MAKE_NETWORKING_EXCEPTIONS_WARNINGS = new CommentedConfigOption<>(
 		new String[]{
 			"Turn exceptions while sending and receiving packets into warnings (default: false)",
