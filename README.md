@@ -392,6 +392,18 @@ This is the current roadmap for the CommandAPI (as of 3rd October 2025):
     </thead>
     <tbody>
         <tr>
+            <td valign="top"><b>11.0.1</b></td>
+            <td valign="top">???</td>
+            <td valign="top">
+                <b>Bug Fixes:</b>
+                <ul>
+                    <li>Fixes replacing a command by calling <code>CommandAPI.unregister()</code> not working under certain circumstances</li>
+                    <li>Fixes custom namespaces not working</li>
+                    <li>Fixes an issue where registering or unregistering many commands at runtime could time out the server</li>
+                </ul>
+           </td>
+        </tr>
+        <tr>
             <td valign="top"><b>11.0.0</b></td>
             <td valign="top">October 2025</td>
             <td valign="top">
