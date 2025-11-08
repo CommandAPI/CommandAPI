@@ -159,6 +159,9 @@
 		<paper.version.1.21.8>1.21.8-R0.1-20250906.215025-55</paper.version.1.21.8>
 		<paper.version.1.21.9>1.21.9-R0.1-20251003.181801-9</paper.version.1.21.9>
 
+		<!-- Paper Snapshot Version -->
+		<current.snapshot.version>25w45a</current.snapshot.version>
+
 		<auto-service.version>1.0.1</auto-service.version>
 
 		<!-- sonarcloud CI -->

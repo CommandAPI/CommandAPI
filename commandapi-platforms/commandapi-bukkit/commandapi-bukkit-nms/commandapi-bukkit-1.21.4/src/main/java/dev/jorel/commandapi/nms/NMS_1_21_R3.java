@@ -282,6 +282,11 @@ public class NMS_1_21_R3 extends NMS_Common {
 		return ResourceArgument.resource(commandBuildContext.get(), Registries.ENCHANTMENT);
 	}
 
+	@Override
+	public final ArgumentType<?> _ArgumentMinecraftKeyRegistered() {
+		return ResourceLocationArgument.id();
+	}
+
 	@Differs(from = "1.21.1", by = "New recipe argument implementation")
 	@Override
 	public ArgumentType<?> _ArgumentRecipe() {

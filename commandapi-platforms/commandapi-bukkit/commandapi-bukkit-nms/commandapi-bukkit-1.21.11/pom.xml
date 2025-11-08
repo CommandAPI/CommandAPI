@@ -30,7 +30,6 @@
 
 	<properties>
 		<minecraft.mappings>1.21.9-R0.1-SNAPSHOT</minecraft.mappings>
-		<current.version>25w45a</current.version>
 	</properties>
 
 	<repositories>
@@ -78,21 +77,39 @@
 <!--		</dependency>-->
 		<!-- Libraries -->
 		<dependency>
-			<groupId>io.papermc.paper</groupId>
-			<artifactId>paper-api</artifactId>
-			<version>${current.version}-R0.1-SNAPSHOT</version>
+			<groupId>ca.bkaw.nms</groupId>
+			<artifactId>paper-snapshot-nms</artifactId>
+			<version>${current.snapshot.version}-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>ca.bkaw.nms</groupId>
-			<artifactId>paper-snapshot-nms</artifactId>
-			<version>${current.version}-SNAPSHOT</version>
+			<groupId>io.papermc.paper</groupId>
+			<artifactId>paper-api</artifactId>
+			<version>${current.snapshot.version}-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.mojang</groupId>
 			<artifactId>datafixerupper</artifactId>
 			<version>8.0.16</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.mojang</groupId>
+			<artifactId>authlib</artifactId>
+			<version>7.0.61</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.mojang</groupId>
+			<artifactId>jtracy</artifactId>
+			<version>1.0.36</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.jopt-simple</groupId>
+			<artifactId>jopt-simple</artifactId>
+			<version>6.0-alpha-3</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -144,7 +161,7 @@
 						<artifact>
 							<groupId>io.papermc.paper</groupId>
 							<artifactId>dev-bundle</artifactId>
-							<version>${current.version}-R0.1-SNAPSHOT</version>
+							<version>${current.snapshot.version}-R0.1-SNAPSHOT</version>
 						</artifact>
 					</devBundle>
 				</configuration>

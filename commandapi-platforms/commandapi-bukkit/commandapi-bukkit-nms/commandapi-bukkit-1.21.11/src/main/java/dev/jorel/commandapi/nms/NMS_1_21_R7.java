@@ -301,6 +301,11 @@ public class NMS_1_21_R7 extends NMS_Common {
 	}
 
 	@Override
+	public final ArgumentType<?> _ArgumentMinecraftKeyRegistered() {
+		return IdentifierArgument.id();
+	}
+
+	@Override
 	public ArgumentType<?> _ArgumentRecipe() {
 		return ResourceKeyArgument.key(Registries.RECIPE);
 	}

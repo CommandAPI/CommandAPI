@@ -14,7 +14,6 @@
 
 	<properties>
 		<minecraft.mappings>1.21.9-R0.1-SNAPSHOT</minecraft.mappings>
-		<current.version>25w45a</current.version>
 	</properties>
 
 	<repositories>
@@ -48,13 +47,13 @@
 		<dependency>
 			<groupId>ca.bkaw.nms</groupId>
 			<artifactId>paper-snapshot-nms</artifactId>
-			<version>${current.version}-SNAPSHOT</version>
+			<version>${current.snapshot.version}-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.papermc.paper</groupId>
 			<artifactId>paper-api</artifactId>
-			<version>${current.version}-R0.1-SNAPSHOT</version>
+			<version>${current.snapshot.version}-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -97,7 +96,7 @@
 						<artifact>
 							<groupId>io.papermc.paper</groupId>
 							<artifactId>dev-bundle</artifactId>
-							<version>${current.version}-R0.1-SNAPSHOT</version>
+							<version>${current.snapshot.version}-R0.1-SNAPSHOT</version>
 						</artifact>
 					</devBundle>
 				</configuration>

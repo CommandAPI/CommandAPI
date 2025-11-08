@@ -257,6 +257,11 @@ public class NMS_1_21_R1 extends NMS_Common {
 	}
 
 	@Override
+	public final ArgumentType<?> _ArgumentMinecraftKeyRegistered() {
+		return ResourceLocationArgument.id();
+	}
+
+	@Override
 	public ArgumentType<?> _ArgumentRecipe() {
 		return ResourceLocationArgument.id();
 	}

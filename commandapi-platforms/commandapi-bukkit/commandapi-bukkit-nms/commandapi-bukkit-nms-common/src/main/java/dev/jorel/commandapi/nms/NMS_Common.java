@@ -47,7 +47,6 @@ import net.minecraft.commands.arguments.OperationArgument;
 import net.minecraft.commands.arguments.ParticleArgument;
 import net.minecraft.commands.arguments.RangeArgument;
 import net.minecraft.commands.arguments.ResourceArgument;
-import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.commands.arguments.ScoreHolderArgument;
 import net.minecraft.commands.arguments.ScoreboardSlotArgument;
 import net.minecraft.commands.arguments.TeamArgument;
@@ -67,21 +66,15 @@ import net.minecraft.commands.arguments.item.ItemPredicateArgument;
 import net.minecraft.commands.synchronization.ArgumentUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ColumnPos;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.phys.Vec3;
 import org.bukkit.Axis;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.NamespacedKey;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 
 import java.io.File;
@@ -177,11 +170,6 @@ public abstract class NMS_Common implements NMS<CommandSourceStack> {
 	@Override
 	public final ArgumentType<?> _ArgumentMathOperation() {
 		return OperationArgument.operation();
-	}
-
-	@Override
-	public final ArgumentType<?> _ArgumentMinecraftKeyRegistered() {
-		return ResourceLocationArgument.id();
 	}
 
 	@Override
