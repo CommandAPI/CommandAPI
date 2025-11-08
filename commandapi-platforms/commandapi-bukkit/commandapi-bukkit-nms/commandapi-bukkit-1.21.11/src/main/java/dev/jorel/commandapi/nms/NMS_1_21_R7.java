@@ -210,9 +210,9 @@ import java.util.function.ToIntFunction;
 // Mojang-Mapped reflection
 
 /**
- * NMS implementation for Minecraft 1.21.9
+ * NMS implementation for Minecraft 1.21.11
  */
-@NMSMeta(compatibleWith = {"1.21.9"})
+@NMSMeta(compatibleWith = {"1.21.11"})
 @RequireField(in = SimpleHelpMap.class, name = "helpTopics", ofType = Map.class)
 @RequireField(in = EntitySelector.class, name = "usesSelector", ofType = boolean.class)
 // @RequireField(in = ItemInput.class, name = "tag", ofType = CompoundTag.class)
@@ -317,7 +317,7 @@ public class NMS_1_21_R7 extends NMS_Common {
 
 	@Override
 	public String[] compatibleVersions() {
-		return new String[]{"1.21.6", "1.21.7", "1.21.8"};
+		return new String[]{"1.21.11"};
 	}
 
 	private String serializeNMSItemStack(ItemStack is) {
