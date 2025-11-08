@@ -211,6 +211,10 @@ public class NMS_1_20_R2 extends NMS_Common {
 		blockInputTag = SafeVarHandle.ofOrNull(BlockInput.class, "c", "tag", CompoundTag.class);
 	}
 
+	public NamespacedKey fromResourceLocation(ResourceLocation key) {
+		return NamespacedKey.fromString(key.getNamespace() + ":" + key.getPath());
+	}
+
 	@Override
 	protected CommandBuildContext getCommandBuildContext() {
 		return COMMAND_BUILD_CONTEXT;

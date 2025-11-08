@@ -36,6 +36,7 @@
 	<modules>
 		<!-- NMS versions -->
 		<module>commandapi-bukkit-nms-common</module>
+		<module>commandapi-bukkit-1.21.11</module>
 		<module>commandapi-bukkit-1.21.9</module>
 		<module>commandapi-bukkit-1.21.6</module>
 		<module>commandapi-bukkit-1.21.5</module>

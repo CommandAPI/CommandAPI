@@ -257,6 +257,10 @@ public class NMS_1_21_R4 extends NMS_Common {
 		minecraftServerFuelValues = SafeVarHandle.ofOrNull(MinecraftServer.class, "aE", "fuelValues", FuelValues.class);
 	}
 
+	public NamespacedKey fromResourceLocation(ResourceLocation key) {
+		return NamespacedKey.fromString(key.getNamespace() + ":" + key.getPath());
+	}
+
 	@Override
 	protected CommandBuildContext getCommandBuildContext() {
 		return commandBuildContext.get();

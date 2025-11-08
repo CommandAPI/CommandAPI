@@ -232,6 +232,10 @@ public class NMS_1_21_R1 extends NMS_Common {
 		vanillaCommandDispatcherFieldExists = fieldExists;
 	}
 
+	public NamespacedKey fromResourceLocation(ResourceLocation key) {
+		return NamespacedKey.fromString(key.getNamespace() + ":" + key.getPath());
+	}
+
 	@Override
 	protected CommandBuildContext getCommandBuildContext() {
 		return commandBuildContext.get();

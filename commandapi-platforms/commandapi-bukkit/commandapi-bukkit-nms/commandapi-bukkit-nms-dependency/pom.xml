@@ -38,6 +38,11 @@
 		<!-- NMS-specific implementations -->
 		<dependency>
 			<groupId>dev.jorel</groupId>
+			<artifactId>commandapi-bukkit-1.21.11</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>dev.jorel</groupId>
 			<artifactId>commandapi-bukkit-1.21.9</artifactId>
 			<version>${project.version}</version>
 		</dependency>

@@ -105,9 +105,6 @@ import java.util.function.Predicate;
  * versions.
  */
 public abstract class NMS_Common implements NMS<CommandSourceStack> {
-	public NamespacedKey fromResourceLocation(ResourceLocation key) {
-		return NamespacedKey.fromString(key.getNamespace() + ":" + key.getPath());
-	}
 
 	protected abstract CommandBuildContext getCommandBuildContext();
 

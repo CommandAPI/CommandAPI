@@ -271,6 +271,10 @@ public class NMS_1_21_R6 extends NMS_Common {
 		return result.getFirst();
 	}
 
+	public NamespacedKey fromResourceLocation(ResourceLocation key) {
+		return NamespacedKey.fromString(key.getNamespace() + ":" + key.getPath());
+	}
+
 	@Override
 	protected CommandBuildContext getCommandBuildContext() {
 		return commandBuildContext.get();
