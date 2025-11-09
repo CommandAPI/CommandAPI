@@ -54,10 +54,10 @@ public abstract class CommandAPIVersionHandler {
 			version = buildInfo.asString(ServerBuildInfo.StringRepresentation.VERSION_SIMPLE);
 			throw new UnsupportedVersionException(version);
 		} catch (Throwable error) {
-			if (error instanceof ClassNotFoundException cnfe) {
+			if (error instanceof NoClassDefFoundError) {
 				// Thrown when users use versions before the ServerBuildInfo was added. We should inform them
 				// to update since Paper 1.20.6 was experimental then anyway
-				throw new IllegalStateException("The CommandAPI doesn't support any version before Paper 1.20.6 build 79. Please update your server!", cnfe);
+				throw new IllegalStateException("The CommandAPI doesn't support any version before Paper 1.20.6 build 79. Please update your server!", error);
 			} else {
 				throw error;
 			}
