@@ -2,7 +2,7 @@ blank_issues_enabled: false
 contact_links:
   - name: 📄 Documentation amendment
     url: https://github.com/CommandAPI/docs/issues/new/choose
-    about: Is there something wrong with the documentation? Raise it in our Docs repository!
+    about: Is there something wrong with the documentation? Raise it in our docs repository!
   - name: 🏃 Get quick support
     url: https://discord.com/invite/G4SzSxZ
     about: |
