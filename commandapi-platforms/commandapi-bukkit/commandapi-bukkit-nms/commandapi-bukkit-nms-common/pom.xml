@@ -43,10 +43,6 @@
 			<id>papermc</id>
 			<url>https://repo.papermc.io/repository/maven-public/</url>
 		</repository>
-		<repository>
-			<id>paper-pr-snapshots</id>
-			<url>https://maven-prs.papermc.io/Paper/pr13194</url>
-		</repository>
 	</repositories>
 
 	<pluginRepositories>
@@ -77,7 +73,7 @@
 		<dependency>
 			<groupId>ca.bkaw.nms</groupId>
 			<artifactId>paper-snapshot-nms</artifactId>
-			<version>${current.snapshot.version}-SNAPSHOT</version>
+			<version>1.21.11-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -144,7 +140,7 @@
 					<devBundle>
 						<id>paper-snapshot-nms</id>
 						<repository>
-							<id>paper-pr-snapshots</id>
+							<id>papermc</id>
 						</repository>
 						<artifact>
 							<groupId>io.papermc.paper</groupId>
