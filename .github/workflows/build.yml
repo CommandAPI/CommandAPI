@@ -198,7 +198,7 @@ jobs:
   snapshot-deploy:
     needs: build # Only run if "build" succeeds
     runs-on: ubuntu-latest
-    if: github.repository == 'CommandAPI/CommandAPI' && github.ref == 'refs/heads/dev/dev'
+    if: github.repository == 'CommandAPI/CommandAPI' && (github.ref == 'refs/heads/dev/dev' || github.ref == 'refs/heads/experiment/paper-snapshots')
 
     steps:
       - name: Checkout the CommandAPI repository
