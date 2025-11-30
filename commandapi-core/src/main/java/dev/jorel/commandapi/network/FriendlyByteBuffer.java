@@ -335,6 +335,9 @@ public class FriendlyByteBuffer {
 	 * @throws IllegalStateException If the read index goes out of bounds while reading bytes.
 	 */
 	public byte[] readBytes(int n) throws IllegalStateException{
+		// Verify we can actually read all these bytes before allocating the array
+		this.checkReadIndexIsInBounds(this.readIndex + n - 1);
+
 		byte[] bytes = new byte[n];
 		for (int i = 0; i < n; i++) {
 			bytes[i] = this.readByte();
