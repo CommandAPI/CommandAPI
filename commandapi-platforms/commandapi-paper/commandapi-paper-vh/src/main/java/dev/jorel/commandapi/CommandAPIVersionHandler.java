@@ -33,7 +33,7 @@ public abstract class CommandAPIVersionHandler {
 				case "1.21.5" -> new PaperNMS_1_21_R4();
 				case "1.21.6", "1.21.7", "1.21.8" -> new PaperNMS_1_21_R5();
 				case "1.21.9", "1.21.10" -> new PaperNMS_1_21_R6();
-				case "1.21.11-pre4", "1.21.11" -> new PaperNMS_1_21_R7();
+				case "1.21.11-pre5", "1.21.11" -> new PaperNMS_1_21_R7();
 				default -> null;
 			};
 			if (versionAdapter != null) {
