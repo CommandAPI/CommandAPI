@@ -160,7 +160,7 @@
 		<paper.version.1.21.9>1.21.9-R0.1-20251003.181801-9</paper.version.1.21.9>
 
 		<!-- Paper Snapshot Version -->
-		<current.snapshot.version>1.21.11-rc1</current.snapshot.version>
+		<current.snapshot.version>1.21.11-rc2</current.snapshot.version>
 
 		<auto-service.version>1.0.1</auto-service.version>
 
