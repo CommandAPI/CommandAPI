@@ -386,6 +386,16 @@ public class NMS_1_20_R3 extends NMS_Common {
 	}
 
 	@Override
+	public DoubleRange getDoubleRange(CommandContext<CommandSourceStack> cmdCtx, String key) {
+		MinMaxBounds.Doubles range = RangeArgument.Floats.getRange(cmdCtx, key);
+		final Double lowBoxed = range.min().orElse(null);
+		final Double highBoxed = range.max().orElse(null);
+		final double low = lowBoxed == null ? -Double.MAX_VALUE : lowBoxed;
+		final double high = highBoxed == null ? Double.MAX_VALUE : highBoxed;
+		return new DoubleRange(low, high);
+	}
+
+	@Override
 	public final Enchantment getEnchantment(CommandContext<CommandSourceStack> cmdCtx, String key)
 			throws CommandSyntaxException {
 		return Registry.ENCHANTMENT.get(fromResourceLocation(
@@ -450,14 +460,10 @@ public class NMS_1_20_R3 extends NMS_Common {
 		);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
-	public DoubleRange getDoubleRange(CommandContext<CommandSourceStack> cmdCtx, String key) {
-		MinMaxBounds.Doubles range = RangeArgument.Floats.getRange(cmdCtx, key);
-		final Double lowBoxed = range.min().orElse(null);
-		final Double highBoxed = range.max().orElse(null);
-		final double low = lowBoxed == null ? -Double.MAX_VALUE : lowBoxed;
-		final double high = highBoxed == null ? Double.MAX_VALUE : highBoxed;
-		return new DoubleRange(low, high);
+	public final org.bukkit.entity.EntityType getEntityType(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
+		return org.bukkit.entity.EntityType.fromName(net.minecraft.world.entity.EntityType.getKey(ResourceArgument.getSummonableEntityType(cmdCtx, key).value()).getPath());
 	}
 
 	@Override
