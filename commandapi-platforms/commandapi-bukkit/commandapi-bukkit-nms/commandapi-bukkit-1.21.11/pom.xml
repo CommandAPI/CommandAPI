@@ -29,7 +29,7 @@
 	<name>Bukkit support for 1.21.11</name>
 
 	<properties>
-		<minecraft.mappings>1.21.9-R0.1-SNAPSHOT</minecraft.mappings>
+		<minecraft.mappings>1.21.11-R0.1-SNAPSHOT</minecraft.mappings>
 	</properties>
 
 	<repositories>

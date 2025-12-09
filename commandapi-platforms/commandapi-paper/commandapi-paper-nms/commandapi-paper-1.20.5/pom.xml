@@ -11,22 +11,11 @@
 
 	<artifactId>commandapi-paper-1.20.5</artifactId>
 	<name>Paper support for 1.20.6</name>
-
-	<properties>
-		<minecraft.mappings>1.20.6-R0.1-SNAPSHOT</minecraft.mappings>
-		<spigot.version>1.20.6-R0.1-SNAPSHOT</spigot.version>
-		<paper.version>1.20.6-R0.1-SNAPSHOT</paper.version>
-	</properties>
-
 	<repositories>
 		<repository>
 			<id>minecraft-libraries</id>
 			<url>https://libraries.minecraft.net</url>
 		</repository>
-<!--		<repository>-->
-<!--			<id>codemc-repo</id>-->
-<!--			<url>https://repo.codemc.io/repository/nms/</url>-->
-<!--		</repository>-->
 		<repository>
 			<id>papermc</id>
 			<url>https://repo.papermc.io/repository/maven-public/</url>
