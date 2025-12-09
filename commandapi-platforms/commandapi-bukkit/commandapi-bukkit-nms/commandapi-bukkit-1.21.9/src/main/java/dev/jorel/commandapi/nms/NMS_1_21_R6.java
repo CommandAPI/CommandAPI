@@ -205,9 +205,9 @@ import java.util.function.ToIntFunction;
 // Mojang-Mapped reflection
 
 /**
- * NMS implementation for Minecraft 1.21.9
+ * NMS implementation for Minecraft 1.21.9 and 1.21.10
  */
-@NMSMeta(compatibleWith = {"1.21.9"})
+@NMSMeta(compatibleWith = {"1.21.9", "1.21.10"})
 @RequireField(in = SimpleHelpMap.class, name = "helpTopics", ofType = Map.class)
 @RequireField(in = EntitySelector.class, name = "usesSelector", ofType = boolean.class)
 // @RequireField(in = ItemInput.class, name = "tag", ofType = CompoundTag.class)
@@ -271,6 +271,10 @@ public class NMS_1_21_R6 extends NMS_Common {
 		return result.getFirst();
 	}
 
+	public NamespacedKey fromResourceLocation(ResourceLocation key) {
+		return NamespacedKey.fromString(key.getNamespace() + ":" + key.getPath());
+	}
+
 	@Override
 	protected CommandBuildContext getCommandBuildContext() {
 		return commandBuildContext.get();
@@ -292,6 +296,11 @@ public class NMS_1_21_R6 extends NMS_Common {
 	}
 
 	@Override
+	public final ArgumentType<?> _ArgumentMinecraftKeyRegistered() {
+		return ResourceLocationArgument.id();
+	}
+
+	@Override
 	public ArgumentType<?> _ArgumentRecipe() {
 		return ResourceKeyArgument.key(Registries.RECIPE);
 	}
@@ -308,7 +317,7 @@ public class NMS_1_21_R6 extends NMS_Common {
 
 	@Override
 	public String[] compatibleVersions() {
-		return new String[]{"1.21.6", "1.21.7", "1.21.8"};
+		return new String[]{"1.21.9", "1.21.10"};
 	}
 
 	private String serializeNMSItemStack(ItemStack is) {
@@ -445,6 +454,16 @@ public class NMS_1_21_R6 extends NMS_Common {
 	}
 
 	@Override
+	public DoubleRange getDoubleRange(CommandContext<CommandSourceStack> cmdCtx, String key) {
+		MinMaxBounds.Doubles range = RangeArgument.Floats.getRange(cmdCtx, key);
+		final Double lowBoxed = range.min().orElse(null);
+		final Double highBoxed = range.max().orElse(null);
+		final double low = lowBoxed == null ? -Double.MAX_VALUE : lowBoxed;
+		final double high = highBoxed == null ? Double.MAX_VALUE : highBoxed;
+		return new DoubleRange(low, high);
+	}
+
+	@Override
 	public final Enchantment getEnchantment(CommandContext<CommandSourceStack> cmdCtx, String key)
 		throws CommandSyntaxException {
 		final net.minecraft.world.item.enchantment.Enchantment enchantment = ResourceArgument.getEnchantment(cmdCtx, key).value();
@@ -510,14 +529,10 @@ public class NMS_1_21_R6 extends NMS_Common {
 		);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
-	public DoubleRange getDoubleRange(CommandContext<CommandSourceStack> cmdCtx, String key) {
-		MinMaxBounds.Doubles range = RangeArgument.Floats.getRange(cmdCtx, key);
-		final Double lowBoxed = range.min().orElse(null);
-		final Double highBoxed = range.max().orElse(null);
-		final double low = lowBoxed == null ? -Double.MAX_VALUE : lowBoxed;
-		final double high = highBoxed == null ? Double.MAX_VALUE : highBoxed;
-		return new DoubleRange(low, high);
+	public final org.bukkit.entity.EntityType getEntityType(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
+		return org.bukkit.entity.EntityType.fromName(net.minecraft.world.entity.EntityType.getKey(ResourceArgument.getSummonableEntityType(cmdCtx, key).value()).getPath());
 	}
 
 	@Override

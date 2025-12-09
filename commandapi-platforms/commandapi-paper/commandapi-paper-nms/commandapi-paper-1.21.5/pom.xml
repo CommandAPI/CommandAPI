@@ -12,19 +12,10 @@
 	<artifactId>commandapi-paper-1.21.5</artifactId>
 	<name>Paper support for 1.21.5</name>
 
-	<properties>
-		<minecraft.mappings>1.21.5-R0.1-SNAPSHOT</minecraft.mappings>
-		<paper.version>1.21.5-R0.1-SNAPSHOT</paper.version>
-	</properties>
-
 	<repositories>
 		<repository>
 			<id>minecraft-libraries</id>
 			<url>https://libraries.minecraft.net</url>
-		</repository>
-		<repository>
-			<id>codemc-repo</id>
-			<url>https://repo.codemc.io/repository/nms/</url>
 		</repository>
 		<repository>
 			<id>papermc</id>
