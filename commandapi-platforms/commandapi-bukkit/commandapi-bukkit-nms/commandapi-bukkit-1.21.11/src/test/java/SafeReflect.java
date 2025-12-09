@@ -18,27 +18,27 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-//import java.util.Map;
-//
-//import net.minecraft.commands.arguments.blocks.ArgumentTileLocation;
-//import net.minecraft.nbt.NBTTagCompound;
-//import org.bukkit.craftbukkit.v1_21_R6.help.SimpleHelpMap;
-//
-//import com.mojang.brigadier.CommandDispatcher;
-//import com.mojang.datafixers.util.Either;
-//
-//import dev.jorel.commandapi.preprocessor.RequireField;
-//import net.minecraft.commands.arguments.selector.EntitySelector;
-//import net.minecraft.server.CustomFunctionManager;
-//import net.minecraft.server.MinecraftServer;
-//import net.minecraft.world.level.block.entity.FuelValues;
-//import net.minecraft.world.level.gameevent.EntityPositionSource;
+import java.util.Map;
+
+import net.minecraft.commands.arguments.blocks.ArgumentTileLocation;
+import net.minecraft.nbt.NBTTagCompound;
+import org.bukkit.craftbukkit.v1_21_R7.help.SimpleHelpMap;
+
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.datafixers.util.Either;
+
+import dev.jorel.commandapi.preprocessor.RequireField;
+import net.minecraft.commands.arguments.selector.EntitySelector;
+import net.minecraft.server.CustomFunctionManager;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.level.block.entity.FuelValues;
+import net.minecraft.world.level.gameevent.EntityPositionSource;
 
 // Spigot-Mapped reflection
-//@RequireField(in = CustomFunctionManager.class, name = "h", ofType = CommandDispatcher.class)
-//@RequireField(in = EntitySelector.class, name = "p", ofType = boolean.class)
-//@RequireField(in = SimpleHelpMap.class, name = "helpTopics", ofType = Map.class)
-//@RequireField(in = EntityPositionSource.class, name = "e", ofType = Either.class)
-//@RequireField(in = MinecraftServer.class, name = "aG", ofType = FuelValues.class)
-//@RequireField(in = ArgumentTileLocation.class, name = "d", ofType = NBTTagCompound.class)
+@RequireField(in = CustomFunctionManager.class, name = "h", ofType = CommandDispatcher.class)
+@RequireField(in = EntitySelector.class, name = "p", ofType = boolean.class)
+@RequireField(in = SimpleHelpMap.class, name = "helpTopics", ofType = Map.class)
+@RequireField(in = EntityPositionSource.class, name = "e", ofType = Either.class)
+@RequireField(in = MinecraftServer.class, name = "aG", ofType = FuelValues.class)
+@RequireField(in = ArgumentTileLocation.class, name = "d", ofType = NBTTagCompound.class)
 public class SafeReflect {}

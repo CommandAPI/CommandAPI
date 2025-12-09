@@ -14,6 +14,7 @@
 	<packaging>pom</packaging>
 
 	<modules>
+		<module>commandapi-spigot-1.21.11</module>
 		<module>commandapi-spigot-1.21.9</module>
 		<module>commandapi-spigot-1.21.6</module>
 		<module>commandapi-spigot-1.21.5</module>

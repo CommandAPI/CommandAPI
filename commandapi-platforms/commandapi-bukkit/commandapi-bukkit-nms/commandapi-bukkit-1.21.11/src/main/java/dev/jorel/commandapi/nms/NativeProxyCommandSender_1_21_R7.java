@@ -8,7 +8,7 @@ import net.minecraft.world.phys.Vec3;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.command.ProxiedNativeCommandSender;
+import org.bukkit.craftbukkit.v1_21_R7.command.ProxiedNativeCommandSender;
 
 public class NativeProxyCommandSender_1_21_R7 extends ProxiedNativeCommandSender implements NativeProxyCommandSender {
 	private final World world;

@@ -126,6 +126,7 @@
 		<spigot.version.1.21.7>1.21.7-R0.1-20250630.172254-1</spigot.version.1.21.7>
 		<spigot.version.1.21.8>1.21.8-R0.1-20251003.231743-17</spigot.version.1.21.8>
 		<spigot.version.1.21.9>1.21.9-R0.1-20250930.202015-1</spigot.version.1.21.9>
+		<spigot.version.1.21.11>1.21.11-R0.1-SNAPSHOT</spigot.version.1.21.11>
 
 		<spigot.api.version.1.20.1>1.20.1-R0.1-20230921.165251-11</spigot.api.version.1.20.1>
 		<spigot.api.version.1.20.2>1.20.2-R0.1-20231205.170307-10</spigot.api.version.1.20.2>
@@ -141,6 +142,7 @@
 		<spigot.api.version.1.21.7>1.21.7-R0.1-20250630.172254-1</spigot.api.version.1.21.7>
 		<spigot.api.version.1.21.8>1.21.8-R0.1-20251003.231743-18</spigot.api.version.1.21.8>
 		<spigot.api.version.1.21.9>1.21.9-R0.1-20250930.202015-1</spigot.api.version.1.21.9>
+		<spigot.api.version.1.21.11>1.21.11-R0.1-SNAPSHOT</spigot.api.version.1.21.11>
 
 		<paper.version.1.20.1>1.20.1-R0.1-20230921.165944-178</paper.version.1.20.1>
 		<paper.version.1.20.2>1.20.2-R0.1-20231203.034718-122</paper.version.1.20.2>
@@ -158,9 +160,7 @@
 		<paper.version.1.21.7>1.21.7-R0.1-20250716.201120-28</paper.version.1.21.7>
 		<paper.version.1.21.8>1.21.8-R0.1-20250906.215025-55</paper.version.1.21.8>
 		<paper.version.1.21.9>1.21.9-R0.1-20251003.181801-9</paper.version.1.21.9>
-
-		<!-- Paper Snapshot Version -->
-		<current.snapshot.version>1.21.11-rc2</current.snapshot.version>
+		<paper.version.1.21.11>1.21.11-R0.1-SNAPSHOT</paper.version.1.21.11>
 
 		<auto-service.version>1.0.1</auto-service.version>
 

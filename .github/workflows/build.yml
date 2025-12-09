@@ -84,8 +84,11 @@ jobs:
       - name: Compile NMS_Common for 1.21.6 and 1.21.7 and 1.21.8
         run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_21_R5
 
-      - name: Compile NMS_Common for 1.21.9
+      - name: Compile NMS_Common for 1.21.9 and 1.21.10
         run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_21_R6
+
+      - name: Compile NMS_Common for 1.21.11
+        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_21_R7
 
       - name: Copy BytecodeAnalyser to nms-common target folder
         run: mv BytecodeAnalyser/build/libs/BytecodeAnalyser*.jar commandapi-platforms/commandapi-bukkit/commandapi-bukkit-nms/commandapi-bukkit-nms-common/target
@@ -198,7 +201,7 @@ jobs:
   snapshot-deploy:
     needs: build # Only run if "build" succeeds
     runs-on: ubuntu-latest
-    if: github.repository == 'CommandAPI/CommandAPI' && (github.ref == 'refs/heads/dev/dev' || github.ref == 'refs/heads/experiment/paper-snapshots')
+    if: github.repository == 'CommandAPI/CommandAPI' && github.ref == 'refs/heads/dev/dev'
 
     steps:
       - name: Checkout the CommandAPI repository

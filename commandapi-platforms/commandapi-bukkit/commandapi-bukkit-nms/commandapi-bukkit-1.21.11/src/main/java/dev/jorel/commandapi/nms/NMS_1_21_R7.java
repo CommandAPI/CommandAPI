@@ -163,21 +163,21 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.SimpleCommandMap;
-import org.bukkit.craftbukkit.CraftLootTable;
-import org.bukkit.craftbukkit.CraftParticle;
-import org.bukkit.craftbukkit.CraftRegistry;
-import org.bukkit.craftbukkit.CraftServer;
-import org.bukkit.craftbukkit.CraftSound;
-import org.bukkit.craftbukkit.CraftWorld;
-import org.bukkit.craftbukkit.block.CraftBlockEntityState;
-import org.bukkit.craftbukkit.block.CraftBlockStates;
-import org.bukkit.craftbukkit.block.data.CraftBlockData;
-import org.bukkit.craftbukkit.command.VanillaCommandWrapper;
-import org.bukkit.craftbukkit.entity.CraftEntity;
-import org.bukkit.craftbukkit.help.CustomHelpTopic;
-import org.bukkit.craftbukkit.help.SimpleHelpMap;
-import org.bukkit.craftbukkit.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.potion.CraftPotionEffectType;
+import org.bukkit.craftbukkit.v1_21_R7.CraftLootTable;
+import org.bukkit.craftbukkit.v1_21_R7.CraftParticle;
+import org.bukkit.craftbukkit.v1_21_R7.CraftRegistry;
+import org.bukkit.craftbukkit.v1_21_R7.CraftServer;
+import org.bukkit.craftbukkit.v1_21_R7.CraftSound;
+import org.bukkit.craftbukkit.v1_21_R7.CraftWorld;
+import org.bukkit.craftbukkit.v1_21_R7.block.CraftBlockEntityState;
+import org.bukkit.craftbukkit.v1_21_R7.block.CraftBlockStates;
+import org.bukkit.craftbukkit.v1_21_R7.block.data.CraftBlockData;
+import org.bukkit.craftbukkit.v1_21_R7.command.VanillaCommandWrapper;
+import org.bukkit.craftbukkit.v1_21_R7.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_21_R7.help.CustomHelpTopic;
+import org.bukkit.craftbukkit.v1_21_R7.help.SimpleHelpMap;
+import org.bukkit.craftbukkit.v1_21_R7.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_21_R7.potion.CraftPotionEffectType;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.help.HelpTopic;
@@ -989,7 +989,7 @@ public class NMS_1_21_R7 extends NMS_Common {
 			this.<MinecraftServer>getMinecraftServer().resources = serverResources;
 			this.<MinecraftServer>getMinecraftServer().server.syncCommands();
 			if (minecraftServerSetSelected == null) {
-				this.<MinecraftServer>getMinecraftServer().getPackRepository().setSelected(collection, true);
+				this.<MinecraftServer>getMinecraftServer().getPackRepository().setSelected(collection);
 			} else {
 				try {
 					minecraftServerSetSelected.invoke(this.<MinecraftServer>getMinecraftServer().getPackRepository(), collection, true);

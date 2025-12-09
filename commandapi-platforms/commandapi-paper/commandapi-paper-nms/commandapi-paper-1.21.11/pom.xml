@@ -41,15 +41,15 @@
 	<dependencies>
 		<!-- Libraries -->
 		<dependency>
-			<groupId>ca.bkaw.nms</groupId>
-			<artifactId>paper-snapshot-nms</artifactId>
+			<groupId>ca.bkaw</groupId>
+			<artifactId>paper-nms</artifactId>
 			<version>1.21.11-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.papermc.paper</groupId>
 			<artifactId>paper-api</artifactId>
-			<version>${current.snapshot.version}-R0.1-SNAPSHOT</version>
+			<version>${paper.version.1.21.11}</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -83,19 +83,6 @@
 				<groupId>ca.bkaw</groupId>
 				<artifactId>paper-nms-maven-plugin</artifactId>
 				<version>1.4.10</version>
-				<configuration>
-					<devBundle>
-						<id>paper-snapshot-nms</id>
-						<repository>
-							<id>papermc</id>
-						</repository>
-						<artifact>
-							<groupId>io.papermc.paper</groupId>
-							<artifactId>dev-bundle</artifactId>
-							<version>${current.snapshot.version}-R0.1-SNAPSHOT</version>
-						</artifact>
-					</devBundle>
-				</configuration>
 			</plugin>
 			<!-- Allow code coverage -->
 			<plugin>
