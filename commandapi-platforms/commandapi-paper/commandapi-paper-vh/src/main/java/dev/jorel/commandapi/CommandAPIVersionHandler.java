@@ -42,7 +42,7 @@ public abstract class CommandAPIVersionHandler {
 					() -> CommandAPI.logNormal("Loaded version " + CommandAPI.getPlatformMessage(versionAdapter))
 				);
 			}
-			if (CommandAPIPaper.getConfiguration().fallbackToLatestNMS()) {
+			if (internalPaperConfig.fallbackToLatestNMS()) {
 				PaperNMS<?> paperNMS = new PaperNMS_1_21_R7();
 				return new LoadContext(
 					new CommandAPIPaper<>(internalPaperConfig, new APITypeProvider(paperNMS)),
