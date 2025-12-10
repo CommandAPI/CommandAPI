@@ -84,7 +84,7 @@ public abstract class CommandAPIMessenger<InputChannel, OutputChannel> {
 			throw exception;
 		} catch (Throwable throwable) {
 			handlePacketException(
-				new IllegalStateException("Exception while reading packet [" + byteArrayFormat.formatHex(input) + "]", throwable),
+				new IllegalStateException("Exception while reading packet sent by " + sender + " [" + byteArrayFormat.formatHex(input) + "]", throwable),
 				sender
 			);
 		}
