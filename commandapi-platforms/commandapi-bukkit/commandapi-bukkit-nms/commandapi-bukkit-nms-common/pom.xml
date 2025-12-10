@@ -26,10 +26,6 @@
 	<artifactId>commandapi-bukkit-nms-common</artifactId>
 	<name>Bukkit support NMS common library</name>
 
-	<properties>
-		<minecraft.mappings>1.20.1-R0.1-SNAPSHOT</minecraft.mappings>
-	</properties>
-
 	<repositories>
 		<repository>
 			<id>minecraft-libraries</id>
@@ -57,7 +53,7 @@
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot</artifactId>
-			<version>${spigot.version.common}</version>
+			<version>${spigot.version}</version>
 			<scope>provided</scope>
 			<classifier>remapped-mojang</classifier>
 		</dependency>
@@ -66,7 +62,7 @@
 		<dependency>
 			<groupId>io.papermc.paper</groupId>
 			<artifactId>paper-api</artifactId>
-			<version>${paper.version.bukkit.common}</version>
+			<version>${paper.version}</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -256,6 +252,11 @@
 		</profile>
 		<profile>
 			<id>Spigot_1_20_R1_Release</id>
+			<properties>
+				<minecraft.mappings>${spigot.version.common}</minecraft.mappings>
+				<spigot.version>${spigot.version.common}</spigot.version>
+				<paper.version>${paper.version.bukkit.common}</paper.version>
+			</properties>
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>

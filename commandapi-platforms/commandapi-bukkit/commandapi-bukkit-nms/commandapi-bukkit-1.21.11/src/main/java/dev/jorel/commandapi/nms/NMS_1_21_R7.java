@@ -534,12 +534,6 @@ public class NMS_1_21_R7 extends NMS_Common {
 		);
 	}
 
-	@SuppressWarnings("deprecation")
-	@Override
-	public final org.bukkit.entity.EntityType getEntityType(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
-		return org.bukkit.entity.EntityType.fromName(net.minecraft.world.entity.EntityType.getKey(ResourceArgument.getSummonableEntityType(cmdCtx, key).value()).getPath());
-	}
-
 	@Override
 	public final FunctionWrapper[] getFunction(CommandContext<CommandSourceStack> cmdCtx, String key)
 		throws CommandSyntaxException {

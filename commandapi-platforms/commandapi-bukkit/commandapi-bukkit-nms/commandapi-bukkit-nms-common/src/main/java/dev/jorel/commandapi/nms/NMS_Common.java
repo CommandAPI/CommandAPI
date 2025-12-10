@@ -307,6 +307,12 @@ public abstract class NMS_Common implements NMS<CommandSourceStack> {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
+	@Override
+	public final org.bukkit.entity.EntityType getEntityType(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
+		return org.bukkit.entity.EntityType.fromName(net.minecraft.world.entity.EntityType.getKey(ResourceArgument.getSummonableEntityType(cmdCtx, key).value()).getPath());
+	}
+
 	@Override
 	public final Location2D getLocation2DBlock(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
 		ColumnPos blockPos = ColumnPosArgument.getColumnPos(cmdCtx, key);
