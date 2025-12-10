@@ -393,13 +393,21 @@ This is the current roadmap for the CommandAPI (as of 3rd October 2025):
     <tbody>
         <tr>
             <td valign="top"><b>11.0.1</b></td>
-            <td valign="top">???</td>
+            <td valign="top">December 2025</td>
             <td valign="top">
+                <b>CommandAPI Changes:</b>
+                <ul>
+                    <li>https://github.com/CommandAPI/CommandAPI/pull/642 Adds the <code>enable-networking</code> and the <code>make-networking-exceptions-warning</code> config options. You can read more about them in the documentation.</li>
+                </ul>
                 <b>Bug Fixes:</b>
                 <ul>
                     <li>Fixes replacing a command by calling <code>CommandAPI.unregister()</code> not working under certain circumstances</li>
                     <li>Fixes custom namespaces not working</li>
                     <li>Fixes an issue where registering or unregistering many commands at runtime could time out the server</li>
+                </ul>
+                <b>Minecraft Version Changes:</b>
+                <ul>
+                    <li>Adds support for Minecraft 1.21.11</li>
                 </ul>
            </td>
         </tr>
