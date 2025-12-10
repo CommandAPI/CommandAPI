@@ -107,7 +107,11 @@ public class BukkitCommandAPIMessenger extends CommandAPIMessenger<Player, Playe
 	}
 
 	@Override
-	protected void handlePacketException(RuntimeException exception) {
+	protected void handlePacketException(RuntimeException exception, Player source) {
+		if (source != null) {
+			source.kickPlayer("Sent invalid plugin message data.");
+		}
+
 		if (CommandAPI.getConfiguration().makeNetworkingExceptionsWarnings()) {
 			CommandAPI.logWarning(exception.getMessage());
 		} else {

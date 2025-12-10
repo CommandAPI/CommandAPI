@@ -83,7 +83,10 @@ public abstract class CommandAPIMessenger<InputChannel, OutputChannel> {
 			// These are expected, throw them directly
 			throw exception;
 		} catch (Throwable throwable) {
-			handlePacketException(new IllegalStateException("Exception while reading packet [" + byteArrayFormat.formatHex(input) + "]", throwable));
+			handlePacketException(
+				new IllegalStateException("Exception while reading packet [" + byteArrayFormat.formatHex(input) + "]", throwable),
+				sender
+			);
 		}
 	}
 
@@ -123,7 +126,7 @@ public abstract class CommandAPIMessenger<InputChannel, OutputChannel> {
 		} catch (ProtocolVersionTooOldException exception) {
 			// Send the exception to the other side too, so they know to update their protocol version
 			this.sendPacket(target, new ProtocolVersionTooOldPacket(CommandAPIProtocol.PROTOCOL_VERSION, exception.getReason()));
-			handlePacketException(exception);
+			handlePacketException(exception, null);
 			return;
 		}
 
@@ -145,6 +148,8 @@ public abstract class CommandAPIMessenger<InputChannel, OutputChannel> {
 	 * May rethrow the exception or log it in another manner.
 	 *
 	 * @param exception The exception that was thrown.
+	 * @param source    The connection that sent the packet which caused the exception during receiving.
+	 *                  This parameter will be null if an exception happens while sending.
 	 */
-	protected abstract void handlePacketException(RuntimeException exception);
+	protected abstract void handlePacketException(RuntimeException exception, InputChannel source);
 }

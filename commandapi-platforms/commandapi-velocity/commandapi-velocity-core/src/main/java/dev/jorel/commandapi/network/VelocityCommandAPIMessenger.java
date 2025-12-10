@@ -11,6 +11,7 @@ import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.messages.*;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.network.packets.SetVersionPacket;
+import net.kyori.adventure.text.Component;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -150,7 +151,11 @@ public class VelocityCommandAPIMessenger extends CommandAPIMessenger<ChannelMess
 	}
 
 	@Override
-	protected void handlePacketException(RuntimeException exception) {
+	protected void handlePacketException(RuntimeException exception, ChannelMessageSource source) {
+		if (source instanceof Player player) {
+			player.disconnect(Component.text("Sent invalid plugin message data."));
+		}
+
 		if (CommandAPI.getConfiguration().makeNetworkingExceptionsWarnings()) {
 			CommandAPI.logWarning(exception.getMessage());
 		} else {
