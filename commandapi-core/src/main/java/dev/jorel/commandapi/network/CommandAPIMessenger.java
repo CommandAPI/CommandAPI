@@ -79,6 +79,9 @@ public abstract class CommandAPIMessenger<InputChannel, OutputChannel> {
 
 			// Handle the packet
 			packetHandlerProvider.getHandlerForProtocol(protocol).handlePacket(sender, packet);
+		} catch (ProtocolVersionTooOldException exception) {
+			// These are expected, throw them directly
+			throw exception;
 		} catch (Throwable throwable) {
 			handlePacketException(new IllegalStateException("Exception while reading packet [" + byteArrayFormat.formatHex(input) + "]", throwable));
 		}

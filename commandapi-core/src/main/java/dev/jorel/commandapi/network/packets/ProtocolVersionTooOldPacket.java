@@ -26,6 +26,8 @@ public record ProtocolVersionTooOldPacket(
 	 */
 	String reason
 ) implements CommandAPIPacket {
+	public static final int MAX_REASON_LENGTH = 256;
+
 	/**
 	 * Reads the bytes from the given {@link FriendlyByteBuffer} to create a new {@link ProtocolVersionTooOldPacket}.
 	 *
@@ -34,7 +36,7 @@ public record ProtocolVersionTooOldPacket(
 	 */
 	public static ProtocolVersionTooOldPacket deserialize(FriendlyByteBuffer buffer) {
 		int protocolVersion = buffer.readVarInt();
-		String reason = buffer.readString();
+		String reason = buffer.readString(MAX_REASON_LENGTH);
 		return new ProtocolVersionTooOldPacket(protocolVersion, reason);
 	}
 
@@ -43,6 +45,6 @@ public record ProtocolVersionTooOldPacket(
 		// No need to check `int protocolVersion`, we'll always send
 		// If we did throw an exception, that would trigger another packet to be sent, causing infinite recursion anyway
 		buffer.writeVarInt(this.protocolVersion);
-		buffer.writeString(this.reason);
+		buffer.writeString(this.reason, MAX_REASON_LENGTH);
 	}
 }

@@ -430,8 +430,14 @@ public class FriendlyByteBuffer {
 	 * For the details of this encoding, see <a href="https://en.wikipedia.org/wiki/UTF-8">UTF-8 - Wikipedia</a>
 	 *
 	 * @param string The String to write.
+	 * @param maxLength The length of the longest String that is allowed.
+	 * @throws IllegalStateException If the given String is longer than the given maximum length.
 	 */
-	public void writeString(String string) {
+	public void writeString(String string, int maxLength) {
+		if (string.length() > maxLength) {
+			throw new IllegalStateException("Given string (" + string.length() + " characters) is too long. " + maxLength + " characters maximum.");
+		}
+
 		byte[] bytes = string.getBytes(StandardCharsets.UTF_8);
 
 		this.writeVarInt(bytes.length);
@@ -439,13 +445,19 @@ public class FriendlyByteBuffer {
 	}
 
 	/**
-	 * Reads a String from this buffer. This method assumes the String was written by {@link #writeString(String)}.
+	 * Reads a String from this buffer. This method assumes the String was written by {@link #writeString(String, int)}.
 	 *
+	 * @param maxLength The length of the longest String that is allowed.
 	 * @return The String read from this buffer.
-	 * @throws IllegalStateException If the read index goes out of bounds while reading bytes.
+	 * @throws IllegalStateException If the read String is longer than the given maximum length.
 	 */
-	public String readString() throws IllegalStateException{
+	public String readString(int maxLength) throws IllegalStateException{
 		int length = this.readVarInt();
+
+		if (length > maxLength) {
+			throw new IllegalStateException("Given string (" + length + " characters) is too long. " + maxLength + " characters maximum.");
+		}
+
 		byte[] bytes = this.readBytes(length);
 
 		return new String(bytes, StandardCharsets.UTF_8);
