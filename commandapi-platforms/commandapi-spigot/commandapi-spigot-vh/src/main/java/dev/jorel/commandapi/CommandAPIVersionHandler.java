@@ -43,7 +43,7 @@ public abstract class CommandAPIVersionHandler {
 				return new LoadContext(platform);
 			}
 			if (internalSpigotConfig.fallbackToLatestNMS()) {
-				return new LoadContext(new SpigotNMS_1_21_R6(internalSpigotConfig), () -> {
+				return new LoadContext(new SpigotNMS_1_21_R7(internalSpigotConfig), () -> {
 					CommandAPI.logWarning("Loading the CommandAPI with the latest and potentially incompatible NMS implementation.");
 					CommandAPI.logWarning("While you may find success with this, further updates might be necessary to fully support the version you are using.");
 				});
