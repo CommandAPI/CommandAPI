@@ -257,7 +257,7 @@ public class NMS_1_21_R7 extends NMS_Common {
 		}
 		minecraftServerSetSelected = setSelected;
 
-		minecraftServerFuelValues = SafeVarHandle.ofOrNull(MinecraftServer.class, "aG", "fuelValues", FuelValues.class);
+		minecraftServerFuelValues = SafeVarHandle.ofOrNull(MinecraftServer.class, "aJ", "fuelValues", FuelValues.class);
 	}
 
 	// Implementation taken from io.papermc.paper.adventure.WrapperAwareSerializer#deserialize(Component)
