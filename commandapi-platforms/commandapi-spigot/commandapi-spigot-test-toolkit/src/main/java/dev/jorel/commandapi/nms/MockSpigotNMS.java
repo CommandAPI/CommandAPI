@@ -7,6 +7,7 @@ import dev.jorel.commandapi.UnimplementedMethodException;
 import dev.jorel.commandapi.arguments.ProfileArgumentType;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.profile.PlayerProfile;
 
 import java.util.List;
@@ -33,6 +34,11 @@ public interface MockSpigotNMS extends SpigotNMS<MockCommandSource> {
 
 	@Override
 	default BaseComponent[] getChatComponent(CommandContext<MockCommandSource> cmdCtx, String key) throws CommandSyntaxException {
+		throw new UnimplementedMethodException();
+	}
+
+	@Override
+	default boolean isNullCommandSender(CommandSender sender) {
 		throw new UnimplementedMethodException();
 	}
 }

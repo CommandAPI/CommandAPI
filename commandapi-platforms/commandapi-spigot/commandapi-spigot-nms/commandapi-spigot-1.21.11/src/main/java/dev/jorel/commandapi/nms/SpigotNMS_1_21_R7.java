@@ -18,9 +18,11 @@ import net.minecraft.commands.arguments.MessageArgument;
 import net.minecraft.server.MinecraftServer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.craftbukkit.v1_21_R7.CraftServer;
 import org.bukkit.craftbukkit.v1_21_R7.command.BukkitCommandWrapper;
+import org.bukkit.craftbukkit.v1_21_R7.command.NullCommandSender;
 import org.bukkit.craftbukkit.v1_21_R7.command.VanillaCommandWrapper;
 import org.bukkit.craftbukkit.v1_21_R7.profile.CraftPlayerProfile;
 import org.bukkit.profile.PlayerProfile;
@@ -74,6 +76,11 @@ public class SpigotNMS_1_21_R7 extends CommandAPISpigot<CommandSourceStack> {
 			this.bukkitNMS = new NMS_1_21_R7(() -> COMMAND_BUILD_CONTEXT);
 		}
 		return bukkitNMS;
+	}
+
+	@Override
+	public boolean isNullCommandSender(CommandSender sender) {
+		return sender instanceof NullCommandSender;
 	}
 
 	@Override
