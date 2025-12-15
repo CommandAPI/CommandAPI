@@ -375,10 +375,24 @@ public class CommandAPI {
 		CommandAPIHandler.getInstance().getPlatform().unregister(command, unregisterNamespaces);
 	}
 
+	/**
+	 * Unregisters several commands
+	 *
+	 * @param commandNameList the names of the commands to unregister
+	 */
 	public static void unregisterSeveral(List<String> commandNameList) {
 		unregisterSeveral(commandNameList, false);
 	}
 
+	/**
+	 * Unregisters several commands
+	 *
+	 * @param commandNameList the names of the commands to unregister
+	 * @param unregisterNamespaces whether the unregistration system should attempt to remove versions of the
+	 *                                command that start with a namespace. E.g. `minecraft:command`, `bukkit:command`,
+	 *                                or `plugin:command`. If true, these namespaced versions of a command are also
+	 *                                unregistered.
+	 */
 	public static void unregisterSeveral(List<String> commandNameList, boolean unregisterNamespaces) {
 		CommandAPIHandler.getInstance().getPlatform().unregisterSeveral(commandNameList, unregisterNamespaces);
 	}

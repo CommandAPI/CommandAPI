@@ -71,9 +71,6 @@
 		<!-- Outputs -->
 		<module>commandapi-annotations</module>
 		<module>commandapi-testing</module>
-
-		<!-- Code coverage reports -->
-		<module>commandapi-codecov</module>
 	</modules>
 
 	<dependencyManagement>
