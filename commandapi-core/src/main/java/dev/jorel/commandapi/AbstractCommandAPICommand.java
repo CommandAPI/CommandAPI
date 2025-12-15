@@ -273,7 +273,7 @@ extends AbstractArgument<?, ?, Argument, CommandSender>
 	/**
 	 * Registers the command with a given namespace
 	 *
-	 * @param namespace The namespace of this command. Cannot be null
+	 * @param namespace The namespace of this command. Can't be null
 	 * @throws NullPointerException if the namespace is null
 	 * @see CommandAPI#register(AbstractCommandAPICommand, String)
 	 */

@@ -308,13 +308,14 @@ public class CommandAPI {
 	/**
 	 * Registers the command with a given namespace
 	 *
-	 * @param namespace The namespace of a command. Cannot be null
+	 * @param namespace The namespace of a command. Can't be null
 	 * @throws NullPointerException if the namespace is null
 	 */
 	public static <Impl extends AbstractCommandAPICommand<Impl, Argument, CommandSender>, Argument extends AbstractArgument<?, ?, Argument, CommandSender>, CommandSender>
 	void register(AbstractCommandAPICommand<Impl, Argument, CommandSender> command, String namespace) {
 		registerInternal(command, namespace, true);
 	}
+
 	@SuppressWarnings("unchecked")
 	private static <Impl extends AbstractCommandAPICommand<Impl, Argument, CommandSender>, Argument extends AbstractArgument<?, ?, Argument, CommandSender>, CommandSender>
 	void registerInternal(AbstractCommandAPICommand<Impl, Argument, CommandSender> command, String namespace, boolean finishProcess) {
@@ -322,7 +323,6 @@ public class CommandAPI {
 			// Only reachable through Velocity
 			throw new NullPointerException("Parameter 'namespace' was null when registering command /" + command.meta.commandName + "!");
 		}
-		@SuppressWarnings("unchecked")
 		Argument[] argumentsArray = (Argument[]) (command.arguments == null ? new AbstractArgument[0] : command.arguments.toArray(AbstractArgument[]::new));
 
 		// Check GreedyArgument constraints
@@ -339,7 +339,6 @@ public class CommandAPI {
 
 		if (command.executor.hasAnyExecutors()) {
 			// Need to cast handler to the right CommandSender type so that argumentsArray and executor are accepted
-			@SuppressWarnings("unchecked")
 			CommandAPIHandler<Argument, CommandSender, ?> handler = (CommandAPIHandler<Argument, CommandSender, ?>) CommandAPIHandler.getInstance();
 
 			// Create a List<Argument[]> that is used to register optional arguments
