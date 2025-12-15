@@ -104,9 +104,15 @@ extends AbstractArgument<?, ?, Argument, CommandSender>
 
 	/**
 	 * Registers a Brigadier command node and returns the built node.
+	 * {@link #finishNodeRegistration()} should be called after registration to finish the process.
 	 */
 	LiteralCommandNode<Source> registerCommandNode(LiteralArgumentBuilder<Source> node, String namespace);
 
+	/**
+	 * Finishes registration process.
+	 * Does nothing when no commands are meant to be registered.
+	 */
+	default void finishNodeRegistration() {}
 
 	/**
 	 * Unregisters a command from the CommandGraph so it can't be run anymore.
@@ -117,6 +123,17 @@ extends AbstractArgument<?, ?, Argument, CommandSender>
 	 *                                or `plugin:command`
 	 */
 	void unregister(String commandName, boolean unregisterNamespaces);
+
+	/**
+	 * Unregisters several commands from the CommandGraph so they can't be run anymore.
+	 *
+	 *
+	 * @param commandNameList the names of the commands to unregister
+	 * @param unregisterNamespaces whether the unregistration system should attempt to remove versions of the
+	 *                                 command that start with a namespace. Eg. `minecraft:command`, `bukkit:command`,
+	 *                                or `plugin:command`
+	 */
+	void unregisterSeveral(List<String> commandNameList, boolean unregisterNamespaces);
 
 	/**
 	 * Creates a new {@link CommandAPIMessenger} for this platform. This is only intended to be called once by

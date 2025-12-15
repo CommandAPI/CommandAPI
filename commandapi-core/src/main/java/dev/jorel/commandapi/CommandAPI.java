@@ -3,6 +3,7 @@ package dev.jorel.commandapi;
 import com.mojang.brigadier.Message;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import dev.jorel.commandapi.arguments.AbstractArgument;
 import dev.jorel.commandapi.commandsenders.AbstractPlayer;
 import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
 
@@ -281,12 +282,85 @@ public class CommandAPI {
 	// Command registration and unregistration
 
 	/**
+	 * Registers several commands with given namespaces
+	 *
+	 * @param commands The commands to register.
+	 * @param namespaces The namespaces for corresponding commands.
+	 * @throws NullPointerException if one of the namespace is null
+	 * @throws IllegalArgumentException if different amount of command and namespaces are present, or both of them is empty
+	 */
+	public static <Impl extends AbstractCommandAPICommand<Impl, Argument, CommandSender>, Argument extends AbstractArgument<?, ?, Argument, CommandSender>, CommandSender>
+	void registerSeveral(List<AbstractCommandAPICommand<Impl, Argument, CommandSender>> commands, List<String> namespaces) {
+		if(commands.size() != namespaces.size()) throw new IllegalArgumentException("Commands and namespaces should be present with the same size");
+		if(commands.isEmpty()) throw new IllegalArgumentException("At least one command should be present");
+
+		int size = commands.size();
+		for (int i = 0; i < size; i++) {
+			registerInternal(
+				commands.get(i),
+				namespaces.get(i),
+				false
+			);
+		}
+		CommandAPIHandler.getInstance().platform.finishNodeRegistration();
+	}
+
+	/**
+	 * Registers the command with a given namespace
+	 *
+	 * @param namespace The namespace of a command. Cannot be null
+	 * @throws NullPointerException if the namespace is null
+	 */
+	public static <Impl extends AbstractCommandAPICommand<Impl, Argument, CommandSender>, Argument extends AbstractArgument<?, ?, Argument, CommandSender>, CommandSender>
+	void register(AbstractCommandAPICommand<Impl, Argument, CommandSender> command, String namespace) {
+		registerInternal(command, namespace, true);
+	}
+	@SuppressWarnings("unchecked")
+	private static <Impl extends AbstractCommandAPICommand<Impl, Argument, CommandSender>, Argument extends AbstractArgument<?, ?, Argument, CommandSender>, CommandSender>
+	void registerInternal(AbstractCommandAPICommand<Impl, Argument, CommandSender> command, String namespace, boolean finishProcess) {
+		if (namespace == null) {
+			// Only reachable through Velocity
+			throw new NullPointerException("Parameter 'namespace' was null when registering command /" + command.meta.commandName + "!");
+		}
+		@SuppressWarnings("unchecked")
+		Argument[] argumentsArray = (Argument[]) (command.arguments == null ? new AbstractArgument[0] : command.arguments.toArray(AbstractArgument[]::new));
+
+		// Check GreedyArgument constraints
+		command.checkGreedyArgumentConstraints(argumentsArray);
+		command.checkHasExecutors();
+
+		// Assign the command's permissions to arguments if the arguments don't already
+		// have one
+		for (Argument argument : argumentsArray) {
+			if (argument.getArgumentPermission() == null) {
+				argument.withPermission(command.meta.permission);
+			}
+		}
+
+		if (command.executor.hasAnyExecutors()) {
+			// Need to cast handler to the right CommandSender type so that argumentsArray and executor are accepted
+			@SuppressWarnings("unchecked")
+			CommandAPIHandler<Argument, CommandSender, ?> handler = (CommandAPIHandler<Argument, CommandSender, ?>) CommandAPIHandler.getInstance();
+
+			// Create a List<Argument[]> that is used to register optional arguments
+			for (Argument[] args : command.getArgumentsToRegister(argumentsArray)) {
+				handler.register(command.meta, args, command.executor, command.isConverted, namespace, finishProcess);
+			}
+		}
+
+		// Convert subcommands into multiliteral arguments
+		for (Impl subcommand : command.subcommands) {
+			AbstractCommandAPICommand.flatten(command.copy(), new ArrayList<>(), subcommand, namespace);
+		}
+	}
+
+	/**
 	 * Unregisters a command
 	 *
 	 * @param command the name of the command to unregister
 	 */
 	public static void unregister(String command) {
-		CommandAPIHandler.getInstance().getPlatform().unregister(command, false);
+		unregister(command, false);
 	}
 
 	/**
@@ -300,6 +374,14 @@ public class CommandAPI {
 	 */
 	public static void unregister(String command, boolean unregisterNamespaces) {
 		CommandAPIHandler.getInstance().getPlatform().unregister(command, unregisterNamespaces);
+	}
+
+	public static void unregisterSeveral(List<String> commandNameList) {
+		unregisterSeveral(commandNameList, false);
+	}
+
+	public static void unregisterSeveral(List<String> commandNameList, boolean unregisterNamespaces) {
+		CommandAPIHandler.getInstance().getPlatform().unregisterSeveral(commandNameList, unregisterNamespaces);
 	}
 
 	/**

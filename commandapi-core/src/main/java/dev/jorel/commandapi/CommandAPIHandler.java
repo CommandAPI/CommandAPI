@@ -425,7 +425,7 @@ extends AbstractArgument<?, ?, Argument, CommandSender>
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private boolean expandMultiLiterals(CommandMetaData<CommandSender> meta, final Argument[] args,
-			CommandAPIExecutor<CommandSender, AbstractCommandSender<? extends CommandSender>> executor, boolean converted, String namespace) {
+			CommandAPIExecutor<CommandSender, AbstractCommandSender<? extends CommandSender>> executor, boolean converted, String namespace, boolean finishProcess) {
 
 		// "Expands" our MultiLiterals into Literals
 		for (int index = 0; index < args.length; index++) {
@@ -449,7 +449,7 @@ extends AbstractArgument<?, ?, Argument, CommandSender>
 					// Reconstruct the list of arguments and place in the new literals
 					Argument[] newArgs = Arrays.copyOf(args, args.length);
 					newArgs[index] = litArg;
-					register(meta, newArgs, executor, converted, namespace);
+					register(meta, newArgs, executor, converted, namespace, finishProcess);
 				}
 				return true;
 			}
@@ -559,9 +559,9 @@ extends AbstractArgument<?, ?, Argument, CommandSender>
 
 	// Builds a command then registers it
 	void register(CommandMetaData<CommandSender> meta, final Argument[] args,
-			CommandAPIExecutor<CommandSender, AbstractCommandSender<? extends CommandSender>> executor, boolean converted, String namespace) {
+				  CommandAPIExecutor<CommandSender, AbstractCommandSender<? extends CommandSender>> executor, boolean converted, String namespace, boolean finishProcess) {
 		// "Expands" our MultiLiterals into Literals
-		if (expandMultiLiterals(meta, args, executor, converted, namespace)) {
+		if (expandMultiLiterals(meta, args, executor, converted, namespace, finishProcess)) {
 			return;
 		}
 
@@ -657,6 +657,8 @@ extends AbstractArgument<?, ?, Argument, CommandSender>
 					.requires(generatePermissions(alias, permission, requirements, namespace)).then(commandArguments), namespace));
 			}
 		}
+
+		if(finishProcess) platform.finishNodeRegistration();
 
 //		TODO: Do something when ambiguities are found
 //		platform.getBrigadierDispatcher().findAmbiguities(

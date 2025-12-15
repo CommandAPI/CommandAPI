@@ -103,6 +103,13 @@ public class CommandAPIVelocity implements CommandAPIPlatform<Argument<?>, Comma
 	}
 
 	@Override
+	public void unregisterSeveral(List<String> commandNameList, boolean unregisterNamespaces) {
+		for (String commandName : commandNameList) {
+			commandManager.unregister(commandName);
+		}
+	}
+
+	@Override
 	public VelocityCommandAPIMessenger setupMessenger() {
 		messenger = new VelocityCommandAPIMessenger(
 			config.getPlugin(),

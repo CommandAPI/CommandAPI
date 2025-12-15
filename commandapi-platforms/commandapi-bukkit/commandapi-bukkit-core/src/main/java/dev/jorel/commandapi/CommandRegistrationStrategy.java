@@ -7,6 +7,7 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 import dev.jorel.commandapi.preprocessor.RequireField;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -80,7 +81,16 @@ public abstract class CommandRegistrationStrategy<Source> {
 
 	public abstract LiteralCommandNode<Source> registerCommandNode(LiteralArgumentBuilder<Source> node, String namespace);
 
-	public abstract void unregister(String commandName, boolean unregisterNamespaces, boolean unregisterBukkit);
+	public void finishRegistration() {}
+
+	public abstract void unregisterSeveral(Collection<UnregisterInformation> collection);
+
+	public void unregister(String commandName, boolean unregisterNamespaces, boolean unregisterBukkit) {
+		unregister(new UnregisterInformation(commandName, unregisterNamespaces, unregisterBukkit));
+	}
+
+	public abstract void unregister(UnregisterInformation unregisterInformation);
 
 	public abstract void preReloadDataPacks();
+
 }

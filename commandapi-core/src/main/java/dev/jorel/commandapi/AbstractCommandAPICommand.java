@@ -214,7 +214,7 @@ extends AbstractArgument<?, ?, Argument, CommandSender>
 	// Expands subcommands into arguments. This method should be static (it
 	// shouldn't be accessing/depending on any of the contents of the current class instance)
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private static <Impl extends AbstractCommandAPICommand<Impl, Argument, CommandSender>, Argument extends AbstractArgument<?, ?, Argument, CommandSender>, CommandSender>
+	static <Impl extends AbstractCommandAPICommand<Impl, Argument, CommandSender>, Argument extends AbstractArgument<?, ?, Argument, CommandSender>, CommandSender>
 	void flatten(Impl rootCommand, List<Argument> prevArguments, Impl subcommand, String namespace) {
 		// Get the list of literals represented by the current subcommand. This
 		// includes the subcommand's name and any aliases for this subcommand
@@ -264,7 +264,7 @@ extends AbstractArgument<?, ?, Argument, CommandSender>
 		return false;
 	}
 	
-	private void checkHasExecutors() {
+	void checkHasExecutors() {
 		if(!hasAnyExecutors()) {
 			throw new MissingCommandExecutorException(this.meta.commandName);
 		}
@@ -273,50 +273,18 @@ extends AbstractArgument<?, ?, Argument, CommandSender>
 	/**
 	 * Registers the command with a given namespace
 	 *
-	 * @param namespace The namespace of this command. This cannot be null
+	 * @param namespace The namespace of this command. Cannot be null
 	 * @throws NullPointerException if the namespace is null
+	 * @see CommandAPI#register(AbstractCommandAPICommand, String)
 	 */
 	@Override
 	public void register(String namespace) {
-		if (namespace == null) {
-			// Only reachable through Velocity
-			throw new NullPointerException("Parameter 'namespace' was null when registering command /" + this.meta.commandName + "!");
-		}
-		@SuppressWarnings("unchecked")
-		Argument[] argumentsArray = (Argument[]) (arguments == null ? new AbstractArgument[0] : arguments.toArray(AbstractArgument[]::new));
-
-		// Check GreedyArgument constraints
-		checkGreedyArgumentConstraints(argumentsArray);
-		checkHasExecutors();
-
-		// Assign the command's permissions to arguments if the arguments don't already
-		// have one
-		for (Argument argument : argumentsArray) {
-			if (argument.getArgumentPermission() == null) {
-				argument.withPermission(meta.permission);
-			}
-		}
-
-		if (executor.hasAnyExecutors()) {
-			// Need to cast handler to the right CommandSender type so that argumentsArray and executor are accepted
-			@SuppressWarnings("unchecked")
-			CommandAPIHandler<Argument, CommandSender, ?> handler = (CommandAPIHandler<Argument, CommandSender, ?>) CommandAPIHandler.getInstance();
-
-			// Create a List<Argument[]> that is used to register optional arguments
-			for (Argument[] args : getArgumentsToRegister(argumentsArray)) {
-				handler.register(meta, args, executor, isConverted, namespace);
-			}
-		}
-
-		// Convert subcommands into multiliteral arguments
-		for (Impl subcommand : this.subcommands) {
-			flatten(this.copy(), new ArrayList<>(), subcommand, namespace);
-		}
+		CommandAPI.register(this, namespace);
 	}
 
 	// Checks that greedy arguments don't have any other arguments at the end,
 	// and only zero or one greedy argument is present in an array of arguments
-	private void checkGreedyArgumentConstraints(Argument[] argumentsArray) {
+	void checkGreedyArgumentConstraints(Argument[] argumentsArray) {
 		for (int i = 0; i < argumentsArray.length; i++) {
 			// If we've seen a greedy argument that isn't at the end, then that
 			// also covers the case of seeing more than one greedy argument, as
@@ -338,7 +306,7 @@ extends AbstractArgument<?, ?, Argument, CommandSender>
 
 	protected abstract Impl newConcreteCommandAPICommand(CommandMetaData<CommandSender> metaData);
 
-	private List<Argument[]> getArgumentsToRegister(Argument[] argumentsArray) {
+	List<Argument[]> getArgumentsToRegister(Argument[] argumentsArray) {
 		List<Argument[]> argumentsToRegister = new ArrayList<>();
 		List<Argument> currentCommand = new ArrayList<>();
 

@@ -34,6 +34,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -344,8 +345,13 @@ public abstract class CommandAPIBukkit<Source> implements BukkitPlatform<Source>
 	}
 
 	@Override
+	public void finishNodeRegistration() {
+		commandRegistrationStrategy.finishRegistration();
+	}
+
+	@Override
 	public void unregister(String commandName, boolean unregisterNamespaces) {
-		unregisterInternal(commandName, unregisterNamespaces, false);
+		unregisterInternal(new UnregisterInformation(commandName, unregisterNamespaces, false));
 	}
 
 	/**
@@ -363,18 +369,60 @@ public abstract class CommandAPIBukkit<Source> implements BukkitPlatform<Source>
 	 *                             commands, and commands registered by other plugin using Bukkit API are Bukkit commands.
 	 */
 	public static void unregister(String commandName, boolean unregisterNamespaces, boolean unregisterBukkit) {
-		CommandAPIBukkit.get().unregisterInternal(commandName, unregisterNamespaces, unregisterBukkit);
+		CommandAPIBukkit.get().unregisterInternal(new UnregisterInformation(commandName, unregisterNamespaces, unregisterBukkit));
 	}
 
-	private void unregisterInternal(String commandName, boolean unregisterNamespaces, boolean unregisterBukkit) {
-		CommandAPI.logInfo("Unregistering command /" + commandName);
+	@Override
+	public void unregisterSeveral(List<String> commandNameList, boolean unregisterNamespaces) {
+		if(commandNameList.isEmpty()) throw new IllegalArgumentException("at least one command should be present");
 
-		commandRegistrationStrategy.unregister(commandName, unregisterNamespaces, unregisterBukkit);
+		List<UnregisterInformation> unregisterInformationList = new ArrayList<>();
+		for (String commandName : commandNameList) {
+			unregisterInformationList.add(new UnregisterInformation(
+				commandName,
+				unregisterNamespaces,
+				false
+			));
+		}
+		unregisterSeveral(unregisterInformationList);
+	}
+
+	private void unregisterSeveral(Collection<UnregisterInformation> collection) {
+		if(collection.isEmpty()) return;
+
+		StringBuilder builder = new StringBuilder("Unregistering commands ");
+		Iterator<UnregisterInformation> iterator = collection.iterator();
+		while (iterator.hasNext()) {
+			builder.append("/").append(iterator.next().commandName());
+			if(iterator.hasNext()) builder.append(", ");
+		}
+		CommandAPI.logInfo(builder.toString());
+
+		commandRegistrationStrategy.unregisterSeveral(collection);
+
+		if(!CommandAPI.canRegister()) {
+			// Help topics (from Bukkit and CommandAPI) are only setup after plugins enable, so we only need to worry
+			// about removing them once the server is loaded.
+			for (UnregisterInformation unregisterInformation : collection) {
+				nms.getHelpMap().remove("/" + unregisterInformation.commandName());
+			}
+
+			// Notify players
+			for (Player p : Bukkit.getOnlinePlayers()) {
+				p.updateCommands();
+			}
+		}
+	}
+
+	private void unregisterInternal(UnregisterInformation unregisterInformation) {
+		CommandAPI.logInfo("Unregistering command /" + unregisterInformation.commandName());
+
+		commandRegistrationStrategy.unregister(unregisterInformation);
 
 		if (!CommandAPI.canRegister()) {
 			// Help topics (from Bukkit and CommandAPI) are only setup after plugins enable, so we only need to worry
 			//  about removing them once the server is loaded.
-			nms.getHelpMap().remove("/" + commandName);
+			nms.getHelpMap().remove("/" + unregisterInformation.commandName());
 
 			// Notify players
 			for (Player p : Bukkit.getOnlinePlayers()) {
