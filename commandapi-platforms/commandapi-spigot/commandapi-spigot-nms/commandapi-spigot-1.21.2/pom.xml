@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>dev.jorel</groupId>
 		<artifactId>commandapi-spigot-nms</artifactId>
-		<version>11.0.1-SNAPSHOT</version>
+		<version>11.1.0</version>
 	</parent>
 
 	<artifactId>commandapi-spigot-1.21.2</artifactId>
