@@ -209,6 +209,10 @@ public class NMS_1_20_R1 extends NMS_Common {
 		blockInputTag = SafeVarHandle.ofOrNull(BlockInput.class, "c", "tag", CompoundTag.class);
 	}
 
+	public NamespacedKey fromResourceLocation(ResourceLocation key) {
+		return NamespacedKey.fromString(key.getNamespace() + ":" + key.getPath());
+	}
+
 	@Override
 	protected CommandBuildContext getCommandBuildContext() {
 		return COMMAND_BUILD_CONTEXT;
@@ -227,6 +231,11 @@ public class NMS_1_20_R1 extends NMS_Common {
 	@Override
 	public final ArgumentType<?> _ArgumentEnchantment() {
 		return ResourceArgument.resource(COMMAND_BUILD_CONTEXT, Registries.ENCHANTMENT);
+	}
+
+	@Override
+	public final ArgumentType<?> _ArgumentMinecraftKeyRegistered() {
+		return ResourceLocationArgument.id();
 	}
 
 	@Override
@@ -317,7 +326,17 @@ public class NMS_1_20_R1 extends NMS_Common {
 	public final World getDimension(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
 		return DimensionArgument.getDimension(cmdCtx, key).getWorld();
 	}
-	
+
+	@Override
+	public DoubleRange getDoubleRange(CommandContext<CommandSourceStack> cmdCtx, String key) {
+		MinMaxBounds.Doubles range = RangeArgument.Floats.getRange(cmdCtx, key);
+		final Double lowBoxed = range.getMin();
+		final Double highBoxed = range.getMax();
+		final double low = lowBoxed == null ? -Double.MAX_VALUE : lowBoxed;
+		final double high = highBoxed == null ? Double.MAX_VALUE : highBoxed;
+		return new DoubleRange(low, high);
+	}
+
 	@Override
 	public final Enchantment getEnchantment(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
 		return Enchantment.getByKey(fromResourceLocation(BuiltInRegistries.ENCHANTMENT.getKey(ResourceArgument.getEnchantment(cmdCtx, key).value())));
@@ -379,16 +398,6 @@ public class NMS_1_20_R1 extends NMS_Common {
 				}
 			}
 		);
-	}
-
-	@Override
-	public DoubleRange getDoubleRange(CommandContext<CommandSourceStack> cmdCtx, String key) {
-		MinMaxBounds.Doubles range = RangeArgument.Floats.getRange(cmdCtx, key);
-		final Double lowBoxed = range.getMin();
-		final Double highBoxed = range.getMax();
-		final double low = lowBoxed == null ? -Double.MAX_VALUE : lowBoxed;
-		final double high = highBoxed == null ? Double.MAX_VALUE : highBoxed;
-		return new DoubleRange(low, high);
 	}
 
 	@Override

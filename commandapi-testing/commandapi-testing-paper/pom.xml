@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>dev.jorel</groupId>
 		<artifactId>commandapi-testing</artifactId>
-		<version>11.0.0</version>
+		<version>11.1.0</version>
 	</parent>
 
 	<artifactId>commandapi-testing-paper</artifactId>

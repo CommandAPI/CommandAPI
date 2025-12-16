@@ -28,7 +28,6 @@ public interface HandshakePacketHandler<InputChannel> extends CommandAPIPacketHa
 	 */
 	void handleSetVersionPacket(InputChannel sender, SetVersionPacket packet);
 
-
 	/**
 	 * Handles a {@link ProtocolVersionTooOldPacket}.
 	 *

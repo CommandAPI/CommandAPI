@@ -41,6 +41,26 @@ public abstract class DefaultConfig {
 		}, false
 	);
 
+	public static final CommentedConfigOption<Boolean> ENABLE_NETWORKING = new CommentedConfigOption<>(
+		new String[]{
+			"Turn on the CommandAPI's plugin messaging functionality (default: false)",
+			"If \"false\", the CommandAPI will not listen to incoming plugin messages",
+			"and attempts to send plugin messages will fail. Enabling networking by",
+			"setting this to \"true\" is currently only useful for allowing command",
+			"requirements on Velocity."
+		}, false
+	);
+
+	public static final CommentedConfigOption<Boolean> MAKE_NETWORKING_EXCEPTIONS_WARNINGS = new CommentedConfigOption<>(
+		new String[]{
+			"Turn exceptions while sending and receiving packets into warnings (default: false)",
+			"If \"false\", the CommandAPI will throw an exception when receiving malformed packets",
+			"or if it tries to send a packet but cannot. If \"true\", these problems will be logged",
+			"as a warning, which does not include the stacktrace. Additionally, warnings can be hidden",
+			"by setting silent logs to \"true\"."
+		}, false
+	);
+
 	public static final CommentedSection SECTION_MESSAGE = new CommentedSection(
 		new String[]{
 			"Messages",

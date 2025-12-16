@@ -4,7 +4,7 @@ import dev.jorel.commandapi.exceptions.ProtocolVersionTooOldException;
 import dev.jorel.commandapi.network.packets.ProtocolVersionTooOldPacket;
 import dev.jorel.commandapi.network.packets.SetVersionPacket;
 
-import java.util.Arrays;
+import java.util.HexFormat;
 
 /**
  * Handles sending and receiving {@link CommandAPIPacket}s between instances of the CommandAPI plugin on different servers.
@@ -41,6 +41,8 @@ public abstract class CommandAPIMessenger<InputChannel, OutputChannel> {
 	 */
 	public abstract int getConnectionProtocolVersion(OutputChannel target);
 
+	private final static HexFormat byteArrayFormat = HexFormat.ofDelimiter(", ").withUpperCase();
+
 	/**
 	 * Handles a message sent to this plugin. The given byte array will be decoded into a {@link CommandAPIPacket}
 	 * according to the given {@link CommandAPIProtocol}, then handled appropriately. Nothing happens if the given byte
@@ -59,28 +61,33 @@ public abstract class CommandAPIMessenger<InputChannel, OutputChannel> {
 
 		FriendlyByteBuffer buffer = new FriendlyByteBuffer(input);
 
-		int id;
-		CommandAPIPacket packet;
 		try {
 			// Read the id
-			id = buffer.readVarInt();
+			int id = buffer.readVarInt();
 			// Use the id and protocol to find and use the correct deserialize method
-			packet = protocol.createPacket(id, buffer);
-		} catch (IllegalStateException e) {
-			throw new IllegalStateException("Exception while reading packet", e);
-		}
-		if (packet == null) throw new IllegalStateException("Unknown packet id: " + id);
+			CommandAPIPacket packet = protocol.createPacket(id, buffer);
 
-		if (buffer.countReadableBytes() != 0) {
-			// If the packet didn't read all the bytes it was given, we have a strange miscommunication
-			throw new IllegalStateException(
-				"Packet was larger than expected! " + buffer.countReadableBytes() + " extra byte(s) found after deserializing.\n" +
-					"Given: " + Arrays.toString(input) + ", Read: " + packet
+			if (packet == null) throw new IllegalStateException("Unknown packet id: " + id + " for channel: " + protocol.getChannelIdentifier());
+
+			if (buffer.countReadableBytes() != 0) {
+				// If the packet didn't read all the bytes it was given, we have a strange miscommunication
+				throw new IllegalStateException(
+					"Packet was larger than expected! " + buffer.countReadableBytes() + " extra byte(s) found after deserializing.\n" +
+						"Read: " + packet
+				);
+			}
+
+			// Handle the packet
+			packetHandlerProvider.getHandlerForProtocol(protocol).handlePacket(sender, packet);
+		} catch (ProtocolVersionTooOldException exception) {
+			// These are expected, throw them directly
+			throw exception;
+		} catch (Throwable throwable) {
+			handlePacketException(
+				new IllegalStateException("Exception while reading packet sent by " + sender + " [" + byteArrayFormat.formatHex(input) + "]", throwable),
+				sender
 			);
 		}
-
-		// Handle the packet
-		packetHandlerProvider.getHandlerForProtocol(protocol).handlePacket(sender, packet);
 	}
 
 	/**
@@ -119,7 +126,8 @@ public abstract class CommandAPIMessenger<InputChannel, OutputChannel> {
 		} catch (ProtocolVersionTooOldException exception) {
 			// Send the exception to the other side too, so they know to update their protocol version
 			this.sendPacket(target, new ProtocolVersionTooOldPacket(CommandAPIProtocol.PROTOCOL_VERSION, exception.getReason()));
-			throw exception;
+			handlePacketException(exception, null);
+			return;
 		}
 
 		// Send the bytes
@@ -134,4 +142,14 @@ public abstract class CommandAPIMessenger<InputChannel, OutputChannel> {
 	 * @param bytes    The array of bytes to send.
 	 */
 	protected abstract void sendRawBytes(CommandAPIProtocol protocol, OutputChannel target, byte[] bytes);
+
+	/**
+	 * Called when there is an exception while sending or receiving a packet.
+	 * May rethrow the exception or log it in another manner.
+	 *
+	 * @param exception The exception that was thrown.
+	 * @param source    The connection that sent the packet which caused the exception during receiving.
+	 *                  This parameter will be null if an exception happens while sending.
+	 */
+	protected abstract void handlePacketException(RuntimeException exception, InputChannel source);
 }

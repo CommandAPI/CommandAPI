@@ -21,9 +21,6 @@
 package dev.jorel.commandapi;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Function;
 
 /**
  * A class to contain information about how to configure the CommandAPI during its loading step.
@@ -44,6 +41,9 @@ extends CommandAPIConfig<Impl>
 
 	boolean usePluginNamespace = false;
 	String namespace = null;
+
+	boolean enableNetworking = false;
+	boolean makeNetworkingExceptionsWarnings = false;
 
 	/**
 	 * Sets verbose output logging for the CommandAPI if true.
@@ -113,4 +113,27 @@ extends CommandAPIConfig<Impl>
 		return instance();
 	}
 
+	/**
+	 * Sets whether the CommandAPI's networking functionality should be enabled.
+	 * This is currently only useful for allowing command requirements on Velocity.
+	 *
+	 * @param enabled whether networking should be enabled
+	 * @return this CommandAPIConfig
+	 */
+	public Impl enableNetworking(boolean enabled) {
+		this.enableNetworking = enabled;
+		return instance();
+	}
+
+	/**
+	 * Sets whether the CommandAPI should throw an exception if it cannot send or receive a packet.
+	 * If true, the problem will be logged as a warning instead.
+	 *
+	 * @param value Whether networking exceptions should be logged as warnings.
+	 * @return this CommandAPIConfig
+	 */
+	public Impl makeNetworkingExceptionsWarnings(boolean value) {
+		this.makeNetworkingExceptionsWarnings = value;
+		return instance();
+	}
 }

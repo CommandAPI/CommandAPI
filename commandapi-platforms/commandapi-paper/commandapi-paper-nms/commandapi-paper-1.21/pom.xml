@@ -6,24 +6,16 @@
 	<parent>
 		<groupId>dev.jorel</groupId>
 		<artifactId>commandapi-paper-nms</artifactId>
-		<version>11.0.0</version>
+		<version>11.1.0</version>
 	</parent>
 
 	<artifactId>commandapi-paper-1.21</artifactId>
 	<name>Paper support for 1.21</name>
 
-	<properties>
-		<minecraft.mappings>1.21-R0.1-SNAPSHOT</minecraft.mappings>
-	</properties>
-
 	<repositories>
 		<repository>
 			<id>minecraft-libraries</id>
 			<url>https://libraries.minecraft.net</url>
-		</repository>
-		<repository>
-			<id>codemc-repo</id>
-			<url>https://repo.codemc.io/repository/nms/</url>
 		</repository>
 		<repository>
 			<id>papermc</id>
@@ -49,7 +41,7 @@
 		<dependency>
 			<groupId>ca.bkaw</groupId>
 			<artifactId>paper-nms</artifactId>
-			<version>1.21</version>
+			<version>1.21-SNAPSHOT</version>
 			<scope>provided</scope>
 			<exclusions>
 				<exclusion>

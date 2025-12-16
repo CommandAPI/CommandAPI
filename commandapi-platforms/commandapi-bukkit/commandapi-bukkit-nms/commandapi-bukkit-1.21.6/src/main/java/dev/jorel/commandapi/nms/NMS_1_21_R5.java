@@ -282,6 +282,10 @@ public class NMS_1_21_R5 extends NMS_Common {
 		return result.getFirst();
 	}
 
+	public NamespacedKey fromResourceLocation(ResourceLocation key) {
+		return NamespacedKey.fromString(key.getNamespace() + ":" + key.getPath());
+	}
+
 	@Override
 	protected CommandBuildContext getCommandBuildContext() {
 		return commandBuildContext.get();
@@ -300,6 +304,11 @@ public class NMS_1_21_R5 extends NMS_Common {
 	@Override
 	public final ArgumentType<?> _ArgumentEnchantment() {
 		return ResourceArgument.resource(commandBuildContext.get(), Registries.ENCHANTMENT);
+	}
+
+	@Override
+	public final ArgumentType<?> _ArgumentMinecraftKeyRegistered() {
+		return ResourceLocationArgument.id();
 	}
 
 	@Override
@@ -456,6 +465,16 @@ public class NMS_1_21_R5 extends NMS_Common {
 	}
 
 	@Override
+	public DoubleRange getDoubleRange(CommandContext<CommandSourceStack> cmdCtx, String key) {
+		MinMaxBounds.Doubles range = RangeArgument.Floats.getRange(cmdCtx, key);
+		final Double lowBoxed = range.min().orElse(null);
+		final Double highBoxed = range.max().orElse(null);
+		final double low = lowBoxed == null ? -Double.MAX_VALUE : lowBoxed;
+		final double high = highBoxed == null ? Double.MAX_VALUE : highBoxed;
+		return new DoubleRange(low, high);
+	}
+
+	@Override
 	public final Enchantment getEnchantment(CommandContext<CommandSourceStack> cmdCtx, String key)
 		throws CommandSyntaxException {
 		final net.minecraft.world.item.enchantment.Enchantment enchantment = ResourceArgument.getEnchantment(cmdCtx, key).value();
@@ -519,16 +538,6 @@ public class NMS_1_21_R5 extends NMS_Common {
 				}
 			}
 		);
-	}
-
-	@Override
-	public DoubleRange getDoubleRange(CommandContext<CommandSourceStack> cmdCtx, String key) {
-		MinMaxBounds.Doubles range = RangeArgument.Floats.getRange(cmdCtx, key);
-		final Double lowBoxed = range.min().orElse(null);
-		final Double highBoxed = range.max().orElse(null);
-		final double low = lowBoxed == null ? -Double.MAX_VALUE : lowBoxed;
-		final double high = highBoxed == null ? Double.MAX_VALUE : highBoxed;
-		return new DoubleRange(low, high);
 	}
 
 	@Override

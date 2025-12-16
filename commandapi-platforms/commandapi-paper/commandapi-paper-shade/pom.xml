@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>dev.jorel</groupId>
 		<artifactId>commandapi-paper</artifactId>
-		<version>11.0.0</version>
+		<version>11.1.0</version>
 	</parent>
 
 	<artifactId>commandapi-paper-shade</artifactId>
@@ -95,6 +95,10 @@
 								</relocation>
 								<relocation>
 									<pattern>org.bukkit.craftbukkit.v1_21_R6</pattern>
+									<shadedPattern>org.bukkit.craftbukkit</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>org.bukkit.craftbukkit.v1_21_R7</pattern>
 									<shadedPattern>org.bukkit.craftbukkit</shadedPattern>
 								</relocation>
 							</relocations>

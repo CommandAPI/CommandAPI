@@ -23,5 +23,5 @@ dependencies {
 	implementation("com.velocitypowered:velocity-api:3.1.1")
 
 	// The CommandAPI dependency used for Velocity
-	implementation("dev.jorel:commandapi-velocity-core:11.0.0")
+	implementation("dev.jorel:commandapi-velocity-core:11.1.0")
 }

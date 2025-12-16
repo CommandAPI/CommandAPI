@@ -42,7 +42,7 @@ public class CommandAPIVelocity implements CommandAPIPlatform<Argument<?>, Comma
 	private static CommandAPIVelocity instance;
 	private static InternalVelocityConfig config;
 
-	private VelocityCommandAPIMessenger messenger;
+	private VelocityCommandAPIMessenger messenger = null;
 	private CommandManager commandManager;
 	private CommandDispatcher<CommandSource> dispatcher;
 
@@ -105,14 +105,20 @@ public class CommandAPIVelocity implements CommandAPIPlatform<Argument<?>, Comma
 	@Override
 	public VelocityCommandAPIMessenger setupMessenger() {
 		messenger = new VelocityCommandAPIMessenger(
-			getConfiguration().getPlugin(),
-			getConfiguration().getServer()
+			config.getPlugin(),
+			config.getServer()
 		);
 		return messenger;
 	}
 
 	public VelocityCommandAPIMessenger getMessenger() {
-		return messenger;
+		if (messenger != null) {
+			return messenger;
+		} else {
+			throw new IllegalStateException("Tried to access the plugin messenger, but it was null." +
+				" Plugin messages are only possible after calling CommandAPI#onEnable." +
+				" Also ensure that the \"enable-networking\" config option is \"true\".");
+		}
 	}
 
 	@Override

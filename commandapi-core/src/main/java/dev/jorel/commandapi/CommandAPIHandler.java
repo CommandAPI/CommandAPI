@@ -97,20 +97,23 @@ extends AbstractArgument<?, ?, Argument, CommandSender>
 	 */
 	public static <CommandSource> String getRawArgumentInput(CommandContext<CommandSource> cmdCtx, String key) {
 		final ParsedArgument<?, ?> parsedArgument = commandContextArguments.get(cmdCtx).get(key);
-		
-		// TODO: Issue #310: Parsing this argument via /execute run <blah> doesn't have the value in
-		//  the arguments for this command context (most likely because it's a redirected command).
-		//  We need to figure out how to handle this case.
-		if (parsedArgument != null) {
-			// Sanity check: See https://github.com/JorelAli/CommandAPI/wiki/Implementation-details#chatcomponentargument-raw-arguments
-			StringRange range = parsedArgument.getRange();
-			if (range.getEnd() > cmdCtx.getInput().length()) {
-				range = StringRange.between(range.getStart(), cmdCtx.getInput().length());
-			}
-			return range.get(cmdCtx.getInput());
-		} else {
+
+		// Hotfix for https://github.com/CommandAPI/CommandAPI/issues/673.
+		//  MultiLiteralArguments are converted into multiple literal nodes.
+		//  Literal nodes are stored in the commandContextArguments by their literal string,
+		//  not the MultiLiteralArgument's node name, so parsedArgument will be null.
+		//  This isn't really a problem, since the raw input string is the same as
+		//  the parsed result for literals. But, dev/command-build-rewrite should fix this.
+		if (parsedArgument == null) {
 			return "";
 		}
+
+		// Sanity check: See https://github.com/JorelAli/CommandAPI/wiki/Implementation-details#chatcomponentargument-raw-arguments
+		StringRange range = parsedArgument.getRange();
+		if (range.getEnd() > cmdCtx.getInput().length()) {
+			range = StringRange.between(range.getStart(), cmdCtx.getInput().length());
+		}
+		return range.get(cmdCtx.getInput());
 	}
 
 	// TODO: Need to ensure this can be safely "disposed of" when we're done (e.g. on reloads).
@@ -119,7 +122,7 @@ extends AbstractArgument<?, ?, Argument, CommandSender>
 	private static final Map<ClassCache, Field> FIELDS = new HashMap<>();
 
 	final CommandAPIPlatform<Argument, CommandSender, Source> platform;
-	private CommandAPIMessenger<?, ?> messenger;
+	private CommandAPIMessenger<?, ?> messenger = null;
 
 	final TreeMap<String, CommandPermission> registeredPermissions = new TreeMap<>();
 	final List<RegisteredCommand> registeredCommands; // Keep track of what has been registered for type checking
@@ -151,13 +154,17 @@ extends AbstractArgument<?, ?, Argument, CommandSender>
 
 	public void onEnable() {
 		platform.onEnable();
-		// Setting up the network messenger usually requires registering
-		//  events, which often does not work until onEnable
-		messenger = platform.setupMessenger();
+
+		if (CommandAPI.getConfiguration().isNetworkingEnabled()) {
+			// Setting up the network messenger usually requires registering
+			//  events, which often does not work until onEnable
+			messenger = platform.setupMessenger();
+		}
 	}
 
 	public void onDisable() {
-		messenger.close();
+		if (messenger != null) messenger.close();
+
 		platform.onDisable();
 		CommandAPIHandler.resetInstance();
 	}
@@ -820,6 +827,13 @@ extends AbstractArgument<?, ?, Argument, CommandSender>
 
 	CommandArguments generatePreviousArguments(CommandContext<Source> context, Argument[] args, String nodeName)
 			throws CommandSyntaxException {
+		// https://github.com/JorelAli/CommandAPI/issues/310 & https://github.com/Mojang/brigadier/issues/137
+		//  If a command goes through a redirect, Brigadier puts all context after the redirect into the child
+		//  CommandContext. When executing a command, Brigadier will pass us the child context. However, when
+		//  suggesting a command, Brigadier passes us the root context for some reason. Assuming the behavior
+		//  when executing a command is correct, when suggesting commands we should use the last child.
+		context = context.getLastChild();
+
 		// Populate Object[], which is our previously filled arguments
 		List<Object> previousArguments = new ArrayList<>();
 
@@ -837,21 +851,9 @@ extends AbstractArgument<?, ?, Argument, CommandSender>
 				break;
 			}
 
-			Object result;
-			try {
-				result = parseArgument(context, arg.getNodeName(), arg, new CommandArguments(previousArguments.toArray(), argsMap, rawArguments.toArray(new String[0]), rawArgumentsMap, "/" + context.getInput()));
-			} catch (IllegalArgumentException e) {
-				/*
-				 * Redirected commands don't parse previous arguments properly. Simplest way to
-				 * determine what we should do is simply set it to null, since there's nothing
-				 * else we can do. I thought about letting this simply be an empty array, but
-				 * then it's even more annoying to deal with - I wouldn't expect an array of
-				 * size n to suddenly, randomly be 0, but I would expect random NPEs because
-				 * let's be honest, this is Java we're dealing with.
-				 */
-				result = null;
-			}
 			if (arg.isListed()) {
+				Object result = parseArgument(context, arg.getNodeName(), arg, new CommandArguments(previousArguments.toArray(), argsMap, rawArguments.toArray(new String[0]), rawArgumentsMap, "/" + context.getInput()));
+
 				// Add the parsed argument
 				previousArguments.add(result);
 				argsMap.put(arg.getNodeName(), result);

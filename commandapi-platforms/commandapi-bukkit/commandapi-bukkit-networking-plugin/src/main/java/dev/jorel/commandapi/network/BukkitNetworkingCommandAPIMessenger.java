@@ -103,4 +103,14 @@ public class BukkitNetworkingCommandAPIMessenger extends CommandAPIMessenger<Pla
 	public void sendRawBytes(CommandAPIProtocol protocol, Player target, byte[] bytes) {
 		target.sendPluginMessage(this.plugin, protocol.getChannelIdentifier(), bytes);
 	}
+
+	@Override
+	protected void handlePacketException(RuntimeException exception, Player source) {
+		if (source != null) {
+			source.kickPlayer("Sent invalid plugin message data.");
+		}
+
+		// No config file or logger yet for the networking plugin
+		throw exception;
+	}
 }

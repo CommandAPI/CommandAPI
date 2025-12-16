@@ -95,6 +95,9 @@ public abstract class CommandAPISpigot<Source> extends CommandAPIBukkit<Source> 
 		if (sender instanceof RemoteConsoleCommandSender remote) {
 			return new BukkitRemoteConsoleCommandSender(remote);
 		}
+		if (isNullCommandSender(sender)) {
+			return null;
+		}
 		throw new RuntimeException("Failed to wrap CommandSender " + sender + " to a CommandAPI-compatible BukkitCommandSender");
 	}
 

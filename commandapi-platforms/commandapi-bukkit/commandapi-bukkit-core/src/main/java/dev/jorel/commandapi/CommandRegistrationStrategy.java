@@ -74,9 +74,9 @@ public abstract class CommandRegistrationStrategy<Source> {
 	// Behavior methods
 	public abstract CommandDispatcher<Source> getBrigadierDispatcher();
 
-	public abstract void runTasksAfterServerStart();
+	public void runTasksAfterServerStart() {}
 
-	public abstract void postCommandRegistration(RegisteredCommand registeredCommand, LiteralCommandNode<Source> resultantNode, List<LiteralCommandNode<Source>> aliasNodes);
+	public void postCommandRegistration(RegisteredCommand registeredCommand, LiteralCommandNode<Source> resultantNode, List<LiteralCommandNode<Source>> aliasNodes) {}
 
 	public abstract LiteralCommandNode<Source> registerCommandNode(LiteralArgumentBuilder<Source> node, String namespace);
 

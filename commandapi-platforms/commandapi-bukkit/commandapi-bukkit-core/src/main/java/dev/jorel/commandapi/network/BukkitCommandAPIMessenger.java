@@ -1,5 +1,6 @@
 package dev.jorel.commandapi.network;
 
+import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.network.packets.SetVersionPacket;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -103,5 +104,18 @@ public class BukkitCommandAPIMessenger extends CommandAPIMessenger<Player, Playe
 	@Override
 	public void sendRawBytes(CommandAPIProtocol protocol, Player target, byte[] bytes) {
 		target.sendPluginMessage(this.plugin, protocol.getChannelIdentifier(), bytes);
+	}
+
+	@Override
+	protected void handlePacketException(RuntimeException exception, Player source) {
+		if (source != null) {
+			source.kickPlayer("Sent invalid plugin message data.");
+		}
+
+		if (CommandAPI.getConfiguration().makeNetworkingExceptionsWarnings()) {
+			CommandAPI.logWarning(exception.getMessage());
+		} else {
+			throw exception;
+		}
 	}
 }

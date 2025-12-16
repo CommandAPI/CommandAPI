@@ -20,7 +20,7 @@ public class VelocityHandshakePacketHandler implements HandshakePacketHandler<Ch
 		VelocityCommandAPIMessenger messenger = CommandAPIVelocity.get().getMessenger();
 
 		// Incoming messages are from ChannelMessageSource, while outgoing messages are ChannelMessageSink
-		//  We actually want to set the version of a ChannelMessageSink. These istanceofs safely down-cast,
+		//  We actually want to set the version of a ChannelMessageSink. These instanceofs safely down-cast,
 		//  then the method call up-casts.
 		if (sender instanceof ServerConnection server) messenger.setServerProtocolVersion(server, protocolVersion);
 		if (sender instanceof Player player) messenger.setPlayerProtocolVersion(player, protocolVersion);

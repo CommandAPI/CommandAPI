@@ -28,14 +28,14 @@
 		<dependency>
 			<groupId>dev.jorel</groupId>
 			<artifactId>commandapi-paper-shade</artifactId>
-			<version>11.0.0</version>
+			<version>11.1.0</version>
 		</dependency>
 
 		<!-- The CommandAPI dependency used for building commands with annotations -->
 		<dependency>
 			<groupId>dev.jorel</groupId>
 			<artifactId>commandapi-paper-annotations</artifactId>
-			<version>11.0.0</version>
+			<version>11.1.0</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -62,7 +62,7 @@
 						<path>
 							<groupId>dev.jorel</groupId>
 							<artifactId>commandapi-annotations</artifactId>
-							<version>11.0.0</version>
+							<version>11.1.0</version>
 						</path>
 					</annotationProcessorPaths>
 					<release>17</release>

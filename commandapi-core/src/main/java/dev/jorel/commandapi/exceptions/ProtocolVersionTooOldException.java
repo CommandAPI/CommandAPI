@@ -7,7 +7,7 @@ public class ProtocolVersionTooOldException extends RuntimeException {
 		return new ProtocolVersionTooOldException(
 			"Tried to send a packet to " + target + ", which is using protocol version " + protocolVersion + ". " +
 				"This system is using version " + CommandAPIProtocol.PROTOCOL_VERSION + ". " +
-				"That version is too old to receive the packet. " +
+				"That version is too old to receive the packet, or CommandAPI networking is not enabled. " +
 				reason,
 			protocolVersion, reason
 		);

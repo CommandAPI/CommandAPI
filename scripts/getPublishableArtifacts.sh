@@ -11,8 +11,8 @@ version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
 
 # Declare associative array: [module_path]=custom_name
 declare -A MODULES_TO_COPY=(
-  ["commandapi-platforms/commandapi-spigot/commandapi-spigot-plugin"]="CommandAPI-Spigot-$version.jar"
-  ["commandapi-platforms/commandapi-paper/commandapi-paper-plugin"]="CommandAPI-Paper-$version.jar"
+  ["commandapi-platforms/commandapi-spigot/commandapi-spigot-plugin"]="CommandAPI-$version-Spigot.jar"
+  ["commandapi-platforms/commandapi-paper/commandapi-paper-plugin"]="CommandAPI-$version-Paper.jar"
   ["commandapi-platforms/commandapi-bukkit/commandapi-bukkit-networking-plugin"]="CommandAPI-$version-Networking-Plugin.jar"
   ["commandapi-platforms/commandapi-velocity/commandapi-velocity-plugin"]="CommandAPI-$version-Velocity.jar"
 )

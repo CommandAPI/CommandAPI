@@ -7,7 +7,7 @@
 	<parent>
 		<artifactId>commandapi</artifactId>
 		<groupId>dev.jorel</groupId>
-		<version>11.0.0</version>
+		<version>11.1.0</version>
 	</parent>
 
 	<artifactId>commandapi-platforms</artifactId>
@@ -36,6 +36,7 @@
 				<module>../commandapi-kotlin/commandapi-kotlin-core</module>
 				<module>../commandapi-kotlin/commandapi-kotlin-bukkit</module>
 				<module>../commandapi-kotlin/commandapi-kotlin-paper</module>
+				<module>../commandapi-testing/commandapi-testing-paper</module>
 			</modules>
 		</profile>
 		<profile>
@@ -46,6 +47,7 @@
 				<module>../commandapi-kotlin/commandapi-kotlin-core</module>
 				<module>../commandapi-kotlin/commandapi-kotlin-bukkit</module>
 				<module>../commandapi-kotlin/commandapi-kotlin-spigot</module>
+				<module>../commandapi-testing/commandapi-testing-spigot</module>
 			</modules>
 		</profile>
 <!--		<profile>-->

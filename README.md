@@ -63,20 +63,21 @@ The list of what version of the CommandAPI you'll need to run on a specific vers
 | **1.19.2**          | 8.5.1 - 9.7.0               | 9.7.0                        | 16                                                        |
 | **1.19.3**          | 8.7.0 - 9.7.0               | 9.7.0                        | 16                                                        |
 | **1.19.4**          | 8.8.0 - 9.7.0               | 9.7.0                        | 16                                                        |
-| **1.20**            | 9.0.2 - 11.0.0              | 11.0.0                       | 17                                                        |
-| **1.20.1**          | 9.0.3 - 11.0.0              | 11.0.0                       | 17                                                        |
-| **1.20.2**          | 9.2.0 - 11.0.0              | 11.0.0                       | 17                                                        |
-| **1.20.3, 1.20.4**  | 9.3.0 - 11.0.0              | 11.0.0                       | 17                                                        |
-| **1.20.5, 1.20.6**  | 9.4.0 - 11.0.0              | 11.0.0                       | 17                                                        |
-| **1.21**            | 9.5.0 - 11.0.0              | 11.0.0                       | 17                                                        |
-| **1.21.1**          | 9.5.2 - 11.0.0              | 11.0.0                       | 17                                                        |
-| **1.21.2, 1.21.3**  | 9.6.0 - 11.0.0              | 11.0.0                       | 17                                                        |
-| **1.21.4**          | 9.7.0 - 11.0.0              | 11.0.0                       | 17                                                        |
-| **1.21.5**          | 10.0.0 - 11.0.0             | 11.0.0                       | 17                                                        |
-| **1.21.6**          | 10.1.0 - 11.0.0             | 11.0.0                       | 17                                                        |
-| **1.21.7**          | 10.1.1 - 11.0.0             | 11.0.0                       | 17                                                        |
-| **1.21.8**          | 10.1.2 - 11.0.0             | 11.0.0                       | 17                                                        |
-| **1.21.9, 1.21.10** | 11.0.0                      | 11.0.0                       | 17                                                        |
+| **1.20**            | 9.0.2 - 11.1.0              | 11.1.0                       | 17                                                        |
+| **1.20.1**          | 9.0.3 - 11.1.0              | 11.1.0                       | 17                                                        |
+| **1.20.2**          | 9.2.0 - 11.1.0              | 11.1.0                       | 17                                                        |
+| **1.20.3, 1.20.4**  | 9.3.0 - 11.1.0              | 11.1.0                       | 17                                                        |
+| **1.20.5, 1.20.6**  | 9.4.0 - 11.1.0              | 11.1.0                       | 17                                                        |
+| **1.21**            | 9.5.0 - 11.1.0              | 11.1.0                       | 17                                                        |
+| **1.21.1**          | 9.5.2 - 11.1.0              | 11.1.0                       | 17                                                        |
+| **1.21.2, 1.21.3**  | 9.6.0 - 11.1.0              | 11.1.0                       | 17                                                        |
+| **1.21.4**          | 9.7.0 - 11.1.0              | 11.1.0                       | 17                                                        |
+| **1.21.5**          | 10.0.0 - 11.1.0             | 11.1.0                       | 17                                                        |
+| **1.21.6**          | 10.1.0 - 11.1.0             | 11.1.0                       | 17                                                        |
+| **1.21.7**          | 10.1.1 - 11.1.0             | 11.1.0                       | 17                                                        |
+| **1.21.8**          | 10.1.2 - 11.1.0             | 11.1.0                       | 17                                                        |
+| **1.21.9, 1.21.10** | 11.0.0 - 11.1.0             | 11.1.0                       | 17                                                        |
+| **1.21.11**         | 11.1.0                      | 11.1.0                       | 17                                                        |
 
 -----
 
@@ -391,6 +392,26 @@ This is the current roadmap for the CommandAPI (as of 3rd October 2025):
         </tr>
     </thead>
     <tbody>
+        <tr>
+            <td valign="top"><b>11.1.0</b></td>
+            <td valign="top">December 2025</td>
+            <td valign="top">
+                <b>CommandAPI Changes:</b>
+                <ul>
+                    <li>https://github.com/CommandAPI/CommandAPI/pull/642 Adds the <code>enable-networking</code> and the <code>make-networking-exceptions-warning</code> config options. You can read more about them in the documentation.</li>
+                </ul>
+                <b>Bug Fixes:</b>
+                <ul>
+                    <li>Fixes replacing a command by calling <code>CommandAPI.unregister()</code> not working under certain circumstances</li>
+                    <li>Fixes custom namespaces not working</li>
+                    <li>Fixes an issue where registering or unregistering many commands at runtime could time out the server</li>
+                </ul>
+                <b>Minecraft Version Changes:</b>
+                <ul>
+                    <li>Adds support for Minecraft 1.21.11</li>
+                </ul>
+           </td>
+        </tr>
         <tr>
             <td valign="top"><b>11.0.0</b></td>
             <td valign="top">October 2025</td>

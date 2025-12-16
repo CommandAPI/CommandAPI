@@ -314,13 +314,13 @@ public interface NMS<CommandListenerWrapper> {
 
 	World getDimension(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException;
 
+	DoubleRange getDoubleRange(CommandContext<CommandListenerWrapper> cmdCtx, String key);
+
 	Enchantment getEnchantment(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException; // Throws exception in 1.19.3
 
 	EntitySelectorParser getEntitySelector(CommandContext<CommandListenerWrapper> cmdCtx, String key);
 
 	EntityType getEntityType(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException;
-
-	DoubleRange getDoubleRange(CommandContext<CommandListenerWrapper> cmdCtx, String key);
 
 	FunctionWrapper[] getFunction(CommandContext<CommandListenerWrapper> cmdCtx, String key)
 		throws CommandSyntaxException;

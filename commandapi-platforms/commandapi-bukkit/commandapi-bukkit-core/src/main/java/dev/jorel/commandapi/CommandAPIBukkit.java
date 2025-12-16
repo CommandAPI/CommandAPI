@@ -48,7 +48,7 @@ public abstract class CommandAPIBukkit<Source> implements BukkitPlatform<Source>
 	// References to utility classes
 	private static CommandAPIBukkit<?> bukkit;
 	protected static InternalBukkitConfig config;
-	private BukkitCommandAPIMessenger messenger;
+	private BukkitCommandAPIMessenger messenger = null;
 
 	protected JavaPlugin plugin;
 	protected NMS<Source> nms;
@@ -310,7 +310,9 @@ public abstract class CommandAPIBukkit<Source> implements BukkitPlatform<Source>
 			return;
 		}
 		String pluginName = pluginCommand.getPlugin().getName();
-		if (plugin.getName().equals(pluginName)) {
+		// Get our plugin name from the config. Don't use the plugin field
+		//  since this might be called before that is initialized.
+		if (config.getPluginName().equals(pluginName)) {
 			CommandAPI.logWarning(
 				"Plugin command /%s is registered by Bukkit (%s). Did you forget to remove this from your plugin.yml file?"
 					.formatted(commandName, pluginName));
@@ -389,7 +391,13 @@ public abstract class CommandAPIBukkit<Source> implements BukkitPlatform<Source>
 
 	@Override
 	public BukkitCommandAPIMessenger getMessenger() {
-		return messenger;
+		if (messenger != null) {
+			return messenger;
+		} else {
+			throw new IllegalStateException("Tried to access the plugin messenger, but it was null." +
+				" Plugin messages are only possible after calling CommandAPI#onEnable." +
+				" Also ensure that the \"enable-networking\" config option is \"true\".");
+		}
 	}
 
 	@Override
