@@ -28,6 +28,7 @@ import dev.jorel.commandapi.wrappers.Rotation;
 import dev.jorel.commandapi.wrappers.ScoreboardSlot;
 import dev.jorel.commandapi.wrappers.SimpleFunctionWrapper;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
+import io.papermc.paper.command.brigadier.MessageComponentSerializer;
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
 import io.papermc.paper.command.brigadier.argument.AxisSet;
 import io.papermc.paper.command.brigadier.argument.SignedMessageResolver;
@@ -52,7 +53,6 @@ import io.papermc.paper.registry.RegistryKey;
 import net.kyori.adventure.chat.SignedMessage;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.bukkit.Axis;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -106,9 +106,9 @@ public class APITypeProvider implements BundledNMS<CommandSourceStack> {
 		this.paperNMS = (PaperNMS<CommandSourceStack>) paperNMS;
 		bukkitNMS();
 
-		GsonComponentSerializer gson = GsonComponentSerializer.gson();
-		this.noEntitiesFound = new SimpleCommandExceptionType(paperNMS.bukkitNMS().generateMessageFromJson(gson.serialize(Component.translatable("argument.entity.notfound.entity"))));
-		this.noPlayersFound = new SimpleCommandExceptionType(paperNMS.bukkitNMS().generateMessageFromJson(gson.serialize(Component.translatable("argument.entity.notfound.player"))));
+		MessageComponentSerializer message = MessageComponentSerializer.message();
+		this.noEntitiesFound = new SimpleCommandExceptionType(message.serialize(Component.translatable("argument.entity.notfound.entity")));
+		this.noPlayersFound = new SimpleCommandExceptionType(message.serialize(Component.translatable("argument.entity.notfound.player")));
 	}
 
 	private ArgumentType<?> getArgumentType(ThrowingSupplier<ArgumentType<?>> paper, Supplier<ArgumentType<?>> nms) {
