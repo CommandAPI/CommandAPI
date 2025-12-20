@@ -1,0 +1,6 @@
+name: DelayedCommands
+main: io.github.jorelali.Main
+version: 0.0.1
+website: https://www.jorel.dev/CommandAPI/
+api-version: 1.13
+depend: [CommandAPI]
