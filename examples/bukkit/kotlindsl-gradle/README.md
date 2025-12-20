@@ -9,7 +9,7 @@ Key points:
 - Add the `commandapi-kotlin-paper` dependency to your project:
 
   ```kotlin
-  compileOnly("dev.jorel:commandapi-kotlin-paper:11.1.0")
+  compileOnly("dev.jorel:commandapi-kotlin-paper:11.1.1-SNAPSHOT")
   ```
 
 - The Kotlin DSL must not be shaded into your plugin

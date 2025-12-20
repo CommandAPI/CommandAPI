@@ -7,7 +7,7 @@ Key points:
 - The `commandapi-paper-plugin` dependency is used:
 
   ```groovy
-  implementation 'dev.jorel:commandapi-paper-plugin:11.1.0'
+  implementation 'dev.jorel:commandapi-paper-plugin:11.1.1-SNAPSHOT'
   ```
 
 - In the plugin.yml, CommandAPI is listed as a depend:

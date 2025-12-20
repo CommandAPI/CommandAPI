@@ -18,14 +18,14 @@ Key points:
 	<dependency>
 		<groupId>dev.jorel</groupId>
 		<artifactId>commandapi-paper-test-toolkit</artifactId>
-		<version>11.1.0</version>
+		<version>11.1.1-SNAPSHOT</version>
 		<scope>test</scope>
 	</dependency>
 
 	<dependency>
 		<groupId>dev.jorel</groupId>
 		<artifactId>commandapi-paper-shade</artifactId>
-		<version>11.1.0</version>
+		<version>11.1.1-SNAPSHOT</version>
 		<scope>compile</scope>
 	</dependency>
 

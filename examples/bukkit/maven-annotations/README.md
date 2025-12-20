@@ -11,13 +11,13 @@ Key points:
       <dependency>
           <groupId>dev.jorel</groupId>
           <artifactId>commandapi-paper-plugin</artifactId>
-          <version>11.1.0</version>
+          <version>11.1.1-SNAPSHOT</version>
           <scope>provided</scope>
       </dependency>
       <dependency>
           <groupId>dev.jorel</groupId>
           <artifactId>commandapi-paper-annotations</artifactId>
-          <version>11.1.0</version>
+          <version>11.1.1-SNAPSHOT</version>
           <scope>provided</scope>
       </dependency>
   </dependencies>
@@ -37,7 +37,7 @@ Key points:
                       <path>
                           <groupId>dev.jorel</groupId>
                           <artifactId>commandapi-annotations</artifactId>
-                          <version>11.1.0</version>
+                          <version>11.1.1-SNAPSHOT</version>
                       </path>
                   </annotationProcessorPaths>
               </configuration>
