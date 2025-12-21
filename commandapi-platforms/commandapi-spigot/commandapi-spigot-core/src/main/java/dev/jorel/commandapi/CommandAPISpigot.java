@@ -20,6 +20,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.ProxiedCommandSender;
 import org.bukkit.command.RemoteConsoleCommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permission;
 
 public abstract class CommandAPISpigot<Source> extends CommandAPIBukkit<Source> implements SpigotNMS<Source> {
 	private static CommandAPISpigot<?> spigot;
@@ -99,6 +100,15 @@ public abstract class CommandAPISpigot<Source> extends CommandAPIBukkit<Source> 
 			return null;
 		}
 		throw new RuntimeException("Failed to wrap CommandSender " + sender + " to a CommandAPI-compatible BukkitCommandSender");
+	}
+
+	@Override
+	public void registerPermission(String string) {
+		try {
+			Bukkit.getPluginManager().addPermission(new Permission(string));
+		} catch (IllegalArgumentException e) {
+			assert true; // nop, not an error.
+		}
 	}
 
 	/**

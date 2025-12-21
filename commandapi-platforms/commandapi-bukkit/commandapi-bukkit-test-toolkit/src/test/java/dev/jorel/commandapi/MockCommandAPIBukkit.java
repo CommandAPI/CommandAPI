@@ -6,6 +6,7 @@ import dev.jorel.commandapi.wrappers.NativeProxyCommandSender;
 import org.bukkit.Bukkit;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permission;
 
 /**
  * An implementation of {@link CommandAPIBukkit} that is compatible with a MockBukkit testing environment.
@@ -82,6 +83,15 @@ public class MockCommandAPIBukkit extends CommandAPIBukkit<MockCommandSource> {
 			return new BukkitRemoteConsoleCommandSender(remote);
 		}
 		throw new RuntimeException("Failed to wrap CommandSender " + sender + " to a CommandAPI-compatible BukkitCommandSender");
+	}
+
+	@Override
+	public void registerPermission(String string) {
+		try {
+			Bukkit.getPluginManager().addPermission(new Permission(string));
+		} catch (IllegalArgumentException e) {
+			assert true; // nop, not an error.
+		}
 	}
 
 	@Override

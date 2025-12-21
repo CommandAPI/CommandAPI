@@ -26,7 +26,11 @@ import org.bukkit.command.RemoteConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 
@@ -36,6 +40,8 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 	private boolean isFoliaPresent = false;
 	private final Class<? extends CommandSender> feedbackForwardingCommandSender;
 	private final Class<? extends CommandSender> nullCommandSender;
+
+	private final Set<String> bootstrapPermissions = new HashSet<>();
 
 	private CommandAPILogger bootstrapLogger;
 
@@ -115,6 +121,9 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 				if (!getConfiguration().skipReloadDatapacks()) {
 					CommandAPIBukkit.get().reloadDataPacks();
 				}
+			}
+			for (String permission : bootstrapPermissions) {
+				Bukkit.getPluginManager().addPermission(new Permission(permission));
 			}
 			CommandAPIBukkit.get().updateHelpForCommands(CommandAPI.getRegisteredCommands());
 		}, 0L);
@@ -225,6 +234,20 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 			return null;
 		}
 		throw new RuntimeException("Failed to wrap CommandSender " + sender + " to a CommandAPI-compatible BukkitCommandSender");
+	}
+
+	@SuppressWarnings("ConstantValue")
+	@Override
+	public void registerPermission(String string) {
+		if (Bukkit.getServer() == null) {
+			bootstrapPermissions.add(string);
+			return;
+		}
+		try {
+			Bukkit.getPluginManager().addPermission(new Permission(string));
+		} catch (IllegalArgumentException e) {
+			assert true; // nop, not an error.
+		}
 	}
 
 	/**

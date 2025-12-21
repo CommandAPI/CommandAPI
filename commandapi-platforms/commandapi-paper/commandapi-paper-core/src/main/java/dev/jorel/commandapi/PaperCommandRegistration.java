@@ -149,8 +149,10 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 				LiteralCommandNode<CommandSourceStack> node = (LiteralCommandNode<CommandSourceStack>) commandNode;
 				event.registrar().register(node, getDescription(node.getLiteral()));
 			}
-			for (String commandName : commandsToRemove) {
-				removeBrigadierCommands(getBrigadierDispatcher().getRoot(), commandName, false, c -> true);
+			if (Bukkit.getServer() != null) {
+				for (String commandName : commandsToRemove) {
+					removeBrigadierCommands(getBrigadierDispatcher().getRoot(), commandName, false, c -> true);
+				}
 			}
 
 			// Update the dispatcher file
