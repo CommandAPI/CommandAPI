@@ -123,7 +123,11 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 				}
 			}
 			for (String permission : bootstrapPermissions) {
-				Bukkit.getPluginManager().addPermission(new Permission(permission));
+				try {
+					Bukkit.getPluginManager().addPermission(new Permission(permission));
+				} catch (IllegalArgumentException e) {
+					assert true; // nop, not an error.
+				}
 			}
 			CommandAPIBukkit.get().updateHelpForCommands(CommandAPI.getRegisteredCommands());
 		}, 0L);
