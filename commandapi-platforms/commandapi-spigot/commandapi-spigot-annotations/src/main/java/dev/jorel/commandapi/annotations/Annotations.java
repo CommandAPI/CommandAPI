@@ -207,15 +207,20 @@ public class Annotations extends AbstractProcessor {
 				}
 			}
 		}
-		
+
+		// Import all the parts of a generic type separately
+		// E.g. List<Set<String>> -> List, Set, and String
+		// Assuming that each class only has one generic type parameter
+		SortedSet<String> expandedImports = new TreeSet<>();
 		for(String import_ : new TreeSet<>(imports)) {
-			if(import_.contains("<")) {
-				imports.add(import_.substring(0, import_.indexOf("<")));
-				imports.add(import_.substring(import_.indexOf("<") + 1, import_.indexOf(">")));
+			while (import_.contains("<")) {
+				expandedImports.add(import_.substring(0, import_.indexOf("<")));
+				import_ = import_.substring(import_.indexOf("<") + 1, import_.lastIndexOf(">"));
 			}
+			expandedImports.add(import_);
 		}
-		
-		return imports;
+
+		return expandedImports;
 	}
 	
 	private void emitImports(PrintWriter out, Element classElement) {
@@ -227,7 +232,7 @@ public class Annotations extends AbstractProcessor {
 					out.println();
 			}
 			// Don't import stuff like "String"
-			if(!import_.contains(".") || import_.contains("<")) {
+			if(!import_.contains(".")) {
 				continue;
 			}
 			
@@ -349,14 +354,17 @@ public class Annotations extends AbstractProcessor {
 			String fromArgumentMap = argumentMapping.get(i);
 			out.print(", (");
 
-			if(fromArgumentMap.contains("<")) {
+			int genericTypesCount = 0;
+			while (fromArgumentMap.contains("<")) {
 				out.print(simpleFromQualified(fromArgumentMap.substring(0, fromArgumentMap.indexOf("<"))));
 				out.print("<");
-				out.print(simpleFromQualified(fromArgumentMap.substring(fromArgumentMap.indexOf("<") + 1, fromArgumentMap.indexOf(">"))));
-				out.print(">");
-			} else {
-				out.print(simpleFromQualified(fromArgumentMap));
+
+				fromArgumentMap = fromArgumentMap.substring(fromArgumentMap.indexOf("<") + 1, fromArgumentMap.lastIndexOf(">"));
+				genericTypesCount++;
 			}
+			out.print(simpleFromQualified(fromArgumentMap));
+			out.print(">".repeat(genericTypesCount));
+
 			out.print(") args.get(");
 			out.print(i);
 			out.print(")");
