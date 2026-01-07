@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>dev.jorel</groupId>
+		<artifactId>commandapi-paper-test</artifactId>
+		<version>11.1.1-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>commandapi-paper-test-impl-1.20.5</artifactId>
+	<name>Paper internal test framework 1.20.5/1.20.6 implementation</name>
+
+	<dependencies>
+		<!-- CommandAPI -->
+		<dependency>
+			<groupId>dev.jorel</groupId>
+			<artifactId>commandapi-paper-test-impl</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<!-- Paper server -->
+		<dependency>
+			<groupId>ca.bkaw</groupId>
+			<artifactId>paper-nms</artifactId>
+			<version>1.20.6-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.seeseemelk</groupId>
+			<artifactId>MockBukkit-v1.20</artifactId>
+			<version>3.93.2</version>
+		</dependency>
+	</dependencies>
+</project>

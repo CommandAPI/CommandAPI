@@ -48,7 +48,7 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 	private LifecycleEventOwner lifecycleEventOwner;
 
 	@SuppressWarnings("unchecked")
-	protected CommandAPIPaper(InternalPaperConfig config, BundledNMS<Source> nms) {
+	public CommandAPIPaper(InternalPaperConfig config, BundledNMS<Source> nms) {
 		CommandAPIPaper.paper = this;
 		CommandAPIBukkit.config = config;
 		this.lifecycleEventOwner = config.getLifecycleEventOwner();

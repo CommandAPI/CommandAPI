@@ -26,6 +26,7 @@
 		<module>commandapi-paper-shade</module>
 		<module>commandapi-paper-plugin</module>
         <module>commandapi-paper-test-toolkit</module>
+		<module>commandapi-paper-test</module>
 
 		<!-- Tests do not compile
 		<module>../../commandapi-test/commandapi-test-paper</module> -->

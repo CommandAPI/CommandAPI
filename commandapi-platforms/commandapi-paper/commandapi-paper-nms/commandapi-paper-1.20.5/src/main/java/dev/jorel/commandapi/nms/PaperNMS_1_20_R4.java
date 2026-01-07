@@ -10,13 +10,12 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.MinecraftServer;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.CraftServer;
-import org.bukkit.craftbukkit.help.SimpleHelpMap;
 
 public class PaperNMS_1_20_R4 implements PaperNMS<CommandSourceStack> {
 
 	private CommandBuildContext commandBuildContext;
 
-	private NMS_1_20_R4 bukkitNMS;
+	private final NMS_1_20_R4 bukkitNMS = new NMS_1_20_R4(this::getCommandBuildContext);
 
 	private CommandBuildContext getCommandBuildContext() {
 		if (commandBuildContext != null) {
@@ -33,9 +32,6 @@ public class PaperNMS_1_20_R4 implements PaperNMS<CommandSourceStack> {
 
 	@Override
 	public NMS<CommandSourceStack> bukkitNMS() {
-		if (bukkitNMS == null) {
-			this.bukkitNMS = new NMS_1_20_R4(this::getCommandBuildContext);
-		}
 		return bukkitNMS;
 	}
 

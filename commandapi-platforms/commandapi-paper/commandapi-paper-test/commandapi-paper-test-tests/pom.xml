@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>dev.jorel</groupId>
+		<artifactId>commandapi-paper-test</artifactId>
+		<version>11.1.1-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>commandapi-paper-test-tests</artifactId>
+	<name>Paper internal tests</name>
+
+	<dependencies>
+		<dependency>
+			<groupId>dev.jorel</groupId>
+			<artifactId>commandapi-bukkit-plugin-common</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>test-jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- Run tests-->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.22.0</version>
+				<configuration>
+					<trimStackTrace>false</trimStackTrace>
+					<!-- To help with debugging tests, you can specify an include
+					 to limit a build to only run a certain test file. Uncomment
+					 here if you want to do that: -->
+<!--					<includes>-->
+<!--						<include>**/ArgumentSuggestionTests.java</include>-->
+<!--					</includes>-->
+				</configuration>
+			</plugin>
+			<!-- Create coverage report -->
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<executions>
+					<!-- to avoid bugs in some situations -->
+					<execution>
+						<id>default-prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<!-- create report during maven verify phase -->
+					<execution>
+						<id>report</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+	<!-- Version specific configuration -->
+	<profiles>
+		<profile>
+			<id>Minecraft_1_20_5</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>dev.jorel</groupId>
+					<artifactId>commandapi-paper-test-impl-1.20.5</artifactId>
+					<version>${project.version}</version>
+					<scope>test</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+	</profiles>
+</project>
