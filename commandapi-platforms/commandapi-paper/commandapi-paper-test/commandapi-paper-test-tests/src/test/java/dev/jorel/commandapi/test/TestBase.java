@@ -42,7 +42,7 @@ public abstract class TestBase {
 		mockPlatform.startServer(pluginClass);
 	}
 
-	public CommandAPIServerMock getServer() {
+	public CommandAPIServerMock<?> getServer() {
 		return mockPlatform.getServer();
 	}
 
@@ -67,12 +67,17 @@ public abstract class TestBase {
 	}
 
 	public <T> void assertStoresResult(CommandSender sender, String command, Mut<T> queue, T expected) {
+		assertStoresResult(sender, command, queue, expected, Function.identity());
+	}
+
+	public <T, U> void assertStoresResult(CommandSender sender, String command, Mut<T> queue, U expected, Function<T, U> transformResult) {
 		assertDoesNotThrow(() -> assertTrue(
 			mockPlatform.getServer().dispatchThrowableCommand(sender, command),
 			"Expected command dispatch to return true, but it gave false"));
-		assertEquals(expected,
-			assertDoesNotThrow(queue::get, "Expected to find <" + expected + "> in queue, but nothing was present")
-		);
+
+		T result = assertDoesNotThrow(queue::get, "Expected to find <" + expected + "> in queue, but nothing was present");
+
+		assertEquals(expected, transformResult.apply(result));
 	}
 
 	public <T extends Throwable> T assertThrowsWithMessage(Class<T> expectedType, String message, Executable executable) {

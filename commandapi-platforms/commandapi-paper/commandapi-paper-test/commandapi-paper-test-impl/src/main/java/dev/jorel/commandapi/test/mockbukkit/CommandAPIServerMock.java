@@ -15,15 +15,20 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.help.HelpTopic;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
 public interface CommandAPIServerMock<Source> extends Server {
+	// Start server
+	void onEnable();
+
 	// Command dispatch
 	// TODO: Not sure these old implementations make sense anymore in the Paper command system
 	@SuppressWarnings("unchecked")
@@ -73,21 +78,11 @@ public interface CommandAPIServerMock<Source> extends Server {
 	boolean serverDispatchCommand(CommandSender sender, String commandLine);
 
 	// Suggestions
-	@SuppressWarnings({"rawtypes", "unchecked"})
 	default List<String> getSuggestions(CommandSender sender, String commandLine) {
-		CommandDispatcher dispatcher = Brigadier.getCommandDispatcher();
-		Object css = Brigadier.getBrigadierSourceFromCommandSender(sender);
-		ParseResults parseResults = dispatcher.parse(commandLine, css);
-		Suggestions suggestions;
-		try {
-			suggestions = (Suggestions) dispatcher.getCompletionSuggestions(parseResults).get();
-		} catch (InterruptedException | ExecutionException e) {
-			e.printStackTrace();
-			suggestions = new Suggestions(StringRange.at(0), new ArrayList<>()); // Empty suggestions
-		}
+		List<Suggestion> suggestions = getSuggestionsWithTooltips(sender, commandLine);
 
 		List<String> suggestionsAsStrings = new ArrayList<>();
-		for (Suggestion suggestion : suggestions.getList()) {
+		for (Suggestion suggestion : suggestions) {
 			suggestionsAsStrings.add(suggestion.getText());
 		}
 
@@ -164,6 +159,8 @@ public interface CommandAPIServerMock<Source> extends Server {
 		key.forEach(this::addAdvancement);
 	}
 
+	Map<String, HelpTopic> getHelpMapTopics();
+
 	Source getBrigadierSourceFromCommandSender(AbstractCommandSender<? extends CommandSender> senderWrapper);
 
 	<T> T getMinecraftServer();
@@ -232,11 +229,5 @@ public interface CommandAPIServerMock<Source> extends Server {
 //	@Override
 //	public @NotNull Messenger getMessenger() {
 //		return messenger;
-//	}
-
-//
-//	@Override
-//	public Iterator<Advancement> advancementIterator() {
-//		return advancements.iterator();
 //	}
 }

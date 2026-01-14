@@ -11,7 +11,6 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.registries.BuiltInRegistries;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
-import org.bukkit.event.server.ServerLoadEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.mockito.Mockito;
@@ -55,19 +54,25 @@ public class MockPlatform_1_20_5 extends MockPlatform implements Enums_1_20_5 {
 		MockPlatform.setField(PaperNMS_1_20_R4.class, "bukkitNMS", paperNMS, bukkitNMS);
 
 		// Override problematic methods
-		Mockito.when(bukkitNMS.getMinecraftServer()).thenAnswer(invocation -> server.getMinecraftServer());
+		Mockito.doAnswer(invocation -> server.getMinecraftServer())
+			.when(bukkitNMS).getMinecraftServer();
 		Mockito.doAnswer(invocation -> server.getBrigadierSourceFromCommandSender(invocation.getArgument(0)))
 			.when(bukkitNMS).getBrigadierSourceFromCommandSender(any());
+		Mockito.doAnswer(invocation -> server.getHelpMapTopics())
+			.when(bukkitNMS).getHelpMap();
 
 		return paperNMS;
 	}
 
 	@Override
 	public void enableServer() {
-		// Run the CommandAPI's enable tasks
 		assertTrue(CommandAPI.canRegister(), "Server was already enabled! Cannot enable twice!");
-		Bukkit.getPluginManager().callEvent(new ServerLoadEvent(ServerLoadEvent.LoadType.STARTUP));
+
+		server.onEnable();
+
+		// Advance by one tick to run delayed processes
 		assertDoesNotThrow(() -> server.getScheduler().performOneTick());
+
 		assertFalse(CommandAPI.canRegister());
 	}
 

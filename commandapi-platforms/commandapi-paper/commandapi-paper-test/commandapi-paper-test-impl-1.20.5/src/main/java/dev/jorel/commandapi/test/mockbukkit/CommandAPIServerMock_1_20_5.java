@@ -6,20 +6,27 @@ import be.seeseemelk.mockbukkit.WorldMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMockFactory;
 import be.seeseemelk.mockbukkit.entity.SimpleEntityMock;
-import com.mojang.brigadier.CommandDispatcher;
+import be.seeseemelk.mockbukkit.help.HelpMapMock;
 import dev.jorel.commandapi.Brigadier;
 import dev.jorel.commandapi.CommandAPIBukkit;
 import dev.jorel.commandapi.commandsenders.AbstractCommandSender;
 import dev.jorel.commandapi.commandsenders.BukkitPlayer;
 import dev.jorel.commandapi.test.MockPlatform;
 import io.papermc.paper.advancement.AdvancementDisplay;
+import io.papermc.paper.command.brigadier.PaperCommands;
+import io.papermc.paper.plugin.lifecycle.event.LifecycleEventRunner;
+import io.papermc.paper.plugin.lifecycle.event.registrar.ReloadableRegistrarEvent;
+import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
+import net.minecraft.SharedConstants;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.functions.CommandFunction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.Bootstrap;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerAdvancementManager;
 import net.minecraft.server.level.ServerPlayer;
@@ -31,19 +38,51 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.server.ServerLoadEvent;
+import org.bukkit.help.HelpTopic;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 import org.mockito.Mockito;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 
 public class CommandAPIServerMock_1_20_5 extends ServerMock implements CommandAPIServerMock<CommandSourceStack> {
 	public CommandAPIServerMock_1_20_5() {
 		MockPlatform.setField(ServerMock.class, "unsafe", this, new CommandAPIUnsafeValues());
+	}
+
+	// Start and stop server
+	private final Commands minecraftCommands;
+
+	{
+		// Invoke Minecraft's game version and registry
+		//  Some ArgumentTypes need this setup to initialize properly
+		SharedConstants.tryDetectVersion();
+		Bootstrap.bootStrap();
+
+		// Create minecraft commands
+		CommandBuildContext commandBuildContext = Mockito.mock();
+		minecraftCommands = new Commands(Commands.CommandSelection.DEDICATED, commandBuildContext);
+		PaperCommands.INSTANCE.setDispatcher(minecraftCommands, commandBuildContext);
+	}
+
+	@Override
+	public void onEnable() {
+		// Register Paper commands
+		LifecycleEventRunner.INSTANCE.callReloadableRegistrarEvent(
+			LifecycleEvents.COMMANDS, PaperCommands.INSTANCE,
+			Plugin.class, ReloadableRegistrarEvent.Cause.INITIAL
+		);
+
+		// Run other server enable events
+		Bukkit.getPluginManager().callEvent(new ServerLoadEvent(ServerLoadEvent.LoadType.STARTUP));
 	}
 
 	// Command dispatch
@@ -151,9 +190,11 @@ public class CommandAPIServerMock_1_20_5 extends ServerMock implements CommandAP
 		this.tags.put(resourceLocation, tagFunctions);
 	}
 
+	private final Stack<Integer> functionCallbackResults = new Stack<>();
+
 	@Override
 	public int popFunctionCallbackResult() {
-		throw new UnsupportedOperationException();
+		return functionCallbackResults.pop();
 	}
 
 	private final ServerAdvancementManager advancementDataWorld = new ServerAdvancementManager(null);
@@ -210,11 +251,16 @@ public class CommandAPIServerMock_1_20_5 extends ServerMock implements CommandAP
 		return bukkitAdvancements.iterator();
 	}
 
+	@Override
+	public Map<String, HelpTopic> getHelpMapTopics() {
+		HelpMapMock helpMap = getHelpMap();
+		return (Map<String, HelpTopic>) MockPlatform.getFieldAs(HelpMapMock.class, "topics", helpMap, Map.class);
+	}
+
 	private final MinecraftServer minecraftServerMock;
 	private final List<ServerPlayer> players = new ArrayList<>();
 	private final PlayerList playerListMock;
 	private final RecipeManager recipeManager = new RecipeManager(HolderLookup.Provider.create(Stream.of()));
-	private final CommandDispatcher<CommandSourceStack> dispatcher = new CommandDispatcher<>();
 
 	{
 		playerListMock = Mockito.mock(PlayerList.class);
@@ -229,6 +275,12 @@ public class CommandAPIServerMock_1_20_5 extends ServerMock implements CommandAP
 		});
 
 		minecraftServerMock = Mockito.mock(MinecraftServer.class);
+
+		// Minecraft commands
+		Mockito.when(minecraftServerMock.getCommands()).thenReturn(minecraftCommands);
+
+		// AdvancementArgument
+		Mockito.when(minecraftServerMock.getAdvancements()).thenReturn(advancementDataWorld);
 
 		// TODO: Evaluate how these get used and if they make sense now
 		//  that the server stuff is Paper instead of Spigot
@@ -264,8 +316,6 @@ public class CommandAPIServerMock_1_20_5 extends ServerMock implements CommandAP
 //			});
 //			return lootDataManager;
 //		});
-//		// AdvancementArgument
-//		Mockito.when(minecraftServerMock.getAdvancements()).thenAnswer(i -> advancementDataWorld);
 //
 //		// TeamArgument
 //		ServerScoreboard scoreboardServerMock = Mockito.mock(ServerScoreboard.class);
@@ -357,18 +407,28 @@ public class CommandAPIServerMock_1_20_5 extends ServerMock implements CommandAP
 //		Mockito.when(minecraftServerMock.getGameRules()).thenAnswer(i -> new GameRules());
 //		Mockito.when(minecraftServerMock.getProfiler()).thenAnswer(i -> InactiveMetricsRecorder.INSTANCE.getProfiler());
 //
-		// Brigadier dispatcher
-		Commands brigadierCommands = Mockito.mock(Commands.class);
-		Mockito.when(brigadierCommands.getDispatcher()).thenReturn(dispatcher);
-
-		Mockito.when(minecraftServerMock.getCommands()).thenReturn(brigadierCommands);
 	}
 
 	@Override
 	public CommandSourceStack getBrigadierSourceFromCommandSender(AbstractCommandSender<? extends CommandSender> senderWrapper) {
 		CommandSender sender = senderWrapper.getSource();
+
 		CommandSourceStack css = Mockito.mock(CommandSourceStack.class);
+
+		// Implement required methods
 		Mockito.when(css.getBukkitSender()).thenReturn(sender);
+		Mockito.when(css.getServer()).thenReturn(minecraftServerMock); // Get mocked MinecraftServer
+
+		// Mockito does not initialize public fields
+		css.currentCommand = new ConcurrentHashMap<>();
+
+		// FunctionArgument
+		// We don't really need to do anything funky here, we'll just return the same CSS
+		Mockito.when(css.withSuppressedOutput()).thenReturn(css);
+		Mockito.when(css.withMaximumPermission(anyInt())).thenReturn(css);
+		Mockito.when(css.callback()).thenReturn((success, result) -> {
+			functionCallbackResults.push(result);
+		});
 
 		// TODO: Evaluate how these get used and if they make sense now
 		//  that the server stuff is Paper instead of Spigot
@@ -398,8 +458,6 @@ public class CommandAPIServerMock_1_20_5 extends ServerMock implements CommandAP
 //			Mockito.when(css.getLevel().isInWorldBounds(any(BlockPos.class))).thenReturn(true);
 //			Mockito.when(css.getAnchor()).thenReturn(Anchor.EYES);
 //
-//			// Get mocked MinecraftServer
-//			Mockito.when(css.getServer()).thenAnswer(s -> getMinecraftServer());
 //
 //			// EntitySelectorArgument
 //			for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
@@ -452,13 +510,6 @@ public class CommandAPIServerMock_1_20_5 extends ServerMock implements CommandAP
 //			// Suggestions
 //			Mockito.when(css.enabledFeatures()).thenAnswer(invocation -> FeatureFlags.DEFAULT_FLAGS);
 //
-//			// FunctionArgument
-//			// We don't really need to do anything funky here, we'll just return the same CSS
-//			Mockito.when(css.withSuppressedOutput()).thenReturn(css);
-//			Mockito.when(css.withMaximumPermission(anyInt())).thenReturn(css);
-//			Mockito.when(css.callback()).thenReturn((success, result) -> {
-//				functionCallbackResults.push(result);
-//			});
 //		} else {
 //			// `getPosition` and `getRotation` are always accessed when `NMS#getSenderForCommand` is called
 //			//  If sender is an entity then we can give a physical location, but here we'll just give some defaults

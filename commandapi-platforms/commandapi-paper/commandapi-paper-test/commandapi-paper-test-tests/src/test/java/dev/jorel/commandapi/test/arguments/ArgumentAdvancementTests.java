@@ -48,18 +48,19 @@ class ArgumentAdvancementTests extends TestBase {
 				results.set((Advancement) args.get(0));
 			})
 			.register();
+		enableServer();
 
 		Player player = addPlayer();
 
 		getServer().addAdvancement(NamespacedKey.minecraft("adventure/adventuring_time"));
 
 		// /test adventure/adventuring_time
-		getServer().dispatchCommand(player, "test adventure/adventuring_time");
-		assertEquals(NamespacedKey.minecraft("adventure/adventuring_time"), results.get().getKey());
+		assertStoresResult(player, "test adventure/adventuring_time",
+			results, NamespacedKey.minecraft("adventure/adventuring_time"), Advancement::getKey);
 
 		// /test minecraft:adventure/adventuring_time
-		getServer().dispatchCommand(player, "test minecraft:adventure/adventuring_time");
-		assertEquals(NamespacedKey.minecraft("adventure/adventuring_time"), results.get().getKey());
+		assertStoresResult(player, "test minecraft:adventure/adventuring_time",
+			results, NamespacedKey.minecraft("adventure/adventuring_time"), Advancement::getKey);
 
 		// /test namespace:group/unknown_advancement
 		assertCommandFailsWith(player, "test namespace:group/unknown_advancement", "Unknown advancement: namespace:group/unknown_advancement");
@@ -77,6 +78,7 @@ class ArgumentAdvancementTests extends TestBase {
 			.withArguments(new AdvancementArgument("advancement"))
 			.executesPlayer(P_EXEC)
 			.register();
+		enableServer();
 
 		Player player = addPlayer();
 
