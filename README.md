@@ -339,6 +339,12 @@ The CommandAPI is built using the Maven build tool - if you don't have it, you c
   git clone https://github.com/CommandAPI/CommandAPI.git
   ```
 
+- For the Paper implementation, the CommandAPI uses dependencies that are not published on any repository. To compile the CommandAPI run this command to setup the required dependencies:
+
+  ```bash
+  ./setupPaperNMS.sh
+  ```
+
 - Run `mvn clean install -P Platform.Bukkit,Platform.Velocity`
 
 Notable artifacts can be found here:
