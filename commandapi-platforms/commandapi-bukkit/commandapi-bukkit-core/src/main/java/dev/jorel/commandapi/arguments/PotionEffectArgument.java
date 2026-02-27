@@ -39,7 +39,7 @@ public class PotionEffectArgument extends SafeOverrideableArgument<PotionEffectT
 	 * @param nodeName the name of the node for this argument
 	 */
 	public PotionEffectArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentMobEffect(), CommandAPIBukkit.get().getNMS()::convert);
+		super(nodeName, CommandAPIBukkit.get().getNMS()::_ArgumentMobEffect, CommandAPIBukkit.get().getNMS()::convert);
 	}
 
 	@Override
@@ -70,7 +70,7 @@ public class PotionEffectArgument extends SafeOverrideableArgument<PotionEffectT
 		 * @param nodeName The name of the node for this argument
 		 */
 		public NamespacedKey(String nodeName) {
-			super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentMobEffect(), org.bukkit.NamespacedKey::toString);
+			super(nodeName, CommandAPIBukkit.get().getNMS()::_ArgumentMobEffect, org.bukkit.NamespacedKey::toString);
 		}
 
 		@Override

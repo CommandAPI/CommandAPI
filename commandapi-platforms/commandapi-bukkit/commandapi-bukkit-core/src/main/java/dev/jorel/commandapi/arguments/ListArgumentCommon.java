@@ -40,7 +40,7 @@ public class ListArgumentCommon<T> extends Argument<List> {
 	private final boolean text;
 
 	ListArgumentCommon(String nodeName, String delimiter, boolean allowDuplicates, Function<SuggestionInfo<CommandSender>, Collection<T>> supplier, Function<T, IStringTooltip> suggestionsMapper, boolean text) {
-		super(nodeName, text ? StringArgumentType.string() : StringArgumentType.greedyString());
+		super(nodeName, text ? StringArgumentType::string : StringArgumentType::greedyString);
 		this.delimiter = delimiter;
 		this.allowDuplicates = allowDuplicates;
 		this.supplier = supplier;

@@ -38,7 +38,7 @@ public class DoubleRangeArgument extends SafeOverrideableArgument<DoubleRange, D
 	 * @param nodeName the name of the node for this argument
 	 */
 	public DoubleRangeArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentFloatRange(), DoubleRange::toString);
+		super(nodeName, CommandAPIBukkit.get().getNMS()::_ArgumentFloatRange, DoubleRange::toString);
 	}
 
 	@Override

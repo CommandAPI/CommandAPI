@@ -38,7 +38,7 @@ public class LongArgument extends SafeOverrideableArgument<Long, Long> {
 	 * @param nodeName the name of the node for this argument
 	 */
 	public LongArgument(String nodeName) {
-		super(nodeName, LongArgumentType.longArg(), String::valueOf);
+		super(nodeName, LongArgumentType::longArg, String::valueOf);
 	}
 
 	/**
@@ -48,7 +48,7 @@ public class LongArgument extends SafeOverrideableArgument<Long, Long> {
 	 * @param min      The minimum value this argument can take (inclusive)
 	 */
 	public LongArgument(String nodeName, long min) {
-		super(nodeName, LongArgumentType.longArg(min), String::valueOf);
+		super(nodeName, () -> LongArgumentType.longArg(min), String::valueOf);
 	}
 
 	/**
@@ -59,7 +59,7 @@ public class LongArgument extends SafeOverrideableArgument<Long, Long> {
 	 * @param max      The maximum value this argument can take (inclusive)
 	 */
 	public LongArgument(String nodeName, long min, long max) {
-		super(nodeName, LongArgumentType.longArg(min, max), String::valueOf);
+		super(nodeName, () -> LongArgumentType.longArg(min, max), String::valueOf);
 		if(max < min) {
 			throw new InvalidRangeException();
 		}

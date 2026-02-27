@@ -38,7 +38,7 @@ public class TeamArgument extends SafeOverrideableArgument<Team, Team> {
 	 * @param nodeName the name of the node for this argument
 	 */
 	public TeamArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentScoreboardTeam(), Team::getName);
+		super(nodeName, CommandAPIBukkit.get().getNMS()::_ArgumentScoreboardTeam, Team::getName);
 	}
 
 	@Override

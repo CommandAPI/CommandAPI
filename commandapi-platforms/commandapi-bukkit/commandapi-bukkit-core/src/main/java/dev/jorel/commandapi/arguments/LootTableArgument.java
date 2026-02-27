@@ -39,7 +39,7 @@ public class LootTableArgument extends SafeOverrideableArgument<LootTable, LootT
 	 * @param nodeName the name of the node for this argument
 	 */
 	public LootTableArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentMinecraftKeyRegistered(), fromKey(Keyed::getKey));
+		super(nodeName, CommandAPIBukkit.get().getNMS()::_ArgumentMinecraftKeyRegistered, fromKey(Keyed::getKey));
 	}
 	
 	@Override

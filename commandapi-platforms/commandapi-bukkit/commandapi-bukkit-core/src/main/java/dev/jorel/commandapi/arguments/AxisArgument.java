@@ -45,7 +45,7 @@ public class AxisArgument extends SafeOverrideableArgument<EnumSet, EnumSet<Axis
 	 * @param nodeName the name of the node for argument
 	 */
 	public AxisArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentAxis(),
+		super(nodeName, CommandAPIBukkit.get().getNMS()::_ArgumentAxis,
 			e -> e.stream().map(Axis::name).map(String::toLowerCase).reduce(String::concat).get());
 	}
 

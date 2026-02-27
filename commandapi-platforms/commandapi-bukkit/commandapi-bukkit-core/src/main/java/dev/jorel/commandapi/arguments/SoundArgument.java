@@ -40,7 +40,7 @@ public class SoundArgument extends SafeOverrideableArgument<Sound, Sound> implem
 	 * @param nodeName the name of the node for this argument
 	 */
 	public SoundArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentMinecraftKeyRegistered(), CommandAPIBukkit.get().getNMS()::convert);
+		super(nodeName, CommandAPIBukkit.get().getNMS()::_ArgumentMinecraftKeyRegistered, CommandAPIBukkit.get().getNMS()::convert);
 	}
 
 	@Override
@@ -77,7 +77,7 @@ public class SoundArgument extends SafeOverrideableArgument<Sound, Sound> implem
 		 * @param nodeName the name of the node for argument
 		 */
 		public NamespacedKey(String nodeName) {
-			super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentMinecraftKeyRegistered(), org.bukkit.NamespacedKey::toString);
+			super(nodeName, CommandAPIBukkit.get().getNMS()::_ArgumentMinecraftKeyRegistered, org.bukkit.NamespacedKey::toString);
 		}
 
 		@Override

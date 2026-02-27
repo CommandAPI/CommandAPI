@@ -45,7 +45,7 @@ public class PlayerProfileArgument extends SafeOverrideableArgument<List, Player
 	 * @param nodeName the name of the node for this argument
 	 */
 	public PlayerProfileArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentProfile(), PlayerProfile::getName);
+		super(nodeName, CommandAPIBukkit.get().getNMS()::_ArgumentProfile, PlayerProfile::getName);
 	}
 
 	@Override

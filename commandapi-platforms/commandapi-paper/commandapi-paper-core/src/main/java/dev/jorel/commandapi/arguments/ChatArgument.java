@@ -45,7 +45,7 @@ public class ChatArgument extends Argument<SignedMessage> implements GreedyArgum
 	 * @param nodeName the name of the node for argument
 	 */
 	public ChatArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentChat());
+		super(nodeName, CommandAPIBukkit.get().getNMS()::_ArgumentChat);
 
 		try {
 			Class.forName("net.kyori.adventure.chat.SignedMessage");

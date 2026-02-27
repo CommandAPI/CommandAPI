@@ -39,7 +39,7 @@ public class UUIDArgument extends SafeOverrideableArgument<UUID, UUID> {
 	 * @param nodeName the name of the node for this argument 
 	 */
 	public UUIDArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentUUID(), UUID::toString);
+		super(nodeName, CommandAPIBukkit.get().getNMS()::_ArgumentUUID, UUID::toString);
 	}
 
 	@Override

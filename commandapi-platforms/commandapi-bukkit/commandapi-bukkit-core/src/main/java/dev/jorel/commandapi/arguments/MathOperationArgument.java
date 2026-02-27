@@ -38,7 +38,7 @@ public class MathOperationArgument extends SafeOverrideableArgument<MathOperatio
 	 * @param nodeName the name of the node for this argument
 	 */
 	public MathOperationArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentMathOperation(), MathOperation::toString);
+		super(nodeName, CommandAPIBukkit.get().getNMS()::_ArgumentMathOperation, MathOperation::toString);
 	}
 	
 	@Override

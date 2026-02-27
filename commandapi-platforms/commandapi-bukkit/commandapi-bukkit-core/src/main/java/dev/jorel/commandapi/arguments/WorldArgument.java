@@ -43,7 +43,7 @@ public class WorldArgument extends SafeOverrideableArgument<World, World> {
 	public WorldArgument(String nodeName) {
 		// Dev note: DO NOT use a method reference for the World class! See
 		// https://github.com/JorelAli/CommandAPI/issues/397 for more info
-		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentDimension(), world -> world.getName().toLowerCase());
+		super(nodeName, CommandAPIBukkit.get().getNMS()::_ArgumentDimension, world -> world.getName().toLowerCase());
 	}
 
 	@Override

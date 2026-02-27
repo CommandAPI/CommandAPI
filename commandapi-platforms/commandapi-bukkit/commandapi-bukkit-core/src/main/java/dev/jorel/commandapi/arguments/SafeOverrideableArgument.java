@@ -5,6 +5,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.command.CommandSender;
 
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * An interface declaring methods required to override argument suggestions
@@ -25,7 +26,7 @@ public abstract class SafeOverrideableArgument<T, S> extends Argument<T> impleme
 	 * @param mapper   the mapping function that maps this argument type to a string
 	 *                 for suggestions
 	 */
-	protected SafeOverrideableArgument(String nodeName, ArgumentType<?> rawType, Function<S, String> mapper) {
+	protected SafeOverrideableArgument(String nodeName, Supplier<ArgumentType<?>> rawType, Function<S, String> mapper) {
 		super(nodeName, rawType);
 		this.mapper = mapper;
 	}

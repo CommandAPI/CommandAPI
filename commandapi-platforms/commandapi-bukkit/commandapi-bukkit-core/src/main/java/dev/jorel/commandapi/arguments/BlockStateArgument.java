@@ -43,7 +43,7 @@ public class BlockStateArgument extends Argument<BlockState> {
 	 * @param nodeName the name of the node for argument
 	 */
 	public BlockStateArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentBlockState());
+		super(nodeName, CommandAPIBukkit.get().getNMS()::_ArgumentBlockState);
 	}
 
 	@Override

@@ -41,7 +41,7 @@ public class FunctionArgument extends SafeOverrideableArgument<FunctionWrapper[]
 	 * @param nodeName the name of the node for this argument
 	 */
 	public FunctionArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentTag(), fromKey(n -> n));
+		super(nodeName, CommandAPIBukkit.get().getNMS()::_ArgumentTag, fromKey(n -> n));
 	}
 
 	@Override

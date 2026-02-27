@@ -41,7 +41,7 @@ public class ItemStackPredicateArgument extends Argument<Predicate> {
 	 * @param nodeName the name of the node for this argument 
 	 */
 	public ItemStackPredicateArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentItemPredicate());
+		super(nodeName, CommandAPIBukkit.get().getNMS()::_ArgumentItemPredicate);
 	}
 
 	@Override

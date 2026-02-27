@@ -63,8 +63,8 @@ public class LocationArgument extends SafeOverrideableArgument<Location, Locatio
 	public LocationArgument(String nodeName, LocationType type, boolean centerPosition) {
 		super(nodeName,
 			type == LocationType.BLOCK_POSITION
-				? CommandAPIBukkit.get().getNMS()._ArgumentPosition()
-				: CommandAPIBukkit.get().getNMS()._ArgumentVec3(centerPosition),
+				? CommandAPIBukkit.get().getNMS()::_ArgumentPosition
+				: () -> CommandAPIBukkit.get().getNMS()._ArgumentVec3(centerPosition),
 			type == LocationType.BLOCK_POSITION
 				? (Location l) -> l.getBlockX() + " " + l.getBlockY() + " " + l.getBlockZ()
 				: (Location l) -> l.getX() + " " + l.getY() + " " + l.getZ()
