@@ -69,6 +69,14 @@
 			<version>${project.version}</version>
 			<scope>provided</scope>
 		</dependency>
+
+		<!-- Annotations -->
+		<dependency>
+			<groupId>org.jetbrains</groupId>
+			<artifactId>annotations</artifactId>
+			<version>26.0.2-1</version>
+			<scope>provided</scope>
+		</dependency>
     </dependencies>
 
 	<build>

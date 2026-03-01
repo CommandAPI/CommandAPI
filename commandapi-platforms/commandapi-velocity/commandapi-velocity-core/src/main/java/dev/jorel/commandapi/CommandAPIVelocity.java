@@ -27,6 +27,7 @@ import dev.jorel.commandapi.commandsenders.*;
 import dev.jorel.commandapi.network.VelocityCommandAPIMessenger;
 import dev.jorel.commandapi.network.packets.UpdateRequirementsPacket;
 import org.apache.logging.log4j.LogManager;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.io.File;
 import java.io.IOException;
@@ -215,6 +216,12 @@ public class CommandAPIVelocity implements CommandAPIPlatform<Argument<?>, Comma
 		// There isn't a Velocity Argument that implements CustomProvidedArgument yet, so this method is not used
 		// If you want to use provided suggestions on an argument, implement this method.
 		return (context, builder) -> Suggestions.empty();
+	}
+
+	@Override
+	@ApiStatus.Internal
+	public <Impl extends AbstractCommandAPICommand<Impl, Argument<?>, CommandSource>> boolean checkRegistrationStatus(AbstractCommandAPICommand<Impl, Argument<?>, CommandSource> command) {
+		return true;
 	}
 
 	@Override

@@ -83,4 +83,8 @@ public abstract class CommandRegistrationStrategy<Source> {
 	public abstract void unregister(String commandName, boolean unregisterNamespaces, boolean unregisterBukkit);
 
 	public abstract void preReloadDataPacks();
+
+	public boolean canRegister() {
+		return true;
+	}
 }

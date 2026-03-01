@@ -1,5 +1,7 @@
 package dev.jorel.commandapi;
 
+import dev.jorel.commandapi.arguments.Argument;
+import dev.jorel.commandapi.commandsenders.AbstractCommandSender;
 import dev.jorel.commandapi.commandsenders.BukkitBlockCommandSender;
 import dev.jorel.commandapi.commandsenders.BukkitCommandSender;
 import dev.jorel.commandapi.commandsenders.BukkitConsoleCommandSender;
@@ -21,6 +23,7 @@ import org.bukkit.command.ProxiedCommandSender;
 import org.bukkit.command.RemoteConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
+import org.jetbrains.annotations.ApiStatus;
 
 public abstract class CommandAPISpigot<Source> extends CommandAPIBukkit<Source> implements SpigotNMS<Source> {
 	private static CommandAPISpigot<?> spigot;
@@ -109,6 +112,12 @@ public abstract class CommandAPISpigot<Source> extends CommandAPIBukkit<Source> 
 		} catch (IllegalArgumentException e) {
 			assert true; // nop, not an error.
 		}
+	}
+
+	@Override
+	@ApiStatus.Internal
+	public <Impl extends AbstractCommandAPICommand<Impl, Argument<?>, CommandSender>> boolean checkRegistrationStatus(AbstractCommandAPICommand<Impl, Argument<?>, CommandSender> command) {
+		return true;
 	}
 
 	/**

@@ -52,6 +52,7 @@ extends AbstractArgument<?, ?, Argument, CommandSender>
 	protected List<Argument> arguments = new ArrayList<>();
 	protected List<Impl> subcommands = new ArrayList<>();
 	protected boolean isConverted;
+	protected String namespace;
 
 	/**
 	 * Creates a new command builder
@@ -278,6 +279,16 @@ extends AbstractArgument<?, ?, Argument, CommandSender>
 	 */
 	@Override
 	public void register(String namespace) {
+		this.namespace = namespace;
+
+		// Need to cast handler to the right CommandSender type so that argumentsArray and executor are accepted
+		@SuppressWarnings("unchecked")
+		CommandAPIHandler<Argument, CommandSender, ?> handler = (CommandAPIHandler<Argument, CommandSender, ?>) CommandAPIHandler.getInstance();
+		boolean canContinue = handler.getPlatform().checkRegistrationStatus(this);
+		if (!canContinue) {
+			return;
+		}
+
 		if (namespace == null) {
 			// Only reachable through Velocity
 			throw new NullPointerException("Parameter 'namespace' was null when registering command /" + this.meta.commandName + "!");
@@ -298,10 +309,6 @@ extends AbstractArgument<?, ?, Argument, CommandSender>
 		}
 
 		if (executor.hasAnyExecutors()) {
-			// Need to cast handler to the right CommandSender type so that argumentsArray and executor are accepted
-			@SuppressWarnings("unchecked")
-			CommandAPIHandler<Argument, CommandSender, ?> handler = (CommandAPIHandler<Argument, CommandSender, ?>) CommandAPIHandler.getInstance();
-
 			// Create a List<Argument[]> that is used to register optional arguments
 			for (Argument[] args : getArgumentsToRegister(argumentsArray)) {
 				handler.register(meta, args, executor, isConverted, namespace);

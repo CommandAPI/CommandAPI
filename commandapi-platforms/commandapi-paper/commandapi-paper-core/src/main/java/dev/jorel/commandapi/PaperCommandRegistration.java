@@ -36,6 +36,8 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 	private final CommandDispatcher<CommandSourceStack> pluginDispatcher = new CommandDispatcher<>();
 	private final Set<String> commandsToRemove = new HashSet<>();
 
+	private boolean canRegister = false;
+	private final List<AbstractCommandAPICommand<?, ?, ?>> bootstrapCommands = new ArrayList<>();
 	private final List<UnregisterInformation> unregisterInformationList = new ArrayList<>();
 
 	private boolean scheduleReloadTask = true;
@@ -112,19 +114,28 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 		CommandAPIBukkit.get().updateHelpForCommands(CommandAPI.getRegisteredCommands());
 	}
 
+	@Override
+	public boolean canRegister() {
+		return canRegister;
+	}
+
+	void addBootstrapCommand(AbstractCommandAPICommand<?, ?, ?> command) {
+		bootstrapCommands.add(command);
+	}
+
 	@SuppressWarnings("ConstantValue") // `getServer` actually is `null` when we are in bootstrap
 	void registerLifecycleEvent() {
 		boolean bootstrap = Bukkit.getServer() == null;
 		if (bootstrap && !lifecycleEventRegistered[0]) {
 			BootstrapContext context = (BootstrapContext) CommandAPIPaper.getPaper().getLifecycleEventOwner();
 			lifecycleEventRegistered[0] = true;
-			registerLifecycleEvent(context.getLifecycleManager(), bootstrapDispatcher);
+			registerLifecycleEvent(context.getLifecycleManager(), bootstrapDispatcher, bootstrap);
 			return;
 		}
 		if (!bootstrap && !lifecycleEventRegistered[1]) {
 			JavaPlugin plugin = (JavaPlugin) CommandAPIPaper.getPaper().getLifecycleEventOwner();
 			lifecycleEventRegistered[1] = true;
-			registerLifecycleEvent(plugin.getLifecycleManager(), pluginDispatcher);
+			registerLifecycleEvent(plugin.getLifecycleManager(), pluginDispatcher, bootstrap);
 
 			plugin.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS.newHandler(event -> {
 				if (!unregisterInformationList.isEmpty()) {
@@ -143,13 +154,19 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 		}
 	}
 
-	private void registerLifecycleEvent(LifecycleEventManager<?> lifecycleEventManager, CommandDispatcher<CommandSourceStack> dispatcher) {
+	private void registerLifecycleEvent(LifecycleEventManager<?> lifecycleEventManager, CommandDispatcher<CommandSourceStack> dispatcher, boolean isBootstrap) {
 		lifecycleEventManager.registerEventHandler(LifecycleEvents.COMMANDS.newHandler(event -> {
+			canRegister = true;
+			if (isBootstrap) {
+				for (AbstractCommandAPICommand<?, ?, ?> command : bootstrapCommands) {
+					command.register(command.namespace);
+				}
+			}
 			for (CommandNode<CommandSourceStack> commandNode : dispatcher.getRoot().getChildren()) {
 				LiteralCommandNode<CommandSourceStack> node = (LiteralCommandNode<CommandSourceStack>) commandNode;
 				event.registrar().register(node, getDescription(node.getLiteral()));
 			}
-			if (Bukkit.getServer() != null) {
+			if (!isBootstrap) {
 				for (String commandName : commandsToRemove) {
 					removeBrigadierCommands(getBrigadierDispatcher().getRoot(), commandName, false, c -> true);
 				}

@@ -1,5 +1,7 @@
 package dev.jorel.commandapi;
 
+import dev.jorel.commandapi.arguments.Argument;
+import dev.jorel.commandapi.commandsenders.AbstractCommandSender;
 import dev.jorel.commandapi.commandsenders.BukkitBlockCommandSender;
 import dev.jorel.commandapi.commandsenders.BukkitCommandSender;
 import dev.jorel.commandapi.commandsenders.BukkitConsoleCommandSender;
@@ -28,6 +30,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -254,6 +257,18 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 		}
 	}
 
+	@Override
+	@ApiStatus.Internal
+	public <Impl extends AbstractCommandAPICommand<Impl, Argument<?>, CommandSender>> boolean checkRegistrationStatus(AbstractCommandAPICommand<Impl, Argument<?>, CommandSender> command) {
+		CommandRegistrationStrategy<Source> registration = getCommandRegistrationStrategy();
+		if (!registration.canRegister() && isBootstrap()) {
+			PaperCommandRegistration<Source> paperRegistration = (PaperCommandRegistration<Source>) registration;
+			paperRegistration.addBootstrapCommand(command);
+			return false;
+		}
+		return true;
+	}
+
 	/**
 	 * Forces a command to return a success value of 0
 	 *
@@ -275,6 +290,11 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 			bootstrapLogger = CommandAPILogger.fromSlf4jLogger(ComponentLogger.logger("CommandAPI"));
 		}
 		return bootstrapLogger;
+	}
+
+	@SuppressWarnings("ConstantValue")
+	private boolean isBootstrap() {
+		return Bukkit.getServer() == null;
 	}
 
 }
