@@ -27,6 +27,8 @@ def coord_for_property(prop_name: str):
         return ("org.spigotmc", "spigot", SPIGOT_SNAP)
     if prop_name.startswith("spigot.api.version."):
         return ("org.spigotmc", "spigot-api", SPIGOT_SNAP)
+    if prop_name.startswith("folia.version."):
+        return ("dev.folia", "folia-api", PAPER_SNAP)
     if prop_name.startswith("paper.version."):
         return ("io.papermc.paper", "paper-api", PAPER_SNAP)
     if prop_name.startswith("velocity.version."):
@@ -106,22 +108,19 @@ def resolve_properties(pom_path: Path, verbose=False):
         if not coord:
             continue
 
-        current = (child.text or "").strip()
-        if not current.endswith("-SNAPSHOT"):
-            if verbose:
-                print(f"[skip] {tag}: already pinned: {current}", flush=True)
-            continue
+        written_version = (child.text or "").strip()
+        current = re.sub(r"([0-9]{8})\.([0-9]{6})-([0-9]{1,3})", "SNAPSHOT", written_version)
 
         group, artifact, repo = coord
         print(f"[resolving] {tag}: {current} -> …", flush=True)
         try:
             resolved = latest_snapshot_value(repo, group, artifact, current, verbose=verbose)
-            if resolved and resolved != current:
+            if resolved and resolved != written_version:
                 print(f"[resolved]  {tag}: {resolved}", flush=True)
                 changes.append((tag, current, resolved))
                 child.text = resolved
             else:
-                print(f"[no-change] {tag}: {current}", flush=True)
+                print(f"[no-change] {tag}: {written_version}", flush=True)
         except Exception as e:
             print(f"[WARN] {tag}: {current} -> could not resolve: {e}", flush=True)
 
