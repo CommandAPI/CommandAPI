@@ -162,6 +162,7 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 					command.register(command.namespace);
 				}
 			}
+			bootstrapCommands.clear();
 			for (CommandNode<CommandSourceStack> commandNode : dispatcher.getRoot().getChildren()) {
 				LiteralCommandNode<CommandSourceStack> node = (LiteralCommandNode<CommandSourceStack>) commandNode;
 				event.registrar().register(node, getDescription(node.getLiteral()));
