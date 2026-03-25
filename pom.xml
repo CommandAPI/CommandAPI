@@ -127,6 +127,7 @@
 		<spigot.version.1.21.8>1.21.8-R0.1-20251112.105536-42</spigot.version.1.21.8>
 		<spigot.version.1.21.9>1.21.9-R0.1-20250930.202015-1</spigot.version.1.21.9>
 		<spigot.version.1.21.11>1.21.11-R0.1-20260115.203122-4</spigot.version.1.21.11>
+		<spigot.version.26.1>26.1-R0.1-SNAPSHOT</spigot.version.26.1>
 
 		<spigot.api.version.1.20.1>1.20.1-R0.1-20230921.165251-11</spigot.api.version.1.20.1>
 		<spigot.api.version.1.20.2>1.20.2-R0.1-20231205.170307-10</spigot.api.version.1.20.2>
@@ -161,6 +162,7 @@
 		<paper.version.1.21.8>1.21.8-R0.1-20250906.215025-55</paper.version.1.21.8>
 		<paper.version.1.21.9>1.21.9-R0.1-20251007.115206-20</paper.version.1.21.9>
 		<paper.version.1.21.11>1.21.11-R0.1-20260228.115254-85</paper.version.1.21.11>
+		<paper.version.26.1>26.1-R0.1-SNAPSHOT</paper.version.26.1>
 
 		<auto-service.version>1.0.1</auto-service.version>
 
