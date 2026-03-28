@@ -93,9 +93,8 @@
 
 		<maven.build.timestamp.format>dd_MMM_yyyy_(hh-mm-ssa)</maven.build.timestamp.format>
 
-		<java.version>25</java.version>
-		<maven.compiler.source>${java.version}</maven.compiler.source>
-		<maven.compiler.target>${java.version}</maven.compiler.target>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
 		<kotlin.version>2.3.0</kotlin.version>
 
 		<!-- Shared versions. This is used by things such as the networking

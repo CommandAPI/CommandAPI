@@ -37,7 +37,7 @@
 					</execution>
 				</executions>
 				<configuration>
-					<jvmTarget>${java.version}</jvmTarget>
+					<jvmTarget>17</jvmTarget>
 				</configuration>
 			</plugin>
 			<plugin>
