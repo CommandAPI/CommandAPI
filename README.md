@@ -399,6 +399,20 @@ This is the current roadmap for the CommandAPI (as of 3rd October 2025):
     </thead>
     <tbody>
         <tr>
+            <td valign="top"><b>11.2.0</b></td>
+            <td valign="top">March 2026</td>
+            <td valign="top">
+                <b>Bug Fixes:</b>
+                <ul>
+                    <li>Fixes multiple issues with command registration at bootstrap</li>
+                </ul>
+                <b>Minecraft Version Changes:</b>
+                <ul>
+                    <li>Adds support for Minecraft 26.1</li>
+                </ul>
+           </td>
+        </tr>
+        <tr>
             <td valign="top"><b>11.1.0</b></td>
             <td valign="top">December 2025</td>
             <td valign="top">
