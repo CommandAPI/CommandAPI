@@ -35,6 +35,13 @@
 			<classifier>remapped-mojang</classifier>
 			<scope>provided</scope>
 		</dependency>
+		<!-- Implementation of CommandListenerWrapper -->
+		<dependency>
+			<groupId>org.spigotmc</groupId>
+			<artifactId>spigot</artifactId>
+			<version>${spigot.version.common}</version>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 
 </project>
