@@ -184,8 +184,12 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 			// Either way, we don't want to schedule the task now
 			return;
 		}
+		if (CommandAPIPaper.getPaper().isFoliaPresent()) {
+			// Bukkit.reloadData() is not available on Folia
+			throw new IllegalStateException("Cannot register/unregister commands after the server is done starting on Folia");
+		}
 		scheduleReloadTask = false;
-		Bukkit.getScheduler().scheduleSyncDelayedTask(CommandAPIPaper.getPaper().getPlugin(), () -> {
+		Bukkit.getGlobalRegionScheduler().runDelayed(CommandAPIPaper.getPaper().getPlugin(), task -> {
 			Bukkit.reloadData();
 			scheduleReloadTask = true;
 		}, 1);

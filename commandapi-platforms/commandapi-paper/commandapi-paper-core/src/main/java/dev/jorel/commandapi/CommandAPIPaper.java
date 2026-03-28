@@ -99,6 +99,10 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 		throw new IllegalStateException("Tried to access NMS instance, but it was null! Are you using CommandAPI features before calling CommandAPI#onLoad?");
 	}
 
+	public boolean isFoliaPresent() {
+		return isFoliaPresent;
+	}
+
 	@Override
 	public void onLoad() {
 		super.onLoad();
@@ -116,9 +120,9 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 		super.plugin = (JavaPlugin) Bukkit.getPluginManager().getPlugin(getConfiguration().getPluginName());
 		this.lifecycleEventOwner = super.plugin;
 
-		new Schedulers(paper.isFoliaPresent).scheduleSyncDelayed(plugin, () -> {
+		Bukkit.getGlobalRegionScheduler().runDelayed(plugin, task -> {
 			CommandAPIBukkit.get().getCommandRegistrationStrategy().runTasksAfterServerStart();
-			if (paper.isFoliaPresent) {
+			if (isFoliaPresent) {
 				CommandAPI.logNormal("Skipping initial datapack reloading because Folia was detected");
 			} else {
 				if (!getConfiguration().skipReloadDatapacks()) {
@@ -133,12 +137,12 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 				}
 			}
 			CommandAPIBukkit.get().updateHelpForCommands(CommandAPI.getRegisteredCommands());
-		}, 0L);
+		}, 1L);
 
 		super.stopCommandRegistrations();
 
 		// Basically just a check to ensure we're actually running Paper
-		if (paper.isPaperPresent) {
+		if (isPaperPresent) {
 			Bukkit.getServer().getPluginManager().registerEvents(new Listener() {
 				@EventHandler
 				public void onServerReloadResources(ServerResourcesReloadedEvent event) {
