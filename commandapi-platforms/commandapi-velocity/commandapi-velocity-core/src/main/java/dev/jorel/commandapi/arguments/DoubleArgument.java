@@ -29,7 +29,7 @@ import dev.jorel.commandapi.executors.CommandArguments;
 /**
  * An argument that represents primitive Java doubles
  *
- * @apiNote Returns a {@link double}
+ * @apiNote Returns a {@code double}
  */
 public class DoubleArgument extends SafeOverrideableArgument<Double, Double> {
 	/**

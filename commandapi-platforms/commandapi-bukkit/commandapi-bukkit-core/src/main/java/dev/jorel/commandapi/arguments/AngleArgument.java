@@ -34,7 +34,7 @@ import dev.jorel.commandapi.executors.CommandArguments;
  * 
  * @since 5.0
  * 
- * @apiNote Returns a {@link float}
+ * @apiNote Returns a {@code float}
  */
 public class AngleArgument extends SafeOverrideableArgument<Float, Float> {
 

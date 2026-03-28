@@ -28,7 +28,7 @@ import dev.jorel.commandapi.executors.CommandArguments;
 /**
  * An argument that represents primitive Java booleans
  * 
- * @apiNote Returns a {@link boolean}
+ * @apiNote Returns a {@code boolean}
  */
 public class BooleanArgument extends SafeOverrideableArgument<Boolean, Boolean> {
 	/**

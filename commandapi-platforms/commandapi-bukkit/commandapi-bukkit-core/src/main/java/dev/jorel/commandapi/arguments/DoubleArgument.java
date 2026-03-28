@@ -31,7 +31,7 @@ import dev.jorel.commandapi.executors.CommandArguments;
  * 
  * @since 1.1
  * 
- * @apiNote Returns a {@link double}
+ * @apiNote Returns a {@code double}
  */
 public class DoubleArgument extends SafeOverrideableArgument<Double, Double> {
 	/**

@@ -30,7 +30,7 @@ import dev.jorel.commandapi.executors.CommandArguments;
  * 
  * @since 1.1
  *
- * @apiNote Returns a {@link boolean}
+ * @apiNote Returns a {@code boolean}
  */
 public class BooleanArgument extends SafeOverrideableArgument<Boolean, Boolean> {
 	/**
