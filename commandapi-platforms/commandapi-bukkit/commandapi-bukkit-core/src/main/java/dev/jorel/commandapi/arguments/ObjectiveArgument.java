@@ -38,7 +38,7 @@ public class ObjectiveArgument extends SafeOverrideableArgument<Objective, Objec
 	 * @param nodeName the name of the node for this argument
 	 */
 	public ObjectiveArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentScoreboardObjective(), Objective::getName);
+		super(nodeName, CommandAPIBukkit.get().getNMS()::_ArgumentScoreboardObjective, Objective::getName);
 	}
 
 	@Override

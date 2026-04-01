@@ -43,7 +43,7 @@ public class NamespacedKeyArgument extends SafeOverrideableArgument<NamespacedKe
 	 * @param nodeName the name of the node for argument
 	 */
 	public NamespacedKeyArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentMinecraftKeyRegistered(),
+		super(nodeName, CommandAPIBukkit.get().getNMS()::_ArgumentMinecraftKeyRegistered,
 				NamespacedKey::toString);
 	}
 

@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * The core abstract class for Command API arguments
@@ -71,7 +72,7 @@ extends AbstractArgument<?, ?, Argument, CommandSender>
 	////////////////////////
 
 	private final String nodeName;
-	private final ArgumentType<?> rawType;
+	private final Supplier<ArgumentType<?>> rawType;
 
 	/**
 	 * Constructs an argument with a given NMS/brigadier type.
@@ -79,7 +80,7 @@ extends AbstractArgument<?, ?, Argument, CommandSender>
 	 * @param nodeName the name to assign to this argument node
 	 * @param rawType  the NMS or brigadier type to be used for this argument
 	 */
-	protected AbstractArgument(String nodeName, ArgumentType<?> rawType) {
+	protected AbstractArgument(String nodeName, Supplier<ArgumentType<?>> rawType) {
 		this.nodeName = nodeName;
 		this.rawType = rawType;
 	}
@@ -90,6 +91,15 @@ extends AbstractArgument<?, ?, Argument, CommandSender>
 	 * @return the NMS or brigadier type for this argument
 	 */
 	public final ArgumentType<?> getRawType() {
+		return this.rawType.get();
+	}
+
+	/**
+	 * Returns the {@link Supplier} for the NMS or brigadier type for this argument.
+	 *
+	 * @return the {@link Supplier} for the NMS or brigadier type for this argument
+	 */
+	public final Supplier<ArgumentType<?>> getRawTypeSupplier() {
 		return this.rawType;
 	}
 

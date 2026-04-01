@@ -36,7 +36,7 @@ public class CommandArgument extends Argument<CommandResult> implements GreedyAr
 	 * @param nodeName the name of the node for this argument
 	 */
 	public CommandArgument(String nodeName) {
-		super(nodeName, StringArgumentType.greedyString());
+		super(nodeName, StringArgumentType::greedyString);
 
 		applySuggestions();
 	}

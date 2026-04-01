@@ -44,7 +44,7 @@ public class ChatArgument extends Argument<BaseComponent[]> implements GreedyArg
 	 * @param nodeName the name of the node for argument
 	 */
 	public ChatArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentChat());
+		super(nodeName, CommandAPIBukkit.get().getNMS()::_ArgumentChat);
 
 		try {
 			Class.forName("org.spigotmc.SpigotConfig");

@@ -39,7 +39,7 @@ public class ParticleArgument extends SafeOverrideableArgument<ParticleData, Par
 	 * @param nodeName the name of the node for this argument
 	 */
 	public ParticleArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentParticle(), CommandAPIBukkit.get().getNMS()::convert);
+		super(nodeName, CommandAPIBukkit.get().getNMS()::_ArgumentParticle, CommandAPIBukkit.get().getNMS()::convert);
 	}
 
 	@Override

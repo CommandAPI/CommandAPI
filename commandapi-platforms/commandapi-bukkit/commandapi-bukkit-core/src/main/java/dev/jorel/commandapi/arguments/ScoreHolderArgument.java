@@ -50,7 +50,7 @@ public class ScoreHolderArgument {
 		 * @param nodeName the name of the node for this argument
 		 */
 		public Single(String nodeName) {
-			super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentScoreholder(ArgumentSubType.SCOREHOLDER_SINGLE));
+			super(nodeName, () -> CommandAPIBukkit.get().getNMS()._ArgumentScoreholder(ArgumentSubType.SCOREHOLDER_SINGLE));
 		}
 
 		@Override
@@ -83,7 +83,7 @@ public class ScoreHolderArgument {
 		 * @param nodeName the name of the node for this argument
 		 */
 		public Multiple(String nodeName) {
-			super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentScoreholder(ArgumentSubType.SCOREHOLDER_MULTIPLE));
+			super(nodeName, () -> CommandAPIBukkit.get().getNMS()._ArgumentScoreholder(ArgumentSubType.SCOREHOLDER_MULTIPLE));
 		}
 
 		@Override

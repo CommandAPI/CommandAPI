@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>dev.jorel</groupId>
 		<artifactId>commandapi-spigot</artifactId>
-		<version>11.1.0</version>
+		<version>11.2.0</version>
 	</parent>
 
 	<artifactId>commandapi-spigot-vh</artifactId>
@@ -33,6 +33,13 @@
 			<artifactId>spigot</artifactId>
 			<version>${spigot.version.common}</version>
 			<classifier>remapped-mojang</classifier>
+			<scope>provided</scope>
+		</dependency>
+		<!-- Implementation of CommandListenerWrapper -->
+		<dependency>
+			<groupId>org.spigotmc</groupId>
+			<artifactId>spigot</artifactId>
+			<version>${spigot.version.common}</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>

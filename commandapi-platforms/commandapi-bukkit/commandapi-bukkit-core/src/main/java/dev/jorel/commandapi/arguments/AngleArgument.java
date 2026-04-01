@@ -34,7 +34,7 @@ import dev.jorel.commandapi.executors.CommandArguments;
  * 
  * @since 5.0
  * 
- * @apiNote Returns a {@link float}
+ * @apiNote Returns a {@code float}
  */
 public class AngleArgument extends SafeOverrideableArgument<Float, Float> {
 
@@ -44,7 +44,7 @@ public class AngleArgument extends SafeOverrideableArgument<Float, Float> {
 	 * @param nodeName the name of the node for argument
 	 */
 	public AngleArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentAngle(), String::valueOf);
+		super(nodeName, CommandAPIBukkit.get().getNMS()::_ArgumentAngle, String::valueOf);
 	}
 
 	@Override

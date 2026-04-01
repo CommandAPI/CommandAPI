@@ -35,7 +35,7 @@ public class GreedyStringArgument extends SafeOverrideableArgument<String, Strin
 	 * @param nodeName the name of the node for this argument
 	 */
 	public GreedyStringArgument(String nodeName) {
-		super(nodeName, StringArgumentType.greedyString(), s -> s);
+		super(nodeName, StringArgumentType::greedyString, s -> s);
 	}
 
 	@Override

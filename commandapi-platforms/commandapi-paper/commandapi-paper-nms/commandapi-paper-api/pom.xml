@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>dev.jorel</groupId>
 		<artifactId>commandapi-paper-nms</artifactId>
-		<version>11.1.0</version>
+		<version>11.2.0</version>
 	</parent>
 
 	<artifactId>commandapi-paper-api</artifactId>
@@ -24,7 +24,7 @@
 			<groupId>io.papermc.paper</groupId>
 			<artifactId>paper-api</artifactId>
 			<!-- TODO: We could use something like paper.version.latest or something here -->
-			<version>${paper.version.1.21.9}</version>
+			<version>${paper.version.26.1}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

@@ -12,6 +12,7 @@ import dev.jorel.commandapi.nms.SpigotNMS_1_21_R4;
 import dev.jorel.commandapi.nms.SpigotNMS_1_21_R5;
 import dev.jorel.commandapi.nms.SpigotNMS_1_21_R6;
 import dev.jorel.commandapi.nms.SpigotNMS_1_21_R7;
+import dev.jorel.commandapi.nms.SpigotNMS_26_1;
 import org.bukkit.Bukkit;
 
 public abstract class CommandAPIVersionHandler {
@@ -25,7 +26,7 @@ public abstract class CommandAPIVersionHandler {
 		}
 		try {
 			String version = Bukkit.getBukkitVersion().split("-")[0];
-			CommandAPIPlatform<?, ?, ?> platform = switch (version) {
+			CommandAPIPlatform<?, ?, ?> platform = switch (VersionMatcher.getRelevantVersion(version)) {
 				case "1.20", "1.20.1" -> new SpigotNMS_1_20_R1(internalSpigotConfig);
 				case "1.20.2" -> new SpigotNMS_1_20_R2(internalSpigotConfig);
 				case "1.20.3", "1.20.4" -> new SpigotNMS_1_20_R3(internalSpigotConfig);
@@ -37,13 +38,14 @@ public abstract class CommandAPIVersionHandler {
 				case "1.21.6", "1.21.7", "1.21.8" -> new SpigotNMS_1_21_R5(internalSpigotConfig);
 				case "1.21.9", "1.21.10" -> new SpigotNMS_1_21_R6(internalSpigotConfig);
 				case "1.21.11" -> new SpigotNMS_1_21_R7(internalSpigotConfig);
+				case "26.1" -> new SpigotNMS_26_1(internalSpigotConfig);
 				default -> null;
 			};
 			if (platform != null) {
 				return new LoadContext(platform);
 			}
 			if (internalSpigotConfig.fallbackToLatestNMS()) {
-				return new LoadContext(new SpigotNMS_1_21_R7(internalSpigotConfig), () -> {
+				return new LoadContext(new SpigotNMS_26_1(internalSpigotConfig), () -> {
 					CommandAPI.logWarning("Loading the CommandAPI with the latest and potentially incompatible NMS implementation.");
 					CommandAPI.logWarning("While you may find success with this, further updates might be necessary to fully support the version you are using.");
 				});

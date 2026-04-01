@@ -43,7 +43,7 @@ public class MapArgument<K, V> extends Argument<LinkedHashMap> implements Greedy
 	 * @param delimiter This is used to separate key-value pairs
 	 */
 	MapArgument(String nodeName, String delimiter, String separator, StringParser<K> keyMapper, StringParser<V> valueMapper, List<String> keyList, List<String> valueList, boolean allowValueDuplicates) {
-		super(nodeName, StringArgumentType.greedyString());
+		super(nodeName, StringArgumentType::greedyString);
 
 		this.delimiter = delimiter;
 		this.separator = separator;

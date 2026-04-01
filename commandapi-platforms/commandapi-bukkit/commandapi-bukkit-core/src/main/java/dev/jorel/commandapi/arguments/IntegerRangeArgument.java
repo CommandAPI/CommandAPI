@@ -38,7 +38,7 @@ public class IntegerRangeArgument extends SafeOverrideableArgument<IntegerRange,
 	 * @param nodeName the name of the node for this argument 
 	 */
 	public IntegerRangeArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentIntRange(), IntegerRange::toString);
+		super(nodeName, CommandAPIBukkit.get().getNMS()::_ArgumentIntRange, IntegerRange::toString);
 	}
 	
 	@Override

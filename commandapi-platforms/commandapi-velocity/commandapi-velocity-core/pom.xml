@@ -7,7 +7,7 @@
 	<parent>
 		<artifactId>commandapi-velocity</artifactId>
 		<groupId>dev.jorel</groupId>
-		<version>11.1.0</version>
+		<version>11.2.0</version>
 	</parent>
 
 	<artifactId>commandapi-velocity-core</artifactId>
@@ -67,6 +67,14 @@
 			<groupId>dev.jorel</groupId>
 			<artifactId>commandapi-preprocessor</artifactId>
 			<version>${project.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- Annotations -->
+		<dependency>
+			<groupId>org.jetbrains</groupId>
+			<artifactId>annotations</artifactId>
+			<version>26.0.2-1</version>
 			<scope>provided</scope>
 		</dependency>
     </dependencies>

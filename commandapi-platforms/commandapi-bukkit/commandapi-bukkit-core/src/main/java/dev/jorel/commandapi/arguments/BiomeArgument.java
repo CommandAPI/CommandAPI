@@ -43,7 +43,7 @@ public class BiomeArgument extends SafeOverrideableArgument<Biome, Biome> implem
 	 * @param nodeName the name of the node for argument
 	 */
 	public BiomeArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentSyntheticBiome(),
+		super(nodeName, CommandAPIBukkit.get().getNMS()::_ArgumentSyntheticBiome,
 			((Function<Biome, String>) biome -> biome.name() /* Hopefully this makes it compatible with older and newer versions */).andThen(String::toLowerCase));
 	}
 
@@ -82,7 +82,7 @@ public class BiomeArgument extends SafeOverrideableArgument<Biome, Biome> implem
 		 * @param nodeName the name of the node for argument
 		 */
 		public NamespacedKey(String nodeName) {
-			super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentSyntheticBiome(), org.bukkit.NamespacedKey::toString);
+			super(nodeName, CommandAPIBukkit.get().getNMS()::_ArgumentSyntheticBiome, org.bukkit.NamespacedKey::toString);
 		}
 
 		@Override

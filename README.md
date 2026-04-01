@@ -78,6 +78,7 @@ The list of what version of the CommandAPI you'll need to run on a specific vers
 | **1.21.8**          | 10.1.2 - 11.1.0             | 11.1.0                       | 17                                                        |
 | **1.21.9, 1.21.10** | 11.0.0 - 11.1.0             | 11.1.0                       | 17                                                        |
 | **1.21.11**         | 11.1.0                      | 11.1.0                       | 17                                                        |
+| **26.1.X**          | 11.2.0                      | 11.2.0                       | 17                                                        |
 
 -----
 
@@ -339,6 +340,12 @@ The CommandAPI is built using the Maven build tool - if you don't have it, you c
   git clone https://github.com/CommandAPI/CommandAPI.git
   ```
 
+- For the Paper implementation, the CommandAPI uses dependencies that are not published on any repository. To compile the CommandAPI run this command to setup the required dependencies:
+
+  ```bash
+  ./setupPaperNMS.sh
+  ```
+
 - Run `mvn clean install -P Platform.Bukkit,Platform.Velocity`
 
 Notable artifacts can be found here:
@@ -392,6 +399,20 @@ This is the current roadmap for the CommandAPI (as of 3rd October 2025):
         </tr>
     </thead>
     <tbody>
+        <tr>
+            <td valign="top"><b>11.2.0</b></td>
+            <td valign="top">April 2026</td>
+            <td valign="top">
+                <b>Bug Fixes:</b>
+                <ul>
+                    <li>Fixes multiple issues with command registration at bootstrap</li>
+                </ul>
+                <b>Minecraft Version Changes:</b>
+                <ul>
+                    <li>Adds support for Minecraft 26.1</li>
+                </ul>
+           </td>
+        </tr>
         <tr>
             <td valign="top"><b>11.1.0</b></td>
             <td valign="top">December 2025</td>

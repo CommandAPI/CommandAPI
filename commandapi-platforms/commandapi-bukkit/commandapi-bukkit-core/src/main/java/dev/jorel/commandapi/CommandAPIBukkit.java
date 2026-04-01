@@ -290,13 +290,7 @@ public abstract class CommandAPIBukkit<Source> implements BukkitPlatform<Source>
 	public abstract BukkitCommandSender<? extends CommandSender> wrapCommandSender(CommandSender sender);
 
 	@Override
-	public void registerPermission(String string) {
-		try {
-			Bukkit.getPluginManager().addPermission(new Permission(string));
-		} catch (IllegalArgumentException e) {
-			assert true; // nop, not an error.
-		}
-	}
+	public abstract void registerPermission(String string);
 
 	@Override
 	public void preCommandRegistration(String commandName) {

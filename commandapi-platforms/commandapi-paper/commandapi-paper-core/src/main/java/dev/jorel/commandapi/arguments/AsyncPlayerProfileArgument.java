@@ -24,7 +24,7 @@ public class AsyncPlayerProfileArgument extends SafeOverrideableArgument<Complet
 	 * @param nodeName the name of the node for this argument
 	 */
 	public AsyncPlayerProfileArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentProfile(), PlayerProfile::getName);
+		super(nodeName, CommandAPIBukkit.get().getNMS()::_ArgumentProfile, PlayerProfile::getName);
 	}
 
 	@SuppressWarnings("unchecked")

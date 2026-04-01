@@ -6,14 +6,15 @@
 	<parent>
 		<groupId>dev.jorel</groupId>
 		<artifactId>commandapi-spigot</artifactId>
-		<version>11.1.0</version>
+		<version>11.2.0</version>
 	</parent>
 
 	<artifactId>commandapi-spigot-nms</artifactId>
-	<name>Paper support NMS library</name>
+	<name>Spigot support NMS library</name>
 	<packaging>pom</packaging>
 
 	<modules>
+		<module>commandapi-spigot-26.1</module>
 		<module>commandapi-spigot-1.21.11</module>
 		<module>commandapi-spigot-1.21.9</module>
 		<module>commandapi-spigot-1.21.6</module>

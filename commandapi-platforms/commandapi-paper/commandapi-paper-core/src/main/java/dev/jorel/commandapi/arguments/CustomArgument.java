@@ -76,7 +76,7 @@ public class CustomArgument<T, B> extends Argument<T> {
 	 *               </p>
 	 */
 	public CustomArgument(Argument<B> base, CustomArgumentInfoParser<T, B> parser) {
-		super(base.getNodeName(), base.getRawType());
+		super(base.getNodeName(), base.getRawTypeSupplier());
 		if (base instanceof LiteralArgument || base instanceof MultiLiteralArgument) {
 			throw new IllegalArgumentException(base.getClass().getSimpleName() + " is not a suitable base argument type for a CustomArgument");
 		}

@@ -40,7 +40,7 @@ public class RecipeArgument extends SafeOverrideableArgument<Recipe, Recipe> imp
 	 * @param nodeName the name of the node for this argument
 	 */
 	public RecipeArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentRecipe(), fromKey((Recipe r) -> ((Keyed) r).getKey()));
+		super(nodeName, CommandAPIBukkit.get().getNMS()::_ArgumentRecipe, fromKey((Recipe r) -> ((Keyed) r).getKey()));
 	}
 
 	@Override

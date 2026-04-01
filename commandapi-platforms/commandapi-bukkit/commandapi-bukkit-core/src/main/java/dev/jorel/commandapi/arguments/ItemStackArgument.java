@@ -38,7 +38,7 @@ public class ItemStackArgument extends SafeOverrideableArgument<ItemStack, ItemS
 	 * @param nodeName the name of the node for this argument
 	 */
 	public ItemStackArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentItemStack(), CommandAPIBukkit.get().getNMS()::convert);
+		super(nodeName, CommandAPIBukkit.get().getNMS()::_ArgumentItemStack, CommandAPIBukkit.get().getNMS()::convert);
 	}
 
 	@Override

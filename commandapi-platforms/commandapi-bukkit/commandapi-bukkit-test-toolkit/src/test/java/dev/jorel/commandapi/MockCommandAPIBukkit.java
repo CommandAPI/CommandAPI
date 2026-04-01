@@ -1,11 +1,14 @@
 package dev.jorel.commandapi;
 
+import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.commandsenders.*;
 import dev.jorel.commandapi.nms.MockNMS;
 import dev.jorel.commandapi.wrappers.NativeProxyCommandSender;
 import org.bukkit.Bukkit;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permission;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * An implementation of {@link CommandAPIBukkit} that is compatible with a MockBukkit testing environment.
@@ -82,6 +85,21 @@ public class MockCommandAPIBukkit extends CommandAPIBukkit<MockCommandSource> {
 			return new BukkitRemoteConsoleCommandSender(remote);
 		}
 		throw new RuntimeException("Failed to wrap CommandSender " + sender + " to a CommandAPI-compatible BukkitCommandSender");
+	}
+
+	@Override
+	public void registerPermission(String string) {
+		try {
+			Bukkit.getPluginManager().addPermission(new Permission(string));
+		} catch (IllegalArgumentException e) {
+			assert true; // nop, not an error.
+		}
+	}
+
+	@Override
+	@ApiStatus.Internal
+	public <Impl extends AbstractCommandAPICommand<Impl, Argument<?>, CommandSender>> boolean checkRegistrationStatus(AbstractCommandAPICommand<Impl, Argument<?>, CommandSender> command) {
+		return true;
 	}
 
 	@Override

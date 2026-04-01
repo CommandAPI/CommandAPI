@@ -30,7 +30,7 @@ import dev.jorel.commandapi.executors.CommandArguments;
  * 
  * @since 1.1
  *
- * @apiNote Returns a {@link boolean}
+ * @apiNote Returns a {@code boolean}
  */
 public class BooleanArgument extends SafeOverrideableArgument<Boolean, Boolean> {
 	/**
@@ -39,7 +39,7 @@ public class BooleanArgument extends SafeOverrideableArgument<Boolean, Boolean> 
 	 * @param nodeName the name of the node for argument
 	 */
 	public BooleanArgument(String nodeName) {
-		super(nodeName, BoolArgumentType.bool(), String::valueOf);
+		super(nodeName, BoolArgumentType::bool, String::valueOf);
 	}
 
 	@Override

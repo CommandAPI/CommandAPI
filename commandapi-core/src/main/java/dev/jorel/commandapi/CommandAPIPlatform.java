@@ -10,6 +10,7 @@ import dev.jorel.commandapi.arguments.SuggestionProviders;
 import dev.jorel.commandapi.commandsenders.AbstractCommandSender;
 import dev.jorel.commandapi.commandsenders.AbstractPlayer;
 import dev.jorel.commandapi.network.CommandAPIMessenger;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.io.File;
 import java.io.IOException;
@@ -84,6 +85,16 @@ extends AbstractArgument<?, ?, Argument, CommandSender>
 
 	// Some commands have existing suggestion providers
 	SuggestionProvider<Source> getSuggestionProvider(SuggestionProviders suggestionProvider);
+
+	/**
+	 * A pre-registration hook to prevent registration if not possible, for
+	 * example on Paper before the bootstrapper runs but the CommandAPI
+	 * already expects commands to be registered.
+	 *
+	 * @return {@code true} if the command can be registered and {@code false} if that is going to be handled by the implementing platform later
+	 */
+	@ApiStatus.Internal
+	<Impl extends AbstractCommandAPICommand<Impl, Argument, CommandSender>> boolean checkRegistrationStatus(AbstractCommandAPICommand<Impl, Argument, CommandSender> command);
 
 	/**
 	 * Stuff to run before a command is generated. For Bukkit, this involves checking

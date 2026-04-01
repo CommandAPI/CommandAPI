@@ -40,7 +40,7 @@ public class AdvancementArgument extends SafeOverrideableArgument<Advancement, A
 	 * @param nodeName the name of the node for argument
 	 */
 	public AdvancementArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentAdvancement(), fromKey(Advancement::getKey));
+		super(nodeName, CommandAPIBukkit.get().getNMS()::_ArgumentAdvancement, fromKey(Advancement::getKey));
 	}
 
 	@Override

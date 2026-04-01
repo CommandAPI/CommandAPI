@@ -35,7 +35,7 @@ public class TextArgument extends Argument<String> {
 	 * @param nodeName the name of the node for this argument
 	 */
 	public TextArgument(String nodeName) {
-		super(nodeName, StringArgumentType.string());
+		super(nodeName, StringArgumentType::string);
 	}
 
 	@Override

@@ -1,5 +1,7 @@
 package dev.jorel.commandapi;
 
+import dev.jorel.commandapi.arguments.Argument;
+import dev.jorel.commandapi.commandsenders.AbstractCommandSender;
 import dev.jorel.commandapi.commandsenders.BukkitBlockCommandSender;
 import dev.jorel.commandapi.commandsenders.BukkitCommandSender;
 import dev.jorel.commandapi.commandsenders.BukkitConsoleCommandSender;
@@ -26,7 +28,12 @@ import org.bukkit.command.RemoteConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.ApiStatus;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 
@@ -36,6 +43,8 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 	private boolean isFoliaPresent = false;
 	private final Class<? extends CommandSender> feedbackForwardingCommandSender;
 	private final Class<? extends CommandSender> nullCommandSender;
+
+	private final Set<String> bootstrapPermissions = new HashSet<>();
 
 	private CommandAPILogger bootstrapLogger;
 
@@ -90,6 +99,10 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 		throw new IllegalStateException("Tried to access NMS instance, but it was null! Are you using CommandAPI features before calling CommandAPI#onLoad?");
 	}
 
+	public boolean isFoliaPresent() {
+		return isFoliaPresent;
+	}
+
 	@Override
 	public void onLoad() {
 		super.onLoad();
@@ -107,22 +120,29 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 		super.plugin = (JavaPlugin) Bukkit.getPluginManager().getPlugin(getConfiguration().getPluginName());
 		this.lifecycleEventOwner = super.plugin;
 
-		new Schedulers(paper.isFoliaPresent).scheduleSyncDelayed(plugin, () -> {
+		Bukkit.getGlobalRegionScheduler().runDelayed(plugin, task -> {
 			CommandAPIBukkit.get().getCommandRegistrationStrategy().runTasksAfterServerStart();
-			if (paper.isFoliaPresent) {
+			if (isFoliaPresent) {
 				CommandAPI.logNormal("Skipping initial datapack reloading because Folia was detected");
 			} else {
 				if (!getConfiguration().skipReloadDatapacks()) {
 					CommandAPIBukkit.get().reloadDataPacks();
 				}
 			}
+			for (String permission : bootstrapPermissions) {
+				try {
+					Bukkit.getPluginManager().addPermission(new Permission(permission));
+				} catch (IllegalArgumentException e) {
+					assert true; // nop, not an error.
+				}
+			}
 			CommandAPIBukkit.get().updateHelpForCommands(CommandAPI.getRegisteredCommands());
-		}, 0L);
+		}, 1L);
 
 		super.stopCommandRegistrations();
 
 		// Basically just a check to ensure we're actually running Paper
-		if (paper.isPaperPresent) {
+		if (isPaperPresent) {
 			Bukkit.getServer().getPluginManager().registerEvents(new Listener() {
 				@EventHandler
 				public void onServerReloadResources(ServerResourcesReloadedEvent event) {
@@ -227,6 +247,32 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 		throw new RuntimeException("Failed to wrap CommandSender " + sender + " to a CommandAPI-compatible BukkitCommandSender");
 	}
 
+	@SuppressWarnings("ConstantValue")
+	@Override
+	public void registerPermission(String string) {
+		if (Bukkit.getServer() == null) {
+			bootstrapPermissions.add(string);
+			return;
+		}
+		try {
+			Bukkit.getPluginManager().addPermission(new Permission(string));
+		} catch (IllegalArgumentException e) {
+			assert true; // nop, not an error.
+		}
+	}
+
+	@Override
+	@ApiStatus.Internal
+	public <Impl extends AbstractCommandAPICommand<Impl, Argument<?>, CommandSender>> boolean checkRegistrationStatus(AbstractCommandAPICommand<Impl, Argument<?>, CommandSender> command) {
+		CommandRegistrationStrategy<Source> registration = getCommandRegistrationStrategy();
+		if (!registration.canRegister() && isBootstrap()) {
+			PaperCommandRegistration<Source> paperRegistration = (PaperCommandRegistration<Source>) registration;
+			paperRegistration.addBootstrapCommand(command);
+			return false;
+		}
+		return true;
+	}
+
 	/**
 	 * Forces a command to return a success value of 0
 	 *
@@ -248,6 +294,11 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 			bootstrapLogger = CommandAPILogger.fromSlf4jLogger(ComponentLogger.logger("CommandAPI"));
 		}
 		return bootstrapLogger;
+	}
+
+	@SuppressWarnings("ConstantValue")
+	private boolean isBootstrap() {
+		return Bukkit.getServer() == null;
 	}
 
 }

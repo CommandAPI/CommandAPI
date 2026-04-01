@@ -19,7 +19,7 @@
 	<parent>
 		<artifactId>commandapi-bukkit-nms</artifactId>
 		<groupId>dev.jorel</groupId>
-		<version>11.1.0</version>
+		<version>11.2.0</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
@@ -95,7 +95,6 @@
 			<plugin>
 				<groupId>net.md-5</groupId>
 				<artifactId>specialsource-maven-plugin</artifactId>
-				<version>2.0.4</version>
 				<executions>
 					<execution>
 						<phase>package</phase>

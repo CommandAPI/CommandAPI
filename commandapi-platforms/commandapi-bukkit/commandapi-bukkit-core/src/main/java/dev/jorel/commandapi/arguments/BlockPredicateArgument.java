@@ -45,7 +45,7 @@ public class BlockPredicateArgument extends Argument<Predicate> {
 	 * @param nodeName the name of the node for argument
 	 */
 	public BlockPredicateArgument(String nodeName) {
-		super(nodeName, CommandAPIBukkit.get().getNMS()._ArgumentBlockPredicate());
+		super(nodeName, CommandAPIBukkit.get().getNMS()::_ArgumentBlockPredicate);
 	}
 
 	@Override
