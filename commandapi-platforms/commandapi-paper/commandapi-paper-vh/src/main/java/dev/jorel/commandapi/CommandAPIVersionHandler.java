@@ -26,7 +26,7 @@ public abstract class CommandAPIVersionHandler {
 		try {
 			ServerBuildInfo buildInfo = ServerBuildInfo.buildInfo();
 			String version = buildInfo.minecraftVersionId();
-			PaperNMS<?> versionAdapter = switch (version) {
+			PaperNMS<?> versionAdapter = switch (VersionMatcher.getRelevantVersion(version)) {
 				case "1.20.6" -> new PaperNMS_1_20_R4();
 				case "1.21", "1.21.1" -> new PaperNMS_1_21_R1();
 				case "1.21.2", "1.21.3" -> new PaperNMS_1_21_R2();

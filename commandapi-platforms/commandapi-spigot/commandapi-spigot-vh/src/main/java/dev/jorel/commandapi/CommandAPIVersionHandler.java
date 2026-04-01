@@ -26,7 +26,7 @@ public abstract class CommandAPIVersionHandler {
 		}
 		try {
 			String version = Bukkit.getBukkitVersion().split("-")[0];
-			CommandAPIPlatform<?, ?, ?> platform = switch (version) {
+			CommandAPIPlatform<?, ?, ?> platform = switch (VersionMatcher.getRelevantVersion(version)) {
 				case "1.20", "1.20.1" -> new SpigotNMS_1_20_R1(internalSpigotConfig);
 				case "1.20.2" -> new SpigotNMS_1_20_R2(internalSpigotConfig);
 				case "1.20.3", "1.20.4" -> new SpigotNMS_1_20_R3(internalSpigotConfig);
