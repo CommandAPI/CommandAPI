@@ -400,7 +400,7 @@ This is the current roadmap for the CommandAPI (as of 3rd October 2025):
     <tbody>
         <tr>
             <td valign="top"><b>11.2.0</b></td>
-            <td valign="top">March 2026</td>
+            <td valign="top">April 2026</td>
             <td valign="top">
                 <b>Bug Fixes:</b>
                 <ul>
