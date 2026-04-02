@@ -46,6 +46,12 @@ sed -i "s/<version>$oldVer<\/version>/<version>$newVer<\/version>/" examples/vel
 sed -i "s/<version>$oldVer<\/version>/<version>$newVer<\/version>/" examples/velocity/maven-shaded/README.md
 sed -i "s/<version>$oldVer<\/version>/<version>$newVer<\/version>/" examples/velocity/maven-shaded/pom.xml
 
+###################
+# Velocity plugin #
+###################
+
+sed -i "s/	version = \"\${project.version}\",/	version = \"$newVer\",/" commandapi-platforms/commandapi-velocity/commandapi-velocity-plugin/src/main/java/dev/jorel/commandapi/CommandAPIMain.java
+
 ###########################
 # Gradle example projects #
 ###########################
