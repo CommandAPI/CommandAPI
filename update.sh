@@ -50,7 +50,7 @@ sed -i "s/<version>$oldVer<\/version>/<version>$newVer<\/version>/" examples/vel
 # Velocity plugin #
 ###################
 
-sed -i "s/	version = \"\${project.version}\",/	version = \"$newVer\",/" commandapi-platforms/commandapi-velocity/commandapi-velocity-plugin/src/main/java/dev/jorel/commandapi/CommandAPIMain.java
+sed -i "s/	version = \"$oldVer\",/	version = \"$newVer\",/" commandapi-platforms/commandapi-velocity/commandapi-velocity-plugin/src/main/java/dev/jorel/commandapi/CommandAPIMain.java
 
 ###########################
 # Gradle example projects #
