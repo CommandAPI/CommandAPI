@@ -1,12 +1,12 @@
 plugins {
 	id("buildlogic.java-conventions")
+	id("io.papermc.paperweight.userdev")
 }
 
 description = "Paper support for 1.21"
 
 dependencies {
-	compileOnly(libs.io.papermc.paper.paper.api.v121)
-	compileOnly(libs.ca.bkaw.paper.nms.v121)
+	paperweight.paperDevBundle("1.21-R0.1-SNAPSHOT")
 	implementation(libs.dev.jorel.commandapi.paper.core)
 	compileOnly(libs.dev.jorel.commandapi.bukkit.v121)
 	compileOnly(libs.dev.jorel.commandapi.bukkit.nms.common)

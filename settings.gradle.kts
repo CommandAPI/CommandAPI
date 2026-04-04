@@ -52,3 +52,10 @@ includeModules(file("commandapi-platforms"), ":commandapi-platforms")
 includeModules(file("commandapi-plugin"), ":commandapi-plugin")
 includeModules(file("commandapi-preprocessor"), ":commandapi-preprocessor")
 includeModules(file("commandapi-testing"), ":commandapi-testing")
+
+pluginManagement {
+	repositories {
+		gradlePluginPortal()
+		maven("https://papermc.io/repo/repository/maven-public/")
+	}
+}

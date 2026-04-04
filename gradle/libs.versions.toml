@@ -1,14 +1,5 @@
 [versions]
 auto-service-version = "1.0.1"
-ca-bkaw-paper-nms-v1206 = "1.20.6-SNAPSHOT"
-ca-bkaw-paper-nms-v121 = "1.21-SNAPSHOT"
-ca-bkaw-paper-nms-v12111 = "1.21.11-SNAPSHOT"
-ca-bkaw-paper-nms-v1213 = "1.21.3-SNAPSHOT"
-ca-bkaw-paper-nms-v1214 = "1.21.4-SNAPSHOT"
-ca-bkaw-paper-nms-v1215 = "1.21.5-SNAPSHOT"
-ca-bkaw-paper-nms-v1216 = "1.21.6-SNAPSHOT"
-ca-bkaw-paper-nms-v1219 = "1.21.9-SNAPSHOT"
-ca-bkaw-paper-nms-v261 = "26.1-SNAPSHOT"
 com-github-seeseemelk-MockBukkit-v120 = "3.9.0"
 com-github-zafarkhaja-java-semver = "0.9.0"
 com-mojang-authlib = "3.3.39"
@@ -63,15 +54,6 @@ spigot-version-v261 = "26.1-R0.1-20260325.170250-2"
 velocity-version-common = "3.3.0-20240916.013244-136"
 
 [libraries]
-ca-bkaw-paper-nms-v1206 = { module = "ca.bkaw:paper-nms", version.ref = "ca-bkaw-paper-nms-v1206" }
-ca-bkaw-paper-nms-v121 = { module = "ca.bkaw:paper-nms", version.ref = "ca-bkaw-paper-nms-v121" }
-ca-bkaw-paper-nms-v12111 = { module = "ca.bkaw:paper-nms", version.ref = "ca-bkaw-paper-nms-v12111" }
-ca-bkaw-paper-nms-v1213 = { module = "ca.bkaw:paper-nms", version.ref = "ca-bkaw-paper-nms-v1213" }
-ca-bkaw-paper-nms-v1214 = { module = "ca.bkaw:paper-nms", version.ref = "ca-bkaw-paper-nms-v1214" }
-ca-bkaw-paper-nms-v1215 = { module = "ca.bkaw:paper-nms", version.ref = "ca-bkaw-paper-nms-v1215" }
-ca-bkaw-paper-nms-v1216 = { module = "ca.bkaw:paper-nms", version.ref = "ca-bkaw-paper-nms-v1216" }
-ca-bkaw-paper-nms-v1219 = { module = "ca.bkaw:paper-nms", version.ref = "ca-bkaw-paper-nms-v1219" }
-ca-bkaw-paper-nms-v261 = { module = "ca.bkaw:paper-nms", version.ref = "ca-bkaw-paper-nms-v261" }
 com-github-seeseemelk-MockBukkit-v120 = { module = "com.github.seeseemelk:MockBukkit-v1.20", version.ref = "com-github-seeseemelk-MockBukkit-v120" }
 com-github-zafarkhaja-java-semver = { module = "com.github.zafarkhaja:java-semver", version.ref = "com-github-zafarkhaja-java-semver" }
 com-google-auto-service-auto-service = { module = "com.google.auto.service:auto-service", version.ref = "auto-service-version" }
