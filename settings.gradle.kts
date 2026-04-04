@@ -19,21 +19,26 @@ fun canBuildModule(name: String): Boolean {
 	return true;
 }
 
-fun includeModules(project: File, path: String) {
-	if (canBuildModule(project.name) && project.resolve("build.gradle.kts").exists()) {
-		include(path)
-		findProject(path)!!.projectDir = project
+fun includeModules(dir: File, path: String) {
+	if (canBuildModule(dir.name) && dir.resolve("build.gradle.kts").exists()) {
+		include(":${dir.name}")
+		findProject(":${dir.name}")!!.projectDir = dir
+//		val project = findProject(path)!!
+//		project.projectDir = dir
+//		project.name = dir.name
 	}
-	project.listFiles()?.forEach { entry ->
+	dir.listFiles()?.forEach { entry ->
 		if (entry.isDirectory && canBuildModule(entry.name)) {
-			val projectPath = "$path:${entry.name}"
-			if (entry.resolve("build.gradle.kts").exists()) {
-				include(projectPath)
-				findProject(projectPath)!!.projectDir = entry
-			}
-			includeModules(entry, projectPath)
+			includeModules(entry, "$path:${entry.name}")
 		}
 	}
+}
+
+fun include(dir: File, projectPath: String) {
+	include(projectPath)
+	val project = findProject(projectPath)!!
+	project.projectDir = dir
+	project.name = dir.name
 }
 
 includeModules(file("commandapi-annotations"), ":commandapi-annotations")
