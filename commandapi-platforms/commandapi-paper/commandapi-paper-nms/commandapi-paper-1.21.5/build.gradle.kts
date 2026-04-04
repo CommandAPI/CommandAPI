@@ -1,13 +1,14 @@
 plugins {
 	id("buildlogic.java-conventions")
+	id("io.papermc.paperweight.userdev")
 }
 
 description = "Paper support for 1.21.5"
 
 dependencies {
+	paperweight.paperDevBundle("1.21.5-R0.1-SNAPSHOT")
 	compileOnly(libs.dev.jorel.commandapi.bukkit.v1215)
 	implementation(libs.dev.jorel.commandapi.paper.core)
-	compileOnly(libs.ca.bkaw.paper.nms.v1215)
 	compileOnly(libs.dev.jorel.commandapi.bukkit.nms.common)
 }
 
