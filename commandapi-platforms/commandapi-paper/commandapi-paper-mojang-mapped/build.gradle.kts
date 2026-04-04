@@ -4,6 +4,10 @@ plugins {
 
 description = "Paper mojang mapped dependency"
 
+dependencies {
+}
+
 java {
+	withSourcesJar()
 	withJavadocJar()
 }

@@ -1,15 +1,16 @@
 plugins {
-    id("buildlogic.java-conventions")
-}
-
-dependencies {
-    compileOnly(libs.dev.jorel.commandapi.bukkit.core)
-    compileOnly(libs.com.google.auto.service.auto.service)
-    compileOnly(libs.org.spigotmc.spigot.api)
+	id("buildlogic.java-conventions")
 }
 
 description = "Annotations Library"
 
+dependencies {
+	compileOnly(libs.com.google.auto.service.auto.service)
+	compileOnly(libs.org.spigotmc.spigot.api)
+	compileOnly(libs.dev.jorel.commandapi.bukkit.core)
+}
+
 java {
-    withJavadocJar()
+	withSourcesJar()
+	withJavadocJar()
 }
