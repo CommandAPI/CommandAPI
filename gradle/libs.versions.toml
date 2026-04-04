@@ -1,0 +1,27 @@
+[versions]
+com-google-auto-service-auto-service = "1.0.1"
+com-mojang-authlib = "3.3.39"
+com-mojang-brigadier = "1.0.17"
+dev-jorel-commandapi-bukkit-core = "11.2.0"
+dev-jorel-commandapi-bukkit-test-toolkit = "11.2.0"
+dev-jorel-commandapi-paper-core = "11.2.0"
+dev-jorel-commandapi-paper-test-toolkit = "11.2.0"
+dev-jorel-commandapi-spigot-core = "11.2.0"
+dev-jorel-commandapi-spigot-test-toolkit = "11.2.0"
+org-apache-logging-log4j-log4j-api = "2.19.0"
+org-jetbrains-annotations = "26.0.2-1"
+org-spigotmc-spigot-api = "1.20.1-R0.1-20230921.165251-11"
+
+[libraries]
+com-google-auto-service-auto-service = { module = "com.google.auto.service:auto-service", version.ref = "com-google-auto-service-auto-service" }
+com-mojang-authlib = { module = "com.mojang:authlib", version.ref = "com-mojang-authlib" }
+com-mojang-brigadier = { module = "com.mojang:brigadier", version.ref = "com-mojang-brigadier" }
+dev-jorel-commandapi-bukkit-core = { module = "dev.jorel:commandapi-bukkit-core", version.ref = "dev-jorel-commandapi-bukkit-core" }
+dev-jorel-commandapi-bukkit-test-toolkit = { module = "dev.jorel:commandapi-bukkit-test-toolkit", version.ref = "dev-jorel-commandapi-bukkit-test-toolkit" }
+dev-jorel-commandapi-paper-core = { module = "dev.jorel:commandapi-paper-core", version.ref = "dev-jorel-commandapi-paper-core" }
+dev-jorel-commandapi-paper-test-toolkit = { module = "dev.jorel:commandapi-paper-test-toolkit", version.ref = "dev-jorel-commandapi-paper-test-toolkit" }
+dev-jorel-commandapi-spigot-core = { module = "dev.jorel:commandapi-spigot-core", version.ref = "dev-jorel-commandapi-spigot-core" }
+dev-jorel-commandapi-spigot-test-toolkit = { module = "dev.jorel:commandapi-spigot-test-toolkit", version.ref = "dev-jorel-commandapi-spigot-test-toolkit" }
+org-apache-logging-log4j-log4j-api = { module = "org.apache.logging.log4j:log4j-api", version.ref = "org-apache-logging-log4j-log4j-api" }
+org-jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref = "org-jetbrains-annotations" }
+org-spigotmc-spigot-api = { module = "org.spigotmc:spigot-api", version.ref = "org-spigotmc-spigot-api" }
