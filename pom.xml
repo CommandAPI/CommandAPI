@@ -76,17 +76,6 @@
 		<module>commandapi-codecov</module>
 	</modules>
 
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.mockbukkit.mockbukkit</groupId>
-				<artifactId>mockbukkit-v1.21</artifactId>
-				<version>4.76.0</version>
-				<scope>provided</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>

@@ -2,6 +2,7 @@ rootProject.name = "commandapi"
 
 val profile = settings.extra.properties["profile"] as String? ?: "default"
 
+val permanentlyExcluded = listOf("sponge", "bukkit-test")
 val excludedModules = mapOf(
 	"default" to setOf(),
 	"bukkit" to setOf("velocity"),
@@ -16,6 +17,11 @@ fun canBuildModule(name: String): Boolean {
 			return false;
 		}
 	}
+	for (exclusion in permanentlyExcluded) {
+		if (name.contains(exclusion)) {
+			return false;
+		}
+	}
 	return true;
 }
 
@@ -23,9 +29,6 @@ fun includeModules(dir: File, path: String) {
 	if (canBuildModule(dir.name) && dir.resolve("build.gradle.kts").exists()) {
 		include(":${dir.name}")
 		findProject(":${dir.name}")!!.projectDir = dir
-//		val project = findProject(path)!!
-//		project.projectDir = dir
-//		project.name = dir.name
 	}
 	dir.listFiles()?.forEach { entry ->
 		if (entry.isDirectory && canBuildModule(entry.name)) {
