@@ -11,8 +11,3 @@ dependencies {
 	compileOnly(libs.org.spongepowered.spongeapi)
 	compileOnly(libs.dev.jorel.commandapi.preprocessor)
 }
-
-java {
-	withSourcesJar()
-	withJavadocJar()
-}

@@ -7,11 +7,7 @@ description = "Paper support for 26.1"
 
 dependencies {
 	paperweight.paperDevBundle("26.1.1.build.+")
-	compileOnly(libs.dev.jorel.commandapi.bukkit.v261)
-	implementation(libs.dev.jorel.commandapi.paper.core)
-}
 
-java {
-	withSourcesJar()
-	withJavadocJar()
+	compileOnly(project(":commandapi-bukkit-26.1"))
+	compileOnly(project(":commandapi-paper-core"))
 }
