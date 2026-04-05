@@ -8,11 +8,8 @@ dependencies {
 	compileOnly(libs.org.jetbrains.annotations)
 	compileOnly(libs.com.mojang.brigadier)
 	compileOnly(libs.org.spigotmc.spigot.api)
-	implementation(libs.dev.jorel.commandapi.bukkit.core)
-	compileOnly(libs.dev.jorel.commandapi.preprocessor)
-}
 
-java {
-	withSourcesJar()
-	withJavadocJar()
+	compileOnly(project(":commandapi-bukkit-core"))
+	compileOnly(project(":commandapi-preprocessor"))
+	annotationProcessor(project(":commandapi-preprocessor"))
 }

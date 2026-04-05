@@ -9,11 +9,8 @@ dependencies {
 	compileOnly(libs.dev.folia.folia.api)
 	compileOnly(libs.com.mojang.brigadier)
 	compileOnly(libs.paper.version.common)
-	implementation(libs.dev.jorel.commandapi.bukkit.core)
-	compileOnly(libs.dev.jorel.commandapi.preprocessor)
-}
 
-java {
-	withSourcesJar()
-	withJavadocJar()
+	compileOnly(project(":commandapi-bukkit-core"))
+	compileOnly(project(":commandapi-preprocessor"))
+	annotationProcessor(project(":commandapi-preprocessor"))
 }

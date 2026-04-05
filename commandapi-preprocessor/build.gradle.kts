@@ -6,8 +6,3 @@ description = "Development Maven preprocessor"
 
 dependencies {
 }
-
-java {
-	withSourcesJar()
-	withJavadocJar()
-}

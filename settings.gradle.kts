@@ -1,8 +1,15 @@
+pluginManagement {
+	repositories {
+		gradlePluginPortal()
+		maven("https://repo.papermc.io/repository/maven-public/")
+	}
+}
+
 rootProject.name = "commandapi"
 
 val profile = settings.extra.properties["profile"] as String? ?: "default"
 
-val permanentlyExcluded = listOf("sponge", "bukkit-test")
+val permanentlyExcluded = listOf("sponge", "bukkit-test:")
 val excludedModules = mapOf(
 	"default" to setOf(),
 	"bukkit" to setOf("velocity"),
@@ -31,17 +38,10 @@ fun includeModules(dir: File, path: String) {
 		findProject(":${dir.name}")!!.projectDir = dir
 	}
 	dir.listFiles()?.forEach { entry ->
-		if (entry.isDirectory && canBuildModule(entry.name)) {
+		if (entry.isDirectory && canBuildModule("$path:${entry.name}")) {
 			includeModules(entry, "$path:${entry.name}")
 		}
 	}
-}
-
-fun include(dir: File, projectPath: String) {
-	include(projectPath)
-	val project = findProject(projectPath)!!
-	project.projectDir = dir
-	project.name = dir.name
 }
 
 includeModules(file("commandapi-annotations"), ":commandapi-annotations")
@@ -52,10 +52,3 @@ includeModules(file("commandapi-platforms"), ":commandapi-platforms")
 includeModules(file("commandapi-plugin"), ":commandapi-plugin")
 includeModules(file("commandapi-preprocessor"), ":commandapi-preprocessor")
 includeModules(file("commandapi-testing"), ":commandapi-testing")
-
-pluginManagement {
-	repositories {
-		gradlePluginPortal()
-		maven("https://papermc.io/repo/repository/maven-public/")
-	}
-}

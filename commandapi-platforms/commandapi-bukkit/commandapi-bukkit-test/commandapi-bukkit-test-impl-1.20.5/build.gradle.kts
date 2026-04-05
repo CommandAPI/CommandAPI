@@ -14,8 +14,3 @@ dependencies {
 	testImplementation(libs.org.junit.jupiter.junit.jupiter.engine)
 	implementation(libs.com.github.seeseemelk.MockBukkit.v120)
 }
-
-java {
-	withSourcesJar()
-	withJavadocJar()
-}

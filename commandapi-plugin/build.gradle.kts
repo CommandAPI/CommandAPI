@@ -6,8 +6,3 @@ description = "Shared plugin library"
 
 dependencies {
 }
-
-java {
-	withSourcesJar()
-	withJavadocJar()
-}

@@ -14,8 +14,3 @@ dependencies {
 	compileOnly(libs.org.spigotmc.spigot.v1201)
 	implementation(libs.com.github.seeseemelk.MockBukkit.v120)
 }
-
-java {
-	withSourcesJar()
-	withJavadocJar()
-}

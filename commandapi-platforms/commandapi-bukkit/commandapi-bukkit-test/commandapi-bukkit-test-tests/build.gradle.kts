@@ -14,8 +14,3 @@ dependencies {
 	testImplementation(libs.org.junit.jupiter.junit.jupiter.engine)
 	implementation(libs.com.github.zafarkhaja.java.semver)
 }
-
-java {
-	withSourcesJar()
-	withJavadocJar()
-}

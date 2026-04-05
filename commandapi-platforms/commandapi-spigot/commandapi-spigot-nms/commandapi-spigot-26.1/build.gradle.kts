@@ -5,12 +5,8 @@ plugins {
 description = "Spigot support for 26.1"
 
 dependencies {
-	compileOnly(libs.dev.jorel.commandapi.bukkit.v261)
-	implementation(libs.dev.jorel.commandapi.spigot.core)
 	compileOnly(libs.org.spigotmc.spigot.v261)
-}
 
-java {
-	withSourcesJar()
-	withJavadocJar()
+	compileOnly(project(":commandapi-bukkit-26.1"))
+	compileOnly(project(":commandapi-spigot-core"))
 }
