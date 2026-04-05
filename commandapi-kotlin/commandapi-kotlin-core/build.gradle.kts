@@ -5,11 +5,7 @@ plugins {
 description = "Bukkit support in Kotlin core library"
 
 dependencies {
-	compileOnly(libs.dev.jorel.commandapi.core)
-	compileOnly(libs.org.jetbrains.kotlin.kotlin.stdlib)
-}
+	api(libs.org.jetbrains.kotlin.kotlin.stdlib)
 
-java {
-	withSourcesJar()
-	withJavadocJar()
+	compileOnly(project(":commandapi-core"))
 }

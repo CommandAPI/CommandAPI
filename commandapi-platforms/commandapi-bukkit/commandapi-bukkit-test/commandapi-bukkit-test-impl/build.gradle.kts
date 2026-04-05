@@ -10,8 +10,3 @@ dependencies {
 	compileOnly(libs.spigot.version.common)
 	compileOnly(libs.paper.version.bukkit.common)
 }
-
-java {
-	withSourcesJar()
-	withJavadocJar()
-}

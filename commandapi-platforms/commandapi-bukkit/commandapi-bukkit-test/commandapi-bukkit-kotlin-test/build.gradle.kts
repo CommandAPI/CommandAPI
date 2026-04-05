@@ -17,8 +17,3 @@ dependencies {
 	implementation(libs.com.github.seeseemelk.MockBukkit.v120)
 	implementation(libs.com.mojang.brigadier)
 }
-
-java {
-	withSourcesJar()
-	withJavadocJar()
-}
