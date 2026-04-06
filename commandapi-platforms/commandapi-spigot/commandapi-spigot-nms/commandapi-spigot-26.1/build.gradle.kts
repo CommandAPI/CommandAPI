@@ -8,5 +8,5 @@ dependencies {
 	compileOnly(libs.org.spigotmc.spigot.v261)
 
 	compileOnly(project(":commandapi-bukkit-26.1"))
-	compileOnly(project(":commandapi-spigot-core"))
+	api(project(":commandapi-spigot-core"))
 }

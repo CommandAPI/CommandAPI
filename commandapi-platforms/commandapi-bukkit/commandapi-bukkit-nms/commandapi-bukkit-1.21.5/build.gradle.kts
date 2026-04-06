@@ -11,10 +11,15 @@ dependencies {
 		}
 	}
 	testImplementation(libs.org.spigotmc.spigot.v1215)
-	compileOnly(libs.io.papermc.paper.paper.api.v1214)
 
 	compileOnly(project(":commandapi-bukkit-core"))
 	compileOnly(project(":commandapi-bukkit-nms-common"))
 	compileOnly(project(":commandapi-preprocessor"))
 	annotationProcessor(project(":commandapi-preprocessor"))
+	testCompileOnly(project(":commandapi-preprocessor"))
+	testAnnotationProcessor(project(":commandapi-preprocessor"))
+}
+
+tasks.withType<Test> {
+	failOnNoDiscoveredTests = false
 }

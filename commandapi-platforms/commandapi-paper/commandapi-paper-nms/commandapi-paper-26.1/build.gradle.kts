@@ -11,3 +11,12 @@ dependencies {
 	compileOnly(project(":commandapi-bukkit-26.1"))
 	compileOnly(project(":commandapi-paper-core"))
 }
+
+configurations.create("shadow") {
+	isCanBeConsumed = true
+	isCanBeResolved = false
+}
+
+artifacts {
+	add("shadow", tasks.jar)
+}

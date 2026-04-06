@@ -7,12 +7,27 @@ description = "Bukkit support testing toolkit"
 dependencies {
 	compileOnly(libs.org.jetbrains.annotations)
 	compileOnly(libs.paper.version.v1218)
+	compileOnly(libs.org.junit.jupiter.junit.jupiter.engine)
 	implementation(libs.org.mockito.mockito.core)
-	testImplementation(libs.org.junit.jupiter.junit.jupiter.params)
 	implementation(libs.org.mockbukkit.mockbukkit.mockbukkit.v121)
-	testImplementation(libs.org.junit.jupiter.junit.jupiter.engine)
 	implementation(libs.com.mojang.brigadier)
 	implementation(libs.org.slf4j.slf4j.nop)
 
 	compileOnly(project(":commandapi-bukkit-core"))
+
+	testImplementation(libs.paper.version.v1218)
+	testImplementation(libs.org.junit.jupiter.junit.jupiter.engine)
+	testImplementation(libs.org.junit.jupiter.junit.jupiter.params)
+	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+	testImplementation(project(":commandapi-bukkit-core"))
+}
+
+tasks.withType<JavaCompile> {
+	options.encoding = "UTF-8"
+	options.release = 21
+}
+
+tasks.withType<Test> {
+	useJUnitPlatform()
 }
