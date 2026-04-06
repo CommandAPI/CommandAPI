@@ -3,6 +3,3 @@ plugins {
 }
 
 description = "Development Maven preprocessor"
-
-dependencies {
-}
