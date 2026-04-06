@@ -6,12 +6,13 @@ description = "Spigot support testing toolkit"
 
 dependencies {
 	compileOnly(libs.paper.version.v1218)
-	implementation(libs.org.mockbukkit.mockbukkit.mockbukkit.v121)
+	compileOnly(libs.org.mockbukkit.mockbukkit.mockbukkit.v121)
 
-	compileOnly(project(":commandapi-bukkit-test-toolkit"))
+	implementation(project(":commandapi-bukkit-test-toolkit"))
 	compileOnly(project(":commandapi-spigot-core"))
 
 	testImplementation(libs.paper.version.v1218)
+	testImplementation(libs.org.mockbukkit.mockbukkit.mockbukkit.v121)
 	testImplementation(project(":commandapi-bukkit-test-toolkit"))
 	testImplementation(project(":commandapi-spigot-core"))
 

@@ -1,3 +1,5 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 plugins {
 	id("buildlogic.java-conventions")
 }
@@ -16,6 +18,7 @@ dependencies {
 	compileOnly(project(":commandapi-bukkit-core"))
 
 	testImplementation(libs.paper.version.v1218)
+	testImplementation(libs.org.mockbukkit.mockbukkit.mockbukkit.v121)
 	testImplementation(libs.org.junit.jupiter.junit.jupiter.engine)
 	testImplementation(libs.org.junit.jupiter.junit.jupiter.params)
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
@@ -30,4 +33,10 @@ tasks.withType<JavaCompile> {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+tasks.withType<ShadowJar> {
+	dependencies {
+		exclude(dependency(libs.org.mockbukkit.mockbukkit.mockbukkit.v121))
+	}
 }
