@@ -12,3 +12,12 @@ dependencies {
 	compileOnly(project(":commandapi-bukkit-nms-common"))
 	compileOnly(project(":commandapi-paper-core"))
 }
+
+configurations.create("shadow") {
+	isCanBeConsumed = true
+	isCanBeResolved = false
+}
+
+artifacts {
+	add("shadow", tasks.jar)
+}

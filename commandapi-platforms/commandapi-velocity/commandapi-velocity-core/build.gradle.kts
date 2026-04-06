@@ -11,7 +11,7 @@ dependencies {
 	compileOnly(libs.com.mojang.authlib)
 	compileOnly(libs.org.apache.logging.log4j.log4j.api)
 
-	compileOnly(project(":commandapi-core"))
+	api(project(":commandapi-core"))
 	compileOnly(project(":commandapi-preprocessor"))
 	annotationProcessor(project(":commandapi-preprocessor"))
 }
