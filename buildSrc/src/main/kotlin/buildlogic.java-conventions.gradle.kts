@@ -27,11 +27,12 @@ repositories {
 
 group = "dev.jorel"
 version = "11.2.0"
-java.sourceCompatibility = JavaVersion.VERSION_17
-java.targetCompatibility = JavaVersion.VERSION_17
 
 java {
     withSourcesJar()
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(25)
+	}
 }
 
 publishing {
@@ -40,9 +41,10 @@ publishing {
     }
 }
 
-tasks.withType<JavaCompile> {
+tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
-	options.release = 17
+	sourceCompatibility = "17"
+	targetCompatibility = "17"
 }
 
 tasks.withType<Javadoc> {

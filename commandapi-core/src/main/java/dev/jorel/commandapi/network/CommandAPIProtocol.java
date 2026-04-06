@@ -3,8 +3,8 @@ package dev.jorel.commandapi.network;
 import dev.jorel.commandapi.network.packets.UpdateRequirementsPacket;
 import dev.jorel.commandapi.network.packets.ProtocolVersionTooOldPacket;
 import dev.jorel.commandapi.network.packets.SetVersionPacket;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Function;
 
