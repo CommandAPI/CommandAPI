@@ -12,11 +12,11 @@ dependencies {
 	compileOnly(project(":commandapi-paper-core"))
 }
 
-configurations.create("shadow") {
+configurations.create("include") {
 	isCanBeConsumed = true
 	isCanBeResolved = false
 }
 
 artifacts {
-	add("shadow", tasks.jar)
+	add("include", tasks.jar)
 }

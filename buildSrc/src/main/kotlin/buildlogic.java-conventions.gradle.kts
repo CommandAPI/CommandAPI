@@ -1,6 +1,7 @@
 plugins {
     `java-library`
     `maven-publish`
+	id("com.gradleup.shadow")
 }
 
 repositories {
@@ -30,6 +31,7 @@ version = "11.2.0"
 
 java {
     withSourcesJar()
+	withJavadocJar()
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(25)
 	}
@@ -49,6 +51,16 @@ tasks.withType<JavaCompile>().configureEach {
 
 tasks.withType<Javadoc> {
     options.encoding = "UTF-8"
+	options {
+		this as StandardJavadocDocletOptions
+		tags(
+			"apiNote:a:API Note:",
+		)
+	}
+}
+
+tasks.named("build") {
+	dependsOn("shadowJar")
 }
 
 configurations.all {
@@ -57,4 +69,9 @@ configurations.all {
 			attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 25)
 		}
 	}
+}
+
+afterEvaluate {
+	configurations["shadowRuntimeElements"].isCanBeConsumed = false;
+	configurations["shadow"].isCanBeConsumed = false
 }
