@@ -1,3 +1,5 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 plugins {
     `java-library`
     `maven-publish`
@@ -27,7 +29,7 @@ repositories {
 }
 
 group = "dev.jorel"
-version = "11.2.0"
+version = "11.2.1-SNAPSHOT"
 
 java {
     withSourcesJar()
@@ -39,7 +41,15 @@ java {
 
 publishing {
     publications.create<MavenPublication>("maven") {
-        from(components["java"])
+        artifact(tasks["shadowJar"]) {
+			classifier = ""
+        }
+	    artifact(tasks["sourcesJar"]) {
+			classifier = "sources"
+	    }
+	    artifact(tasks["javadocJar"]) {
+			classifier = "javadoc"
+	    }
     }
 }
 
@@ -63,11 +73,19 @@ tasks.named("build") {
 	dependsOn("shadowJar")
 }
 
+tasks.named("test") {
+	dependsOn("shadowJar")
+}
+
 configurations.all {
 	if (isCanBeResolved) {
 		attributes {
 			attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 25)
 		}
+	}
+	if (name in listOf("apiElements", "runtimeElements")) {
+		outgoing.artifacts.clear()
+		outgoing.artifact(tasks.shadowJar)
 	}
 }
 
