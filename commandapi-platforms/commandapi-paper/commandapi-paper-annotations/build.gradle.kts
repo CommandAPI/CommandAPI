@@ -8,11 +8,11 @@ dependencies {
 	compileOnly(libs.com.google.auto.service.auto.service)
 	compileOnly(paper.version.common)
 
-	implementation(project(":commandapi-annotations"))
+	implementation(project(":commandapi-bukkit-annotations"))
 	compileOnly(project(":commandapi-paper-core"))
 
 	testCompileOnly(paper.version.common)
-	testCompileOnly(project(":commandapi-annotations"))
+	testCompileOnly(project(":commandapi-bukkit-annotations"))
 	testCompileOnly(project(":commandapi-paper-core"))
 }
 
