@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
-
 plugins {
 	id("buildlogic.java-conventions")
 	kotlin("jvm")

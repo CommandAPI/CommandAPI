@@ -5,7 +5,7 @@ plugins {
 description = "Paper support NMS library"
 
 dependencies {
-	implementation(project(":commandapi-bukkit-nms-common"))
+	implementation(project(":commandapi-bukkit-nms-common", "mojang"))
 
 	api(project(":commandapi-paper-api"))
 
