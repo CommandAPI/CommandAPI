@@ -1,5 +1,3 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-
 plugins {
     `java-library`
     `maven-publish`
@@ -29,7 +27,7 @@ repositories {
 }
 
 group = "dev.jorel"
-version = "11.2.0"
+version = "11.2.1-SNAPSHOT"
 
 java {
     withSourcesJar()
