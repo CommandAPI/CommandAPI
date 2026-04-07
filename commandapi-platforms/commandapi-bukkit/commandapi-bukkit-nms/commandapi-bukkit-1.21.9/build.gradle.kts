@@ -1,8 +1,6 @@
-import io.github.patrick.gradle.remapper.RemapTask
-
 plugins {
 	id("buildlogic.java-conventions")
-	id("io.github.patrick.remapper")
+	id("io.typst.gradlesource.spigot")
 }
 
 description = "Bukkit support for 1.21.9"
@@ -41,15 +39,15 @@ configurations.create("mojang") {
 }
 
 artifacts {
-	add("spigot", layout.buildDirectory.file("libs/${project.name}-${project.version}-remapped.jar")) {
-		builtBy(tasks.remap)
+	add("spigot", layout.buildDirectory.file("libs/${project.name}-${project.version}-spigot-jar.jar")) {
+		builtBy(tasks.remapObfToSpigot)
 	}
 	add("mojang", tasks.jar)
 }
 
-tasks.withType<RemapTask> {
-	version = "1.21.9"
-	archiveClassifier = "remapped"
+spigotRemap {
+	spigotVersion = "1.21.9"
+	sourceJarTask = tasks.jar
 }
 
 tasks.withType<Test> {
