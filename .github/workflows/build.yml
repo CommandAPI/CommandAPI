@@ -50,7 +50,7 @@ jobs:
       ### Compilation ###
 
       - name: Build the CommandAPI (Bukkit+Velocity) using Gradle
-        run: ./gradlew build
+        run: ./gradlew build publishToMavenLocal
 
       ### Check NMS_Common compiles against all compatible Minecraft versions
 
