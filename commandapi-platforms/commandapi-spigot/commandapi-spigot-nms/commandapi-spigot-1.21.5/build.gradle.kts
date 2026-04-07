@@ -1,8 +1,6 @@
-import io.github.patrick.gradle.remapper.RemapTask
-
 plugins {
 	id("buildlogic.java-conventions")
-	id("io.github.patrick.remapper")
+	id("io.typst.gradlesource.spigot")
 }
 
 description = "Spigot support for 1.21.5"
@@ -26,12 +24,12 @@ configurations.create("remapped") {
 }
 
 artifacts {
-	add("remapped", layout.buildDirectory.file("libs/${project.name}-${project.version}-remapped.jar")) {
-		builtBy(tasks.remap)
+	add("remapped", layout.buildDirectory.file("libs/${project.name}-${project.version}-spigot-jar.jar")) {
+		builtBy(tasks.remapObfToSpigot)
 	}
 }
 
-tasks.withType<RemapTask> {
-	version = "1.21.5"
-	archiveClassifier = "remapped"
+spigotRemap {
+	spigotVersion = "1.21.5"
+	sourceJarTask = tasks.jar
 }
