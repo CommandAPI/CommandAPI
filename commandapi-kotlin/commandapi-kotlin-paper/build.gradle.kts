@@ -6,7 +6,7 @@ plugins {
 description = "Paper support in Kotlin"
 
 dependencies {
-	compileOnly(libs.paper.version.v1201)
+	compileOnly(paper.version.v1201)
 	compileOnly(libs.org.jetbrains.kotlin.kotlin.stdlib)
 
 	implementation(project(":commandapi-kotlin-bukkit"))

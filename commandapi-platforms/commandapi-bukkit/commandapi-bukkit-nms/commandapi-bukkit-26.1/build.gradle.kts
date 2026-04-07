@@ -5,7 +5,7 @@ plugins {
 description = "Bukkit support for 26.1"
 
 dependencies {
-	compileOnly(libs.org.spigotmc.spigot.v261)
+	compileOnly(spigot.version.v261)
 
 	compileOnly(project(":commandapi-bukkit-core"))
 	compileOnly(project(":commandapi-preprocessor"))

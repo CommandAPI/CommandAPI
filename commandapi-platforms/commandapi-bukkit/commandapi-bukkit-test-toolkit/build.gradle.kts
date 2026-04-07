@@ -8,7 +8,7 @@ description = "Bukkit support testing toolkit"
 
 dependencies {
 	compileOnly(libs.org.jetbrains.annotations)
-	compileOnly(libs.paper.version.v1218)
+	compileOnly(paper.version.v1218)
 	compileOnly(libs.org.junit.jupiter.junit.jupiter.engine)
 	implementation(libs.org.mockito.mockito.core)
 	implementation(libs.org.mockbukkit.mockbukkit.mockbukkit.v121)
@@ -17,7 +17,7 @@ dependencies {
 
 	compileOnly(project(":commandapi-bukkit-core"))
 
-	testImplementation(libs.paper.version.v1218)
+	testImplementation(paper.version.v1218)
 	testImplementation(libs.org.mockbukkit.mockbukkit.mockbukkit.v121)
 	testImplementation(libs.org.junit.jupiter.junit.jupiter.engine)
 	testImplementation(libs.org.junit.jupiter.junit.jupiter.params)

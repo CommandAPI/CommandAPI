@@ -5,7 +5,7 @@ plugins {
 description = "Bukkit support Velocity networking plugin"
 
 dependencies {
-	compileOnly(libs.org.spigotmc.spigot.api)
+	compileOnly(spigot.version.api)
 
 	compileOnly(project(":commandapi-core"))
 }

@@ -7,7 +7,7 @@ description = "Paper support core library"
 dependencies {
 	compileOnly(libs.org.jetbrains.annotations)
 	compileOnly(libs.com.mojang.brigadier)
-	compileOnly(libs.paper.version.common)
+	compileOnly(paper.version.common)
 
 	api(project(":commandapi-bukkit-core"))
 	compileOnly(project(":commandapi-preprocessor"))

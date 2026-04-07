@@ -5,8 +5,8 @@ plugins {
 description = "Spigot support version handler"
 
 dependencies {
-	compileOnly(libs.spigot.version.common)
-	compileOnly(libs.spigot.version.common) {
+	compileOnly(spigot.version.common)
+	compileOnly(spigot.version.common) {
 		artifact {
 			classifier = "remapped-mojang"
 		}

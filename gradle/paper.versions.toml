@@ -1,0 +1,18 @@
+[versions]
+common = "1.20.6-R0.1-20241030.191541-127"
+v1201 = "1.20.1-R0.1-20230921.165944-178"
+v1206 = "1.20.6-R0.1-20241030.191541-127"
+v1211 = "1.21.1-R0.1-20250328.161643-128"
+v1218 = "1.21.8-R0.1-20250906.215025-55"
+v261 = "26.1.1.build.15-alpha"
+velocity-version = "3.3.0-20240916.013244-136"
+
+[libraries]
+velocity-api = { module = "com.velocitypowered:velocity-api", version.ref = "velocity-version" }
+version-bukkit-common = { module = "io.papermc.paper:paper-api", version.ref = "v1201" }
+version-common = { module = "io.papermc.paper:paper-api", version.ref = "common" }
+version-v1201 = { module = "io.papermc.paper:paper-api", version.ref = "v1201" }
+version-v1206 = { module = "io.papermc.paper:paper-api", version.ref = "v1206" }
+version-v1211 = { module = "io.papermc.paper:paper-api", version.ref = "v1211" }
+version-v1218 = { module = "io.papermc.paper:paper-api", version.ref = "v1218" }
+version-v2611 = { module = "io.papermc.paper:paper-api", version.ref = "v261" }

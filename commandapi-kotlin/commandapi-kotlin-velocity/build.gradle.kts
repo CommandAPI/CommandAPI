@@ -6,7 +6,7 @@ plugins {
 description = "Velocity support in Kotlin"
 
 dependencies {
-	compileOnly(libs.com.velocitypowered.velocity.api)
+	compileOnly(paper.velocity.api)
 	compileOnly(libs.org.jetbrains.kotlin.kotlin.stdlib)
 
 	implementation(project(":commandapi-kotlin-core"))

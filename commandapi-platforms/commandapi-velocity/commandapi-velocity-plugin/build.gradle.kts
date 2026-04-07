@@ -5,7 +5,7 @@ plugins {
 description = "Velocity support plugin"
 
 dependencies {
-	compileOnly(libs.com.velocitypowered.velocity.api)
+	compileOnly(paper.velocity.api)
 
 	implementation(project(":commandapi-velocity-core"))
 	implementation(project(":commandapi-plugin"))

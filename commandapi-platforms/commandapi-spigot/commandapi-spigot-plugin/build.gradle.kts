@@ -7,7 +7,7 @@ plugins {
 description = "Spigot support Spigot-mapped plugin"
 
 dependencies {
-	compileOnly(libs.org.spigotmc.spigot.api)
+	compileOnly(spigot.version.api)
 
 	implementation(project(":commandapi-spigot-shade"))
 	implementation(project(":commandapi-bukkit-plugin-common"))
