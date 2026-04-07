@@ -6,12 +6,12 @@ plugins {
 description = "Bukkit support NMS common library"
 
 dependencies {
-	compileOnly(libs.org.spigotmc.spigot.v1201) {
+	compileOnly(spigot.version.v1201) {
 		artifact {
 			classifier = "remapped-mojang"
 		}
 	}
-	compileOnly(libs.paper.version.bukkit.common)
+	compileOnly(paper.version.bukkit.common)
 
 	compileOnly(project(":commandapi-bukkit-core"))
 }

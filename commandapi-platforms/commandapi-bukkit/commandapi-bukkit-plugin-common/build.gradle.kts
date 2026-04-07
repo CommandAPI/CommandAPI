@@ -5,7 +5,7 @@ plugins {
 description = "Bukkit support plugin common library"
 
 dependencies {
-	compileOnly(libs.paper.version.v1211)
+	compileOnly(paper.version.v1211)
 
 	api(project(":commandapi-plugin"))
 	compileOnly(project(":commandapi-bukkit-core"))
