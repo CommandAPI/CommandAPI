@@ -18,7 +18,7 @@ dependencyResolutionManagement {
 
 rootProject.name = "commandapi"
 
-val profile = settings.extra.properties["profile"] as String? ?: "default"
+val profile = providers.gradleProperty("profile").getOrElse("default")
 
 val permanentlyExcluded = listOf("sponge", "bukkit-test:")
 val excludedModules = mapOf(
@@ -26,6 +26,7 @@ val excludedModules = mapOf(
 	"bukkit" to setOf("velocity"),
 	"paper" to setOf("spigot", "velocity"),
 	"spigot" to setOf("paper", "velocity"),
+	"velocity" to setOf("bukkit", "paper", "spigot")
 )
 
 fun canBuildModule(name: String): Boolean {
@@ -55,7 +56,6 @@ fun includeModules(dir: File, path: String) {
 	}
 }
 
-includeModules(file("commandapi-annotations"), ":commandapi-annotations")
 includeModules(file("commandapi-codecov"), ":commandapi-codecov")
 includeModules(file("commandapi-core"), ":commandapi-core")
 includeModules(file("commandapi-kotlin"), ":commandapi-kotlin")
