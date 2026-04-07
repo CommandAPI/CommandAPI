@@ -23,15 +23,13 @@ SPIGOT_SNAP = "https://repo.codemc.io/repository/nms/"
 PAPER_SNAP  = "https://repo.papermc.io/repository/maven-public"
 
 def coord_for_property(prop_name: str):
-    if prop_name.startswith("spigot.version."):
-        return ("org.spigotmc", "spigot", SPIGOT_SNAP)
-    if prop_name.startswith("spigot.api.version."):
+    if prop_name.startswith("spigot-api"):
         return ("org.spigotmc", "spigot-api", SPIGOT_SNAP)
-    if prop_name.startswith("folia.version."):
-        return ("dev.folia", "folia-api", PAPER_SNAP)
-    if prop_name.startswith("paper.version."):
+    if prop_name.startswith("spigot"):
+        return ("org.spigotmc", "spigot", SPIGOT_SNAP)
+    if prop_name.startswith("paper-api"):
         return ("io.papermc.paper", "paper-api", PAPER_SNAP)
-    if prop_name.startswith("velocity.version."):
+    if prop_name.startswith("velocity"):
         return ("com.velocitypowered", "velocity-api", PAPER_SNAP)
     return None
 
@@ -90,39 +88,49 @@ def latest_snapshot_value(repo_base: str, group: str, artifact: str, snapshot_ve
             return f"{base}-{ts}-{bn}"
     raise RuntimeError("No snapshot value found in metadata")
 
-def resolve_properties(pom_path: Path, verbose=False):
-    ns = {"m": "http://maven.apache.org/POM/4.0.0"}
-    ET.register_namespace("", "http://maven.apache.org/POM/4.0.0")
-    tree = ET.parse(pom_path)
-    root = tree.getroot()
+def resolve_properties(paper_versions_path: Path, spigot_versions_path: Path, verbose=False):
+    props: list[(str, str)] = []
+    version_matcher = re.compile(r"([0-9]+)\.([0-9]+)(\.[0-9]+)?-(R[0-9]\.1-)?((([0-9]{8})\.([0-9]{6})-([0-9]{1,3})|SNAPSHOT))")
+    
+    with open(paper_versions_path) as f:
+        contents = f.read().split("\n\n")[0].split("\n")
+        contents.pop(0)
+        for raw_version in contents:
+            name, version = raw_version.split(" = ")
+            version = version.replace("\"", "")
+            if (version_matcher.match(version)):
+                props.append((name, version))
 
-    props = root.find("m:properties", ns)
-    if props is None:
-        print("No <properties> found.")
-        return
+    with open(spigot_versions_path) as f:
+        contents = f.read().split("\n\n")[0].split("\n")
+        contents.pop(0)
+        for raw_version in contents:
+            name, version = raw_version.split(" = ")
+            version = version.replace("\"", "")
+            if (version_matcher.match(version)):
+                props.append((name, version))
 
     changes = []
-    for child in list(props):
-        tag = re.sub(r"^\{.*\}", "", child.tag)  # strip ns
-        coord = coord_for_property(tag)
+    for property, version in list(props):
+        coord = coord_for_property(property)
         if not coord:
             continue
 
-        written_version = (child.text or "").strip()
+        written_version = (version or "").strip()
         current = re.sub(r"([0-9]{8})\.([0-9]{6})-([0-9]{1,3})", "SNAPSHOT", written_version)
 
         group, artifact, repo = coord
-        print(f"[resolving] {tag}: {current} -> …", flush=True)
+        print(f"[resolving] {property}: {current} -> …", flush=True)
         try:
             resolved = latest_snapshot_value(repo, group, artifact, current, verbose=verbose)
             if resolved and resolved != written_version:
-                print(f"[resolved]  {tag}: {resolved}", flush=True)
-                changes.append((tag, current, resolved))
-                child.text = resolved
+                print(f"[resolved]  {property}: {resolved}", flush=True)
+                changes.append((property, current, resolved))
+                version = resolved
             else:
-                print(f"[no-change] {tag}: {written_version}", flush=True)
+                print(f"[no-change] {property}: {written_version}", flush=True)
         except Exception as e:
-            print(f"[WARN] {tag}: {current} -> could not resolve: {e}", flush=True)
+            print(f"[WARN] {property}: {current} -> could not resolve: {e}", flush=True)
 
     if not changes:
         print("No snapshot properties needed updates.")
@@ -139,10 +147,11 @@ def resolve_properties(pom_path: Path, verbose=False):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("pom", nargs="?", default="pom.xml")
+    ap.add_argument("paper", nargs="?", default="gradle/paper.versions.toml")
+    ap.add_argument("spigot", nargs="?", default="gradle/spigot.versions.toml")
     ap.add_argument("-v", "--verbose", action="store_true")
     args = ap.parse_args()
-    resolve_properties(Path(args.pom), verbose=args.verbose)
+    resolve_properties(Path(args.paper), Path(args.spigot), verbose=args.verbose)
 
 if __name__ == "__main__":
     main()
