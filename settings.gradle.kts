@@ -26,7 +26,7 @@ val excludedModules = mapOf(
 	"bukkit" to setOf("velocity"),
 	"paper" to setOf("spigot", "velocity"),
 	"spigot" to setOf("paper", "velocity"),
-	"velocity" to setOf("bukkit", "paper", "spigot")
+	"velocity" to setOf("bukkit", "paper", "spigot", "commandapi-annotations")
 )
 
 fun canBuildModule(name: String): Boolean {
@@ -56,6 +56,7 @@ fun includeModules(dir: File, path: String) {
 	}
 }
 
+includeModules(file("commandapi-annotations"), ":commandapi-annotations")
 includeModules(file("commandapi-codecov"), ":commandapi-codecov")
 includeModules(file("commandapi-core"), ":commandapi-core")
 includeModules(file("commandapi-kotlin"), ":commandapi-kotlin")
