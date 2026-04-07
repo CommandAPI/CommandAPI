@@ -1,5 +1,3 @@
-import io.typst.gradlesource.spigot.SpigotRemapExtension
-
 plugins {
 	id("buildlogic.java-conventions")
 	id("io.typst.gradlesource.spigot")
