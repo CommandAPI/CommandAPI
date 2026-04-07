@@ -8,7 +8,7 @@ dependencies {
 	compileOnly(libs.com.google.auto.service.auto.service)
 	compileOnly(libs.paper.version.common)
 
-	compileOnly(project(":commandapi-annotations"))
+	implementation(project(":commandapi-annotations"))
 	compileOnly(project(":commandapi-paper-core"))
 
 	testCompileOnly(libs.paper.version.common)

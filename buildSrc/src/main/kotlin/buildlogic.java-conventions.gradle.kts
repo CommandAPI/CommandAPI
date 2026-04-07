@@ -29,7 +29,7 @@ repositories {
 }
 
 group = "dev.jorel"
-version = "11.2.1-SNAPSHOT"
+version = "11.2.0"
 
 java {
     withSourcesJar()

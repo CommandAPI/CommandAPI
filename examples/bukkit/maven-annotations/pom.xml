@@ -27,7 +27,7 @@
 		<!-- The CommandAPI dependency used for Bukkit and it's forks -->
 		<dependency>
 			<groupId>dev.jorel</groupId>
-			<artifactId>commandapi-paper-plugin</artifactId>
+			<artifactId>commandapi-paper-core</artifactId>
 			<version>11.2.0</version>
 			<scope>provided</scope>
 		</dependency>
