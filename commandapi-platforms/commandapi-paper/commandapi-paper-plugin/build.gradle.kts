@@ -7,7 +7,7 @@ plugins {
 description = "Paper support plugin"
 
 dependencies {
-	compileOnly(libs.paper.version.common)
+	compileOnly(paper.version.common)
 
 	implementation(project(":commandapi-paper-shade"))
 	implementation(project(":commandapi-bukkit-plugin-common"))

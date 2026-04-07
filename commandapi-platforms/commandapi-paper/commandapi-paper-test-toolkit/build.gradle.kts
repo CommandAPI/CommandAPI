@@ -5,13 +5,13 @@ plugins {
 description = "Paper support testing toolkit"
 
 dependencies {
-	compileOnly(libs.paper.version.v1218)
+	compileOnly(paper.version.v1218)
 	compileOnly(libs.org.mockbukkit.mockbukkit.mockbukkit.v121)
 
 	implementation(project(":commandapi-bukkit-test-toolkit"))
 	compileOnly(project(":commandapi-paper-core"))
 
-	testImplementation(libs.paper.version.v1218)
+	testImplementation(paper.version.v1218)
 	testImplementation(libs.org.mockbukkit.mockbukkit.mockbukkit.v121)
 	testImplementation(project(":commandapi-bukkit-test-toolkit"))
 	testImplementation(project(":commandapi-paper-core"))

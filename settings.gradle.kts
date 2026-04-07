@@ -5,6 +5,17 @@ pluginManagement {
 	}
 }
 
+dependencyResolutionManagement {
+	versionCatalogs {
+		create("paper") {
+			from(files("gradle/paper.versions.toml"))
+		}
+		create("spigot") {
+			from(files("gradle/spigot.versions.toml"))
+		}
+	}
+}
+
 rootProject.name = "commandapi"
 
 val profile = settings.extra.properties["profile"] as String? ?: "default"
