@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>dev.jorel</groupId>
 		<artifactId>commandapi-paper</artifactId>
-		<version>11.2.0</version>
+		<version>11.2.1-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>commandapi-paper-test-toolkit</artifactId>
@@ -36,6 +36,8 @@
 		<dependency>
 			<groupId>org.mockbukkit.mockbukkit</groupId>
 			<artifactId>mockbukkit-v1.21</artifactId>
+			<version>4.76.0</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>dev.jorel</groupId>

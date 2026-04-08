@@ -25,7 +25,7 @@
 
 	<groupId>dev.jorel</groupId>
 	<artifactId>commandapi</artifactId>
-	<version>11.2.0</version>
+	<version>11.2.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>commandapi</name>
@@ -76,24 +76,14 @@
 		<module>commandapi-codecov</module>
 	</modules>
 
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.mockbukkit.mockbukkit</groupId>
-				<artifactId>mockbukkit-v1.21</artifactId>
-				<version>4.76.0</version>
-				<scope>provided</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
 		<maven.build.timestamp.format>dd_MMM_yyyy_(hh-mm-ssa)</maven.build.timestamp.format>
 
-		<maven.compiler.release>17</maven.compiler.release>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
 		<kotlin.version>2.3.0</kotlin.version>
 
 		<!-- Shared versions. This is used by things such as the networking
@@ -160,7 +150,7 @@
 		<paper.version.1.21.8>1.21.8-R0.1-20250906.215025-55</paper.version.1.21.8>
 		<paper.version.1.21.9>1.21.9-R0.1-20251007.115206-20</paper.version.1.21.9>
 		<paper.version.1.21.11>1.21.11-R0.1-20260228.115254-85</paper.version.1.21.11>
-		<paper.version.26.1>26.1-R0.1-SNAPSHOT</paper.version.26.1>
+		<paper.version.26.1>26.1.1.build.15-alpha</paper.version.26.1>
 
 		<auto-service.version>1.0.1</auto-service.version>
 

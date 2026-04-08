@@ -6,7 +6,7 @@
 	<parent>
 		<artifactId>commandapi-bukkit</artifactId>
 		<groupId>dev.jorel</groupId>
-		<version>11.2.0</version>
+		<version>11.2.1-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>commandapi-bukkit-core</artifactId>
@@ -32,7 +32,7 @@
 		<dependency>
 			<groupId>com.mojang</groupId>
 			<artifactId>brigadier</artifactId>
-			<version>1.0.17</version>
+			<version>1.3.10</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

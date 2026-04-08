@@ -19,7 +19,7 @@
 	<parent>
 		<artifactId>commandapi</artifactId>
 		<groupId>dev.jorel</groupId>
-		<version>11.2.0</version>
+		<version>11.2.1-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
@@ -43,7 +43,7 @@
 		<dependency>
 			<groupId>com.mojang</groupId>
 			<artifactId>brigadier</artifactId>
-			<version>1.0.17</version>
+			<version>1.3.10</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
