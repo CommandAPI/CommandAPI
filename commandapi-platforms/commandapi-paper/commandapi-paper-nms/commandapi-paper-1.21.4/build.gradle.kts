@@ -21,3 +21,9 @@ configurations.create("include") {
 artifacts {
 	add("include", tasks.jar)
 }
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
