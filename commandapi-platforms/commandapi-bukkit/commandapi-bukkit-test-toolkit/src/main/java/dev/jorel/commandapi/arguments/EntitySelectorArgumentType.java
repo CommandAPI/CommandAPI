@@ -100,7 +100,7 @@ public record EntitySelectorArgumentType(boolean singleTarget, boolean playersOn
 		if (entities.size() > 1) {
 			throw ERROR_NOT_SINGLE_ENTITY.create();
 		}
-		return entities.getFirst();
+		return entities.get(0);
 	}
 
 	public static Player findSinglePlayer(CommandContext<MockCommandSource> cmdCtx, String key) throws CommandSyntaxException {
@@ -108,6 +108,6 @@ public record EntitySelectorArgumentType(boolean singleTarget, boolean playersOn
 		if (players.size() != 1) {
 			throw NO_PLAYERS_FOUND.create();
 		}
-		return players.getFirst();
+		return players.get(0);
 	}
 }

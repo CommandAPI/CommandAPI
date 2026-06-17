@@ -35,7 +35,7 @@
 		<dependency>
 			<groupId>ca.bkaw</groupId>
 			<artifactId>paper-nms</artifactId>
-			<version>26.1-SNAPSHOT</version>
+			<version>${paper.version.26.1}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -65,7 +65,6 @@
 			<plugin>
 				<groupId>ca.bkaw</groupId>
 				<artifactId>paper-nms-maven-plugin</artifactId>
-				<version>1.4.10</version>
 			</plugin>
 			<!-- Allow code coverage -->
 			<plugin>

@@ -20,12 +20,15 @@ public record MockCommandSource(CommandSender bukkitSender, Location location, E
 	}
 
 	private static Location getLocation(CommandSender sender) {
-		return switch (sender) {
-			case Entity entity -> entity.getLocation();
-			case BlockCommandSender block -> block.getBlock().getLocation();
-			case NativeProxyCommandSender proxy -> proxy.getLocation();
-			default -> new Location(null, 0, 0, 0);
-		};
+		if (sender instanceof Entity entity) {
+			return entity.getLocation();
+		} else if (sender instanceof BlockCommandSender block) {
+			return block.getBlock().getLocation();
+		} else if (sender instanceof NativeProxyCommandSender proxy) {
+			return proxy.getLocation();
+		} else {
+			return new Location(null, 0, 0, 0);
+		}
 	}
 
 	private static Entity getEntity(CommandSender sender) {

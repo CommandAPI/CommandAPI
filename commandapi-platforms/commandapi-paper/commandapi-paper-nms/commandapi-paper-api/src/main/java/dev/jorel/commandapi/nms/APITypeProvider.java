@@ -482,8 +482,8 @@ public class APITypeProvider implements BundledNMS<CommandSourceStack> {
 	@Override
 	public EntitySelectorParser getEntitySelector(CommandContext<CommandSourceStack> cmdCtx, String key) {
 		return new EntitySelectorParser(
-			() -> cmdCtx.getArgument(key, PlayerSelectorArgumentResolver.class).resolve(cmdCtx.getSource()).getFirst(),
-			() -> cmdCtx.getArgument(key, EntitySelectorArgumentResolver.class).resolve(cmdCtx.getSource()).getFirst(),
+			() -> cmdCtx.getArgument(key, PlayerSelectorArgumentResolver.class).resolve(cmdCtx.getSource()).get(0),
+			() -> cmdCtx.getArgument(key, EntitySelectorArgumentResolver.class).resolve(cmdCtx.getSource()).get(0),
 			(allowEmpty) -> {
 				List<Player> players = cmdCtx.getArgument(key, PlayerSelectorArgumentResolver.class).resolve(cmdCtx.getSource());
 				if (players.isEmpty() && !allowEmpty) {
