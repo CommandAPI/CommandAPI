@@ -22,36 +22,40 @@ package dev.jorel.commandapi.nms;
 
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import dev.jorel.commandapi.preprocessor.Differs;
 import dev.jorel.commandapi.preprocessor.NMSMeta;
 import dev.jorel.commandapi.wrappers.DoubleRange;
 import dev.jorel.commandapi.wrappers.IntegerRange;
-import net.minecraft.advancements.criterion.MinMaxBounds;
+import net.minecraft.advancements.predicates.MinMaxBounds;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.arguments.ColorArgument;
 import net.minecraft.commands.arguments.RangeArgument;
+import net.minecraft.commands.arguments.TeamColorArgument;
 
 import java.util.function.Supplier;
 
 /**
- * NMS implementation for Minecraft 26.1
+ * NMS implementation for Minecraft 26.2
  */
-@NMSMeta(compatibleWith = {"26.1"})
-public class NMS_26_1 extends NMS_26_Common {
-	public NMS_26_1(Supplier<CommandBuildContext> commandBuildContext) {
+@NMSMeta(compatibleWith = {"26.2"})
+public class NMS_26_2 extends NMS_26_Common {
+	public NMS_26_2(Supplier<CommandBuildContext> commandBuildContext) {
 		super(commandBuildContext);
 	}
 
 	@Override
 	public String[] compatibleVersions() {
-		return new String[]{"26.1"};
+		return new String[]{"26.2"};
 	}
 
+	// It looks like there is now also a "HexColorArgument"
+	@Differs(from = "26.1", by = "ColorArgument -> TeamColorArgument")
 	@Override
 	public final ArgumentType<?> _ArgumentChatFormat() {
-		return ColorArgument.color();
+		return TeamColorArgument.teamColor();
 	}
 
+	@Differs(from = "26.1", by = "net.minecraft.advancements.criterion.MinMaxBounds -> net.minecraft.advancements.predicates.MinMaxBounds")
 	@Override
 	public DoubleRange getDoubleRange(CommandContext<CommandSourceStack> cmdCtx, String key) {
 		MinMaxBounds.Doubles range = RangeArgument.Floats.getRange(cmdCtx, key);
@@ -62,6 +66,7 @@ public class NMS_26_1 extends NMS_26_Common {
 		return new DoubleRange(low, high);
 	}
 
+	@Differs(from = "26.1", by = "net.minecraft.advancements.criterion.MinMaxBounds -> net.minecraft.advancements.predicates.MinMaxBounds")
 	@Override
 	public IntegerRange getIntRange(CommandContext<CommandSourceStack> cmdCtx, String key) {
 		MinMaxBounds.Ints range = RangeArgument.Ints.getRange(cmdCtx, key);

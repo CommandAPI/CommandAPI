@@ -25,8 +25,8 @@
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>commandapi-bukkit-26.1</artifactId>
-	<name>Bukkit support for 26.1</name>
+	<artifactId>commandapi-bukkit-26.2</artifactId>
+	<name>Bukkit support for 26.2</name>
 
 	<repositories>
 		<repository>
@@ -47,14 +47,14 @@
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot</artifactId>
-			<version>${spigot.version.26.1}</version>
+			<version>${spigot.version.26.2}</version>
 			<scope>provided</scope>
 		</dependency>
 		<!-- Libraries -->
 		<dependency>
 			<groupId>io.papermc.paper</groupId>
 			<artifactId>paper-api</artifactId>
-			<version>${paper.version.26.1}</version>
+			<version>${paper.version.26.2}</version>
 			<scope>provided</scope>
 		</dependency>
 
