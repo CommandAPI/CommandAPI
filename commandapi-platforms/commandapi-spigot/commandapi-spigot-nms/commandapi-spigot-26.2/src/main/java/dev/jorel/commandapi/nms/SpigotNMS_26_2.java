@@ -19,8 +19,8 @@ public class SpigotNMS_26_2 extends SpigotNMS_26_Common {
 	@Differs(from = "26.1", by = "ColorArgument -> TeamColorArgument")
 	@Override
 	public ChatColor getChatColor(CommandContext<CommandSourceStack> cmdCtx, String key) {
-		// TODO: TeamColor#getChar doesn't exist. How to do this?
-		return ChatColor.getByChar(TeamColorArgument.getTeamColor(cmdCtx, key).getChar());
+		// Relies on the fact that the enums have identical names for the colors
+		return ChatColor.valueOf(TeamColorArgument.getTeamColor(cmdCtx, key).name());
 	}
 
 	@Override
