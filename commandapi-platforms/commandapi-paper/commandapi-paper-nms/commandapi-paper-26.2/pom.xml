@@ -9,8 +9,8 @@
 		<version>11.2.0</version>
 	</parent>
 
-	<artifactId>commandapi-paper-26.1</artifactId>
-	<name>Paper support for 26.1</name>
+	<artifactId>commandapi-paper-26.2</artifactId>
+	<name>Paper support for 26.2</name>
 
 	<repositories>
 		<repository>
@@ -35,13 +35,13 @@
 		<dependency>
 			<groupId>ca.bkaw</groupId>
 			<artifactId>paper-nms</artifactId>
-			<version>${paper.version.26.1}</version>
+			<version>${paper.version.26.2}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.papermc.paper</groupId>
 			<artifactId>paper-api</artifactId>
-			<version>${paper.version.26.1}</version>
+			<version>${paper.version.26.2}</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -54,7 +54,7 @@
 		</dependency>
 		<dependency>
 			<groupId>dev.jorel</groupId>
-			<artifactId>commandapi-bukkit-26.1</artifactId>
+			<artifactId>commandapi-bukkit-26.2</artifactId>
 			<version>${project.version}</version>
 			<scope>provided</scope>
 		</dependency>
