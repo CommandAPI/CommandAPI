@@ -6,7 +6,7 @@ plugins {
 description = "Paper support for 26.1"
 
 dependencies {
-	paperweight.paperDevBundle("26.1.1.build.+")
+	paperweight.paperDevBundle("26.1.2.build.+")
 
 	compileOnly(project(":commandapi-bukkit-26.1"))
 	compileOnly(project(":commandapi-paper-core"))
