@@ -1,6 +1,6 @@
 plugins {
 	id("buildlogic.java-conventions")
-	id("io.typst.gradlesource.spigot")
+	id("buildlogic.spigot-remap")
 }
 
 description = "Bukkit support for 1.21.9"
@@ -39,7 +39,7 @@ configurations.create("mojang") {
 }
 
 artifacts {
-	add("spigot", layout.buildDirectory.file("libs/${project.name}-${project.version}-spigot-jar.jar")) {
+	add("spigot", layout.buildDirectory.file("libs/${project.name}-${project.version}-spigot.jar")) {
 		builtBy(tasks.remapObfToSpigot)
 	}
 	add("mojang", tasks.jar)
