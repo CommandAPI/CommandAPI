@@ -7,10 +7,12 @@ plugins {
 description = "Paper support shade library"
 
 dependencies {
-	api(project(":commandapi-paper-core"))
+	// `vh` must be before `core` so we resolve the correct version of `CommandAPIVersionHandler`
 	api(project(":commandapi-paper-vh"))
-	api(project(":commandapi-paper-nms-dependency"))
+	// `mojang-mapped` must be before `core` so we resolve the correct version of `MojangMappedVersionHandler`
 	api(project(":commandapi-paper-mojang-mapped"))
+	api(project(":commandapi-paper-core"))
+	api(project(":commandapi-paper-nms-dependency"))
 }
 
 tasks.withType<ShadowJar> {
