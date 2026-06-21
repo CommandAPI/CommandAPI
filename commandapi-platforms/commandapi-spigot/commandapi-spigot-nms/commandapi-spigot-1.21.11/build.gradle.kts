@@ -1,6 +1,6 @@
 plugins {
 	id("buildlogic.java-conventions")
-	id("io.typst.gradlesource.spigot")
+	id("buildlogic.spigot-remap")
 }
 
 description = "Spigot support for 1.21.11"
@@ -24,7 +24,7 @@ configurations.create("remapped") {
 }
 
 artifacts {
-	add("remapped", layout.buildDirectory.file("libs/${project.name}-${project.version}-spigot-jar.jar")) {
+	add("remapped", layout.buildDirectory.file("libs/${project.name}-${project.version}-spigot.jar")) {
 		builtBy(tasks.remapObfToSpigot)
 	}
 }
