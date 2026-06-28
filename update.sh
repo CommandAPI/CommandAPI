@@ -82,6 +82,12 @@ sed -i "s/dev\.jorel:commandapi-velocity-core:$oldVer/dev\.jorel:commandapi-velo
 sed -i "s/dev\.jorel:commandapi-velocity-core:$oldVer/dev\.jorel:commandapi-velocity-core:$newVer/" examples/velocity/gradle-kotlin/README.md
 sed -i "s/dev\.jorel:commandapi-velocity-core:$oldVer/dev\.jorel:commandapi-velocity-core:$newVer/" examples/velocity/gradle-kotlin/build.gradle.kts
 
+###################################
+# CommandAPI project gradle build #
+###################################
+
+sed -i "s/version = \"$oldVer\"/version = \"$newVer\"/" buildSrc/src/main/kotlin/buildlogic.java-conventions.gradle.kts
+
 ##############################
 # CommandAPI project pom.xml #
 ##############################

@@ -1,6 +1,6 @@
 name: CommandAPINetworking
 main: dev.jorel.commandapi.CommandAPINetworkingMain
-version: ${project.version}
+version: ${version}
 description: A barebones plugin that only handles plugin messages sent by the CommandAPI
 authors:
   - Will Kroboth

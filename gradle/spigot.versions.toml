@@ -1,0 +1,31 @@
+[versions]
+spigot-api-version-common = "1.20.1-R0.1-20230921.165251-11"
+spigot-version-common = "1.20.1-R0.1-20230921.165347-11"
+spigot-version-v1201 = "1.20.1-R0.1-20230921.165347-11"
+spigot-version-v1202 = "1.20.2-R0.1-20231205.170413-10"
+spigot-version-v1204 = "1.20.4-R0.1-20240423.154326-27"
+spigot-version-v1206 = "1.20.6-R0.1-20240613.152322-4"
+spigot-version-v1211 = "1.21.1-R0.1-20241120.105205-27"
+spigot-version-v12111 = "1.21.11-R0.1-20260115.203122-4"
+spigot-version-v1213 = "1.21.3-R0.1-20250116.085943-59"
+spigot-version-v1214 = "1.21.4-R0.1-20250425.052153-76"
+spigot-version-v1215 = "1.21.5-R0.1-20250723.090352-40"
+spigot-version-v1216 = "1.21.6-R0.1-20250617.185834-1"
+spigot-version-v1219 = "1.21.9-R0.1-20250930.202015-1"
+spigot-version-v261 = "26.1-R0.1-20260325.170250-2"
+
+[libraries]
+version-api = { module = "org.spigotmc:spigot-api", version.ref = "spigot-api-version-common" }
+version-v1201 = { module = "org.spigotmc:spigot", version.ref = "spigot-version-v1201" }
+version-v1202 = { module = "org.spigotmc:spigot", version.ref = "spigot-version-v1202" }
+version-v1204 = { module = "org.spigotmc:spigot", version.ref = "spigot-version-v1204" }
+version-v1206 = { module = "org.spigotmc:spigot", version.ref = "spigot-version-v1206" }
+version-v1211 = { module = "org.spigotmc:spigot", version.ref = "spigot-version-v1211" }
+version-v12111 = { module = "org.spigotmc:spigot", version.ref = "spigot-version-v12111" }
+version-v1213 = { module = "org.spigotmc:spigot", version.ref = "spigot-version-v1213" }
+version-v1214 = { module = "org.spigotmc:spigot", version.ref = "spigot-version-v1214" }
+version-v1215 = { module = "org.spigotmc:spigot", version.ref = "spigot-version-v1215" }
+version-v1216 = { module = "org.spigotmc:spigot", version.ref = "spigot-version-v1216" }
+version-v1219 = { module = "org.spigotmc:spigot", version.ref = "spigot-version-v1219" }
+version-v261 = { module = "org.spigotmc:spigot", version.ref = "spigot-version-v261" }
+version-common = { module = "org.spigotmc:spigot", version.ref = "spigot-version-common" }

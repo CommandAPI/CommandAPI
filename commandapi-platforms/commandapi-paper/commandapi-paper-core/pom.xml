@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>dev.jorel</groupId>
 		<artifactId>commandapi-paper</artifactId>
-		<version>11.2.0</version>
+		<version>11.2.1-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>commandapi-paper-core</artifactId>
@@ -57,7 +57,7 @@
 		<dependency>
 			<groupId>com.mojang</groupId>
 			<artifactId>brigadier</artifactId>
-			<version>1.0.18</version>
+			<version>1.3.10</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

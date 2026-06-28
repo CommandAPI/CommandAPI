@@ -17,3 +17,4 @@ docssrc/src/.markdownlint-cli2.yaml
 *.versionsBackup
 dependency-reduced-pom.xml
 .paper-nms
+.kotlin

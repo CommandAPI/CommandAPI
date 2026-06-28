@@ -49,55 +49,52 @@ jobs:
 
       ### Compilation ###
 
-      - name: Setup Paper NMS for all applicable versions
-        run: ./setupPaperNMS.sh
-
-      - name: Build the CommandAPI (Bukkit+Velocity) using maven
-        run: mvn clean install --batch-mode -P Platform.Bukkit,Platform.Velocity
+      - name: Build the CommandAPI (Bukkit+Velocity) using Gradle
+        run: ./gradlew build publishToMavenLocal
 
       ### Check NMS_Common compiles against all compatible Minecraft versions
 
-      - name: Compile NMS_Common for 1.20 and 1.20.1
-        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_20_R1
-
-      - name: Compile NMS_Common for 1.20.2
-        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_20_R2
-
-      - name: Compile NMS_Common for 1.20.3 and 1.20.4
-        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_20_R3
-
-      - name: Compile NMS_Common for 1.20.5 and 1.20.6
-        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_20_R4
-
-      - name: Compile NMS_Common for 1.21 and 1.21.1
-        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_21_R1
-
-      - name: Compile NMS_Common for 1.21.2 and 1.21.3
-        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_21_R2
-
-      - name: Compile NMS_Common for 1.21.4
-        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_21_R3
-
-      - name: Compile NMS_Common for 1.21.5
-        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_21_R4
-
-      - name: Compile NMS_Common for 1.21.6 and 1.21.7 and 1.21.8
-        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_21_R5
-
-      - name: Compile NMS_Common for 1.21.9 and 1.21.10
-        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_21_R6
-
-      - name: Compile NMS_Common for 1.21.11
-        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_21_R7
-
-      - name: Copy BytecodeAnalyser to nms-common target folder
-        run: mv BytecodeAnalyser/build/libs/BytecodeAnalyser*.jar commandapi-platforms/commandapi-bukkit/commandapi-bukkit-nms/commandapi-bukkit-nms-common/target
-
-      - name: Run BytecodeAnalyser
-        run: |
-            cd commandapi-platforms/commandapi-bukkit/commandapi-bukkit-nms/commandapi-bukkit-nms-common/target
-            chmod +x BytecodeAnalyser*.jar
-            java -jar BytecodeAnalyser*.jar
+#      - name: Compile NMS_Common for 1.20 and 1.20.1
+#        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_20_R1
+#
+#      - name: Compile NMS_Common for 1.20.2
+#        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_20_R2
+#
+#      - name: Compile NMS_Common for 1.20.3 and 1.20.4
+#        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_20_R3
+#
+#      - name: Compile NMS_Common for 1.20.5 and 1.20.6
+#        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_20_R4
+#
+#      - name: Compile NMS_Common for 1.21 and 1.21.1
+#        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_21_R1
+#
+#      - name: Compile NMS_Common for 1.21.2 and 1.21.3
+#        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_21_R2
+#
+#      - name: Compile NMS_Common for 1.21.4
+#        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_21_R3
+#
+#      - name: Compile NMS_Common for 1.21.5
+#        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_21_R4
+#
+#      - name: Compile NMS_Common for 1.21.6 and 1.21.7 and 1.21.8
+#        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_21_R5
+#
+#      - name: Compile NMS_Common for 1.21.9 and 1.21.10
+#        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_21_R6
+#
+#      - name: Compile NMS_Common for 1.21.11
+#        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_21_R7
+#
+#      - name: Copy BytecodeAnalyser to nms-common target folder
+#        run: mv BytecodeAnalyser/build/libs/BytecodeAnalyser*.jar commandapi-platforms/commandapi-bukkit/commandapi-bukkit-nms/commandapi-bukkit-nms-common/target
+#
+#      - name: Run BytecodeAnalyser
+#        run: |
+#            cd commandapi-platforms/commandapi-bukkit/commandapi-bukkit-nms/commandapi-bukkit-nms-common/target
+#            chmod +x BytecodeAnalyser*.jar
+#            java -jar BytecodeAnalyser*.jar
 
       # - name: validate version-specific dependencies (nms-common)
       #   run: |
