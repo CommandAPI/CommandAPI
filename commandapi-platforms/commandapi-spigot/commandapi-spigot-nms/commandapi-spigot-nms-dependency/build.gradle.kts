@@ -5,8 +5,11 @@ plugins {
 description = "Spigot support Spigot-mapped NMS dependency"
 
 dependencies {
-	implementation(project(":commandapi-bukkit-nms-common", "spigot"))
+	api(project(":commandapi-bukkit-nms-common", "spigot"))
+	api(project(":commandapi-bukkit-26-common"))
+	api(project(":commandapi-spigot-26-common"))
 
+	api(project(":commandapi-spigot-26.2"))
 	api(project(":commandapi-spigot-26.1"))
 	api(project(":commandapi-spigot-1.21.11", "remapped"))
 	api(project(":commandapi-spigot-1.21.9", "remapped"))
@@ -20,6 +23,7 @@ dependencies {
 	api(project(":commandapi-spigot-1.20.2", "remapped"))
 	api(project(":commandapi-spigot-1.20", "remapped"))
 
+	api(project(":commandapi-bukkit-26.2"))
 	api(project(":commandapi-bukkit-26.1"))
 	api(project(":commandapi-bukkit-1.21.11", "spigot"))
 	api(project(":commandapi-bukkit-1.21.9", "spigot"))

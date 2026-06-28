@@ -2,13 +2,15 @@ plugins {
 	id("buildlogic.java-conventions")
 }
 
-description = "Bukkit support for 26.1"
+description = "Spigot support for 26.2"
 
 dependencies {
-	compileOnly(spigot.version.v261)
+	compileOnly(spigot.version.v262)
 
-	compileOnly(project(":commandapi-bukkit-core"))
+	compileOnly(project(":commandapi-bukkit-26.2"))
 	compileOnly(project(":commandapi-bukkit-26-common"))
+	compileOnly(project(":commandapi-spigot-26-common"))
+	api(project(":commandapi-spigot-core"))
 	compileOnly(project(":commandapi-preprocessor"))
 	annotationProcessor(project(":commandapi-preprocessor"))
 }
