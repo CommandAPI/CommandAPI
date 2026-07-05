@@ -155,9 +155,7 @@ jobs:
         with:
           name: CommandAPI (Spigot plugin)
           path: |
-            commandapi-platforms/commandapi-spigot/commandapi-spigot-plugin/target/CommandAPI*.jar
-            !commandapi-platforms/commandapi-spigot/commandapi-spigot-plugin/target/*sources.jar
-            !commandapi-platforms/commandapi-spigot/commandapi-spigot-plugin/target/*javadoc.jar
+            commandapi-platforms/commandapi-spigot/commandapi-spigot-plugin/build/libs/commandapi-spigot-plugin-*-all.jar
 
       - name: Upload CommandAPI (Paper) plugin artifact
         if: ${{ runner.os == 'Linux' && matrix.java == '21' }} # Only upload artifacts built from latest java on one OS
@@ -165,9 +163,7 @@ jobs:
         with:
             name: CommandAPI (Paper plugin)
             path: |
-                commandapi-platforms/commandapi-paper/commandapi-paper-plugin/target/CommandAPI*.jar
-                !commandapi-platforms/commandapi-paper/commandapi-paper-plugin/target/*sources.jar
-                !commandapi-platforms/commandapi-paper/commandapi-paper-plugin/target/*javadoc.jar
+              commandapi-platforms/commandapi-paper/commandapi-paper-plugin/build/libs/commandapi-paper-plugin-*-all.jar
 
       - name: Upload CommandAPI (Velocity) plugin artifact
         if: ${{ runner.os == 'Linux' && matrix.java == '21' }} # Only upload artifacts built from latest java on one OS
@@ -175,9 +171,7 @@ jobs:
         with:
           name: CommandAPI (Velocity plugin)
           path: |
-            commandapi-platforms/commandapi-velocity/commandapi-velocity-plugin/target/CommandAPI*.jar
-            !commandapi-platforms/commandapi-velocity/commandapi-velocity-plugin/target/*sources.jar
-            !commandapi-platforms/commandapi-velocity/commandapi-velocity-plugin/target/*javadoc.jar
+            commandapi-platforms/commandapi-velocity/commandapi-velocity-plugin/build/libs/commandapi-velocity-plugin-*-all.jar
 
       ### Examples ###
 
