@@ -21,6 +21,11 @@
 			<version>${project.version}</version>
 			<classifier>mojang-mapped</classifier>
 		</dependency>
+		<dependency>
+			<groupId>dev.jorel</groupId>
+			<artifactId>commandapi-bukkit-26-common</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 
 		<!-- API types -->
 		<dependency>
@@ -30,6 +35,11 @@
 		</dependency>
 
 		<!-- NMS-specific implementations for Paper -->
+		<dependency>
+			<groupId>dev.jorel</groupId>
+			<artifactId>commandapi-paper-26.2</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>dev.jorel</groupId>
 			<artifactId>commandapi-paper-26.1</artifactId>
@@ -77,6 +87,11 @@
 		</dependency>
 
 		<!-- NMS-specific implementations -->
+		<dependency>
+			<groupId>dev.jorel</groupId>
+			<artifactId>commandapi-bukkit-26.2</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>dev.jorel</groupId>
 			<artifactId>commandapi-bukkit-26.1</artifactId>
