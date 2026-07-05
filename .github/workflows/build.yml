@@ -208,6 +208,9 @@ jobs:
           java-version: 25
           cache: maven
 
+      - name: Setup Paper NMS for all applicable versions
+        run: ./setupPaperNMS.sh
+
       - name: Deploy snapshot version of the CommandAPI (Bukkit+Velocity) to the Sonatype snapshot repository
         run: |
           if mvn help:evaluate -Dexpression=project.version -q -DforceStdout | grep -E -q '\-SNAPSHOT$';  then
