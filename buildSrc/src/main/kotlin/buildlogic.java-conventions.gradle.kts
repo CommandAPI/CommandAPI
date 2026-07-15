@@ -49,6 +49,17 @@ publishing {
 			classifier = "javadoc"
 	    }
     }
+
+    repositories {
+        maven {
+            name = "centralSnapshots"
+            url = uri("https://central.sonatype.com/repository/maven-snapshots/")
+            credentials {
+                username = providers.environmentVariable("centralSonatypeUsername").orElse("").get()
+                password = providers.environmentVariable("centralSonatypePassword").orElse("").get()
+            }
+        }
+    }
 }
 
 tasks.withType<JavaCompile>().configureEach {

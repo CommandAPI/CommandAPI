@@ -202,23 +202,20 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          server-id: central # Needs to match the id in the main pom.xml file
-          server-username: MAVEN_USERNAME
-          server-password: MAVEN_PASSWORD
           java-version: 25
-          cache: maven
+          cache: gradle
 
       - name: Setup Paper NMS for all applicable versions
         run: ./setupPaperNMS.sh
 
-      - name: Deploy snapshot version of the CommandAPI (Bukkit+Velocity) to the Sonatype snapshot repository
+      - name: Publish snapshot version of the CommandAPI (Bukkit+Velocity) to the Sonatype snapshot repository
         run: |
-          if mvn help:evaluate -Dexpression=project.version -q -DforceStdout | grep -E -q '\-SNAPSHOT$';  then
-            echo "SNAPSHOT version detected: $(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)"
-            mvn deploy --batch-mode -P Platform.Bukkit,Platform.Velocity -DskipTests=true
+          if ./gradlew -q :commandapi-core:properties | grep -E '^version: .*SNAPSHOT$' >/dev/null; then
+            echo "SNAPSHOT version detected"
+            ./gradlew publish
           else
             echo "Version is not a SNAPSHOT version, not deploying to Sonatype Snapshot repo"
           fi
         env:
-          MAVEN_USERNAME: ${{ secrets.CENTRAL_SONATYPE_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.CENTRAL_SONATYPE_PASSWORD }}
+          centralSonatypeUsername: ${{ secrets.CENTRAL_SONATYPE_USERNAME }}
+          centralSonatypePassword: ${{ secrets.CENTRAL_SONATYPE_PASSWORD }}
