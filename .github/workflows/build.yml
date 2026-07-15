@@ -205,9 +205,6 @@ jobs:
           java-version: 25
           cache: gradle
 
-      - name: Setup Paper NMS for all applicable versions
-        run: ./setupPaperNMS.sh
-
       - name: Publish snapshot version of the CommandAPI (Bukkit+Velocity) to the Sonatype snapshot repository
         run: |
           if ./gradlew -q :commandapi-core:properties | grep -E '^version: .*SNAPSHOT$' >/dev/null; then
