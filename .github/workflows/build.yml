@@ -209,10 +209,10 @@ jobs:
         run: |
           if ./gradlew -q :commandapi-core:properties | grep -E '^version: .*SNAPSHOT$' >/dev/null; then
             echo "SNAPSHOT version detected"
-            ./gradlew publish
+            ./gradlew publishToMavenCentral
           else
             echo "Version is not a SNAPSHOT version, not deploying to Sonatype Snapshot repo"
           fi
         env:
-          centralSonatypeUsername: ${{ secrets.CENTRAL_SONATYPE_USERNAME }}
-          centralSonatypePassword: ${{ secrets.CENTRAL_SONATYPE_PASSWORD }}
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.CENTRAL_SONATYPE_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.CENTRAL_SONATYPE_PASSWORD }}
