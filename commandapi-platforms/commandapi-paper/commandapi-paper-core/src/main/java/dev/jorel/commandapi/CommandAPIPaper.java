@@ -119,22 +119,18 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 		super.plugin = (JavaPlugin) Bukkit.getPluginManager().getPlugin(getConfiguration().getPluginName());
 		this.lifecycleEventOwner = super.plugin;
 
-		boolean performInitialReload;
-		if (isFoliaPresent) {
-			CommandAPI.logNormal("Skipping initial datapack reloading because Folia was detected");
-			performInitialReload = false;
-		} else {
-			performInitialReload = !getConfiguration().skipReloadDatapacks();
-		}
-
 		Bukkit.getGlobalRegionScheduler().runDelayed(plugin, task -> {
 			CommandAPIBukkit.get().getCommandRegistrationStrategy().runTasksAfterServerStart();
 
-			if (performInitialReload) {
-				// Trigger a reload so that commands registered
-				//  by JavaPlugins can be used in datapacks
-				CommandAPI.logNormal("Reloading datapacks...");
-				Bukkit.reloadData();
+			if (isFoliaPresent) {
+				CommandAPI.logNormal("Skipping initial datapack reloading because Folia was detected");
+			} else {
+				if (!getConfiguration().skipReloadDatapacks()) {
+					// Trigger a reload so that commands registered
+					//  by JavaPlugins can be used in datapacks
+					CommandAPI.logNormal("Reloading datapacks...");
+					Bukkit.reloadData();
+				}
 			}
 
 			for (String permission : bootstrapPermissions) {
@@ -162,16 +158,8 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 			CommandAPI.logNormal("Did not hook into Paper ServerResourcesReloadedEvent while using commandapi-paper. Are you actually using Paper?");
 		}
 
-		if (!performInitialReload) {
-			// Register commands that were created after bootstrap (JavaPlugin onLoad or onEnable)
-			// If we are going to trigger a reload, doing this is useless because the reload is going to reset
-			//  commands, and our bootstrapLifecycleEvent is going to handle registering the commands anyway.
-			// However, if we're not going to reload right now, we should make the commands available without
-			//  a reload. This is especially important on Folia where we can not reload.
-			CommandAPI.logNormal("Registering enable lifecycle event");
-			PaperCommandRegistration<Source> registration = (PaperCommandRegistration<Source>) getCommandRegistrationStrategy();
-			registration.registerEnableLifecycleEvent(plugin);
-		}
+		PaperCommandRegistration<Source> registration = (PaperCommandRegistration<Source>) getCommandRegistrationStrategy();
+		registration.registerEnableLifecycleEvent(plugin);
 	}
 
 	private void checkPaperDependencies() {

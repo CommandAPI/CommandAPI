@@ -227,13 +227,13 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 	void registerEnableLifecycleEvent(LifecycleEventOwner owner) {
 		getManager(owner).registerEventHandler(LifecycleEvents.COMMANDS.newHandler(
 			event -> {
-				if (!commandsToRegister.getChildren().isEmpty()) {
-					// This will trigger once if we want to register commands that were
-					//  made in onEnable, but we aren't automatically reloading on server start.
-					// If and when `minecraft:reload` is called, the bootstrap event will handle
-					//  registering these commands.
-					registerCommandsThroughPaper(event, commandsToRegister);
-				}
+				// This will have commands once if we want to register commands that were
+				//  made in onEnable, but we aren't automatically reloading on server start.
+				// If and when `minecraft:reload` is called, the bootstrap event will handle
+				//  registering these commands.
+				// Even if we don't have our own commands here, we still want to run this to unregister
+				//  commands from other plugins that were created during their enable lifecycle event.
+				registerCommandsThroughPaper(event, commandsToRegister);
 			}
 			// Always run after our own bootstrap event handler in case both
 			//  of the event handlers are JavaPlugin event handlers
