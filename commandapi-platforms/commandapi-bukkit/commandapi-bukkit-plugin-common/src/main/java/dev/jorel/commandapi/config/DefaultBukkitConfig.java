@@ -21,19 +21,12 @@ public class DefaultBukkitConfig extends DefaultConfig {
 	public static final CommentedConfigOption<Boolean> SKIP_RELOAD_DATAPACKS = new CommentedConfigOption<>(
 		new String[] {
 			"Skips the initial datapack reload when the server loads (default: true)",
-			"If \"true\", the CommandAPI will not reload datapacks when the server has finished",
-			"loading. Datapacks will still be reloaded if performed manually when \"hook-paper-reload\"",
-			"is set to \"true\" and /minecraft:reload is run."
+			"If \"false\", the CommandAPI will trigger `minecraft:reload` to allow commands",
+			"registered after bootstrap to be used in datapack functions. If \"true\", the",
+			"CommandAPI will not automatically reload, so non-bootstrap commands will not be",
+			"available in datapacks. Non-bootstrap commands will still be available in datapacks",
+			"later if a reload happens due to another plugin or manually through `minecraft:reload`."
 		}, true
-	);
-
-	public static final CommentedConfigOption<Boolean> HOOK_PAPER_RELOAD = new CommentedConfigOption<>(
-		new String[] {
-			"Hook into Paper's ServerResourcesReloadedEvent (default: false)",
-			"If \"true\", the CommandAPI will hook into Paper's ServerResourcesReloadedEvent to detect when",
-			"/minecraft:reload is run. This allows the CommandAPI to automatically call its custom datapack-reloading",
-			"function which allows CommandAPI commands to be used in datapacks."
-		}, false
 	);
 
 	public static final CommentedConfigOption<List<?>> PLUGINS_TO_CONVERT = new CommentedConfigOption<>(
@@ -70,8 +63,7 @@ public class DefaultBukkitConfig extends DefaultConfig {
 		options.put("messages.missing-executor-implementation", MISSING_EXECUTOR_IMPLEMENTATION);
 		options.put("create-dispatcher-json", CREATE_DISPATCHER_JSON);
 		options.put("fallback-to-latest-nms", FALLBACK_TO_LATEST_NMS(true));
-		options.put("skip-initial-datapack-reload", SKIP_RELOAD_DATAPACKS); // TODO: Remove once the Paper plugin utilizes the bootstrapper
-		options.put("hook-paper-reload", HOOK_PAPER_RELOAD); // TODO: Remove once the Paper plugin utilizes the bootstrapper
+		options.put("skip-initial-datapack-reload", SKIP_RELOAD_DATAPACKS);
 		options.put("enable-networking", ENABLE_NETWORKING);
 		options.put("make-networking-exceptions-warnings", MAKE_NETWORKING_EXCEPTIONS_WARNINGS);
 		options.put("plugins-to-convert", PLUGINS_TO_CONVERT);
