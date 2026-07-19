@@ -30,8 +30,6 @@ group = "dev.jorel"
 version = "11.2.1-SNAPSHOT"
 
 java {
-    withSourcesJar()
-	withJavadocJar()
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(25)
 	}
@@ -42,11 +40,11 @@ mavenPublishing {
   publishToMavenCentral()
 
   if (!version.toString().endsWith("SNAPSHOT")) {
-	// Don't sign SNAPSHOT versions, only main releases
-  	signAllPublications()
+    // Don't sign SNAPSHOT versions, only main releases
+    signAllPublications()
   }
 
-  coordinates(group.toString(), name.toString(), version.toString())
+  coordinates(group.toString(), name, version.toString())
 
   pom {
     name.set("commandapi")
