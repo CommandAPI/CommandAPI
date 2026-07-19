@@ -20,15 +20,12 @@
  *******************************************************************************/
 package dev.jorel.commandapi;
 
-import dev.jorel.commandapi.config.BukkitConfigurationAdapter;
-import dev.jorel.commandapi.config.DefaultBukkitConfig;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.InvalidPluginException;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,32 +40,7 @@ public class CommandAPIMain extends JavaPlugin {
 
 	@Override
 	public void onLoad() {
-		// Read config file
-		saveDefaultConfig();
 		FileConfiguration fileConfig = getConfig();
-		CommandAPIPaperConfig config = new CommandAPIPaperConfig(this)
-			.verboseOutput(fileConfig.getBoolean("verbose-outputs"))
-			.silentLogs(fileConfig.getBoolean("silent-logs"))
-			.fallbackToLatestNMS(fileConfig.getBoolean("fallback-to-latest-nms"))
-			.missingExecutorImplementationMessage(fileConfig.getString("messages.missing-executor-implementation"))
-			.dispatcherFile(fileConfig.getBoolean("create-dispatcher-json") ? new File(getDataFolder(), "command_registration.json") : null)
-			.hookPaperReload(fileConfig.getBoolean("hook-paper-reload")) // TODO: Remove once this utilizes the bootstrapper
-			.skipInitialDatapackReload(fileConfig.getBoolean("skip-initial-datapack-reload")) // TODO: Remove once this utilizes the bootstrapper
-			.enableNetworking(fileConfig.getBoolean("enable-networking"))
-			.makeNetworkingExceptionsWarnings(fileConfig.getBoolean("make-networking-exceptions-warnings"));
-
-		for (String pluginName : fileConfig.getStringList("skip-sender-proxy")) {
-			if (Bukkit.getPluginManager().getPlugin(pluginName) != null) {
-				config.addSkipSenderProxy(pluginName);
-			} else {
-				new InvalidPluginException("Could not find a plugin " + pluginName + "! Has it been loaded properly?")
-					.printStackTrace();
-			}
-		}
-
-		// Main CommandAPI loading
-		CommandAPI.setLogger(CommandAPILogger.fromJavaLogger(getLogger()));
-		CommandAPI.onLoad(config);
 
 		// Convert all plugins to be converted
 		if (!fileConfig.getList(PLUGINS_TO_CONVERT).isEmpty()
@@ -136,22 +108,4 @@ public class CommandAPIMain extends JavaPlugin {
 	public void onEnable() {
 		CommandAPI.onEnable();
 	}
-
-	/**
-	 * In contrast to the superclass' method {@link org.bukkit.plugin.java.JavaPlugin#saveDefaultConfig()},
-	 * this doesn't fail silently if the config.yml already exists but instead will update the config with
-	 * new values if available.
-	 * <p>
-	 * This should fail silently if all values are set already.
-	 */
-	@Override
-	public void saveDefaultConfig() {
-		File configFile = new File(getDataFolder(), "config.yml");
-		BukkitConfigurationAdapter.createMinimalInstance(configFile).saveDefaultConfig(
-			DefaultBukkitConfig.createDefaultPaperConfig(),
-			getDataFolder(),
-			getLogger()
-		);
-	}
-
 }

@@ -149,7 +149,7 @@ public class CommandAPIMain extends JavaPlugin {
 		BukkitConfigurationAdapter.createMinimalInstance(configFile).saveDefaultConfig(
 			DefaultBukkitConfig.createDefaultSpigotConfig(),
 			getDataFolder(),
-			getLogger()
+			getLogger()::severe
 		);
 	}
 
