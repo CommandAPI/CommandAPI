@@ -43,32 +43,7 @@ public class CommandAPIMain extends JavaPlugin {
 
 	@Override
 	public void onLoad() {
-		// Read config file
-		saveDefaultConfig();
 		FileConfiguration fileConfig = getConfig();
-		CommandAPIPaperConfig config = new CommandAPIPaperConfig(this)
-			.verboseOutput(fileConfig.getBoolean("verbose-outputs"))
-			.silentLogs(fileConfig.getBoolean("silent-logs"))
-			.fallbackToLatestNMS(fileConfig.getBoolean("fallback-to-latest-nms"))
-			.missingExecutorImplementationMessage(fileConfig.getString("messages.missing-executor-implementation"))
-			.dispatcherFile(fileConfig.getBoolean("create-dispatcher-json") ? new File(getDataFolder(), "command_registration.json") : null)
-			.hookPaperReload(fileConfig.getBoolean("hook-paper-reload")) // TODO: Remove once this utilizes the bootstrapper
-			.skipInitialDatapackReload(fileConfig.getBoolean("skip-initial-datapack-reload")) // TODO: Remove once this utilizes the bootstrapper
-			.enableNetworking(fileConfig.getBoolean("enable-networking"))
-			.makeNetworkingExceptionsWarnings(fileConfig.getBoolean("make-networking-exceptions-warnings"));
-
-		for (String pluginName : fileConfig.getStringList("skip-sender-proxy")) {
-			if (Bukkit.getPluginManager().getPlugin(pluginName) != null) {
-				config.addSkipSenderProxy(pluginName);
-			} else {
-				new InvalidPluginException("Could not find a plugin " + pluginName + "! Has it been loaded properly?")
-					.printStackTrace();
-			}
-		}
-
-		// Main CommandAPI loading
-		CommandAPI.setLogger(CommandAPILogger.fromJavaLogger(getLogger()));
-		CommandAPI.onLoad(config);
 
 		// Convert all plugins to be converted
 		if (!fileConfig.getList(PLUGINS_TO_CONVERT).isEmpty()
@@ -150,7 +125,7 @@ public class CommandAPIMain extends JavaPlugin {
 		BukkitConfigurationAdapter.createMinimalInstance(configFile).saveDefaultConfig(
 			DefaultBukkitConfig.createDefaultPaperConfig(),
 			getDataFolder(),
-			getLogger()
+			getLogger()::severe
 		);
 	}
 
