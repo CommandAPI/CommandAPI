@@ -42,6 +42,8 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 
 	private boolean scheduleReloadTask = true;
 
+	boolean pluginCommandsAvailableToDatapacks = false;
+
 	public PaperCommandRegistration(Supplier<CommandDispatcher<Source>> getBrigadierDispatcher, Predicate<CommandNode<Source>> isBukkitCommand) {
 		this.getBrigadierDispatcher = getBrigadierDispatcher;
 		this.isBukkitCommand = isBukkitCommand;
@@ -163,9 +165,21 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 				}
 			}
 			bootstrapCommands.clear();
-			for (CommandNode<CommandSourceStack> commandNode : dispatcher.getRoot().getChildren()) {
-				LiteralCommandNode<CommandSourceStack> node = (LiteralCommandNode<CommandSourceStack>) commandNode;
-				event.registrar().register(node, getDescription(node.getLiteral()));
+			if (isBootstrap || !pluginCommandsAvailableToDatapacks) {
+				// If we are bootstrap, always register our own commands
+				// Otherwise, we are plugin, but we should only register our commands if bootstrap didn't
+				for (CommandNode<CommandSourceStack> commandNode : dispatcher.getRoot().getChildren()) {
+					LiteralCommandNode<CommandSourceStack> node = (LiteralCommandNode<CommandSourceStack>) commandNode;
+					event.registrar().register(node, getDescription(node.getLiteral()));
+				}
+			}
+			if (isBootstrap && pluginCommandsAvailableToDatapacks) {
+				// If we are bootstrap, and we want plugin commands to be available to datapacks,
+				//  register plugin commands rather than in the plugin lifecycle event where it will be too late
+				for (CommandNode<CommandSourceStack> commandNode : pluginDispatcher.getRoot().getChildren()) {
+					LiteralCommandNode<CommandSourceStack> node = (LiteralCommandNode<CommandSourceStack>) commandNode;
+					event.registrar().register(node, getDescription(node.getLiteral()));
+				}
 			}
 			if (!isBootstrap) {
 				for (String commandName : commandsToRemove) {

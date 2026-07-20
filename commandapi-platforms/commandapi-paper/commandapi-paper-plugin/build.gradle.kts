@@ -19,7 +19,7 @@ tasks.withType<ProcessResources> {
 		"version" to version,
 	)
 	inputs.properties(properties)
-	filesMatching("plugin.yml") {
+	filesMatching("paper-plugin.yml") {
 		expand(properties)
 	}
 }

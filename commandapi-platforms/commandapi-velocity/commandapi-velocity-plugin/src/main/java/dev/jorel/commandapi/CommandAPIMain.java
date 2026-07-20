@@ -45,7 +45,7 @@ public class CommandAPIMain {
 		VelocityConfigurationAdapter.createMinimalInstance(loader).saveDefaultConfig(
 			DefaultVelocityConfig.createDefault(),
 			configFile.getParent().toFile(),
-			logger
+			logger::severe
 		);
 
 		// Load the file as a yaml node
