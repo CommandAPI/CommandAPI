@@ -37,18 +37,6 @@ public class CommandAPIBootstrap implements PluginBootstrap {
 			.enableNetworking(yamlConfig.getBoolean("enable-networking"))
 			.makeNetworkingExceptionsWarnings(yamlConfig.getBoolean("make-networking-exceptions-warnings"));
 
-		for (String pluginName : yamlConfig.getStringList("skip-sender-proxy")) {
-			// TODO: Do we need to do this later during onLoad in order to properly see other plugins?
-			//  This seems to only be used by `Converter`, so maybe this can be handled directly like the
-			//  other command-conversion config options rather than being in the `onLoad` config.
-			if (Bukkit.getPluginManager().getPlugin(pluginName) != null) {
-				config.addSkipSenderProxy(pluginName);
-			} else {
-				new InvalidPluginException("Could not find a plugin " + pluginName + "! Has it been loaded properly?")
-					.printStackTrace();
-			}
-		}
-
 		// Main CommandAPI loading
 		CommandAPI.setLogger(CommandAPILogger.fromSlf4jLogger(context.getLogger()));
 		CommandAPI.onLoad(config);

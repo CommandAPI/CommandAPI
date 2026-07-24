@@ -118,7 +118,6 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 	public void onEnable() {
 		super.plugin = (JavaPlugin) Bukkit.getPluginManager().getPlugin(getConfiguration().getPluginName());
 		this.lifecycleEventOwner = super.plugin;
-		PaperCommandRegistration<Source> registration = (PaperCommandRegistration<Source>) getCommandRegistrationStrategy();
 
 		Bukkit.getGlobalRegionScheduler().runDelayed(plugin, task -> {
 			CommandAPIBukkit.get().getCommandRegistrationStrategy().runTasksAfterServerStart();
@@ -128,13 +127,9 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 				if (!getConfiguration().skipReloadDatapacks()) {
 					// Trigger a reload so that the bootstrap command lifecycle event
 					//  runs again, so we can make plugin commands available to datapacks
-					registration.pluginCommandsAvailableToDatapacks = true;
 					Bukkit.reloadData();
 				}
 			}
-			// For future reloads, the `hookPaperReload` option determines
-			//  whether plugin commands are available to datapacks.
-			registration.pluginCommandsAvailableToDatapacks = getConfiguration().hookPaperReload();
 			for (String permission : bootstrapPermissions) {
 				try {
 					Bukkit.getPluginManager().addPermission(new Permission(permission));
@@ -160,6 +155,7 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 			CommandAPI.logNormal("Did not hook into Paper ServerResourcesReloadedEvent while using commandapi-paper. Are you actually using Paper?");
 		}
 
+		PaperCommandRegistration<Source> registration = (PaperCommandRegistration<Source>) getCommandRegistrationStrategy();
 		registration.registerLifecycleEvent();
 	}
 

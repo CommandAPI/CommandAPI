@@ -71,6 +71,10 @@ public abstract class InternalBukkitConfig extends InternalConfig {
 		return this.skipSenderProxy.contains(commandName);
 	}
 
+	void addSkipSenderProxy(String commandName) {
+		this.skipSenderProxy.add(commandName);
+	}
+
 	/**
 	 * @return The NBT Tag Compound implementation class
 	 */

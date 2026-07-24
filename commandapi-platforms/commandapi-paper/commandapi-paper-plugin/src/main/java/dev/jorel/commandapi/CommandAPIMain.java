@@ -45,6 +45,15 @@ public class CommandAPIMain extends JavaPlugin {
 	public void onLoad() {
 		FileConfiguration fileConfig = getConfig();
 
+		for (String pluginName : fileConfig.getStringList("skip-sender-proxy")) {
+			if (Bukkit.getPluginManager().getPlugin(pluginName) != null) {
+				CommandAPIPaper.getConfiguration().addSkipSenderProxy(pluginName);
+			} else {
+				new InvalidPluginException("Could not find a plugin " + pluginName + "! Has it been loaded properly?")
+					.printStackTrace();
+			}
+		}
+
 		// Convert all plugins to be converted
 		if (!fileConfig.getList(PLUGINS_TO_CONVERT).isEmpty()
 			&& fileConfig.getMapList(PLUGINS_TO_CONVERT).isEmpty()) {
@@ -78,17 +87,17 @@ public class CommandAPIMain extends JavaPlugin {
 		// Convert plugin commands
 		for (Entry<JavaPlugin, String[]> pluginToConvert : pluginsToConvert.entrySet()) {
 			if (pluginToConvert.getValue().length == 0) {
-				Converter.convert(pluginToConvert.getKey());
+				Converter.convert(pluginToConvert.getKey(), command -> ((PaperCommandRegistration<?>) CommandAPIPaper.get().getCommandRegistrationStrategy()).addBootstrapCommand(command));
 			} else {
 				for (String command : pluginToConvert.getValue()) {
-					new AdvancedConverter(pluginToConvert.getKey(), command).convert();
+					new AdvancedConverter(pluginToConvert.getKey(), command).convert(cmd -> ((PaperCommandRegistration<?>) CommandAPIPaper.get().getCommandRegistrationStrategy()).addBootstrapCommand(cmd));
 				}
 			}
 		}
 
 		// Convert all arbitrary commands
 		for (String commandName : fileConfig.getStringList("other-commands-to-convert")) {
-			new AdvancedConverter(commandName).convertCommand();
+			new AdvancedConverter(commandName).convertCommand(command -> ((PaperCommandRegistration<?>) CommandAPIPaper.get().getCommandRegistrationStrategy()).addBootstrapCommand(command));
 		}
 	}
 
