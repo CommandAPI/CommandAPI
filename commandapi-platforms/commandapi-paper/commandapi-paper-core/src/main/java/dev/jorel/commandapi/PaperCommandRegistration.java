@@ -37,6 +37,7 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 	private final Set<String> commandsToRemove = new HashSet<>();
 
 	private boolean canRegister = false;
+	private boolean isBootstrapLifecycleEvent = false;
 	private final List<AbstractCommandAPICommand<?, ?, ?>> bootstrapCommands = new ArrayList<>();
 	private final List<UnregisterInformation> unregisterInformationList = new ArrayList<>();
 
@@ -87,7 +88,7 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 
 	@SuppressWarnings("ConstantValue") // `getServer` actually is `null` when we are in bootstrap
 	private void addCommandToDispatcher(LiteralCommandNode<CommandSourceStack> node) {
-		if (Bukkit.getServer() == null) {
+		if (Bukkit.getServer() == null || isBootstrapLifecycleEvent) {
 			bootstrapDispatcher.getRoot().addChild(node);
 		} else {
 			pluginDispatcher.getRoot().addChild(node);
@@ -157,12 +158,14 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 	private void registerLifecycleEvent(LifecycleEventManager<?> lifecycleEventManager, CommandDispatcher<CommandSourceStack> dispatcher, boolean isBootstrap) {
 		lifecycleEventManager.registerEventHandler(LifecycleEvents.COMMANDS.newHandler(event -> {
 			canRegister = true;
+			this.isBootstrapLifecycleEvent = isBootstrap;
 			if (isBootstrap) {
 				for (AbstractCommandAPICommand<?, ?, ?> command : bootstrapCommands) {
-					command.register(command.namespace);
+					String commandNamespace = command.namespace != null ? command.namespace : CommandAPIPaper.getConfiguration().getNamespace();
+					command.register(commandNamespace);
 				}
+				bootstrapCommands.clear();
 			}
-			bootstrapCommands.clear();
 			for (CommandNode<CommandSourceStack> commandNode : dispatcher.getRoot().getChildren()) {
 				LiteralCommandNode<CommandSourceStack> node = (LiteralCommandNode<CommandSourceStack>) commandNode;
 				event.registrar().register(node, getDescription(node.getLiteral()));
