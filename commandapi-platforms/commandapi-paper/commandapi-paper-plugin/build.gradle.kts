@@ -1,5 +1,4 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import com.modrinth.minotaur.ModrinthExtension
 
 plugins {
 	id("buildlogic.java-conventions")
