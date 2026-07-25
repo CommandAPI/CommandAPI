@@ -2,6 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
 	id("buildlogic.java-conventions")
+	id("com.modrinth.minotaur")
 }
 
 description = "Paper support plugin"
@@ -30,3 +31,16 @@ tasks.withType<ShadowJar> {
 	from("LICENSE")
 }
 
+modrinth {
+	token = "this-is-not-a-real-token-this-is-just-to-shut-the-plugin-up";//System.getenv("MODRINTH_TOKEN")
+	projectId = "commandapi"
+	versionNumber = project.version.toString()
+	versionType = if (project.version.toString().endsWith("-SNAPSHOT")) "beta" else "release" // adding this so we can potentially publish snapshots for easier access to Modrinth as well
+	uploadFile = tasks.shadowJar.get()
+	gameVersions.addAll("1.20.6", "1.21", "1.21.1", "1.21.2", "1.21.3", "1.21.4", "1.21.5", "1.21.6", "1.21.7", "1.21.8", "1.21.9", "1.21.10", "1.21.11", "26.1", "26.1.1", "26.1.2", "26.2")
+	loaders.addAll("paper", "folia")
+
+	changelog = File("changelog.md").readLines().joinToString("\n")
+
+	debugMode = true
+}
