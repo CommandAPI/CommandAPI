@@ -27,5 +27,5 @@ modrinth {
 
 	changelog = File("changelog.md").readLines().joinToString("\n")
 
-	debugMode = true
+	debugMode = !providers.gradleProperty("publish-modrinth").getOrElse("false").toBoolean()
 }
