@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Consumer;
 
 /**
  * Main CommandAPI plugin entrypoint
@@ -84,20 +85,22 @@ public class CommandAPIMain extends JavaPlugin {
 			}
 		}
 
+		Consumer<CommandAPICommand> registrationStrategy = CommandAPIPaper.getPaper().getCommandRegistrationStrategy()::addBootstrapCommand;
+
 		// Convert plugin commands
 		for (Entry<JavaPlugin, String[]> pluginToConvert : pluginsToConvert.entrySet()) {
 			if (pluginToConvert.getValue().length == 0) {
-				Converter.convert(pluginToConvert.getKey(), command -> ((PaperCommandRegistration<?>) CommandAPIPaper.get().getCommandRegistrationStrategy()).addBootstrapCommand(command));
+				Converter.convert(pluginToConvert.getKey(), registrationStrategy);
 			} else {
 				for (String command : pluginToConvert.getValue()) {
-					new AdvancedConverter(pluginToConvert.getKey(), command).convert(cmd -> ((PaperCommandRegistration<?>) CommandAPIPaper.get().getCommandRegistrationStrategy()).addBootstrapCommand(cmd));
+					new AdvancedConverter(pluginToConvert.getKey(), command).convert(registrationStrategy);
 				}
 			}
 		}
 
 		// Convert all arbitrary commands
 		for (String commandName : fileConfig.getStringList("other-commands-to-convert")) {
-			new AdvancedConverter(commandName).convertCommand(command -> ((PaperCommandRegistration<?>) CommandAPIPaper.get().getCommandRegistrationStrategy()).addBootstrapCommand(command));
+			new AdvancedConverter(commandName).convertCommand(registrationStrategy);
 		}
 	}
 
