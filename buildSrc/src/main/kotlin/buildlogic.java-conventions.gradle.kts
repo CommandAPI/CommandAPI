@@ -1,3 +1,5 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 plugins {
     `java-library`
     id("com.vanniktech.maven.publish")
@@ -104,6 +106,14 @@ tasks.named("build") {
 
 tasks.named("test") {
 	dependsOn("shadowJar")
+}
+
+tasks.withType<Jar>().configureEach {
+	archiveClassifier = "thin"
+}
+
+tasks.withType<ShadowJar>().configureEach {
+	archiveClassifier = ""
 }
 
 configurations.all {
