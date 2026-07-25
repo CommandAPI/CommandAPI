@@ -32,8 +32,7 @@ public class CommandAPIBootstrap implements PluginBootstrap {
 			.fallbackToLatestNMS(yamlConfig.getBoolean("fallback-to-latest-nms"))
 			.missingExecutorImplementationMessage(yamlConfig.getString("messages.missing-executor-implementation"))
 			.dispatcherFile(yamlConfig.getBoolean("create-dispatcher-json") ? new File(dataFolder, "command_registration.json") : null)
-			.hookPaperReload(yamlConfig.getBoolean("hook-paper-reload")) // TODO: Remove once this utilizes the bootstrapper
-			.skipInitialDatapackReload(yamlConfig.getBoolean("skip-initial-datapack-reload")) // TODO: Remove once this utilizes the bootstrapper
+			.skipInitialDatapackReload(yamlConfig.getBoolean("skip-initial-datapack-reload"))
 			.enableNetworking(yamlConfig.getBoolean("enable-networking"))
 			.makeNetworkingExceptionsWarnings(yamlConfig.getBoolean("make-networking-exceptions-warnings"));
 
