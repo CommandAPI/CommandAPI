@@ -44,7 +44,6 @@ tasks.named("modrinth") {
 afterEvaluate {
 	tasks.named("publishPluginPublicationToHangar") {
 		dependsOn(renameForPublishing)
-		mustRunAfter(tasks.build)
 	}
 }
 
@@ -53,7 +52,7 @@ modrinth {
 	projectId = "commandapi"
 	versionNumber = project.version.toString()
 	versionType = if (project.version.toString().endsWith("-SNAPSHOT")) "beta" else "release" // adding this so we can potentially publish snapshots for easier access to Modrinth as well
-	uploadFile.set(renameForPublishing.flatMap { it.outputs.files.let { f -> layout.buildDirectory.file("libs/CommandAPI-$version-Velocity.jar") } })
+	uploadFile.set(renameForPublishing.flatMap { it.outputs.files.let { f -> layout.buildDirectory.file("libs/CommandAPI-${project.version}-Velocity.jar") } })
 	gameVersions.addAll("1.20", "1.20.1", "1.20.2", "1.20.3", "1.20.4", "1.20.5", "1.20.6", "1.21", "1.21.1", "1.21.2", "1.21.3", "1.21.4", "1.21.5", "1.21.6", "1.21.7", "1.21.8", "1.21.9", "1.21.10", "1.21.11", "26.1", "26.1.1", "26.1.2", "26.2")
 	loaders.addAll("velocity")
 
@@ -71,8 +70,8 @@ hangarPublish {
 		apiKey = System.getenv("HANGAR_API_KEY")
 		platforms {
 			register(Platforms.VELOCITY) {
-				jar.set(renameForPublishing.flatMap { it.outputs.files.let { _ -> layout.buildDirectory.file("libs/CommandAPI-$version-Velocity.jar") } })
-				platformVersions = listOf("1.20.x", "1.21.x", "26.1.x", "26.2")
+				jar.set(renameForPublishing.flatMap { it.outputs.files.let { _ -> layout.buildDirectory.file("libs/CommandAPI-${project.version}-Velocity.jar") } })
+				platformVersions = listOf("3.3-3.5")
 			}
 		}
 	}
