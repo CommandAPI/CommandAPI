@@ -1,10 +1,8 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import io.papermc.hangarpublishplugin.model.Platforms
 
 plugins {
 	id("buildlogic.java-conventions")
 	id("com.modrinth.minotaur")
-	id("io.papermc.hangar-publish-plugin")
 }
 
 description = "Paper support plugin"
@@ -55,12 +53,6 @@ tasks.named("modrinth") {
 	dependsOn(renameForPublishing)
 }
 
-afterEvaluate {
-	tasks.named("publishPluginPublicationToHangar") {
-		dependsOn(renameForPublishing)
-	}
-}
-
 modrinth {
 	token = System.getenv("MODRINTH_TOKEN")
 	projectId = "commandapi"
@@ -73,20 +65,4 @@ modrinth {
 	changelog = File("changelog.md").readLines().joinToString("\n")
 
 	debugMode = !providers.gradleProperty("publish-modrinth").getOrElse("false").toBoolean()
-}
-
-hangarPublish {
-	publications.register("plugin") {
-		version = project.version.toString()
-		channel = if (project.version.toString().endsWith("-SNAPSHOT")) "Snapshot" else "Release" // adding this so we can potentially publish snapshots for easier access to Hangar as well
-		id = "CommandAPI"
-		changelog = File("changelog.md").readLines().joinToString("\n")
-		apiKey = System.getenv("HANGAR_API_KEY")
-		platforms {
-			register(Platforms.PAPER) {
-				jar.set(renameForPublishing.flatMap { it.outputs.files.let { _ -> layout.buildDirectory.file("libs/CommandAPI-${project.version}-Paper.jar") } })
-				platformVersions = listOf("1.20.6", "1.21.x", "26.1.x", "26.2")
-			}
-		}
-	}
 }

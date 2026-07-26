@@ -25,3 +25,21 @@ tasks.withType<ProcessResources> {
 tasks.withType<ShadowJar> {
 	minimize()
 }
+
+val renameForPublishing = tasks.register("renameForPublishing") {
+	group = "publishing"
+	description = "Copies the shadowJar output and renames the result for publishing to Modrinth"
+	dependsOn(tasks.shadowJar)
+
+	val outputFile = layout.buildDirectory.file("libs/CommandAPI-$version-Paper.jar")
+	inputs.file(tasks.shadowJar.get().archiveFile)
+	outputs.file(outputFile)
+
+	doLast {
+		copy {
+			from(tasks.shadowJar.get().archiveFile)
+			into(layout.buildDirectory.dir("libs"))
+			rename { "CommandAPI-$version-Networking-Plugin.jar" }
+		}
+	}
+}
