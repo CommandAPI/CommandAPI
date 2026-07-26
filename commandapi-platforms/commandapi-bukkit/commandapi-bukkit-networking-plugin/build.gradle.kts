@@ -31,7 +31,7 @@ val renameForPublishing = tasks.register("renameForPublishing") {
 	description = "Copies the shadowJar output and renames the result for publishing to Modrinth"
 	dependsOn(tasks.shadowJar)
 
-	val outputFile = layout.buildDirectory.file("libs/CommandAPI-$version-Paper.jar")
+	val outputFile = layout.buildDirectory.file("libs/CommandAPI-$version-Networking-Plugin.jar")
 	inputs.file(tasks.shadowJar.get().archiveFile)
 	outputs.file(outputFile)
 
