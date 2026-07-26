@@ -1,9 +1,10 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import com.modrinth.minotaur.ModrinthExtension
+import io.papermc.hangarpublishplugin.model.Platforms
 
 plugins {
 	id("buildlogic.java-conventions")
 	id("com.modrinth.minotaur")
+	id("io.papermc.hangar-publish-plugin")
 }
 
 description = "Paper support plugin"
@@ -32,7 +33,7 @@ tasks.withType<ShadowJar> {
 	from("LICENSE")
 }
 
-val renameForModrinth = tasks.register("renameForModrinth") {
+val renameForPublishing = tasks.register("renameForPublishing") {
 	group = "publishing"
 	description = "Copies the shadowJar output and renames the result for publishing to Modrinth"
 	dependsOn(tasks.shadowJar)
@@ -51,7 +52,14 @@ val renameForModrinth = tasks.register("renameForModrinth") {
 }
 
 tasks.named("modrinth") {
-	dependsOn(renameForModrinth)
+	dependsOn(renameForPublishing)
+}
+
+afterEvaluate {
+	tasks.named("publishPluginPublicationToHangar") {
+		dependsOn(renameForPublishing)
+		mustRunAfter(tasks.build)
+	}
 }
 
 modrinth {
@@ -59,11 +67,27 @@ modrinth {
 	projectId = "commandapi"
 	versionNumber = project.version.toString()
 	versionType = if (project.version.toString().endsWith("-SNAPSHOT")) "beta" else "release" // adding this so we can potentially publish snapshots for easier access to Modrinth as well
-	uploadFile.set(renameForModrinth.flatMap { it.outputs.files.let { f -> layout.buildDirectory.file("libs/CommandAPI-$version-Paper.jar") } })
+	uploadFile.set(renameForPublishing.flatMap { it.outputs.files.let { _ -> layout.buildDirectory.file("libs/CommandAPI-$version-Paper.jar") } })
 	gameVersions.addAll("1.20.6", "1.21", "1.21.1", "1.21.2", "1.21.3", "1.21.4", "1.21.5", "1.21.6", "1.21.7", "1.21.8", "1.21.9", "1.21.10", "1.21.11", "26.1", "26.1.1", "26.1.2", "26.2")
 	loaders.addAll("paper", "folia")
 
 	changelog = File("changelog.md").readLines().joinToString("\n")
 
 	debugMode = !providers.gradleProperty("publish-modrinth").getOrElse("false").toBoolean()
+}
+
+hangarPublish {
+	publications.register("plugin") {
+		version = project.version.toString()
+		channel = if (project.version.toString().endsWith("-SNAPSHOT")) "Snapshot" else "Release" // adding this so we can potentially publish snapshots for easier access to Hangar as well
+		id = "CommandAPI"
+		changelog = File("changelog.md").readLines().joinToString("\n")
+		apiKey = System.getenv("HANGAR_API_KEY")
+		platforms {
+			register(Platforms.PAPER) {
+				jar.set(renameForPublishing.flatMap { it.outputs.files.let { _ -> layout.buildDirectory.file("libs/CommandAPI-$version-Paper.jar") } })
+				platformVersions = listOf("1.20.6", "1.21.x", "26.1.x", "26.2")
+			}
+		}
+	}
 }
