@@ -85,7 +85,7 @@ public class CommandAPIMain extends JavaPlugin {
 			}
 		}
 
-		Consumer<CommandAPICommand> registrationStrategy = CommandAPIPaper.getPaper().getCommandRegistrationStrategy()::addBootstrapCommand;
+		Consumer<CommandAPICommand> registrationStrategy = CommandAPIPaper.getPaper().getPaperCommandRegistrationStrategy()::addBootstrapCommand;
 
 		// Convert plugin commands
 		for (Entry<JavaPlugin, String[]> pluginToConvert : pluginsToConvert.entrySet()) {

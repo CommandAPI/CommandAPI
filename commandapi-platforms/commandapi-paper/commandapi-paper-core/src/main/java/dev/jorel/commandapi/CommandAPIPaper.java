@@ -86,8 +86,7 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 		return (InternalPaperConfig) CommandAPIBukkit.getConfiguration();
 	}
 
-	@Override
-	public PaperCommandRegistration<Source> getCommandRegistrationStrategy() {
+	public PaperCommandRegistration<Source> getPaperCommandRegistrationStrategy() {
 		return (PaperCommandRegistration<Source>) super.getCommandRegistrationStrategy();
 	}
 
@@ -111,7 +110,7 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 	public void onLoad() {
 		super.onLoad();
 		checkPaperDependencies();
-		getCommandRegistrationStrategy().registerLifecycleEvent();
+		getPaperCommandRegistrationStrategy().registerLifecycleEvent();
 	}
 
 	/**
@@ -159,7 +158,7 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 			CommandAPI.logNormal("Did not hook into Paper ServerResourcesReloadedEvent while using commandapi-paper. Are you actually using Paper?");
 		}
 
-		getCommandRegistrationStrategy().registerLifecycleEvent();
+		getPaperCommandRegistrationStrategy().registerLifecycleEvent();
 	}
 
 	private void checkPaperDependencies() {
@@ -263,9 +262,8 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 	@Override
 	@ApiStatus.Internal
 	public <Impl extends AbstractCommandAPICommand<Impl, Argument<?>, CommandSender>> boolean checkRegistrationStatus(AbstractCommandAPICommand<Impl, Argument<?>, CommandSender> command) {
-		PaperCommandRegistration<Source> registration = getCommandRegistrationStrategy();
-		if (!registration.canRegister() && isBootstrap()) {
-			registration.addBootstrapCommand(command);
+		if (!getCommandRegistrationStrategy().canRegister() && isBootstrap()) {
+			getPaperCommandRegistrationStrategy().addBootstrapCommand(command);
 			return false;
 		}
 		return true;
