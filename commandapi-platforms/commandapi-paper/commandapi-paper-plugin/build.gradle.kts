@@ -33,6 +33,7 @@ tasks.withType<ShadowJar> {
 }
 
 val renameForModrinth = tasks.register("renameForModrinth") {
+	group = "publishing"
 	description = "Copies the shadowJar output and renames the result for publishing to Modrinth"
 	dependsOn(tasks.shadowJar)
 
