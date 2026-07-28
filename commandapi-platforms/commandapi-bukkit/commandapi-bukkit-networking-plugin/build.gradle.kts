@@ -2,6 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
 	id("buildlogic.java-conventions")
+	id("com.gradleup.shadow")
 }
 
 description = "Bukkit support Velocity networking plugin"
@@ -42,4 +43,25 @@ val renameForPublishing = tasks.register("renameForPublishing") {
 			rename { "CommandAPI-$version-Networking-Plugin.jar" }
 		}
 	}
+}
+
+tasks.named("build") {
+	dependsOn(tasks.shadowJar)
+}
+
+tasks.named("test") {
+	dependsOn(tasks.shadowJar)
+}
+
+tasks.withType<Jar> {
+	archiveClassifier = "thin"
+}
+
+tasks.withType<ShadowJar> {
+	archiveClassifier = ""
+}
+
+afterEvaluate {
+	configurations["shadowRuntimeElements"].isCanBeConsumed = false;
+	configurations["shadow"].isCanBeConsumed = false
 }

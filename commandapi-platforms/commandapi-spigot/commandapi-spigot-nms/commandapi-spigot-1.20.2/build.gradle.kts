@@ -31,5 +31,5 @@ artifacts {
 
 spigotRemap {
 	spigotVersion = "1.20.2"
-	sourceJarTask = tasks.shadowJar
+	sourceJarTask = tasks.jar
 }

@@ -11,7 +11,7 @@ dependencies {
 	compileOnly(paper.version.v1218)
 	compileOnly(libs.org.junit.jupiter.junit.jupiter.engine)
 	implementation(libs.org.mockito.mockito.core)
-	implementation(libs.org.mockbukkit.mockbukkit.mockbukkit.v121)
+	compileOnly(libs.org.mockbukkit.mockbukkit.mockbukkit.v121)
 	implementation(libs.com.mojang.brigadier)
 	implementation(libs.org.slf4j.slf4j.nop)
 
@@ -39,4 +39,5 @@ tasks.withType<ShadowJar> {
 	dependencies {
 		exclude(dependency(libs.org.mockbukkit.mockbukkit.mockbukkit.v121))
 	}
+	minimize()
 }

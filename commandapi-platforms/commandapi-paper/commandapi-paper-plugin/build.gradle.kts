@@ -3,6 +3,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 plugins {
 	id("buildlogic.java-conventions")
 	id("com.modrinth.minotaur")
+	id("com.gradleup.shadow")
 }
 
 description = "Paper support plugin"
@@ -65,4 +66,25 @@ modrinth {
 	changelog = File("changelog.md").readLines().joinToString("\n")
 
 	debugMode = !providers.gradleProperty("publish-modrinth").getOrElse("false").toBoolean()
+}
+
+tasks.named("build") {
+	dependsOn(tasks.shadowJar)
+}
+
+tasks.named("test") {
+	dependsOn(tasks.shadowJar)
+}
+
+tasks.withType<Jar> {
+	archiveClassifier = "thin"
+}
+
+tasks.withType<ShadowJar> {
+	archiveClassifier = ""
+}
+
+afterEvaluate {
+	configurations["shadowRuntimeElements"].isCanBeConsumed = false;
+	configurations["shadow"].isCanBeConsumed = false
 }

@@ -1,9 +1,6 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-
 plugins {
     `java-library`
     id("com.vanniktech.maven.publish")
-	id("com.gradleup.shadow")
 }
 
 repositories {
@@ -101,19 +98,11 @@ tasks.withType<Javadoc> {
 }
 
 tasks.named("build") {
-	dependsOn("shadowJar")
+	dependsOn(tasks.jar)
 }
 
 tasks.named("test") {
-	dependsOn("shadowJar")
-}
-
-tasks.withType<Jar>().configureEach {
-	archiveClassifier = "thin"
-}
-
-tasks.withType<ShadowJar>().configureEach {
-	archiveClassifier = ""
+	dependsOn(tasks.jar)
 }
 
 configurations.all {
@@ -124,11 +113,6 @@ configurations.all {
 	}
 	if (name in listOf("apiElements", "runtimeElements")) {
 		outgoing.artifacts.clear()
-		outgoing.artifact(tasks.shadowJar)
+		outgoing.artifact(tasks.jar)
 	}
-}
-
-afterEvaluate {
-	configurations["shadowRuntimeElements"].isCanBeConsumed = false;
-	configurations["shadow"].isCanBeConsumed = false
 }
