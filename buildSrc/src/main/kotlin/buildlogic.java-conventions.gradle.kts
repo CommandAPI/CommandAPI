@@ -114,5 +114,10 @@ configurations.all {
 	if (name in listOf("apiElements", "runtimeElements")) {
 		outgoing.artifacts.clear()
 		outgoing.artifact(tasks.jar)
+
+		pluginManager.withPlugin("com.gradleup.shadow") {
+			outgoing.artifacts.clear()
+			outgoing.artifact(tasks.named("shadowJar"))
+		}
 	}
 }

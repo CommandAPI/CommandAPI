@@ -1,5 +1,4 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import org.gradle.kotlin.dsl.assign
 import org.gradle.kotlin.dsl.withType
 
 plugins {
