@@ -25,8 +25,8 @@ import java.util.logging.Logger;
 @Plugin(
 	id = "commandapi",
 	name = "CommandAPI",
-	version = "${project.version}", // Hopefully Maven is smart enough to substitute this TODO: Maven is not that smart
-	url = "https://commandapi.jorel.dev",
+	version = "12.0.0",
+	url = "https://docs.commandapi.dev",
 	description = "An API to use Minecraft 1.13s new command UI",
 	authors = {"Skepter"}
 )
@@ -45,7 +45,7 @@ public class CommandAPIMain {
 		VelocityConfigurationAdapter.createMinimalInstance(loader).saveDefaultConfig(
 			DefaultVelocityConfig.createDefault(),
 			configFile.getParent().toFile(),
-			logger
+			logger::severe
 		);
 
 		// Load the file as a yaml node

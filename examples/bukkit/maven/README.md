@@ -10,7 +10,7 @@ Key points:
   <dependency>
       <groupId>dev.jorel</groupId>
       <artifactId>commandapi-paper-plugin</artifactId>
-      <version>11.2.0</version>
+      <version>12.0.0</version>
       <scope>provided</scope>
   </dependency>
   ```

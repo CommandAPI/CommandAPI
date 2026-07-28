@@ -46,6 +46,12 @@ sed -i "s/<version>$oldVer<\/version>/<version>$newVer<\/version>/" examples/vel
 sed -i "s/<version>$oldVer<\/version>/<version>$newVer<\/version>/" examples/velocity/maven-shaded/README.md
 sed -i "s/<version>$oldVer<\/version>/<version>$newVer<\/version>/" examples/velocity/maven-shaded/pom.xml
 
+###################
+# Velocity plugin #
+###################
+
+sed -i "s/	version = \"$oldVer\",/	version = \"$newVer\",/" commandapi-platforms/commandapi-velocity/commandapi-velocity-plugin/src/main/java/dev/jorel/commandapi/CommandAPIMain.java
+
 ###########################
 # Gradle example projects #
 ###########################
@@ -75,6 +81,12 @@ sed -i "s/dev\.jorel:commandapi-velocity-core:$oldVer/dev\.jorel:commandapi-velo
 
 sed -i "s/dev\.jorel:commandapi-velocity-core:$oldVer/dev\.jorel:commandapi-velocity-core:$newVer/" examples/velocity/gradle-kotlin/README.md
 sed -i "s/dev\.jorel:commandapi-velocity-core:$oldVer/dev\.jorel:commandapi-velocity-core:$newVer/" examples/velocity/gradle-kotlin/build.gradle.kts
+
+###################################
+# CommandAPI project gradle build #
+###################################
+
+sed -i "s/version = \"$oldVer\"/version = \"$newVer\"/" buildSrc/src/main/kotlin/buildlogic.java-conventions.gradle.kts
 
 ##############################
 # CommandAPI project pom.xml #

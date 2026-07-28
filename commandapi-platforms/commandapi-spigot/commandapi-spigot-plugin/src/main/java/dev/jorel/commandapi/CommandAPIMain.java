@@ -102,7 +102,7 @@ public class CommandAPIMain extends JavaPlugin {
 		// Convert plugin commands
 		for (Entry<JavaPlugin, String[]> pluginToConvert : pluginsToConvert.entrySet()) {
 			if (pluginToConvert.getValue().length == 0) {
-				Converter.convert(pluginToConvert.getKey());
+				Converter.convert(pluginToConvert.getKey(), CommandAPICommand::register);
 			} else {
 				for (String command : pluginToConvert.getValue()) {
 					new AdvancedConverter(pluginToConvert.getKey(), command).convert();
@@ -149,7 +149,7 @@ public class CommandAPIMain extends JavaPlugin {
 		BukkitConfigurationAdapter.createMinimalInstance(configFile).saveDefaultConfig(
 			DefaultBukkitConfig.createDefaultSpigotConfig(),
 			getDataFolder(),
-			getLogger()
+			getLogger()::severe
 		);
 	}
 

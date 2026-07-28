@@ -1,7 +1,6 @@
 package dev.jorel.commandapi;
 
 import dev.jorel.commandapi.arguments.Argument;
-import dev.jorel.commandapi.commandsenders.AbstractCommandSender;
 import dev.jorel.commandapi.commandsenders.BukkitBlockCommandSender;
 import dev.jorel.commandapi.commandsenders.BukkitCommandSender;
 import dev.jorel.commandapi.commandsenders.BukkitConsoleCommandSender;
@@ -87,6 +86,10 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 		return (InternalPaperConfig) CommandAPIBukkit.getConfiguration();
 	}
 
+	public PaperCommandRegistration<Source> getPaperCommandRegistrationStrategy() {
+		return (PaperCommandRegistration<Source>) super.getCommandRegistrationStrategy();
+	}
+
 	public LifecycleEventOwner getLifecycleEventOwner() {
 		return lifecycleEventOwner;
 	}
@@ -107,8 +110,7 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 	public void onLoad() {
 		super.onLoad();
 		checkPaperDependencies();
-		PaperCommandRegistration<Source> registration = (PaperCommandRegistration<Source>) getCommandRegistrationStrategy();
-		registration.registerLifecycleEvent();
+		getPaperCommandRegistrationStrategy().registerLifecycleEvent();
 	}
 
 	/**
@@ -121,12 +123,14 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 		this.lifecycleEventOwner = super.plugin;
 
 		Bukkit.getGlobalRegionScheduler().runDelayed(plugin, task -> {
-			CommandAPIBukkit.get().getCommandRegistrationStrategy().runTasksAfterServerStart();
+			getCommandRegistrationStrategy().runTasksAfterServerStart();
 			if (isFoliaPresent) {
 				CommandAPI.logNormal("Skipping initial datapack reloading because Folia was detected");
 			} else {
 				if (!getConfiguration().skipReloadDatapacks()) {
-					CommandAPIBukkit.get().reloadDataPacks();
+					// Trigger a reload so that the bootstrap command lifecycle event
+					//  runs again, so we can make plugin commands available to datapacks
+					Bukkit.reloadData();
 				}
 			}
 			for (String permission : bootstrapPermissions) {
@@ -146,12 +150,7 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 			Bukkit.getServer().getPluginManager().registerEvents(new Listener() {
 				@EventHandler
 				public void onServerReloadResources(ServerResourcesReloadedEvent event) {
-					CommandAPIBukkit.get().getCommandRegistrationStrategy().preReloadDataPacks();
-
-					if (getConfiguration().hookPaperReload()) {
-						CommandAPI.logNormal("/minecraft:reload detected. Reloading CommandAPI commands!");
-						CommandAPIBukkit.get().reloadDataPacks();
-					}
+					getCommandRegistrationStrategy().preReloadDataPacks();
 				}
 			}, plugin);
 			CommandAPI.logNormal("Hooked into Paper ServerResourcesReloadedEvent");
@@ -159,8 +158,7 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 			CommandAPI.logNormal("Did not hook into Paper ServerResourcesReloadedEvent while using commandapi-paper. Are you actually using Paper?");
 		}
 
-		PaperCommandRegistration<Source> registration = (PaperCommandRegistration<Source>) getCommandRegistrationStrategy();
-		registration.registerLifecycleEvent();
+		getPaperCommandRegistrationStrategy().registerLifecycleEvent();
 	}
 
 	private void checkPaperDependencies() {
@@ -264,10 +262,8 @@ public class CommandAPIPaper<Source> extends CommandAPIBukkit<Source> {
 	@Override
 	@ApiStatus.Internal
 	public <Impl extends AbstractCommandAPICommand<Impl, Argument<?>, CommandSender>> boolean checkRegistrationStatus(AbstractCommandAPICommand<Impl, Argument<?>, CommandSender> command) {
-		CommandRegistrationStrategy<Source> registration = getCommandRegistrationStrategy();
-		if (!registration.canRegister() && isBootstrap()) {
-			PaperCommandRegistration<Source> paperRegistration = (PaperCommandRegistration<Source>) registration;
-			paperRegistration.addBootstrapCommand(command);
+		if (!getCommandRegistrationStrategy().canRegister() && isBootstrap()) {
+			getPaperCommandRegistrationStrategy().addBootstrapCommand(command);
 			return false;
 		}
 		return true;

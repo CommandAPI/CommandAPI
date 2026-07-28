@@ -22,6 +22,7 @@ package dev.jorel.commandapi;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -120,7 +121,7 @@ class AdvancedConverter {
 		this.command = command;
 	}
 
-	public void convert() {
+	public void convert(Consumer<CommandAPICommand> registerStrategy) {
 		String commandName = command.split(" ")[0];
 		List<Argument<?>> arguments;
 		try {
@@ -130,14 +131,14 @@ class AdvancedConverter {
 			return;
 		}
 		if (arguments.isEmpty()) {
-			Converter.convert(plugin, commandName);
+			Converter.convert(plugin, commandName, registerStrategy);
 		} else {
-			Converter.convert(plugin, commandName, arguments);
+			Converter.convert(plugin, commandName, arguments, registerStrategy);
 		}
 
 	}
 
-	public void convertCommand() {
+	public void convertCommand(Consumer<CommandAPICommand> registerStrategy) {
 		String commandName = command.split(" ")[0];
 		List<Argument<?>> arguments;
 		try {
@@ -147,9 +148,9 @@ class AdvancedConverter {
 			return;
 		}
 		if (arguments.isEmpty()) {
-			Converter.convert(commandName);
+			Converter.convert(commandName, registerStrategy);
 		} else {
-			Converter.convert(commandName, arguments);
+			Converter.convert(commandName, arguments, registerStrategy);
 		}
 	}
 

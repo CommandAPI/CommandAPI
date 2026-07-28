@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -59,10 +60,10 @@ public final class Converter {
 	 * 
 	 * @param plugin The plugin which commands are to be converted
 	 */
-	public static void convert(JavaPlugin plugin) {
+	public static void convert(JavaPlugin plugin, Consumer<CommandAPICommand> registerStrategy) {
 		CommandAPI.logInfo("Converting commands for " + plugin.getName() + ":");
 		for (String commandName : plugin.getDescription().getCommands().keySet()) {
-			convertPluginCommand(plugin, commandName, PLAIN_ARGUMENTS);
+			convertPluginCommand(plugin, commandName, PLAIN_ARGUMENTS, registerStrategy);
 		}
 	}
 
@@ -73,8 +74,8 @@ public final class Converter {
 	 * @param plugin  The plugin where the command is registered
 	 * @param cmdName The command to convert
 	 */
-	public static void convert(JavaPlugin plugin, String cmdName) {
-		convertPluginCommand(plugin, cmdName, PLAIN_ARGUMENTS);
+	public static void convert(JavaPlugin plugin, String cmdName, Consumer<CommandAPICommand> registerStrategy) {
+		convertPluginCommand(plugin, cmdName, PLAIN_ARGUMENTS, registerStrategy);
 	}
 
 	/**
@@ -85,8 +86,8 @@ public final class Converter {
 	 * @param cmdName   The command to convert
 	 * @param arguments The arguments that should be used to parse this command
 	 */
-	public static void convert(JavaPlugin plugin, String cmdName, Argument<?>... arguments) {
-		convertPluginCommand(plugin, cmdName, Arrays.asList(arguments));
+	public static void convert(JavaPlugin plugin, String cmdName, Consumer<CommandAPICommand> registerStrategy, Argument<?>... arguments) {
+		convertPluginCommand(plugin, cmdName, Arrays.asList(arguments), registerStrategy);
 	}
 
 	/**
@@ -97,8 +98,8 @@ public final class Converter {
 	 * @param cmdName   The command to convert
 	 * @param arguments The arguments that should be used to parse this command
 	 */
-	public static void convert(JavaPlugin plugin, String cmdName, List<Argument<?>> arguments) {
-		convertPluginCommand(plugin, cmdName, arguments);
+	public static void convert(JavaPlugin plugin, String cmdName, List<Argument<?>> arguments, Consumer<CommandAPICommand> registerStrategy) {
+		convertPluginCommand(plugin, cmdName, arguments, registerStrategy);
 	}
 
 	/**
@@ -107,8 +108,8 @@ public final class Converter {
 	 * @param cmdName The name of the command (without the leading /). For commands
 	 *                such as //set in WorldEdit, this parameter should be "/set"
 	 */
-	public static void convert(String cmdName) {
-		convertCommand(cmdName, PLAIN_ARGUMENTS);
+	public static void convert(String cmdName, Consumer<CommandAPICommand> registerStrategy) {
+		convertCommand(cmdName, PLAIN_ARGUMENTS, registerStrategy);
 	}
 
 	/**
@@ -120,18 +121,18 @@ public final class Converter {
 	 *                  be "/set"
 	 * @param arguments The arguments that should be used to parse this command
 	 */
-	public static void convert(String cmdName, List<Argument<?>> arguments) {
-		convertCommand(cmdName, arguments);
+	public static void convert(String cmdName, List<Argument<?>> arguments, Consumer<CommandAPICommand> registerStrategy) {
+		convertCommand(cmdName, arguments, registerStrategy);
 	}
 
-	private static void convertCommand(String commandName, List<Argument<?>> arguments) {
+	private static void convertCommand(String commandName, List<Argument<?>> arguments, Consumer<CommandAPICommand> registerStrategy) {
 		CommandAPI.logInfo("Converting command /" + commandName);
 
 		// No arguments
-		new CommandAPICommand(commandName).withPermission(CommandPermission.NONE).executesNative((sender, args) -> {
+		registerStrategy.accept(new CommandAPICommand(commandName).withPermission(CommandPermission.NONE).executesNative((sender, args) -> {
 			Bukkit.dispatchCommand(mergeProxySender(sender), commandName);
 			return;
-		}).register();
+		}));
 
 		// Multiple arguments
 		CommandAPICommand multiArgs = new CommandAPICommand(commandName).withPermission(CommandPermission.NONE)
@@ -143,7 +144,7 @@ public final class Converter {
 				});
 
 		multiArgs.setConverted(true);
-		multiArgs.register();
+		registerStrategy.accept(multiArgs);
 	}
 	
 	private static String[] unpackAliases(Object aliasObj) {
@@ -158,7 +159,7 @@ public final class Converter {
 		}
 	}
 
-	private static void convertPluginCommand(JavaPlugin plugin, String commandName, List<Argument<?>> arguments) {
+	private static void convertPluginCommand(JavaPlugin plugin, String commandName, List<Argument<?>> arguments, Consumer<CommandAPICommand> registerStrategy) {
 		CommandAPI.logInfo("Converting " + plugin.getName() + " command /" + commandName);
 		/* Parse the commands */
 		Map<String, Object> cmdData = plugin.getDescription().getCommands().get(commandName);
@@ -212,22 +213,20 @@ public final class Converter {
 		};
 
 		// No arguments
-		new CommandAPICommand(commandName)
+		registerStrategy.accept(new CommandAPICommand(commandName)
 			.withPermission(permissionNode)
 			.withAliases(aliases)
 			.withFullDescription(fullDescription)
-			.executesNative(executor)
-			.register();
+			.executesNative(executor));
 
 		// Multiple arguments
-		new CommandAPICommand(commandName)
+		registerStrategy.accept(new CommandAPICommand(commandName)
 			.withPermission(permissionNode)
 			.withAliases(aliases)
 			.withArguments(arguments)
 			.withFullDescription(fullDescription)
 			.executesNative(executor)
-			.setConverted(true)
-			.register();
+			.setConverted(true));
 	}
 
 	/*

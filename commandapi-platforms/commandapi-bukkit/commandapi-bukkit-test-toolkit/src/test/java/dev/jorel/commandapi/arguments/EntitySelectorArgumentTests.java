@@ -101,7 +101,7 @@ class EntitySelectorArgumentTests extends CommandTestBase {
 	void testErrors_EntitySelectorArgumentType_parse() {
 		// Yes, these errors do start at position 0 on a real server, Minecraft's code specifically tells them to do that
 		PlayerMock player = server.addPlayer();
-		Entity entity = server.getWorlds().getFirst().spawn(new Location(null, 0, 0, 0), Pig.class);
+		Entity entity = server.getWorlds().get(0).spawn(new Location(null, 0, 0, 0), Pig.class);
 
 		// Single selector required, but multiple targets allowed
 		assertCommandFails(
@@ -266,7 +266,7 @@ class EntitySelectorArgumentTests extends CommandTestBase {
 		PlayerMock p1 = server.addPlayer();
 		p1.teleport(p1.getLocation().set(0, 0, 0));
 
-		Entity e = server.getWorlds().getFirst().spawn(new Location(null, 1, 0, 0), Pig.class);
+		Entity e = server.getWorlds().get(0).spawn(new Location(null, 1, 0, 0), Pig.class);
 
 		PlayerMock p2 = server.addPlayer();
 		p2.teleport(p2.getLocation().set(5, 0, 0));
@@ -293,7 +293,7 @@ class EntitySelectorArgumentTests extends CommandTestBase {
 		PlayerMock p1 = server.addPlayer();
 		p1.teleport(p1.getLocation().set(0, 0, 0));
 
-		Entity e = server.getWorlds().getFirst().spawn(new Location(null, 1, 0, 0), Pig.class);
+		Entity e = server.getWorlds().get(0).spawn(new Location(null, 1, 0, 0), Pig.class);
 
 		PlayerMock p2 = server.addPlayer();
 		p2.teleport(p2.getLocation().set(5, 0, 0));
@@ -319,7 +319,7 @@ class EntitySelectorArgumentTests extends CommandTestBase {
 		PlayerMock p1 = server.addPlayer();
 		p1.teleport(p1.getLocation().set(0, 0, 0));
 
-		Entity e = server.getWorlds().getFirst().spawn(new Location(null, 1, 0, 0), Pig.class);
+		Entity e = server.getWorlds().get(0).spawn(new Location(null, 1, 0, 0), Pig.class);
 
 		PlayerMock p2 = server.addPlayer();
 		p2.teleport(p2.getLocation().set(5, 0, 0));
@@ -340,7 +340,7 @@ class EntitySelectorArgumentTests extends CommandTestBase {
 			assertNotNull(entities, "Could not get entities list");
 			assertEquals(1, entities.size(), "Expected only one entity, but found: " + entities);
 
-			Entity entity = entities.getFirst();
+			Entity entity = entities.get(0);
 			assertInstanceOf(Player.class, entity, "Expected to find player, but was: " + entity);
 			Player player = (Player) entity;
 
@@ -359,7 +359,7 @@ class EntitySelectorArgumentTests extends CommandTestBase {
 		PlayerMock p1 = server.addPlayer();
 		p1.teleport(p1.getLocation().set(0, 0, 0));
 
-		Entity e = server.getWorlds().getFirst().spawn(new Location(null, 1, 0, 0), Pig.class);
+		Entity e = server.getWorlds().get(0).spawn(new Location(null, 1, 0, 0), Pig.class);
 
 		PlayerMock p2 = server.addPlayer();
 		p2.teleport(p2.getLocation().set(5, 0, 0));
@@ -395,7 +395,7 @@ class EntitySelectorArgumentTests extends CommandTestBase {
 		PlayerMock p1 = server.addPlayer();
 		p1.teleport(p1.getLocation().set(0, 0, 0));
 
-		Entity e = server.getWorlds().getFirst().spawn(new Location(null, 1, 0, 0), Pig.class);
+		Entity e = server.getWorlds().get(0).spawn(new Location(null, 1, 0, 0), Pig.class);
 
 		PlayerMock p2 = server.addPlayer();
 		p2.teleport(p2.getLocation().set(5, 0, 0));
@@ -433,7 +433,7 @@ class EntitySelectorArgumentTests extends CommandTestBase {
 		PlayerMock p1 = server.addPlayer();
 		p1.teleport(p1.getLocation().set(0, 0, 0));
 
-		Entity e = server.getWorlds().getFirst().spawn(new Location(null, 1, 0, 0), Pig.class);
+		Entity e = server.getWorlds().get(0).spawn(new Location(null, 1, 0, 0), Pig.class);
 
 		PlayerMock p2 = server.addPlayer();
 		p2.teleport(p2.getLocation().set(5, 0, 0));
@@ -562,7 +562,7 @@ class EntitySelectorArgumentTests extends CommandTestBase {
 		PlayerMock player = new PlayerMock(server, "player", playerUUID);
 		server.addPlayer(player);
 
-		Entity entity = server.getWorlds().getFirst().spawn(new Location(null, 0, 0, 0), Pig.class);
+		Entity entity = server.getWorlds().get(0).spawn(new Location(null, 0, 0, 0), Pig.class);
 		UUID entityUUID = entity.getUniqueId();
 
 		UUID otherUUID = UUID.randomUUID();

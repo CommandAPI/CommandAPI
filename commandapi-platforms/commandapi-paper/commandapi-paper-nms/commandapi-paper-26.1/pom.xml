@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>dev.jorel</groupId>
 		<artifactId>commandapi-paper-nms</artifactId>
-		<version>11.2.0</version>
+		<version>12.0.0</version>
 	</parent>
 
 	<artifactId>commandapi-paper-26.1</artifactId>
@@ -35,7 +35,7 @@
 		<dependency>
 			<groupId>ca.bkaw</groupId>
 			<artifactId>paper-nms</artifactId>
-			<version>26.1-SNAPSHOT</version>
+			<version>${paper.version.26.1}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -58,6 +58,12 @@
 			<version>${project.version}</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>dev.jorel</groupId>
+			<artifactId>commandapi-bukkit-26-common</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -65,7 +71,6 @@
 			<plugin>
 				<groupId>ca.bkaw</groupId>
 				<artifactId>paper-nms-maven-plugin</artifactId>
-				<version>1.4.10</version>
 			</plugin>
 			<!-- Allow code coverage -->
 			<plugin>

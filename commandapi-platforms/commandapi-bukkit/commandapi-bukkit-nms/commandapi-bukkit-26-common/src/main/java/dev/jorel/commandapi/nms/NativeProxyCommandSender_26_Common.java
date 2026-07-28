@@ -10,11 +10,11 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.command.ProxiedNativeCommandSender;
 
-public class NativeProxyCommandSender_26_1 extends ProxiedNativeCommandSender implements NativeProxyCommandSender {
+public class NativeProxyCommandSender_26_Common extends ProxiedNativeCommandSender implements NativeProxyCommandSender {
 	private final World world;
 	private final Location location;
 
-	public NativeProxyCommandSender_26_1(CommandSourceStack css, CommandSender caller, CommandSender callee) {
+	public NativeProxyCommandSender_26_Common(CommandSourceStack css, CommandSender caller, CommandSender callee) {
 		super(css, caller, callee);
 
 		Vec3 pos = css.getPosition();

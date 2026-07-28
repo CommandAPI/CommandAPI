@@ -88,7 +88,7 @@ import java.util.function.Predicate;
 
 /**
  * Common NMS code To ensure that this code actually works across all versions
- * of Minecraft that this is supposed to support (1.20+), you should be
+ * of Minecraft that this is supposed to support (1.20 to 1.21), you should be
  * compiling this code against all of the declared Maven profiles specified in
  * this submodule's pom.xml file, by running the following command:
  * ./compileNMSCommon

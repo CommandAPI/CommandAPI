@@ -1,6 +1,7 @@
 name: CommandAPI
 main: dev.jorel.commandapi.CommandAPIMain
-version: ${project.version}
+bootstrapper: dev.jorel.commandapi.CommandAPIBootstrap
+version: ${version}
 description: An API to use Minecraft 1.13s new command UI
 authors:
   - Skepter
@@ -11,5 +12,5 @@ softdepend:
   - NBTAPI
 provides:
     - CommandAPINetworking
-api-version: 1.13
+api-version: '1.20.6'
 folia-supported: true

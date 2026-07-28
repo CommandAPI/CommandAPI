@@ -25,7 +25,7 @@
 
 	<groupId>dev.jorel</groupId>
 	<artifactId>commandapi</artifactId>
-	<version>11.2.0</version>
+	<version>12.0.0</version>
 	<packaging>pom</packaging>
 
 	<name>commandapi</name>
@@ -76,17 +76,6 @@
 		<module>commandapi-codecov</module>
 	</modules>
 
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.mockbukkit.mockbukkit</groupId>
-				<artifactId>mockbukkit-v1.21</artifactId>
-				<version>4.76.0</version>
-				<scope>provided</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -127,6 +116,7 @@
 		<spigot.version.1.21.9>1.21.9-R0.1-20250930.202015-1</spigot.version.1.21.9>
 		<spigot.version.1.21.11>1.21.11-R0.1-20260115.203122-4</spigot.version.1.21.11>
 		<spigot.version.26.1>26.1-R0.1-20260325.170250-2</spigot.version.26.1>
+		<spigot.version.26.2>26.2-R0.1-20260616.165333-1</spigot.version.26.2>
 
 		<spigot.api.version.1.20.1>1.20.1-R0.1-20230921.165251-11</spigot.api.version.1.20.1>
 		<spigot.api.version.1.20.2>1.20.2-R0.1-20231205.170307-10</spigot.api.version.1.20.2>
@@ -161,7 +151,8 @@
 		<paper.version.1.21.8>1.21.8-R0.1-20250906.215025-55</paper.version.1.21.8>
 		<paper.version.1.21.9>1.21.9-R0.1-20251007.115206-20</paper.version.1.21.9>
 		<paper.version.1.21.11>1.21.11-R0.1-20260228.115254-85</paper.version.1.21.11>
-		<paper.version.26.1>26.1-R0.1-SNAPSHOT</paper.version.26.1>
+		<paper.version.26.1>26.1.2.build.70-stable</paper.version.26.1>
+		<paper.version.26.2>26.2.build.39-alpha</paper.version.26.2>
 
 		<auto-service.version>1.0.1</auto-service.version>
 
@@ -230,6 +221,11 @@
 					<groupId>net.md-5</groupId>
 					<artifactId>specialsource-maven-plugin</artifactId>
 					<version>2.0.5</version>
+				</plugin>
+				<plugin>
+					<groupId>ca.bkaw</groupId>
+					<artifactId>paper-nms-maven-plugin</artifactId>
+					<version>1.5</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>

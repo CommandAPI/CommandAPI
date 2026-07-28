@@ -129,9 +129,9 @@ class AdvancedConverter {
 			return;
 		}
 		if (arguments.isEmpty()) {
-			Converter.convert(plugin, commandName);
+			Converter.convert(plugin, commandName, CommandAPICommand::register);
 		} else {
-			Converter.convert(plugin, commandName, arguments);
+			Converter.convert(plugin, commandName, arguments, CommandAPICommand::register);
 		}
 
 	}
@@ -146,9 +146,9 @@ class AdvancedConverter {
 			return;
 		}
 		if (arguments.isEmpty()) {
-			Converter.convert(commandName);
+			Converter.convert(commandName, CommandAPICommand::register);
 		} else {
-			Converter.convert(commandName, arguments);
+			Converter.convert(commandName, arguments, CommandAPICommand::register);
 		}
 	}
 

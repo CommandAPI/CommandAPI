@@ -1,0 +1,39 @@
+[versions]
+auto-service-version = "1.0.1"
+com-github-zafarkhaja-java-semver = "0.9.0"
+com-google-guava = "31.0.1-jre"
+com-mojang-authlib = "3.3.39"
+com-mojang-brigadier = "1.3.10"
+com-saicone-rtag-rtag = "1.4.4"
+de-tr7zw-item-nbt-api = "2.12.4"
+kotlin-version = "2.3.0"
+org-apache-logging-log4j-log4j-api = "2.19.0"
+org-jetbrains-annotations = "26.0.2-1"
+org-junit-jupiter-junit-jupiter-api = "5.13.3"
+org-junit-jupiter-junit-jupiter-engine = "5.13.3"
+org-junit-jupiter-junit-jupiter-params = "5.13.3"
+org-mockbukkit-mockbukkit-mockbukkit-v121 = "4.76.0"
+org-mockito-mockito-core = "5.11.0"
+org-slf4j-slf4j-nop = "2.0.16"
+org-slf4j-slf4j-api = "1.8.0-beta4"
+org-spongepowered-spongeapi = "8.0.0"
+
+[libraries]
+com-github-zafarkhaja-java-semver = { module = "com.github.zafarkhaja:java-semver", version.ref = "com-github-zafarkhaja-java-semver" }
+com-google-auto-service-auto-service = { module = "com.google.auto.service:auto-service", version.ref = "auto-service-version" }
+com-google-guava-guava = { module = "com.google.guava:guava", version.ref = "com-google-guava" }
+com-mojang-authlib = { module = "com.mojang:authlib", version.ref = "com-mojang-authlib" }
+com-mojang-brigadier = { module = "com.mojang:brigadier", version.ref = "com-mojang-brigadier" }
+com-saicone-rtag-rtag = { module = "com.saicone.rtag:rtag", version.ref = "com-saicone-rtag-rtag" }
+de-tr7zw-item-nbt-api = { module = "de.tr7zw:item-nbt-api", version.ref = "de-tr7zw-item-nbt-api" }
+org-apache-logging-log4j-log4j-api = { module = "org.apache.logging.log4j:log4j-api", version.ref = "org-apache-logging-log4j-log4j-api" }
+org-jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref = "org-jetbrains-annotations" }
+org-jetbrains-kotlin-kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin-version" }
+org-junit-jupiter-junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "org-junit-jupiter-junit-jupiter-api" }
+org-junit-jupiter-junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "org-junit-jupiter-junit-jupiter-engine" }
+org-junit-jupiter-junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "org-junit-jupiter-junit-jupiter-params" }
+org-mockbukkit-mockbukkit-mockbukkit-v121 = { module = "org.mockbukkit.mockbukkit:mockbukkit-v1.21", version.ref = "org-mockbukkit-mockbukkit-mockbukkit-v121" }
+org-mockito-mockito-core = { module = "org.mockito:mockito-core", version.ref = "org-mockito-mockito-core" }
+org-slf4j-slf4j-nop = { module = "org.slf4j:slf4j-nop", version.ref = "org-slf4j-slf4j-nop" }
+org-slf4j-slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "org-slf4j-slf4j-api" }
+org-spongepowered-spongeapi = { module = "org.spongepowered:spongeapi", version.ref = "org-spongepowered-spongeapi" }

@@ -3,7 +3,7 @@ package dev.jorel.commandapi.config;
 import java.io.File;
 import java.io.IOException;
 import java.util.Set;
-import java.util.logging.Logger;
+import java.util.function.Consumer;
 
 public interface ConfigurationAdapter<Configuration> {
 
@@ -31,23 +31,25 @@ public interface ConfigurationAdapter<Configuration> {
 
 	void saveToFile() throws IOException;
 
-	default void saveDefaultConfig(DefaultConfig defaultConfig, File directory, Logger logger) {
+	// TODO: It might make sense to use CommandAPILogger as an abstraction above different Logging
+	//  classes, but it was easier to just do a Consumer since we currently only log severe messages
+	default void saveDefaultConfig(DefaultConfig defaultConfig, File directory, Consumer<String> severeLog) {
 		ConfigGenerator generator = ConfigGenerator.createNew(defaultConfig);
 		ConfigurationAdapter<Configuration> existingConfig;
 		if (!directory.exists()) {
 			if (!directory.mkdirs()) {
-				logger.severe("Failed to create directory for the CommandAPI's config.yml file!");
+				severeLog.accept("Failed to create directory for the CommandAPI's config.yml file!");
 			}
 			existingConfig = createNew();
 		} else {
 			try {
 				existingConfig = loadFromFile();
 			} catch (IOException e) {
-				logger.severe("Failed to load the config file!");
-				logger.severe("Error message: " + e.getMessage());
-				logger.severe("Stacktrace:");
+				severeLog.accept("Failed to load the config file!");
+				severeLog.accept("Error message: " + e.getMessage());
+				severeLog.accept("Stacktrace:");
 				for (StackTraceElement element : e.getStackTrace()) {
-					logger.severe(element.toString());
+					severeLog.accept(element.toString());
 				}
 				return;
 			}
@@ -59,11 +61,11 @@ public interface ConfigurationAdapter<Configuration> {
 		try {
 			updatedConfig.saveToFile();
 		} catch (IOException e) {
-			logger.severe("Failed to save the config file!");
-			logger.severe("Error message: " + e.getMessage());
-			logger.severe("Stacktrace:");
+			severeLog.accept("Failed to save the config file!");
+			severeLog.accept("Error message: " + e.getMessage());
+			severeLog.accept("Stacktrace:");
 			for (StackTraceElement element : e.getStackTrace()) {
-				logger.severe(element.toString());
+				severeLog.accept(element.toString());
 			}
 		}
 	}
