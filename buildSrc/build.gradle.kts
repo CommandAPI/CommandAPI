@@ -13,6 +13,10 @@ gradlePlugin {
             id = "buildlogic.spigot-remap"
             implementationClass = "spigotremap.SpigotRemapPlugin"
         }
+	    create("buildlogic.github-publish") {
+			id = "buildlogic.github-publish"
+		    implementationClass = "publishgithub.GitHubPublishPlugin"
+	    }
     }
 }
 
