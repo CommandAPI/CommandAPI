@@ -21,7 +21,6 @@ gradlePlugin {
 }
 
 dependencies {
-    implementation("com.vanniktech.maven.publish:com.vanniktech.maven.publish.gradle.plugin:0.37.0")
     implementation("org.jetbrains.kotlin.jvm:org.jetbrains.kotlin.jvm.gradle.plugin:2.3.20")
     implementation("net.md-5:SpecialSource:1.11.3")
 }

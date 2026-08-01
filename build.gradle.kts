@@ -8,6 +8,7 @@ plugins {
 	id("io.papermc.hangar-publish-plugin") version "0.1.5-SNAPSHOT"
 	id("buildlogic.java-conventions")
 	id("buildlogic.github-publish")
+	id("com.vanniktech.maven.publish") version "0.37.0" apply false
 }
 
 tasks.register("collectPlugins") {
