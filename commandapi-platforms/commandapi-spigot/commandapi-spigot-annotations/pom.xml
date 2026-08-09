@@ -52,6 +52,18 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<executions>
 					<execution>
+						<id>default-compile</id>
+						<configuration>
+							<annotationProcessorPaths>
+								<path>
+									<groupId>com.google.auto.service</groupId>
+									<artifactId>auto-service</artifactId>
+									<version>${auto-service.version}</version>
+								</path>
+							</annotationProcessorPaths>
+						</configuration>
+					</execution>
+					<execution>
 						<goals>
 							<goal>testCompile</goal>
 						</goals>
