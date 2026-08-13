@@ -208,7 +208,7 @@
 					 it here -->
 					<groupId>org.apache.logging.log4j</groupId>
 					<artifactId>log4j-api</artifactId>
-					<version>2.23.1</version>
+					<version>2.25.5</version>
 					<scope>provided</scope>
 				</dependency>
 				<dependency>
@@ -260,7 +260,7 @@
 					 it here -->
 					<groupId>org.apache.logging.log4j</groupId>
 					<artifactId>log4j-api</artifactId>
-					<version>2.23.1</version>
+					<version>2.25.5</version>
 					<scope>provided</scope>
 				</dependency>
 				<dependency>
@@ -320,7 +320,7 @@
 					 it here -->
 					<groupId>org.apache.logging.log4j</groupId>
 					<artifactId>log4j-api</artifactId>
-					<version>2.19.0</version>
+					<version>2.25.5</version>
 					<scope>provided</scope>
 				</dependency>
 				<dependency>
@@ -372,7 +372,7 @@
 					 it here -->
 					<groupId>org.apache.logging.log4j</groupId>
 					<artifactId>log4j-api</artifactId>
-					<version>2.19.0</version>
+					<version>2.25.5</version>
 					<scope>provided</scope>
 				</dependency>
 				<dependency>
@@ -423,7 +423,7 @@
 					 it here -->
 					<groupId>org.apache.logging.log4j</groupId>
 					<artifactId>log4j-api</artifactId>
-					<version>2.19.0</version>
+					<version>2.25.5</version>
 					<scope>provided</scope>
 				</dependency>
 				<dependency>
@@ -471,7 +471,7 @@
 					 it here -->
 					<groupId>org.apache.logging.log4j</groupId>
 					<artifactId>log4j-api</artifactId>
-					<version>2.19.0</version>
+					<version>2.25.5</version>
 					<scope>provided</scope>
 				</dependency>
 				<dependency>
