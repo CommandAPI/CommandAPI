@@ -8,10 +8,14 @@ plugins {
 
 description = "Spigot support Spigot-mapped plugin"
 
+val commandApiShade = project(":commandapi-spigot-shade")
+
+evaluationDependsOn(":commandapi-spigot-shade")
+
 dependencies {
 	compileOnly(spigot.version.api)
 
-	implementation(project(":commandapi-spigot-shade"))
+	implementation(files(commandApiShade.tasks.named("shadowJar")))
 	implementation(project(":commandapi-bukkit-plugin-common"))
 }
 

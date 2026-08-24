@@ -8,10 +8,14 @@ plugins {
 
 description = "Paper support plugin"
 
+val commandApiShade = project(":commandapi-paper-shade")
+
+evaluationDependsOn(":commandapi-paper-shade")
+
 dependencies {
 	compileOnly(paper.version.common)
 
-	implementation(project(":commandapi-paper-shade"))
+	implementation(files(commandApiShade.tasks.named("shadowJar")))
 	implementation(project(":commandapi-bukkit-plugin-common"))
 }
 

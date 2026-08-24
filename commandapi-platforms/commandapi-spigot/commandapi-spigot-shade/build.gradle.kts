@@ -9,9 +9,9 @@ description = "Spigot support Spigot-mapped shade library"
 
 dependencies {
 	// `vh` must be before `core` so we resolve the correct version of `CommandAPIVersionHandler`
-	api(project(":commandapi-spigot-vh"))
-	api(project(":commandapi-spigot-core"))
-	api(project(":commandapi-spigot-nms-dependency"))
+	shadow(project(":commandapi-spigot-vh"))
+	shadow(project(":commandapi-spigot-core"))
+	shadow(project(":commandapi-spigot-nms-dependency"))
 }
 
 tasks.named("build") {
@@ -28,6 +28,7 @@ tasks.withType<Jar> {
 
 tasks.withType<ShadowJar> {
 	archiveClassifier = ""
+	configurations = listOf(project.configurations["shadow"])
 }
 
 afterEvaluate {

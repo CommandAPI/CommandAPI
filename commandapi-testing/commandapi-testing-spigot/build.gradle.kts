@@ -4,9 +4,13 @@ plugins {
 
 description = "Testing plugin for Spigot"
 
+val commandApiShade = project(":commandapi-spigot-shade")
+
+evaluationDependsOn(":commandapi-spigot-shade")
+
 dependencies {
 	compileOnly(libs.com.mojang.brigadier)
 	compileOnly(spigot.version.api)
 
-	compileOnly(project(":commandapi-spigot-shade"))
+	implementation(files(commandApiShade.tasks.named("shadowJar")))
 }
