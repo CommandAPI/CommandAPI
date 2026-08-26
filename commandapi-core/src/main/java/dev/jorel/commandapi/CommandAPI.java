@@ -309,7 +309,8 @@ public class CommandAPI {
 	 */
 	public static void registerCommand(Class<?> commandClass) {
 		try {
-			Class.forName(commandClass.getName() + "$Command").getDeclaredMethod("register").invoke(null);
+			Class.forName(commandClass.getName() + "$Command", true, commandClass.getClassLoader())
+				.getDeclaredMethod("register").invoke(null);
 		} catch (ReflectiveOperationException e) {
 			e.printStackTrace();
 		}
