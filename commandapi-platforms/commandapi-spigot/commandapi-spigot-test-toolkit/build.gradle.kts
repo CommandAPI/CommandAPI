@@ -29,13 +29,6 @@ tasks.withType<Test> {
 	useJUnitPlatform()
 }
 
-tasks.withType<ShadowJar> {
-	dependencies {
-		exclude(dependency(libs.org.mockbukkit.mockbukkit.mockbukkit.v121))
-	}
-	minimize()
-}
-
 tasks.named("build") {
 	dependsOn(tasks.shadowJar)
 }

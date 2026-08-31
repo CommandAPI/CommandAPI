@@ -29,6 +29,7 @@ tasks.withType<Jar> {
 tasks.withType<ShadowJar> {
 	archiveClassifier = ""
 	configurations = listOf(project.configurations["shadow"])
+	from("LICENSE")
 }
 
 afterEvaluate {

@@ -40,6 +40,8 @@ tasks.withType<ShadowJar> {
 	relocate("org.bukkit.craftbukkit.v1_21_R5", "org.bukkit.craftbukkit")
 	relocate("org.bukkit.craftbukkit.v1_21_R6", "org.bukkit.craftbukkit")
 	relocate("org.bukkit.craftbukkit.v1_21_R7", "org.bukkit.craftbukkit")
+
+	from("LICENSE")
 }
 
 afterEvaluate {

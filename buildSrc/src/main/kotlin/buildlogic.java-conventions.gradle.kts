@@ -85,6 +85,7 @@ tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
 	sourceCompatibility = "17"
 	targetCompatibility = "17"
+	options.compilerArgs.add("-Xpkginfo:always")
 }
 
 tasks.withType<Javadoc> {
