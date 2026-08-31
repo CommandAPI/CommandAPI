@@ -8,6 +8,7 @@ description = "Paper Annotations"
 
 dependencies {
 	compileOnly(libs.com.google.auto.service.auto.service)
+	annotationProcessor(libs.com.google.auto.service.auto.service)
 	compileOnly(paper.version.common)
 
 	api(project(":commandapi-annotations"))
