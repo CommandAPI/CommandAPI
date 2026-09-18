@@ -187,11 +187,6 @@ extends AbstractArgument<?, ?, Argument, CommandSender>
 	}
 
 	/**
-	 * Reloads the server's data packs to include CommandAPI commands
-	 */
-	void reloadDataPacks();
-
-	/**
 	 * Updates the requirements required for a given player to execute a command.
 	 *
 	 * @param player the player to update

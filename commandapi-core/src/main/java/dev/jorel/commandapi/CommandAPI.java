@@ -238,9 +238,12 @@ public class CommandAPI {
 	 * Reloads all the datapacks that are on the server. This should be used if
 	 * you change a datapack and want to reload a server. Execute this method after
 	 * running /minecraft:reload, NOT before.
+	 *
+	 * @deprecated Only implemented for the Spigot version. Use {@code CommandAPISpigot#reloadDataPacks()}
 	 */
+	@Deprecated(forRemoval = true, since = "12.1.0")
 	public static void reloadDatapacks() {
-		CommandAPIHandler.getInstance().getPlatform().reloadDataPacks();
+		//CommandAPIHandler.getInstance().getPlatform().reloadDataPacks();
 	}
 
 	/**

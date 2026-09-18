@@ -58,7 +58,7 @@ public abstract class CommandAPISpigot<Source> extends CommandAPIBukkit<Source> 
 			// Sort out permissions after the server has finished registering them all
 			CommandAPIBukkit.get().getCommandRegistrationStrategy().runTasksAfterServerStart();
 			if (!getConfiguration().skipReloadDatapacks()) {
-				CommandAPIBukkit.get().reloadDataPacks();
+				reloadDataPacks();
 			}
 			CommandAPIBukkit.get().updateHelpForCommands(CommandAPI.getRegisteredCommands());
 		}, 0L);

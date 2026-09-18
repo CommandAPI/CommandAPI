@@ -526,9 +526,12 @@ public class MockNMS implements NMS<MockCommandSource> {
 		throw new UnimplementedMethodException();
 	}
 
-	@Override
+	/**
+	 * @deprecated Only useful in the Spigot version
+	 */
+	@Deprecated(forRemoval = true, since = "12.1.0")
 	public void reloadDataPacks() {
-		throw new UnimplementedMethodException();
+		//throw new UnimplementedMethodException();
 	}
 
 	@Override

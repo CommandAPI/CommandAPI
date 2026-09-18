@@ -737,11 +737,6 @@ public class APITypeProvider implements BundledNMS<CommandSourceStack> {
 	}
 
 	@Override
-	public void reloadDataPacks() {
-		paperNMS.bukkitNMS().reloadDataPacks();
-	}
-
-	@Override
 	public HelpTopic generateHelpTopic(String commandName, String shortDescription, String fullDescription, String permission) {
 		return paperNMS.bukkitNMS().generateHelpTopic(commandName, shortDescription, fullDescription, permission);
 	}

@@ -25,4 +25,9 @@ public interface SpigotNMS<CommandListenerWrapper> {
 
 	NMS<CommandListenerWrapper> bukkitNMS();
 
+	/**
+	 * Reloads the datapacks by using the updated the commandDispatcher tree
+	 */
+	void reloadDataPacks();
+
 }
