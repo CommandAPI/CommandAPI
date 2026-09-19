@@ -11,6 +11,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.item.ItemInput;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.component.Removed;
 import net.minecraft.core.component.TypedDataComponent;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.NbtOps;
@@ -51,11 +52,15 @@ public class PaperNMS_26_3 implements PaperNMS<CommandSourceStack> {
 				return Stream.empty();
 			} else {
 				Object value = entry.getValue();
-				TypedDataComponent<?> typedDataComponent = TypedDataComponent.createUnchecked(type, value);
-				return typedDataComponent.encodeValue(serializationContext).result().stream().map((tag) -> {
-					String componentString = identifier.toString();
-					return componentString + "=" + tag;
-				});
+				if (!Removed.isRemoved(value)) {
+					TypedDataComponent<?> typedDataComponent = TypedDataComponent.createUnchecked(type, value);
+					return typedDataComponent.encodeValue(serializationContext).result().stream().map((tag) -> {
+						String componentString = identifier.toString();
+						return componentString + "=" + tag;
+					});
+				} else {
+					return Stream.of("!" + identifier);
+				}
 			}
 		}).collect(Collectors.joining(String.valueOf(',')));
 	}
