@@ -5,7 +5,7 @@ plugins {
 description = "Paper API support"
 
 dependencies {
-	compileOnly(paper.version.v262)
+	compileOnly(paper.version.v263)
 
 	api(project(":commandapi-paper-core"))
 }

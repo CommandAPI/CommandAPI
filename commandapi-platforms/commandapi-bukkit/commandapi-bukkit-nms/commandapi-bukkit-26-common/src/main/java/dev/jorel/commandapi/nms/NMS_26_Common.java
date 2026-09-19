@@ -20,7 +20,6 @@
  *******************************************************************************/
 package dev.jorel.commandapi.nms;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.io.Files;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -36,7 +35,6 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPIBukkit;
@@ -108,8 +106,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.core.component.DataComponentType;
-import net.minecraft.core.component.TypedDataComponent;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.core.particles.DustColorTransitionOptions;
@@ -125,37 +121,24 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.MinecraftServer.ReloadableResources;
 import net.minecraft.server.ServerFunctionLibrary;
 import net.minecraft.server.ServerFunctionManager;
 import net.minecraft.server.level.ColumnPos;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.packs.PackResources;
-import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.repository.Pack;
-import net.minecraft.server.packs.repository.PackRepository;
-import net.minecraft.server.packs.resources.MultiPackResourceManager;
-import net.minecraft.server.packs.resources.SimpleReloadInstance;
 import net.minecraft.server.permissions.LevelBasedPermissionSet;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.util.Unit;
 import net.minecraft.util.profiling.Profiler;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
-import net.minecraft.world.level.DataPackConfig;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.WorldDataConfiguration;
-import net.minecraft.world.level.block.entity.FuelValues;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.level.gameevent.BlockPositionSource;
 import net.minecraft.world.phys.Vec2;
@@ -208,33 +191,24 @@ import org.bukkit.scoreboard.Team;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 // Mojang-Mapped reflection
 
@@ -245,7 +219,6 @@ import java.util.stream.Stream;
 @RequireField(in = EntitySelector.class, name = "usesSelector", ofType = boolean.class)
 // @RequireField(in = ItemInput.class, name = "tag", ofType = CompoundTag.class)
 @RequireField(in = ServerFunctionLibrary.class, name = "dispatcher", ofType = CommandDispatcher.class)
-@RequireField(in = MinecraftServer.class, name = "fuelValues", ofType = FuelValues.class)
 @RequireField(in = BlockInput.class, name = "tag", ofType = CompoundTag.class)
 public abstract class NMS_26_Common implements NMS<CommandSourceStack> {
 
@@ -496,27 +469,7 @@ public abstract class NMS_26_Common implements NMS<CommandSourceStack> {
 		return builder.toString();
 	}
 
-	private String serializeComponents(ItemInput itemInput, HolderLookup.Provider provider) {
-		DynamicOps<Tag> serializationContext = provider.createSerializationContext(NbtOps.INSTANCE);
-		return itemInput.components().entrySet().stream().flatMap((entry) -> {
-			DataComponentType<?> type = entry.getKey();
-			Identifier identifier = BuiltInRegistries.DATA_COMPONENT_TYPE.getKey(type);
-			if (identifier == null) {
-				return Stream.empty();
-			} else {
-				Optional<?> value = entry.getValue();
-				if (value.isPresent()) {
-					TypedDataComponent<?> typedDataComponent = TypedDataComponent.createUnchecked(type, value.get());
-					return typedDataComponent.encodeValue(serializationContext).result().stream().map((tag) -> {
-						String componentString = identifier.toString();
-						return componentString + "=" + tag;
-					});
-				} else {
-					return Stream.of("!" + identifier);
-				}
-			}
-		}).collect(Collectors.joining(String.valueOf(',')));
-	}
+	abstract String serializeComponents(ItemInput itemInput, HolderLookup.Provider provider);
 
 	@Override
 	public final String convert(org.bukkit.inventory.ItemStack is) {

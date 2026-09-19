@@ -3,12 +3,21 @@ package dev.jorel.commandapi.nms;
 import com.google.common.collect.ImmutableList;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.logging.LogUtils;
+import com.mojang.serialization.DynamicOps;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPIBukkit;
 import dev.jorel.commandapi.InternalSpigotConfig;
-import dev.jorel.commandapi.SafeVarHandle;
+import dev.jorel.commandapi.preprocessor.Differs;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.arguments.ColorArgument;
+import net.minecraft.commands.arguments.TeamColorArgument;
+import net.minecraft.commands.arguments.item.ItemInput;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.component.TypedDataComponent;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
@@ -20,7 +29,6 @@ import net.minecraft.util.Unit;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.level.DataPackConfig;
 import net.minecraft.world.level.WorldDataConfiguration;
-import net.minecraft.world.level.block.entity.FuelValues;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.Recipe;
@@ -31,31 +39,49 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class SpigotNMS_26_1 extends SpigotNMS_26_Common {
 
-	private static final SafeVarHandle<MinecraftServer, FuelValues> minecraftServerFuelValues;
+public class SpigotNMS_26_3 extends SpigotNMS_26_Common {
 
-	static {
-		minecraftServerFuelValues = SafeVarHandle.ofOrNull(MinecraftServer.class, "fuelValues", "fuelValues", FuelValues.class);
-	}
+	private NMS_26_3 bukkitNMS;
 
-	private NMS_26_1 bukkitNMS;
-
-	public SpigotNMS_26_1(InternalSpigotConfig config) {
+	public SpigotNMS_26_3(InternalSpigotConfig config) {
 		super(config);
 	}
 
+	private String serializeComponents(ItemInput itemInput, HolderLookup.Provider provider) {
+		DynamicOps<Tag> serializationContext = provider.createSerializationContext(NbtOps.INSTANCE);
+		return itemInput.components().entrySet().stream().flatMap((entry) -> {
+			DataComponentType<?> type = entry.getKey();
+			Identifier identifier = BuiltInRegistries.DATA_COMPONENT_TYPE.getKey(type);
+			if (identifier == null) {
+				return Stream.empty();
+			} else {
+				Object value = entry.getValue();
+				TypedDataComponent<?> typedDataComponent = TypedDataComponent.createUnchecked(type, value);
+				return typedDataComponent.encodeValue(serializationContext).result().stream().map((tag) -> {
+					String componentString = identifier.toString();
+					return componentString + "=" + tag;
+				});
+			}
+		}).collect(Collectors.joining(String.valueOf(',')));
+	}
+
+	@Differs(from = "26.1", by = "ColorArgument -> TeamColorArgument")
 	@Override
 	public ChatColor getChatColor(CommandContext<CommandSourceStack> cmdCtx, String key) {
-		return ChatColor.getByChar(ColorArgument.getColor(cmdCtx, key).getChar());
+		// Relies on the fact that the enums have identical names for the colors
+		return ChatColor.valueOf(TeamColorArgument.getTeamColor(cmdCtx, key).name());
 	}
 
 	@Override
 	public NMS_26_Common bukkitNMS() {
 		if (bukkitNMS == null) {
-			this.bukkitNMS = new NMS_26_1(() -> COMMAND_BUILD_CONTEXT);
+			this.bukkitNMS = new NMS_26_3(() -> COMMAND_BUILD_CONTEXT, this::serializeComponents);
 		}
 		return bukkitNMS;
 	}
@@ -104,14 +130,11 @@ public class SpigotNMS_26_1 extends SpigotNMS_26_Common {
 		CompletableFuture<List<PackResources>> first = CompletableFuture.supplyAsync(() -> {
 			PackRepository serverPackRepository = bukkitNMS().<MinecraftServer>getMinecraftServer().getPackRepository();
 
-			List<PackResources> packResources = new ArrayList<>();
-			for (String packID : collection) {
-				Pack pack = serverPackRepository.getPack(packID);
-				if (pack != null) {
-					packResources.add(pack.open());
-				}
-			}
-			return packResources;
+			return collection.stream()
+				.map(serverPackRepository::getPack)
+				.filter(Objects::nonNull)
+				.flatMap(Pack::open)
+				.toList();
 		}).exceptionally(exception -> {
 			CommandAPI.logException("Something went wrong while trying to collect resource packs!", exception);
 			// Return all currently selected packs
@@ -181,15 +204,8 @@ public class SpigotNMS_26_1 extends SpigotNMS_26_Common {
 			// bukkitNMS().<MinecraftServer>getMinecraftServer().getPlayerList().saveAll();
 			// bukkitNMS().<MinecraftServer>getMinecraftServer().getPlayerList().reloadResources();
 			// bukkitNMS().<MinecraftServer>getMinecraftServer().getFunctions().replaceLibrary(bukkitNMS().<MinecraftServer>getMinecraftServer().resources.managers().getFunctionLibrary());
-			bukkitNMS().<MinecraftServer>getMinecraftServer().getStructureManager()
+			bukkitNMS().<MinecraftServer>getMinecraftServer().getStructureTemplateManager()
 				.onResourceManagerReload(bukkitNMS().<MinecraftServer>getMinecraftServer().resources.resourceManager());
-
-			// Set fuel values with the new loaded fuel values from the list of enabled features
-			minecraftServerFuelValues.set(bukkitNMS().<MinecraftServer>getMinecraftServer(),
-				FuelValues.vanillaBurnTimes(bukkitNMS().<MinecraftServer>getMinecraftServer().registries().compositeAccess(),
-					enabledFeatures
-				)
-			);
 		}).exceptionally(exception -> {
 			CommandAPI.logException("Something went wrong while trying to load resources.", exception);
 			return null;
@@ -218,4 +234,5 @@ public class SpigotNMS_26_1 extends SpigotNMS_26_Common {
 					+ stringWriter.toString());
 		}
 	}
+
 }

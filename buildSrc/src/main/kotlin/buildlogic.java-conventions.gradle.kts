@@ -23,6 +23,11 @@ repositories {
 		url = uri("https://central.sonatype.com/repository/maven-snapshots/")
 	}
 	mavenCentral()
+	mavenLocal {
+		mavenContent {
+			includeModule("org.spigotmc", "spigot")
+		}
+	}
 }
 
 group = "dev.jorel"

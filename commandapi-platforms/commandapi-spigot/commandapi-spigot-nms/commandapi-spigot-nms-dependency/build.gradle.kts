@@ -9,6 +9,7 @@ dependencies {
 	api(project(":commandapi-bukkit-26-common"))
 	api(project(":commandapi-spigot-26-common"))
 
+	api(project(":commandapi-spigot-26.3"))
 	api(project(":commandapi-spigot-26.2"))
 	api(project(":commandapi-spigot-26.1"))
 	api(project(":commandapi-spigot-1.21.11", "remapped"))
@@ -23,6 +24,7 @@ dependencies {
 	api(project(":commandapi-spigot-1.20.2", "remapped"))
 	api(project(":commandapi-spigot-1.20", "remapped"))
 
+	api(project(":commandapi-bukkit-26.3"))
 	api(project(":commandapi-bukkit-26.2"))
 	api(project(":commandapi-bukkit-26.1"))
 	api(project(":commandapi-bukkit-1.21.11", "spigot"))

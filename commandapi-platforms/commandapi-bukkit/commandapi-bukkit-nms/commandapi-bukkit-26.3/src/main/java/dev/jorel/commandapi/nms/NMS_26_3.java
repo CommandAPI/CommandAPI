@@ -42,44 +42,31 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.resources.Identifier;
 
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * NMS implementation for Minecraft 26.2
+ * NMS implementation for Minecraft 26.3
  */
-@NMSMeta(compatibleWith = {"26.2"})
-public class NMS_26_2 extends NMS_26_Common {
-	public NMS_26_2(Supplier<CommandBuildContext> commandBuildContext) {
-		super(commandBuildContext);
-	}
+@NMSMeta(compatibleWith = {"26.3"})
+public class NMS_26_3 extends NMS_26_Common {
 
-	String serializeComponents(ItemInput itemInput, HolderLookup.Provider provider) {
-		DynamicOps<Tag> serializationContext = provider.createSerializationContext(NbtOps.INSTANCE);
-		return itemInput.components().entrySet().stream().flatMap((entry) -> {
-			DataComponentType<?> type = entry.getKey();
-			Identifier identifier = BuiltInRegistries.DATA_COMPONENT_TYPE.getKey(type);
-			if (identifier == null) {
-				return Stream.empty();
-			} else {
-				Optional<?> value = entry.getValue();
-				if (value.isPresent()) {
-					TypedDataComponent<?> typedDataComponent = TypedDataComponent.createUnchecked(type, value.get());
-					return typedDataComponent.encodeValue(serializationContext).result().stream().map((tag) -> {
-						String componentString = identifier.toString();
-						return componentString + "=" + tag;
-					});
-				} else {
-					return Stream.of("!" + identifier);
-				}
-			}
-		}).collect(Collectors.joining(String.valueOf(',')));
+	private final BiFunction<ItemInput, HolderLookup.Provider, String> serializeComponents;
+
+	public NMS_26_3(Supplier<CommandBuildContext> commandBuildContext, BiFunction<ItemInput, HolderLookup.Provider, String> serializeComponents) {
+		super(commandBuildContext);
+		this.serializeComponents = serializeComponents;
 	}
 
 	@Override
 	public String[] compatibleVersions() {
-		return new String[]{"26.2"};
+		return new String[]{"26.3"};
+	}
+
+	String serializeComponents(ItemInput itemInput, HolderLookup.Provider provider) {
+		return this.serializeComponents.apply(itemInput, provider);
 	}
 
 	// It looks like there is now also a "HexColorArgument"
