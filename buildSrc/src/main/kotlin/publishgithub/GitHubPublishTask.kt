@@ -49,7 +49,7 @@ abstract class GitHubPublishTask : DefaultTask() {
 			release.deleteVersion()
 		}
 
-		if (info == null || info.first == version) {
+		if (info == null || info.second) {
 			release.createOrUpdate(files.files)
 		}
 
