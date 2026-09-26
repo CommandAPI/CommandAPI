@@ -1,3 +1,3 @@
 # Minecraft Version Changes
 
-- Adds support for Minecraft 26.2
+- Adds support for Minecraft 26.3
