@@ -1,7 +1,6 @@
 plugins {
 	id("buildlogic.java-conventions")
 	kotlin("jvm")
-	id("com.gradleup.shadow")
 	id("com.vanniktech.maven.publish")
 }
 
