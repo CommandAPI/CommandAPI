@@ -4,8 +4,12 @@ plugins {
 
 description = "Testing plugin for Paper"
 
+val commandApiShade = project(":commandapi-paper-shade")
+
+evaluationDependsOn(":commandapi-paper-shade")
+
 dependencies {
 	compileOnly(paper.version.v1206)
 
-	compileOnly(project(":commandapi-paper-shade"))
+	implementation(files(commandApiShade.tasks.named("shadowJar")))
 }

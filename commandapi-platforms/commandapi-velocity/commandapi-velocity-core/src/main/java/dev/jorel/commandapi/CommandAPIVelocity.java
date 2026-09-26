@@ -245,11 +245,6 @@ public class CommandAPIVelocity implements CommandAPIPlatform<Argument<?>, Comma
 	}
 
 	@Override
-	public void reloadDataPacks() {
-		// Nothing to do, Velocity does not have data packs
-	}
-
-	@Override
 	public void updateRequirements(AbstractPlayer<?> playerWrapper) {
 		Player player = (Player) playerWrapper.getSource();
 		Optional<ServerConnection> optionalServer = player.getCurrentServer();

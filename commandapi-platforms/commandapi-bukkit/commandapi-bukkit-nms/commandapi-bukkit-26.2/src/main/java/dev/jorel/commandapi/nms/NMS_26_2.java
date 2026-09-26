@@ -22,6 +22,7 @@ package dev.jorel.commandapi.nms;
 
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.serialization.DynamicOps;
 import dev.jorel.commandapi.preprocessor.Differs;
 import dev.jorel.commandapi.preprocessor.NMSMeta;
 import dev.jorel.commandapi.wrappers.DoubleRange;
@@ -31,8 +32,19 @@ import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.RangeArgument;
 import net.minecraft.commands.arguments.TeamColorArgument;
+import net.minecraft.commands.arguments.item.ItemInput;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.component.TypedDataComponent;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.Identifier;
 
+import java.util.Optional;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * NMS implementation for Minecraft 26.2
@@ -41,6 +53,28 @@ import java.util.function.Supplier;
 public class NMS_26_2 extends NMS_26_Common {
 	public NMS_26_2(Supplier<CommandBuildContext> commandBuildContext) {
 		super(commandBuildContext);
+	}
+
+	String serializeComponents(ItemInput itemInput, HolderLookup.Provider provider) {
+		DynamicOps<Tag> serializationContext = provider.createSerializationContext(NbtOps.INSTANCE);
+		return itemInput.components().entrySet().stream().flatMap((entry) -> {
+			DataComponentType<?> type = entry.getKey();
+			Identifier identifier = BuiltInRegistries.DATA_COMPONENT_TYPE.getKey(type);
+			if (identifier == null) {
+				return Stream.empty();
+			} else {
+				Optional<?> value = entry.getValue();
+				if (value.isPresent()) {
+					TypedDataComponent<?> typedDataComponent = TypedDataComponent.createUnchecked(type, value.get());
+					return typedDataComponent.encodeValue(serializationContext).result().stream().map((tag) -> {
+						String componentString = identifier.toString();
+						return componentString + "=" + tag;
+					});
+				} else {
+					return Stream.of("!" + identifier);
+				}
+			}
+		}).collect(Collectors.joining(String.valueOf(',')));
 	}
 
 	@Override

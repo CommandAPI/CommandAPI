@@ -10,6 +10,7 @@ dependencies {
 
 	api(project(":commandapi-paper-api"))
 
+	api(project(":commandapi-paper-26.3", "include"))
 	api(project(":commandapi-paper-26.2", "include"))
 	api(project(":commandapi-paper-26.1", "include"))
 	api(project(":commandapi-paper-1.21.11", "include"))
@@ -21,6 +22,7 @@ dependencies {
 	api(project(":commandapi-paper-1.21", "include"))
 	api(project(":commandapi-paper-1.20.5", "include"))
 
+	api(project(":commandapi-bukkit-26.3"))
 	api(project(":commandapi-bukkit-26.2"))
 	api(project(":commandapi-bukkit-26.1"))
 	api(project(":commandapi-bukkit-1.21.11", "mojang"))

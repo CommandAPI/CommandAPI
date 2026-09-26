@@ -2,10 +2,13 @@ import io.papermc.hangarpublishplugin.model.Platforms
 
 plugins {
 	id("io.papermc.paperweight.userdev") version "2.0.0-beta.21" apply false
+	id("com.gradleup.shadow") version "9.6.1" apply false
 	id("buildlogic.spigot-remap") apply false
 	id("com.modrinth.minotaur") version "2.+" apply false
 	id("io.papermc.hangar-publish-plugin") version "0.1.5-SNAPSHOT"
 	id("buildlogic.java-conventions")
+	id("buildlogic.github-publish")
+	id("com.vanniktech.maven.publish") version "0.37.0" apply false
 }
 
 tasks.register("collectPlugins") {
@@ -15,6 +18,13 @@ tasks.register("collectPlugins") {
 		project(":commandapi-spigot-plugin").tasks.named("renameForPublishing"),
 		project(":commandapi-velocity-plugin").tasks.named("renameForPublishing"),
 		project(":commandapi-bukkit-networking-plugin").tasks.named("renameForPublishing")
+	)
+
+	outputs.files(
+		layout.buildDirectory.file("libs/CommandAPI-${project.version}-Paper.jar"),
+		layout.buildDirectory.file("libs/CommandAPI-${project.version}-Velocity.jar"),
+		layout.buildDirectory.file("libs/CommandAPI-${project.version}-Spigot.jar"),
+		layout.buildDirectory.file("libs/CommandAPI-${project.version}-Networking-Plugin.jar"),
 	)
 
 	doLast {
@@ -41,6 +51,10 @@ afterEvaluate {
 	tasks.named("publishPluginPublicationToHangar") {
 		dependsOn(tasks.named("collectPlugins"))
 	}
+
+	tasks.named("publishToGitHub") {
+		dependsOn(tasks.named("collectPlugins"))
+	}
 }
 
 hangarPublish {
@@ -53,7 +67,7 @@ hangarPublish {
 		platforms {
 			register(Platforms.PAPER) {
 				jar.set(layout.buildDirectory.file("libs/CommandAPI-${project.version}-Paper.jar"))
-				platformVersions = listOf("1.20.6", "1.21.x", "26.1.x", "26.2")
+				platformVersions = listOf("1.20.6", "1.21.x", "26.1.x", "26.2", "26.3")
 			}
 			register(Platforms.VELOCITY) {
 				jar.set(layout.buildDirectory.file("libs/CommandAPI-${project.version}-Velocity.jar"))
@@ -61,4 +75,12 @@ hangarPublish {
 			}
 		}
 	}
+}
+
+github {
+	apiKey = System.getenv("GITHUB_TOKEN")
+	version = project.version.toString()
+	changelog = File("changelog.md").readLines().joinToString("\n")
+	preRelease = project.version.toString().endsWith("-SNAPSHOT")
+	files = project.files(tasks.named("collectPlugins"))
 }

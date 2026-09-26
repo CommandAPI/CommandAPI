@@ -14,6 +14,7 @@ import dev.jorel.commandapi.nms.SpigotNMS_1_21_R6;
 import dev.jorel.commandapi.nms.SpigotNMS_1_21_R7;
 import dev.jorel.commandapi.nms.SpigotNMS_26_1;
 import dev.jorel.commandapi.nms.SpigotNMS_26_2;
+import dev.jorel.commandapi.nms.SpigotNMS_26_3;
 import org.bukkit.Bukkit;
 
 public abstract class CommandAPIVersionHandler {
@@ -41,13 +42,14 @@ public abstract class CommandAPIVersionHandler {
 				case "1.21.11" -> new SpigotNMS_1_21_R7(internalSpigotConfig);
 				case "26.1" -> new SpigotNMS_26_1(internalSpigotConfig);
 				case "26.2" -> new SpigotNMS_26_2(internalSpigotConfig);
+				case "26.3" -> new SpigotNMS_26_3(internalSpigotConfig);
 				default -> null;
 			};
 			if (platform != null) {
 				return new LoadContext(platform);
 			}
 			if (internalSpigotConfig.fallbackToLatestNMS()) {
-				return new LoadContext(new SpigotNMS_26_2(internalSpigotConfig), () -> {
+				return new LoadContext(new SpigotNMS_26_3(internalSpigotConfig), () -> {
 					CommandAPI.logWarning("Loading the CommandAPI with the latest and potentially incompatible NMS implementation.");
 					CommandAPI.logWarning("While you may find success with this, further updates might be necessary to fully support the version you are using.");
 				});

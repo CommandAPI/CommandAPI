@@ -195,7 +195,6 @@ public class NMS_1_20_R3 extends NMS_Common {
 	private static final SafeVarHandle<SimpleHelpMap, Map<String, HelpTopic>> helpMapTopics;
 	private static final Field entitySelectorUsesSelector;
 	private static final SafeVarHandle<ItemInput, CompoundTag> itemInput;
-	private static final Field serverFunctionLibraryDispatcher;
 	private static final SafeVarHandle<BlockInput, CompoundTag> blockInputTag;
 
 	// Derived from net.minecraft.commands.Commands;
@@ -215,8 +214,6 @@ public class NMS_1_20_R3 extends NMS_Common {
 		// For some reason, MethodHandles fails for this field, but Field works okay
 		entitySelectorUsesSelector = CommandAPIHandler.getField(EntitySelector.class, "p", "usesSelector");
 		itemInput = SafeVarHandle.ofOrNull(ItemInput.class, "c", "tag", CompoundTag.class);
-		// For some reason, MethodHandles fails for this field, but Field works okay
-		serverFunctionLibraryDispatcher = CommandAPIHandler.getField(ServerFunctionLibrary.class, "g", "dispatcher");
 		blockInputTag = SafeVarHandle.ofOrNull(BlockInput.class, "c", "tag", CompoundTag.class);
 	}
 
@@ -800,133 +797,6 @@ public class NMS_1_20_R3 extends NMS_Common {
 	@Override
 	public World getWorldForCSS(CommandSourceStack css) {
 		return (css.getLevel() == null) ? null : css.getLevel().getWorld();
-	}
-
-	@Override
-	public final void reloadDataPacks() {
-		CommandAPI.logNormal("Reloading datapacks...");
-
-		// Get previously declared recipes to be re-registered later
-		Iterator<Recipe> recipes = Bukkit.recipeIterator();
-
-		// Update the commandDispatcher with the current server's commandDispatcher
-		ReloadableResources serverResources = this.<MinecraftServer>getMinecraftServer().resources;
-		serverResources.managers().commands = this.<MinecraftServer>getMinecraftServer().getCommands();
-
-		// Update the ServerFunctionLibrary's command dispatcher with the new one
-		try {
-			serverFunctionLibraryDispatcher.set(serverResources.managers().getFunctionLibrary(),
-				CommandAPIBukkit.get().getBrigadierDispatcher());
-		} catch (IllegalAccessException ignored) {
-			// Shouldn't happen, CommandAPIHandler#getField makes it accessible
-		}
-
-		// From this.<MinecraftServer>getMinecraftServer().reloadResources //
-		// Discover new packs
-		Collection<String> collection;
-		{
-			List<String> packIDs = new ArrayList<>(
-					this.<MinecraftServer>getMinecraftServer().getPackRepository().getSelectedIds());
-			List<String> disabledPacks = this.<MinecraftServer>getMinecraftServer().getWorldData()
-					.getDataConfiguration().dataPacks().getDisabled();
-
-			for (String availablePack : this.<MinecraftServer>getMinecraftServer().getPackRepository()
-					.getAvailableIds()) {
-				// Add every other available pack that is not disabled
-				// and is not already in the list of existing packs
-				if (!disabledPacks.contains(availablePack) && !packIDs.contains(availablePack)) {
-					packIDs.add(availablePack);
-				}
-			}
-			collection = packIDs;
-		}
-
-		Frozen registryAccess = this.<MinecraftServer>getMinecraftServer().registryAccess();
-
-		// Step 1: Construct an async supplier of a list of all resource packs to
-		// be loaded in the reload phase
-		CompletableFuture<List<PackResources>> first = CompletableFuture.supplyAsync(() -> {
-			PackRepository serverPackRepository = this.<MinecraftServer>getMinecraftServer().getPackRepository();
-
-			List<PackResources> packResources = new ArrayList<>();
-			for (String packID : collection) {
-				Pack pack = serverPackRepository.getPack(packID);
-				if (pack != null) {
-					packResources.add(pack.open());
-				}
-			}
-			return packResources;
-		});
-
-		// Step 2: Convert all of the resource packs into ReloadableResources which
-		// are replaced by our custom server resources with defined commands
-		CompletableFuture<ReloadableResources> second = first.thenCompose(packResources -> {
-			MultiPackResourceManager resourceManager = new MultiPackResourceManager(PackType.SERVER_DATA,
-					packResources);
-
-			// Not using packResources, because we really really want this to work
-			CompletableFuture<?> simpleReloadInstance = SimpleReloadInstance.create(resourceManager,
-					serverResources.managers().listeners(), this.<MinecraftServer>getMinecraftServer().executor,
-					this.<MinecraftServer>getMinecraftServer(), CompletableFuture
-							.completedFuture(Unit.INSTANCE) /* ReloadableServerResources.DATA_RELOAD_INITIAL_TASK */,
-					LogUtils.getLogger().isDebugEnabled()).done();
-
-			return simpleReloadInstance.thenApply(x -> serverResources);
-		});
-
-		// Step 3: Actually load all of the resources
-		CompletableFuture<Void> third = second.thenAcceptAsync(resources -> {
-			this.<MinecraftServer>getMinecraftServer().resources.close();
-			this.<MinecraftServer>getMinecraftServer().resources = serverResources;
-			this.<MinecraftServer>getMinecraftServer().server.syncCommands();
-			this.<MinecraftServer>getMinecraftServer().getPackRepository().setSelected(collection);
-
-			// this.<MinecraftServer>getMinecraftServer().getSelectedPacks
-			Collection<String> selectedIDs = this.<MinecraftServer>getMinecraftServer().getPackRepository()
-					.getSelectedIds();
-			List<String> enabledIDs = ImmutableList.copyOf(selectedIDs);
-			List<String> disabledIDs = new ArrayList<>(
-					this.<MinecraftServer>getMinecraftServer().getPackRepository().getAvailableIds());
-
-			disabledIDs.removeIf(enabledIDs::contains);
-
-			this.<MinecraftServer>getMinecraftServer().getWorldData()
-					.setDataConfiguration(new WorldDataConfiguration(new DataPackConfig(enabledIDs, disabledIDs),
-							this.<MinecraftServer>getMinecraftServer().getWorldData().getDataConfiguration()
-									.enabledFeatures()));
-			this.<MinecraftServer>getMinecraftServer().resources.managers().updateRegistryTags(registryAccess);
-			// May need to be commented out, may not. Comment it out just in case.
-			// For some reason, calling getPlayerList().saveAll() may just hang
-			// the server indefinitely. Not sure why!
-			// this.<MinecraftServer>getMinecraftServer().getPlayerList().saveAll();
-			// this.<MinecraftServer>getMinecraftServer().getPlayerList().reloadResources();
-			// this.<MinecraftServer>getMinecraftServer().getFunctions().replaceLibrary(this.<MinecraftServer>getMinecraftServer().resources.managers().getFunctionLibrary());
-			this.<MinecraftServer>getMinecraftServer().getStructureManager()
-					.onResourceManagerReload(this.<MinecraftServer>getMinecraftServer().resources.resourceManager());
-		});
-
-		// Step 4: Block the thread until everything's done
-		if (this.<MinecraftServer>getMinecraftServer().isSameThread()) {
-			this.<MinecraftServer>getMinecraftServer().managedBlock(third::isDone);
-		}
-
-		// Run the completableFuture (and bind tags?)
-		try {
-
-			// Register recipes again because reloading datapacks
-			// removes all non-vanilla recipes
-			CommandAPIBukkit.get().registerBukkitRecipesSafely(recipes);
-
-			CommandAPI.logNormal("Finished reloading datapacks");
-		} catch (Exception e) {
-			StringWriter stringWriter = new StringWriter();
-			PrintWriter printWriter = new PrintWriter(stringWriter);
-			e.printStackTrace(printWriter);
-
-			CommandAPI.logError(
-					"Failed to load datapacks, can't proceed with normal server load procedure. Try fixing your datapacks?\n"
-							+ stringWriter.toString());
-		}
 	}
 
 	@Override

@@ -525,8 +525,4 @@ public abstract class CommandAPIBukkit<Source> implements BukkitPlatform<Source>
 		nms.createDispatcherFile(file, dispatcher);
 	}
 
-	@Override
-	public void reloadDataPacks() {
-		nms.reloadDataPacks();
-	}
 }

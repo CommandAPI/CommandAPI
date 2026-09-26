@@ -406,11 +406,6 @@ public interface NMS<CommandListenerWrapper> {
 
 	Set<NamespacedKey> getTags();
 
-	/**
-	 * Reloads the datapacks by using the updated the commandDispatcher tree
-	 */
-	void reloadDataPacks();
-
 	HelpTopic generateHelpTopic(String commandName, String shortDescription, String fullDescription, String permission);
 
 	Map<String, HelpTopic> getHelpMap();

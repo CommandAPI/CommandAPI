@@ -41,4 +41,9 @@ public interface MockSpigotNMS extends SpigotNMS<MockCommandSource> {
 	default boolean isNullCommandSender(CommandSender sender) {
 		throw new UnimplementedMethodException();
 	}
+
+	@Override
+	default void reloadDataPacks() {
+		throw new UnimplementedMethodException();
+	}
 }

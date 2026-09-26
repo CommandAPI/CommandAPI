@@ -13,7 +13,8 @@ spigot-version-v1215 = "1.21.5-R0.1-20250723.090352-40"
 spigot-version-v1216 = "1.21.6-R0.1-20250617.185834-1"
 spigot-version-v1219 = "1.21.9-R0.1-20250930.202015-1"
 spigot-version-v261 = "26.1-R0.1-20260325.170250-2"
-spigot-version-v262 = "26.2-R0.1-20260725.025545-3"
+spigot-version-v262 = "26.2-R0.1-20260916.211027-14"
+spigot-version-v263 = "26.3-R0.1-SNAPSHOT"
 
 [libraries]
 version-api = { module = "org.spigotmc:spigot-api", version.ref = "spigot-api-version-common" }
@@ -30,4 +31,5 @@ version-v1216 = { module = "org.spigotmc:spigot", version.ref = "spigot-version-
 version-v1219 = { module = "org.spigotmc:spigot", version.ref = "spigot-version-v1219" }
 version-v261 = { module = "org.spigotmc:spigot", version.ref = "spigot-version-v261" }
 version-v262 = { module = "org.spigotmc:spigot", version.ref = "spigot-version-v262" }
+version-v263 = { module = "org.spigotmc:spigot", version.ref = "spigot-version-v263" }
 version-common = { module = "org.spigotmc:spigot", version.ref = "spigot-version-common" }

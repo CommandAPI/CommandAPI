@@ -3,6 +3,7 @@ package dev.jorel.commandapi.nms;
 import com.google.common.collect.Collections2;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.jorel.commandapi.CommandAPIHandler;
 import dev.jorel.commandapi.CommandAPISpigot;
 import dev.jorel.commandapi.CommandRegistrationStrategy;
 import dev.jorel.commandapi.InternalSpigotConfig;
@@ -15,6 +16,8 @@ import net.minecraft.commands.arguments.ComponentArgument;
 import net.minecraft.commands.arguments.GameProfileArgument;
 import net.minecraft.commands.arguments.MessageArgument;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.ServerFunctionLibrary;
+import net.minecraft.server.packs.repository.PackRepository;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.SimpleCommandMap;
@@ -25,12 +28,19 @@ import org.bukkit.craftbukkit.command.VanillaCommandWrapper;
 import org.bukkit.craftbukkit.profile.CraftPlayerProfile;
 import org.bukkit.profile.PlayerProfile;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public abstract class SpigotNMS_26_Common extends CommandAPISpigot<CommandSourceStack> {
 
 	protected static final CommandBuildContext COMMAND_BUILD_CONTEXT;
+	protected static final Field serverFunctionLibraryDispatcher;
+	protected static final MethodHandle minecraftServerSetSelected;
 
 	static {
 		if (Bukkit.getServer() instanceof CraftServer server) {
@@ -39,6 +49,18 @@ public abstract class SpigotNMS_26_Common extends CommandAPISpigot<CommandSource
 		} else {
 			COMMAND_BUILD_CONTEXT = null;
 		}
+		// For some reason, MethodHandles fails for this field, but Field works okay
+		serverFunctionLibraryDispatcher = CommandAPIHandler.getField(ServerFunctionLibrary.class, "dispatcher", "dispatcher");
+
+		MethodHandles.Lookup lookup = MethodHandles.lookup();
+		MethodHandle setSelected;
+		try {
+			setSelected = lookup.findVirtual(PackRepository.class, "setSelected", MethodType.methodType(void.class, Collection.class, boolean.class));
+		} catch (NoSuchMethodException | IllegalAccessException e) {
+			// We're on Spigot or Paper 1.21.4 build 62 or earlier
+			setSelected = null;
+		}
+		minecraftServerSetSelected = setSelected;
 	}
 
 	public SpigotNMS_26_Common(InternalSpigotConfig config) {

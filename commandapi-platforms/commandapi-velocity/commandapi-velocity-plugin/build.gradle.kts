@@ -1,6 +1,10 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import org.gradle.kotlin.dsl.withType
+
 plugins {
 	id("buildlogic.java-conventions")
 	id("com.modrinth.minotaur")
+	id("com.gradleup.shadow")
 }
 
 description = "Velocity support plugin"
@@ -44,10 +48,31 @@ modrinth {
 	versionNumber = project.version.toString()
 	versionType = if (project.version.toString().endsWith("-SNAPSHOT")) "beta" else "release" // adding this so we can potentially publish snapshots for easier access to Modrinth as well
 	uploadFile.set(renameForPublishing.flatMap { it.outputs.files.let { f -> layout.buildDirectory.file("libs/CommandAPI-${project.version}-Velocity.jar") } })
-	gameVersions.addAll("1.20", "1.20.1", "1.20.2", "1.20.3", "1.20.4", "1.20.5", "1.20.6", "1.21", "1.21.1", "1.21.2", "1.21.3", "1.21.4", "1.21.5", "1.21.6", "1.21.7", "1.21.8", "1.21.9", "1.21.10", "1.21.11", "26.1", "26.1.1", "26.1.2", "26.2")
+	gameVersions.addAll("1.20", "1.20.1", "1.20.2", "1.20.3", "1.20.4", "1.20.5", "1.20.6", "1.21", "1.21.1", "1.21.2", "1.21.3", "1.21.4", "1.21.5", "1.21.6", "1.21.7", "1.21.8", "1.21.9", "1.21.10", "1.21.11", "26.1", "26.1.1", "26.1.2", "26.2", "26.3")
 	loaders.addAll("velocity")
 
 	changelog = File("changelog.md").readLines().joinToString("\n")
 
 	debugMode = !providers.gradleProperty("publish-modrinth").getOrElse("false").toBoolean()
+}
+
+tasks.named("build") {
+	dependsOn(tasks.shadowJar)
+}
+
+tasks.named("test") {
+	dependsOn(tasks.shadowJar)
+}
+
+tasks.withType<Jar> {
+	archiveClassifier = "thin"
+}
+
+tasks.withType<ShadowJar> {
+	archiveClassifier = ""
+}
+
+afterEvaluate {
+	configurations["shadowRuntimeElements"].isCanBeConsumed = false;
+	configurations["shadow"].isCanBeConsumed = false
 }

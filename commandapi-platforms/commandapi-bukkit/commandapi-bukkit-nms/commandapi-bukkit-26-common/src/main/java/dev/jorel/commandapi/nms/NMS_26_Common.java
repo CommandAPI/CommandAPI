@@ -20,7 +20,6 @@
  *******************************************************************************/
 package dev.jorel.commandapi.nms;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.io.Files;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -36,7 +35,6 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPIBukkit;
@@ -108,8 +106,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.core.component.DataComponentType;
-import net.minecraft.core.component.TypedDataComponent;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.core.particles.DustColorTransitionOptions;
@@ -125,37 +121,24 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.MinecraftServer.ReloadableResources;
 import net.minecraft.server.ServerFunctionLibrary;
 import net.minecraft.server.ServerFunctionManager;
 import net.minecraft.server.level.ColumnPos;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.packs.PackResources;
-import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.repository.Pack;
-import net.minecraft.server.packs.repository.PackRepository;
-import net.minecraft.server.packs.resources.MultiPackResourceManager;
-import net.minecraft.server.packs.resources.SimpleReloadInstance;
 import net.minecraft.server.permissions.LevelBasedPermissionSet;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.util.Unit;
 import net.minecraft.util.profiling.Profiler;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
-import net.minecraft.world.level.DataPackConfig;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.WorldDataConfiguration;
-import net.minecraft.world.level.block.entity.FuelValues;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.level.gameevent.BlockPositionSource;
 import net.minecraft.world.phys.Vec2;
@@ -208,33 +191,24 @@ import org.bukkit.scoreboard.Team;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 // Mojang-Mapped reflection
 
@@ -245,16 +219,12 @@ import java.util.stream.Stream;
 @RequireField(in = EntitySelector.class, name = "usesSelector", ofType = boolean.class)
 // @RequireField(in = ItemInput.class, name = "tag", ofType = CompoundTag.class)
 @RequireField(in = ServerFunctionLibrary.class, name = "dispatcher", ofType = CommandDispatcher.class)
-@RequireField(in = MinecraftServer.class, name = "fuelValues", ofType = FuelValues.class)
 @RequireField(in = BlockInput.class, name = "tag", ofType = CompoundTag.class)
 public abstract class NMS_26_Common implements NMS<CommandSourceStack> {
 
 	private static final SafeVarHandle<SimpleHelpMap, Map<String, HelpTopic>> helpMapTopics;
 	private static final Field entitySelectorUsesSelector;
 	// private static final SafeVarHandle<ItemInput, CompoundTag> itemInput;
-	private static final Field serverFunctionLibraryDispatcher;
-	private static final MethodHandle minecraftServerSetSelected;
-	private static final SafeVarHandle<MinecraftServer, FuelValues> minecraftServerFuelValues;
 	private static final SafeVarHandle<BlockInput, CompoundTag> blockInputTag;
 
 	// Derived from net.minecraft.commands.Commands;
@@ -271,21 +241,7 @@ public abstract class NMS_26_Common implements NMS<CommandSourceStack> {
 		// For some reason, MethodHandles fails for this field, but Field works okay
 		entitySelectorUsesSelector = CommandAPIHandler.getField(EntitySelector.class, "usesSelector", "usesSelector");
 		// itemInput = SafeVarHandle.ofOrNull(ItemInput.class, "c", "tag", CompoundTag.class);
-		// For some reason, MethodHandles fails for this field, but Field works okay
-		serverFunctionLibraryDispatcher = CommandAPIHandler.getField(ServerFunctionLibrary.class, "dispatcher", "dispatcher");
 		blockInputTag = SafeVarHandle.ofOrNull(BlockInput.class, "tag", "tag", CompoundTag.class);
-
-		MethodHandles.Lookup lookup = MethodHandles.lookup();
-		MethodHandle setSelected;
-		try {
-			setSelected = lookup.findVirtual(PackRepository.class, "setSelected", MethodType.methodType(void.class, Collection.class, boolean.class));
-		} catch (NoSuchMethodException | IllegalAccessException e) {
-			// We're on Spigot or Paper 1.21.4 build 62 or earlier
-			setSelected = null;
-		}
-		minecraftServerSetSelected = setSelected;
-
-		minecraftServerFuelValues = SafeVarHandle.ofOrNull(MinecraftServer.class, "fuelValues", "fuelValues", FuelValues.class);
 	}
 
 	// Implementation taken from io.papermc.paper.adventure.WrapperAwareSerializer#deserialize(Component)
@@ -513,27 +469,7 @@ public abstract class NMS_26_Common implements NMS<CommandSourceStack> {
 		return builder.toString();
 	}
 
-	private String serializeComponents(ItemInput itemInput, HolderLookup.Provider provider) {
-		DynamicOps<Tag> serializationContext = provider.createSerializationContext(NbtOps.INSTANCE);
-		return itemInput.components().entrySet().stream().flatMap((entry) -> {
-			DataComponentType<?> type = entry.getKey();
-			Identifier identifier = BuiltInRegistries.DATA_COMPONENT_TYPE.getKey(type);
-			if (identifier == null) {
-				return Stream.empty();
-			} else {
-				Optional<?> value = entry.getValue();
-				if (value.isPresent()) {
-					TypedDataComponent<?> typedDataComponent = TypedDataComponent.createUnchecked(type, value.get());
-					return typedDataComponent.encodeValue(serializationContext).result().stream().map((tag) -> {
-						String componentString = identifier.toString();
-						return componentString + "=" + tag;
-					});
-				} else {
-					return Stream.of("!" + identifier);
-				}
-			}
-		}).collect(Collectors.joining(String.valueOf(',')));
-	}
+	abstract String serializeComponents(ItemInput itemInput, HolderLookup.Provider provider);
 
 	@Override
 	public final String convert(org.bukkit.inventory.ItemStack is) {
@@ -1188,165 +1124,6 @@ public abstract class NMS_26_Common implements NMS<CommandSourceStack> {
 	@Override
 	public World getWorldForCSS(CommandSourceStack css) {
 		return (css.getLevel() == null) ? null : css.getLevel().getWorld();
-	}
-
-	@Override
-	public final void reloadDataPacks() {
-		CommandAPI.logNormal("Reloading datapacks...");
-
-		// Get previously declared recipes to be re-registered later
-		Iterator<Recipe> recipes = Bukkit.recipeIterator();
-
-		// Update the commandDispatcher with the current server's commandDispatcher
-		ReloadableResources serverResources = this.<MinecraftServer>getMinecraftServer().resources;
-		serverResources.managers().commands = this.<MinecraftServer>getMinecraftServer().getCommands();
-
-		// Update the ServerFunctionLibrary's command dispatcher with the new one
-		try {
-			serverFunctionLibraryDispatcher.set(serverResources.managers().getFunctionLibrary(),
-				CommandAPIBukkit.<CommandSourceStack>get().getBrigadierDispatcher());
-		} catch (IllegalAccessException ignored) {
-			// Shouldn't happen, CommandAPIHandler#getField makes it accessible
-		}
-
-		// From this.<MinecraftServer>getMinecraftServer().reloadResources //
-		// Discover new packs
-		Collection<String> collection;
-		{
-			List<String> packIDs = new ArrayList<>(
-				this.<MinecraftServer>getMinecraftServer().getPackRepository().getSelectedIds());
-			List<String> disabledPacks = this.<MinecraftServer>getMinecraftServer().getWorldData()
-				.getDataConfiguration().dataPacks().getDisabled();
-
-			for (String availablePack : this.<MinecraftServer>getMinecraftServer().getPackRepository()
-				.getAvailableIds()) {
-				// Add every other available pack that is not disabled
-				// and is not already in the list of existing packs
-				if (!disabledPacks.contains(availablePack) && !packIDs.contains(availablePack)) {
-					packIDs.add(availablePack);
-				}
-			}
-			collection = packIDs;
-		}
-
-		// Step 1: Construct an async supplier of a list of all resource packs to
-		// be loaded in the reload phase
-		CompletableFuture<List<PackResources>> first = CompletableFuture.supplyAsync(() -> {
-			PackRepository serverPackRepository = this.<MinecraftServer>getMinecraftServer().getPackRepository();
-
-			List<PackResources> packResources = new ArrayList<>();
-			for (String packID : collection) {
-				Pack pack = serverPackRepository.getPack(packID);
-				if (pack != null) {
-					packResources.add(pack.open());
-				}
-			}
-			return packResources;
-		}).exceptionally(exception -> {
-			CommandAPI.logException("Something went wrong while trying to collect resource packs!", exception);
-			// Return all currently selected packs
-			return this.<MinecraftServer>getMinecraftServer().getPackRepository().openAllSelected();
-		});
-
-		// Step 2: Convert all of the resource packs into ReloadableResources which
-		// are replaced by our custom server resources with defined commands
-		CompletableFuture<ReloadableResources> second = first.thenCompose(packResources -> {
-			MultiPackResourceManager resourceManager = new MultiPackResourceManager(PackType.SERVER_DATA,
-				packResources);
-
-			// TODO: I'm not sure if this is sufficient anymore - Do we not want to load tags for existing
-			// registries here as well?
-			// List<PendingTags<?>> TagList = TagLoader.loadTagsForExistingRegistries(resourceManager, this.<MinecraftServer>getMinecraftServer().registries().compositeAccess());
-
-			// Not using packResources, because we really really want this to work
-			CompletableFuture<?> simpleReloadInstance = SimpleReloadInstance.create(resourceManager,
-				serverResources.managers().listeners(), this.<MinecraftServer>getMinecraftServer().executor,
-				this.<MinecraftServer>getMinecraftServer(), CompletableFuture
-					.completedFuture(Unit.INSTANCE) /* ReloadableServerResources.DATA_RELOAD_INITIAL_TASK */,
-				LogUtils.getLogger().isDebugEnabled()).done();
-
-			return simpleReloadInstance.thenApply(x -> serverResources);
-		}).exceptionally(exception -> {
-			CommandAPI.logException("Something went wrong while trying to convert resource packs into ReloadableResources", exception);
-			// Return existing resources
-			return this.<MinecraftServer>getMinecraftServer().resources;
-		});
-
-		// Step 3: Actually load all of the resources
-		CompletableFuture<Void> third = second.thenAcceptAsync(resources -> {
-			this.<MinecraftServer>getMinecraftServer().resources.close();
-			this.<MinecraftServer>getMinecraftServer().resources = serverResources;
-			this.<MinecraftServer>getMinecraftServer().server.syncCommands();
-			if (minecraftServerSetSelected == null) {
-				this.<MinecraftServer>getMinecraftServer().getPackRepository().setSelected(collection);
-			} else {
-				try {
-					minecraftServerSetSelected.invoke(this.<MinecraftServer>getMinecraftServer().getPackRepository(), collection, true);
-				} catch (Throwable e) {
-					CommandAPI.logException("Something went wrong while trying to invoke PackRepository#setSelected(Collection, boolean)", e);
-				}
-			}
-
-			final FeatureFlagSet enabledFeatures = this.<MinecraftServer>getMinecraftServer().getWorldData().getDataConfiguration().enabledFeatures();
-
-			// this.<MinecraftServer>getMinecraftServer().getSelectedPacks
-			Collection<String> selectedIDs = this.<MinecraftServer>getMinecraftServer().getPackRepository()
-				.getSelectedIds();
-			List<String> enabledIDs = ImmutableList.copyOf(selectedIDs);
-			List<String> disabledIDs = new ArrayList<>(
-				this.<MinecraftServer>getMinecraftServer().getPackRepository().getAvailableIds());
-
-			disabledIDs.removeIf(enabledIDs::contains);
-
-			this.<MinecraftServer>getMinecraftServer().getWorldData()
-				.setDataConfiguration(new WorldDataConfiguration(new DataPackConfig(enabledIDs, disabledIDs), enabledFeatures));
-			// this.<MinecraftServer>getMinecraftServer().resources.managers().updateRegistryTags(registryAccess);
-			//this.<MinecraftServer>getMinecraftServer().resources.managers().updateStaticRegistryTags(); // TODO: Review this
-			this.<MinecraftServer>getMinecraftServer().resources.managers().updateComponentsAndStaticRegistryTags(); // TODO: Review this
-			this.<MinecraftServer>getMinecraftServer().resources.managers().getRecipeManager().finalizeRecipeLoading(enabledFeatures);
-
-			// May need to be commented out, may not. Comment it out just in case.
-			// For some reason, calling getPlayerList().saveAll() may just hang
-			// the server indefinitely. Not sure why!
-			// this.<MinecraftServer>getMinecraftServer().getPlayerList().saveAll();
-			// this.<MinecraftServer>getMinecraftServer().getPlayerList().reloadResources();
-			// this.<MinecraftServer>getMinecraftServer().getFunctions().replaceLibrary(this.<MinecraftServer>getMinecraftServer().resources.managers().getFunctionLibrary());
-			this.<MinecraftServer>getMinecraftServer().getStructureManager()
-				.onResourceManagerReload(this.<MinecraftServer>getMinecraftServer().resources.resourceManager());
-
-			// Set fuel values with the new loaded fuel values from the list of enabled features
-			minecraftServerFuelValues.set(this.<MinecraftServer>getMinecraftServer(),
-				FuelValues.vanillaBurnTimes(this.<MinecraftServer>getMinecraftServer().registries().compositeAccess(),
-					enabledFeatures
-				)
-			);
-		}).exceptionally(exception -> {
-			CommandAPI.logException("Something went wrong while trying to load resources.", exception);
-			return null;
-		});
-
-		// Step 4: Block the thread until everything's done
-		if (this.<MinecraftServer>getMinecraftServer().isSameThread()) {
-			this.<MinecraftServer>getMinecraftServer().managedBlock(third::isDone);
-		}
-
-		// Run the completableFuture (and bind tags?)
-		try {
-
-			// Register recipes again because reloading datapacks
-			// removes all non-vanilla recipes
-			CommandAPIBukkit.get().registerBukkitRecipesSafely(recipes);
-
-			CommandAPI.logNormal("Finished reloading datapacks");
-		} catch (Exception e) {
-			StringWriter stringWriter = new StringWriter();
-			PrintWriter printWriter = new PrintWriter(stringWriter);
-			e.printStackTrace(printWriter);
-
-			CommandAPI.logError(
-				"Failed to load datapacks, can't proceed with normal server load procedure. Try fixing your datapacks?\n"
-					+ stringWriter.toString());
-		}
 	}
 
 	@Differs(from = "1.21.5", by = "#toJson is now implemented in this class")
