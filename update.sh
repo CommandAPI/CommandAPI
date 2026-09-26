@@ -87,17 +87,3 @@ sed -i "s/dev\.jorel:commandapi-velocity-core:$oldVer/dev\.jorel:commandapi-velo
 ###################################
 
 sed -i "s/version = \"$oldVer\"/version = \"$newVer\"/" buildSrc/src/main/kotlin/buildlogic.java-conventions.gradle.kts
-
-##############################
-# CommandAPI project pom.xml #
-##############################
-
-# Set version in pom.xml using Maven
-mvn versions:set -DnewVersion=$newVer
-mvn versions:commit
-
-mvn versions:set -DnewVersion=$newVer -P Platform.Bukkit
-mvn versions:commit -P Platform.Bukkit
-
-mvn versions:set -DnewVersion=$newVer -P Platform.Velocity
-mvn versions:commit -P Platform.Velocity
