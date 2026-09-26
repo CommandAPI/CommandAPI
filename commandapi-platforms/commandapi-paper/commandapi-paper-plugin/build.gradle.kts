@@ -64,7 +64,7 @@ modrinth {
 	versionNumber = project.version.toString()
 	versionType = if (project.version.toString().endsWith("-SNAPSHOT")) "beta" else "release" // adding this so we can potentially publish snapshots for easier access to Modrinth as well
 	uploadFile.set(renameForPublishing.flatMap { it.outputs.files.let { _ -> layout.buildDirectory.file("libs/CommandAPI-${project.version}-Paper.jar") } })
-	gameVersions.addAll("1.20.6", "1.21", "1.21.1", "1.21.2", "1.21.3", "1.21.4", "1.21.5", "1.21.6", "1.21.7", "1.21.8", "1.21.9", "1.21.10", "1.21.11", "26.1", "26.1.1", "26.1.2", "26.2")
+	gameVersions.addAll("1.20.6", "1.21", "1.21.1", "1.21.2", "1.21.3", "1.21.4", "1.21.5", "1.21.6", "1.21.7", "1.21.8", "1.21.9", "1.21.10", "1.21.11", "26.1", "26.1.1", "26.1.2", "26.2", "26.3")
 	loaders.addAll("paper", "folia")
 
 	changelog = File("changelog.md").readLines().joinToString("\n")

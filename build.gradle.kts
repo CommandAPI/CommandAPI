@@ -67,7 +67,7 @@ hangarPublish {
 		platforms {
 			register(Platforms.PAPER) {
 				jar.set(layout.buildDirectory.file("libs/CommandAPI-${project.version}-Paper.jar"))
-				platformVersions = listOf("1.20.6", "1.21.x", "26.1.x", "26.2")
+				platformVersions = listOf("1.20.6", "1.21.x", "26.1.x", "26.2", "26.3")
 			}
 			register(Platforms.VELOCITY) {
 				jar.set(layout.buildDirectory.file("libs/CommandAPI-${project.version}-Velocity.jar"))
