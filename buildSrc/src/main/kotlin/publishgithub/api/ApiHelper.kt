@@ -57,7 +57,7 @@ class ApiHelper {
 			val releaseObject = JsonObject()
 			releaseObject.addProperty("tag_name", version)
 			releaseObject.addProperty("name", "CommandAPI Version $version")
-			releaseObject.addProperty("target_commitish", "dev/dev")
+			releaseObject.addProperty("target_commitish", if (prerelease) "dev/dev" else "release/$version")
 			releaseObject.addProperty("body", changelog)
 			releaseObject.addProperty("prerelease", prerelease)
 
