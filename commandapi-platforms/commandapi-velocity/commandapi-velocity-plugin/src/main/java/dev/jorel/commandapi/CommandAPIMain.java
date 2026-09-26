@@ -25,7 +25,7 @@ import java.util.logging.Logger;
 @Plugin(
 	id = "commandapi",
 	name = "CommandAPI",
-	version = "12.1.0",
+	version = "12.2.0-SNAPSHOT",
 	url = "https://docs.commandapi.dev",
 	description = "An API to use Minecraft 1.13s new command UI",
 	authors = {"Skepter"}

@@ -11,12 +11,12 @@ Key points:
       <dependency>
           <groupId>dev.jorel</groupId>
           <artifactId>commandapi-paper-shade</artifactId>
-          <version>12.1.0</version>
+          <version>12.2.0-SNAPSHOT</version>
       </dependency>
       <dependency>
           <groupId>dev.jorel</groupId>
           <artifactId>commandapi-paper-annotations</artifactId>
-          <version>12.1.0</version>
+          <version>12.2.0-SNAPSHOT</version>
           <scope>provided</scope>
       </dependency>
   </dependencies>
@@ -36,7 +36,7 @@ Key points:
                       <path>
                           <groupId>dev.jorel</groupId>
                           <artifactId>commandapi-annotations</artifactId>
-                          <version>12.1.0</version>
+                          <version>12.2.0-SNAPSHOT</version>
                       </path>
                   </annotationProcessorPaths>
               </configuration>

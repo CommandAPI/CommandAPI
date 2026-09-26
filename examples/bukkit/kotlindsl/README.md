@@ -12,7 +12,7 @@ Key points:
   <dependency>
     <groupId>dev.jorel</groupId>
     <artifactId>commandapi-kotlin-paper</artifactId>
-    <version>12.1.0</version>
+    <version>12.2.0-SNAPSHOT</version>
   </dependency>
   ```
 

@@ -30,7 +30,7 @@ repositories {
 }
 
 group = "dev.jorel"
-version = "12.1.0"
+version = "12.2.0-SNAPSHOT"
 
 java {
 	toolchain {
