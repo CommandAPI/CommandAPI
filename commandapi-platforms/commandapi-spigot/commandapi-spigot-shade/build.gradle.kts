@@ -15,6 +15,10 @@ dependencies {
 	shadow(project(":commandapi-spigot-nms-dependency"))
 }
 
+shadow {
+	addShadowVariantIntoJavaComponent = false
+}
+
 tasks.named("build") {
 	dependsOn(tasks.shadowJar)
 }

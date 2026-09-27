@@ -13,7 +13,7 @@ dependencies {
 	compileOnly(paper.version.v1218)
 	compileOnly(libs.org.mockbukkit.mockbukkit.mockbukkit.v121)
 
-	implementation(project(":commandapi-bukkit-test-toolkit"))
+	shadow(project(":commandapi-bukkit-test-toolkit"))
 	compileOnly(project(":commandapi-spigot-core"))
 
 	testImplementation(paper.version.v1218)
@@ -24,6 +24,10 @@ dependencies {
 	testImplementation(libs.org.junit.jupiter.junit.jupiter.engine)
 	testImplementation(libs.org.junit.jupiter.junit.jupiter.api)
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
+
+shadow {
+	addShadowVariantIntoJavaComponent = false
 }
 
 tasks.withType<Test> {
@@ -44,6 +48,7 @@ tasks.withType<Jar> {
 
 tasks.withType<ShadowJar> {
 	archiveClassifier = ""
+	configurations = listOf(project.configurations["shadow"])
 }
 
 afterEvaluate {

@@ -17,6 +17,10 @@ dependencies {
 	shadow(project(":commandapi-paper-nms-dependency"))
 }
 
+shadow {
+	addShadowVariantIntoJavaComponent = false
+}
+
 tasks.named("build") {
 	dependsOn(tasks.shadowJar)
 }

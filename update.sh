@@ -87,3 +87,14 @@ sed -i "s/dev\.jorel:commandapi-velocity-core:$oldVer/dev\.jorel:commandapi-velo
 ###################################
 
 sed -i "s/version = \"$oldVer\"/version = \"$newVer\"/" buildSrc/src/main/kotlin/buildlogic.java-conventions.gradle.kts
+
+#############################
+# Print manual update notes #
+#############################
+
+echo "Some files may need additional updating:"
+echo "  - .github/ISSUE_TEMPLATE/bug_report.yml"
+echo "  - commandapi-paper-plugin/build.gradle.kts"
+echo "  - commandapi-spigot-plugin/build.gradle.kts"
+echo "  - commandapi-velocity-plugin/build.gradle.kts"
+echo "  - build.gradle.kts"
