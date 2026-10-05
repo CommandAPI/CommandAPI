@@ -1,5 +1,8 @@
 blank_issues_enabled: false
 contact_links:
+  - name: Report a security vulnerability
+    url: https://github.com/CommandAPI/CommandAPI/security/advisories/new
+    about: Report security issues privately via GitHub advisory (preferred) or security@commandapi.dev. See SECURITY.md.
   - name: 📄 Documentation amendment
     url: https://github.com/CommandAPI/docs/issues/new/choose
     about: Is there something wrong with the documentation? Raise it in our docs repository!
