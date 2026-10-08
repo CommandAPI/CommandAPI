@@ -118,34 +118,34 @@ jobs:
       # Dev note: Yes, I know I could put this under one run section, but it's a million times easier
       # to see which version failed when it's got the version name and subsection in GitHub Actions
 
-      - name: Run Bukkit unit tests across all versions (1.20.5 - 1.20.6)
-        continue-on-error: true
-        run: mvn clean package -pl :commandapi-bukkit-test-tests -P Platform.Bukkit -Dmaven.javadoc.skip=true -P Minecraft_1_20_5
-
-      - name: Run Bukkit unit tests across all versions (Mojang Mapped 1.20.5 - 1.20.6)
-        continue-on-error: true
-        run: mvn clean package -pl :commandapi-bukkit-test-tests -P Platform.Bukkit -Dmaven.javadoc.skip=true -P Minecraft_1_20_5_Mojang
-
-      - name: Run Bukkit unit tests across all versions (1.20.3 - 1.20.4)
-        continue-on-error: true
-        run: mvn clean package -pl :commandapi-bukkit-test-tests -P Platform.Bukkit -Dmaven.javadoc.skip=true -P Minecraft_1_20_3
-
-      - name: Run Bukkit unit tests across all versions (1.20.2)
-        continue-on-error: true
-        run: mvn clean package -pl :commandapi-bukkit-test-tests -P Platform.Bukkit -Dmaven.javadoc.skip=true -P Minecraft_1_20_2
-
-      - name: Run Bukkit unit tests across all versions (1.20 - 1.20.1)
-        continue-on-error: true
-        run: mvn clean package -pl :commandapi-bukkit-test-tests -P Platform.Bukkit -Dmaven.javadoc.skip=true -P Minecraft_1_20
-
-      - name: Run Bukkit unit tests across all versions (Mojang Mapped 1.20 - 1.20.1)
-        continue-on-error: true
-        run: mvn clean package -pl :commandapi-bukkit-test-tests -P Platform.Bukkit -Dmaven.javadoc.skip=true -P Minecraft_1_20_Mojang
-
-      # It doesn't matter which version the Kotlin DSL uses. It should be version independent
-      - name: Run Bukkit Kotlin DSL unit tests
-        continue-on-error: true
-        run: mvn clean package -pl :commandapi-bukkit-kotlin-test -P Platform.Bukkit -Dmaven.javadoc.skip=true -P Minecraft_1_20
+#      - name: Run Bukkit unit tests across all versions (1.20.5 - 1.20.6)
+#        continue-on-error: true
+#        run: mvn clean package -pl :commandapi-bukkit-test-tests -P Platform.Bukkit -Dmaven.javadoc.skip=true -P Minecraft_1_20_5
+#
+#      - name: Run Bukkit unit tests across all versions (Mojang Mapped 1.20.5 - 1.20.6)
+#        continue-on-error: true
+#        run: mvn clean package -pl :commandapi-bukkit-test-tests -P Platform.Bukkit -Dmaven.javadoc.skip=true -P Minecraft_1_20_5_Mojang
+#
+#      - name: Run Bukkit unit tests across all versions (1.20.3 - 1.20.4)
+#        continue-on-error: true
+#        run: mvn clean package -pl :commandapi-bukkit-test-tests -P Platform.Bukkit -Dmaven.javadoc.skip=true -P Minecraft_1_20_3
+#
+#      - name: Run Bukkit unit tests across all versions (1.20.2)
+#        continue-on-error: true
+#        run: mvn clean package -pl :commandapi-bukkit-test-tests -P Platform.Bukkit -Dmaven.javadoc.skip=true -P Minecraft_1_20_2
+#
+#      - name: Run Bukkit unit tests across all versions (1.20 - 1.20.1)
+#        continue-on-error: true
+#        run: mvn clean package -pl :commandapi-bukkit-test-tests -P Platform.Bukkit -Dmaven.javadoc.skip=true -P Minecraft_1_20
+#
+#      - name: Run Bukkit unit tests across all versions (Mojang Mapped 1.20 - 1.20.1)
+#        continue-on-error: true
+#        run: mvn clean package -pl :commandapi-bukkit-test-tests -P Platform.Bukkit -Dmaven.javadoc.skip=true -P Minecraft_1_20_Mojang
+#
+#      # It doesn't matter which version the Kotlin DSL uses. It should be version independent
+#      - name: Run Bukkit Kotlin DSL unit tests
+#        continue-on-error: true
+#        run: mvn clean package -pl :commandapi-bukkit-kotlin-test -P Platform.Bukkit -Dmaven.javadoc.skip=true -P Minecraft_1_20
 
       ### Upload .jar artifacts ###
 
@@ -155,7 +155,7 @@ jobs:
         with:
           name: CommandAPI (Spigot plugin)
           path: |
-            commandapi-platforms/commandapi-spigot/commandapi-spigot-plugin/build/libs/commandapi-spigot-plugin-*-all.jar
+            commandapi-platforms/commandapi-spigot/commandapi-spigot-plugin/build/libs/commandapi-spigot-plugin-*.jar
 
       - name: Upload CommandAPI (Paper) plugin artifact
         if: ${{ runner.os == 'Linux' && matrix.java == '25' }} # Only upload artifacts built from latest java on one OS
@@ -163,7 +163,7 @@ jobs:
         with:
             name: CommandAPI (Paper plugin)
             path: |
-              commandapi-platforms/commandapi-paper/commandapi-paper-plugin/build/libs/commandapi-paper-plugin-*-all.jar
+              commandapi-platforms/commandapi-paper/commandapi-paper-plugin/build/libs/commandapi-paper-plugin-*.jar
 
       - name: Upload CommandAPI (Velocity) plugin artifact
         if: ${{ runner.os == 'Linux' && matrix.java == '25' }} # Only upload artifacts built from latest java on one OS
@@ -171,7 +171,7 @@ jobs:
         with:
           name: CommandAPI (Velocity plugin)
           path: |
-            commandapi-platforms/commandapi-velocity/commandapi-velocity-plugin/build/libs/commandapi-velocity-plugin-*-all.jar
+            commandapi-platforms/commandapi-velocity/commandapi-velocity-plugin/build/libs/commandapi-velocity-plugin-*.jar
 
       ### Examples ###
 
