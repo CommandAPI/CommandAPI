@@ -344,8 +344,8 @@ The CommandAPI is built using the Gradle build tool.
 
 - Run `./gradlew build`
 
-  > [!NOTE]
-  > It is highly recommended to run the initial build using the `--no-configuration-cache` flag. Otherwise setting up the required dependencies may use a lot of your system's resources. 
+> [!NOTE]
+> It is highly recommended to run the initial build using the `--no-configuration-cache` flag. Otherwise setting up the required dependencies may use a lot of your system's resources. 
 
 Notable artifacts can be found here:
 
