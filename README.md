@@ -334,7 +334,7 @@ plugins-to-convert:
 
 ## Building the CommandAPI
 
-The CommandAPI is built using the Maven build tool - if you don't have it, you can download it [here](https://maven.apache.org/download.cgi).
+The CommandAPI is built using the Gradle build tool.
 
 - Clone the repository using your preferred method, or with the command below:
 
@@ -342,32 +342,29 @@ The CommandAPI is built using the Maven build tool - if you don't have it, you c
   git clone https://github.com/CommandAPI/CommandAPI.git
   ```
 
-- For the Paper implementation, the CommandAPI uses dependencies that are not published on any repository. To compile the CommandAPI run this command to setup the required dependencies:
+- Run `./gradlew build`
 
-  ```bash
-  ./setupPaperNMS.sh
-  ```
-
-- Run `mvn clean install -P Platform.Bukkit,Platform.Velocity`
+  > [!NOTE]
+  > It is highly recommended to run the initial build using the `--no-configuration-cache` flag. Otherwise setting up the required dependencies may use a lot of your system's resources. 
 
 Notable artifacts can be found here:
 
 - Paper Plugin `.jar`:
 
   ```sh
-  commandapi-platforms/commandapi-paper/commandapi-paper-plugin/target/CommandAPI-X.X.X_DATE.jar
+  commandapi-platforms/commandapi-paper/commandapi-paper-plugin/build/libs/commandapi-paper-plugin-X.X.X.jar
   ```
 
 - Spigot Plugin `.jar`:
 
   ```sh
-  commandapi-platforms/commandapi-spigot/commandapi-spigot-plugin/target/CommandAPI-X.X.X_DATE.jar
+  commandapi-platforms/commandapi-spigot/commandapi-spigot-plugin/build/libs/commandapi-spigot-plugin-X.X.X.jar
   ```
 
 - Velocity Plugin `.jar`:
 
   ```sh
-  commandapi-platforms/commandapi-velocity/commandapi-velocity-plugin/target/CommandAPI-X.X.X_DATE.jar
+  commandapi-platforms/commandapi-velocity/commandapi-velocity-plugin/build/libs/commandapi-velocity-plugin-X.X.X.jar
   ```
 
 -----
