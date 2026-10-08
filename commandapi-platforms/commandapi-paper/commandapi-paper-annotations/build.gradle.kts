@@ -13,7 +13,7 @@ dependencies {
 	compileOnly(paper.version.common)
 
 	api(project(":commandapi-annotations"))
-	compileOnly(project(":commandapi-paper-core"))
+	api(project(":commandapi-paper-core"))
 
 	testCompileOnly(paper.version.common)
 	testCompileOnly(project(":commandapi-annotations"))

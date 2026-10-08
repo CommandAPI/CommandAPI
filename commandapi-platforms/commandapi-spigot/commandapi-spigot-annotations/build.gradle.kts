@@ -11,7 +11,7 @@ dependencies {
 	compileOnly(spigot.version.api)
 
 	api(project(":commandapi-annotations"))
-	compileOnly(project(":commandapi-spigot-core"))
+	api(project(":commandapi-spigot-core"))
 }
 
 // https://vanniktech.github.io/gradle-maven-publish-plugin/central/
