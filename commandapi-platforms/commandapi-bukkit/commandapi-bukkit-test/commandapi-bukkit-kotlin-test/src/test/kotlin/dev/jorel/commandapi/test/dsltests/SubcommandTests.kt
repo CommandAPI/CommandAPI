@@ -1,6 +1,6 @@
 package dev.jorel.commandapi.test.dsltests
 
-import be.seeseemelk.mockbukkit.entity.PlayerMock
+import org.mockbukkit.mockbukkit.entity.PlayerMock
 import dev.jorel.commandapi.kotlindsl.commandAPICommand
 import dev.jorel.commandapi.kotlindsl.playerExecutor
 import dev.jorel.commandapi.kotlindsl.subcommand
@@ -59,7 +59,7 @@ class SubcommandTests : TestBase() {
 		assertEquals("/test two", results.get())
 
 		// /test
-		assertCommandFailsWith(player, "test", "Unknown or incomplete command, see below for error at position 4: test<--[HERE]")
+		assertCommandFailsWith(player, "test", "Unknown or incomplete command. See below for error at position 4: test<--[HERE]")
 
 		assertNoMoreResults(results)
 	}
@@ -96,7 +96,7 @@ class SubcommandTests : TestBase() {
 		assertEquals("/test two", results.get())
 
 		// /test
-		assertCommandFailsWith(player, "test", "Unknown or incomplete command, see below for error at position 4: test<--[HERE]")
+		assertCommandFailsWith(player, "test", "Unknown or incomplete command. See below for error at position 4: test<--[HERE]")
 
 		assertNoMoreResults(results)
 	}

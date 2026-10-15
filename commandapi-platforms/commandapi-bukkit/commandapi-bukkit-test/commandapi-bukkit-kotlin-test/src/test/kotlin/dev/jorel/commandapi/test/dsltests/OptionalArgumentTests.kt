@@ -1,6 +1,6 @@
 package dev.jorel.commandapi.test.dsltests
 
-import be.seeseemelk.mockbukkit.entity.PlayerMock
+import org.mockbukkit.mockbukkit.entity.PlayerMock
 import dev.jorel.commandapi.arguments.StringArgument
 import dev.jorel.commandapi.exceptions.OptionalArgumentException
 import dev.jorel.commandapi.kotlindsl.*

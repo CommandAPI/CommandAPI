@@ -1,6 +1,6 @@
 package dev.jorel.commandapi.test.dsltests
 
-import be.seeseemelk.mockbukkit.entity.PlayerMock
+import org.mockbukkit.mockbukkit.entity.PlayerMock
 import dev.jorel.commandapi.arguments.LiteralArgument
 import dev.jorel.commandapi.kotlindsl.commandTree
 import dev.jorel.commandapi.kotlindsl.literalArgument
@@ -90,7 +90,7 @@ class CommandTreeTests : TestBase() {
 		assertEquals("/test two three", results.get())
 
 		// /test
-		assertCommandFailsWith(player, "test", "Unknown or incomplete command, see below for error at position 4: test<--[HERE]")
+		assertCommandFailsWith(player, "test", "Unknown or incomplete command. See below for error at position 4: test<--[HERE]")
 
 		// /test three
 		assertCommandFailsWith(player, "test three", "Incorrect argument for command at position 5: test <--[HERE]")
@@ -133,7 +133,7 @@ class CommandTreeTests : TestBase() {
 		assertEquals("/test one two three four five", results.get())
 
 		// /test
-		assertCommandFailsWith(player, "test", "Unknown or incomplete command, see below for error at position 4: test<--[HERE]")
+		assertCommandFailsWith(player, "test", "Unknown or incomplete command. See below for error at position 4: test<--[HERE]")
 
 		// /test three
 		assertCommandFailsWith(player, "test three", "Incorrect argument for command at position 5: test <--[HERE]")
@@ -176,7 +176,7 @@ class CommandTreeTests : TestBase() {
 		assertEquals("/test one two three four five", results.get())
 
 		// /test
-		assertCommandFailsWith(player, "test", "Unknown or incomplete command, see below for error at position 4: test<--[HERE]")
+		assertCommandFailsWith(player, "test", "Unknown or incomplete command. See below for error at position 4: test<--[HERE]")
 
 		// /test three
 		assertCommandFailsWith(player, "test three", "Incorrect argument for command at position 5: test <--[HERE]")

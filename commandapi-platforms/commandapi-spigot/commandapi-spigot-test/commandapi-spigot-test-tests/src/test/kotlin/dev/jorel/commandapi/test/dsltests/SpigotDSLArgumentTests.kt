@@ -1,6 +1,6 @@
 package dev.jorel.commandapi.test.dsltests
 
-import be.seeseemelk.mockbukkit.entity.PlayerMock
+import org.mockbukkit.mockbukkit.entity.PlayerMock
 import dev.jorel.commandapi.kotlindsl.chatArgument
 import dev.jorel.commandapi.kotlindsl.chatColorArgument
 import dev.jorel.commandapi.kotlindsl.commandAPICommand

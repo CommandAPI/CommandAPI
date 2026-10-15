@@ -1,7 +1,6 @@
 package dev.jorel.commandapi.test.arguments;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.util.Arrays;
 import java.util.List;
@@ -11,9 +10,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import be.seeseemelk.mockbukkit.entity.PlayerMock;
+import org.mockbukkit.mockbukkit.entity.PlayerMock;
 import dev.jorel.commandapi.CommandAPICommand;
-import dev.jorel.commandapi.MCVersion;
 import dev.jorel.commandapi.arguments.EntityTypeArgument;
 import dev.jorel.commandapi.test.MockPlatform;
 import dev.jorel.commandapi.test.Mut;
@@ -47,31 +45,9 @@ class ArgumentEntityTypeTests extends TestBase {
 		return Arrays.stream(MockPlatform.getInstance().getEntityTypes())
 			.filter(e -> e != EntityType.UNKNOWN)
 			.filter(e -> e != EntityType.PLAYER)
-			// Renamed from FISHING_HOOK to FISHING_BOBBER in 1.20.5
-			.filter(e -> !e.name().equals("FISHING_HOOK") && !e.name().equals("FISHING_BOBBER"))
-			.filter(e -> { 
-				if (version.equals(MCVersion.V1_19_4)) {
-					return !e.name().equals("CAMEL") && !e.name().equals("SNIFFER");
-				} else {
-					return true;
-				}
-			})
+			.filter(e -> e != EntityType.FISHING_BOBBER)
 			.map(e -> e.getKey().toString())
 			.sorted()
-			.toList();
-	}
-
-	/**
-	 * @return all entity types that are suggested. Entities that need an experimental feature flag can be used,
-	 * but aren't suggested.
-	 */
-	private List<String> getSuggestedEntityTypes() {
-		// These 1.21 entities need the update_1_21 feature flag in 1.20.5 and 1.20.6
-		List<String> experimentalEntityTypes = version.equals(MCVersion.V1_20_5)
-			? List.of("minecraft:bogged", "minecraft:breeze", "minecraft:breeze_wind_charge", "minecraft:ominous_item_spawner", "minecraft:wind_charge")
-			: List.of();
-		return getAllEntityTypes().stream()
-			.filter(e -> !experimentalEntityTypes.contains(e))
 			.toList();
 	}
 
@@ -102,13 +78,7 @@ class ArgumentEntityTypeTests extends TestBase {
 
 		// /test giraffe
 		// Unknown entity, giraffe is not a valid entity type
-		if (version.greaterThanOrEqualTo(MCVersion.V1_20_5)) {
-			assertCommandFailsWith(player, "test giraffe", "Can't find element 'minecraft:giraffe' of type 'minecraft:entity_type' at position 12: ...st giraffe<--[HERE]");
-		} else if (version.greaterThanOrEqualTo(MCVersion.V1_19_4)) {
-			assertCommandFailsWith(player, "test giraffe", "Can't find element 'minecraft:giraffe' of type 'minecraft:entity_type'");
-		} else {
-			assertCommandFailsWith(player, "test giraffe", "Unknown entity: minecraft:giraffe");
-		}
+		assertCommandFailsWith(player, "test giraffe", "Can't find element 'minecraft:giraffe' of type 'minecraft:entity_type' at position 12: ...st giraffe<--[HERE]");
 
 		assertNoMoreResults(results);
 	}
@@ -147,16 +117,14 @@ class ArgumentEntityTypeTests extends TestBase {
 
 		PlayerMock player = server.addPlayer();
 		
-		assumeTrue(version.greaterThanOrEqualTo(MCVersion.V1_19)); // TODO: Can't figure out how to fix in 1.18
-
 		// /test
 		// All entities (that aren't experimental) should be suggested
-		assertEquals(getSuggestedEntityTypes(), server.getSuggestions(player, "test "));
+		assertEquals(getAllEntityTypes(), server.getSuggestions(player, "test "));
 
 		// /test p
 		// All entities starting with 'p' should be suggested as well as entities which
 		// are underscore-separated and start with 'p', such as 'ender_pearl'
-		assertEquals(getSuggestedEntityTypes().stream().filter(s -> s.contains(":p") || s.contains("_p")).toList(), server.getSuggestions(player, "test p"));
+		assertEquals(getAllEntityTypes().stream().filter(s -> s.contains(":p") || s.contains("_p")).toList(), server.getSuggestions(player, "test p"));
 		
 		// /test x
 		// No entities should be suggested

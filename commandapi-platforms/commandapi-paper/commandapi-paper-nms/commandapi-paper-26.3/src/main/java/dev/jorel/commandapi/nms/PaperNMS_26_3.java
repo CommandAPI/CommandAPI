@@ -20,6 +20,8 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.CraftServer;
+import org.bukkit.craftbukkit.block.data.CraftBlockData;
+import org.bukkit.craftbukkit.inventory.CraftItemStack;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -68,7 +70,7 @@ public class PaperNMS_26_3 implements PaperNMS<CommandSourceStack> {
 	@Override
 	public NMS<CommandSourceStack> bukkitNMS() {
 		if (bukkitNMS == null) {
-			this.bukkitNMS = new NMS_26_3(this::getCommandBuildContext, this::serializeComponents);
+			this.bukkitNMS = new NMS_26_3(this::getCommandBuildContext, this::serializeComponents, CraftItemStack::asBukkitCopy, CraftBlockData::createData);
 		}
 		return bukkitNMS;
 	}

@@ -11,9 +11,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import be.seeseemelk.mockbukkit.entity.PlayerMock;
+import org.mockbukkit.mockbukkit.entity.PlayerMock;
 import dev.jorel.commandapi.CommandAPICommand;
-import dev.jorel.commandapi.MCVersion;
 import dev.jorel.commandapi.arguments.LootTableArgument;
 import dev.jorel.commandapi.test.MockPlatform;
 import dev.jorel.commandapi.test.Mut;
@@ -75,22 +74,17 @@ class ArgumentLootTableTests extends TestBase {
 
 		PlayerMock player = server.addPlayer();
 
-		if (version.greaterThanOrEqualTo(MCVersion.V1_19_4)) {
-			// Bukkit's LootTables doesn't have the loot tables of these entities
-			Stream<String> missingEntityLootTables = version.greaterThanOrEqualTo(MCVersion.V1_20_5)
-				? Stream.of("minecraft:entities/camel", "minecraft:entities/sniffer", "minecraft:entities/armadillo", "minecraft:entities/bogged", "minecraft:entities/breeze")
-				: Stream.of("minecraft:entities/camel", "minecraft:entities/sniffer");
-			Stream<String> expected = Stream.concat(
-				Arrays.stream(MockPlatform.getInstance().getLootTables())
-					.map(lt -> lt.getKey().toString()),
-				missingEntityLootTables
-			);
-			assertEquals(expected.sorted().toList(), server.getSuggestions(player, "test "));
-		} else {
-			assertEquals(Arrays.stream(MockPlatform.getInstance().getLootTables())
-				.map(lt -> lt.getKey().toString())
-				.sorted().toList(), server.getSuggestions(player, "test "));
-		}
+		// Bukkit's LootTables doesn't have the loot tables of these entities
+		Stream<String> missingEntityLootTables = Stream.of("minecraft:entities/camel", "minecraft:entities/sniffer", "minecraft:entities/armadillo", "minecraft:entities/bogged", "minecraft:entities/breeze",
+			"minecraft:entities/allay", "minecraft:entities/camel_husk", "minecraft:entities/copper_golem", "minecraft:entities/creaking", "minecraft:entities/frog",
+			"minecraft:entities/happy_ghast", "minecraft:entities/mannequin", "minecraft:entities/nautilus", "minecraft:entities/parched", "minecraft:entities/sulfur_cube",
+			"minecraft:entities/tadpole", "minecraft:entities/warden", "minecraft:entities/zombie_nautilus");
+		Stream<String> expected = Stream.concat(
+			Arrays.stream(MockPlatform.getInstance().getLootTables())
+				.map(lt -> lt.getKey().toString()),
+			missingEntityLootTables
+		);
+		assertEquals(expected.sorted().toList(), server.getSuggestions(player, "test "));
 	}
 
 }

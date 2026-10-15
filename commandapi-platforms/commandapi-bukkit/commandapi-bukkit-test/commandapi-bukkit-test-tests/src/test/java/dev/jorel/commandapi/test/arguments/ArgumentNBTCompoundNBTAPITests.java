@@ -2,22 +2,20 @@ package dev.jorel.commandapi.test.arguments;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import be.seeseemelk.mockbukkit.entity.PlayerMock;
+import org.bukkit.craftbukkit.CraftPackageServerMock;
+import org.mockbukkit.mockbukkit.entity.PlayerMock;
 import de.tr7zw.changeme.nbtapi.NBTContainer;
 import de.tr7zw.changeme.nbtapi.utils.MinecraftVersion;
 import dev.jorel.commandapi.CommandAPICommand;
-import dev.jorel.commandapi.CommandAPIVersionHandler;
-import dev.jorel.commandapi.MCVersion;
 import dev.jorel.commandapi.arguments.NBTCompoundArgument;
+import dev.jorel.commandapi.test.CommandAPIServerMock;
 import dev.jorel.commandapi.test.MockPlatform;
 import dev.jorel.commandapi.test.Mut;
 import dev.jorel.commandapi.test.TestBase;
@@ -25,7 +23,6 @@ import dev.jorel.commandapi.test.TestBase;
 /**
  * Tests for the {@link NBTCompoundArgument}
  */
-@Disabled
 class ArgumentNBTCompoundNBTAPITests extends TestBase {
 
 	/*********
@@ -34,29 +31,19 @@ class ArgumentNBTCompoundNBTAPITests extends TestBase {
 
 	@BeforeEach
 	public void setUp() {
-		// Ignoring 1.20.5 for NBT tests until they update
-		assumeTrue(version.lessThan(MCVersion.V1_20_5));
-
-		// NBT API can't run via Mojang Mappings
-		assumeTrue(!CommandAPIVersionHandler.IS_MOJANG_MAPPED);
-
 		super.setUp(NBTContainer.class, NBTContainer::new);
 		MinecraftVersion.disableBStats();
 		MinecraftVersion.disablePackageWarning();
 		MinecraftVersion.disableUpdateCheck();
 
-		MinecraftVersion currentNBTAPIMinecraftVersion = switch (version) {
-			case V1_16_5 -> MinecraftVersion.MC1_16_R3;
-			case V1_17 -> MinecraftVersion.MC1_17_R1;
-			case V1_18 -> MinecraftVersion.MC1_18_R1;
-			case V1_19_2 -> MinecraftVersion.MC1_19_R1;
-			case V1_19_4 -> MinecraftVersion.MC1_19_R3;
-			case V1_20 -> MinecraftVersion.MC1_20_R1;
-			case V1_20_2 -> MinecraftVersion.MC1_20_R2;
-			case V1_20_3 -> MinecraftVersion.MC1_20_R3;
-			default -> throw new IllegalArgumentException("Unexpected value: " + version);
-		};
-		MockPlatform.setField(MinecraftVersion.class, "version", null, currentNBTAPIMinecraftVersion);
+		// The NBT API detects the version from the server, which is MockBukkit's
+		MockPlatform.setField(MinecraftVersion.class, "version", null, MinecraftVersion.MC26_3);
+	}
+
+	@Override
+	protected CommandAPIServerMock createServer() {
+		// So the NBT API can find CraftBukkit's classes
+		return new CraftPackageServerMock();
 	}
 
 	@AfterEach

@@ -2,7 +2,6 @@ package dev.jorel.commandapi;
 
 import dev.jorel.commandapi.nms.APITypeProvider;
 import dev.jorel.commandapi.test.PaperMockNMS;
-import net.minecraft.SharedConstants;
 
 /**
  * This file handles loading the correct platform implementation. The CommandAPIVersionHandler
@@ -20,16 +19,17 @@ public abstract class CommandAPIVersionHandler {
 	public static final boolean IS_MOJANG_MAPPED = true;
 
 	static {
-		// Paper's ServerBuildInfo (used by Bukkit#setServer, so before the CommandAPI loads) needs
-		//  to know the game version. The shared TestBase uses this class before mocking the server.
-		SharedConstants.tryDetectVersion();
+		// MockBukkit's ServerMock uses Bukkit's registries when it's created, which on Paper are backed by the
+		//  Minecraft registries. This also initializes the game version, which Paper's ServerBuildInfo (used by
+		//  Bukkit#setServer) needs. The shared TestBase uses this class before mocking the server.
+		PaperMockNMS.setupRegistries();
 	}
 
 	/**
 	 * @return the Minecraft version being tested, used by the shared tests in commandapi-bukkit-test-tests
 	 */
 	public static MCVersion getVersion() {
-		return MCVersion.V1_20_5;
+		return MCVersion.V26_3;
 	}
 
 	static LoadContext getPlatform(CommandAPIConfig<?> config) {

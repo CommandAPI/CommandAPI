@@ -8,9 +8,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import be.seeseemelk.mockbukkit.entity.PlayerMock;
+import org.mockbukkit.mockbukkit.entity.PlayerMock;
 import dev.jorel.commandapi.CommandAPICommand;
-import dev.jorel.commandapi.MCVersion;
 import dev.jorel.commandapi.arguments.ChatComponentArgument;
 import dev.jorel.commandapi.test.Mut;
 import dev.jorel.commandapi.test.TestBase;
@@ -85,26 +84,13 @@ class ArgumentChatComponentTests extends TestBase {
 		
 		// /test []
 		// Fails due to invalid JSON for a chat component
-		if (version.lessThan(MCVersion.V1_18)) {
-			assertCommandFailsWith(player, "test []", "Invalid chat component: empty at position 8: test []<--[HERE]");
-		} else if (version.greaterThanOrEqualTo(MCVersion.V1_20_5)) {
-			// Components are decoded with a codec that tries each form a component can take
-			assertCommandFailsWith(player, "test []", "Invalid chat component: Not a JSON object: []; List must have contents; Not a string: [] at position 7: test []<--[HERE]");
-		} else if(version.greaterThanOrEqualTo(MCVersion.V1_20_3)) {
-			assertCommandFailsWith(player, "test []", "Invalid chat component: Not a JSON object: [] at position 8: test []<--[HERE]");
-		} else {
-			assertCommandFailsWith(player, "test []", "Invalid chat component: Invalid chat component: empty at position 8: test []<--[HERE] at position 8: test []<--[HERE]");	
-		}
+		// Components are parsed as SNBT
+		assertCommandFailsWith(player, "test []", "Invalid chat component: Failed to parse either. First: Failed to parse either. First: Not a string; Second: List must have contents; Second: Not a map: [] at position 5: test <--[HERE]");
 		
 		// /test [\"[\"\",{\"text\":\"Some text with bad quote escaping\"}\"]
 		// Fails due to inner quotes not being escaped with a \ character
-		if (version.greaterThanOrEqualTo(MCVersion.V1_20_5)) {
-			assertCommandFailsWith(player, "test [\"[\"\",{\"text\":\"Some text with bad quote escaping\"}\"]", "Invalid chat component: Unterminated array at line 1 column 6 path $[1] at position 10: test [\"[\"\"<--[HERE]");
-		} else if (version.greaterThanOrEqualTo(MCVersion.V1_20_3)) {
-			assertCommandFailsWith(player, "test [\"[\"\",{\"text\":\"Some text with bad quote escaping\"}\"]", "Invalid chat component: Unterminated array at line 1 column 6 path $[1] at position 11: ...est [\"[\"\",<--[HERE]");
-		} else {
-			assertCommandFailsWith(player, "test [\"[\"\",{\"text\":\"Some text with bad quote escaping\"}\"]", "Invalid chat component: Unterminated array at line 1 column 6 path $[1] at position 5: test <--[HERE]");
-		}
+		// Components are parsed as SNBT
+		assertCommandFailsWith(player, "test [\"[\"\",{\"text\":\"Some text with bad quote escaping\"}\"]", "Expected literal , at position 9: test [\"[\"<--[HERE]");
 
 		assertNoMoreResults(results);
 	}
@@ -127,8 +113,8 @@ class ArgumentChatComponentTests extends TestBase {
 		assertEquals(List.of(), server.getSuggestions(player, "test "));
 
 		// /test [
-		// The ChatComponentArgument doesn't have any suggestions
-		assertEquals(List.of(), server.getSuggestions(player, "test ["));
+		// Components are parsed as SNBT, so this suggests how to continue the list
+		assertEquals(List.of("]", "B", "I", "L"), server.getSuggestions(player, "test ["));
 	}
 
 }

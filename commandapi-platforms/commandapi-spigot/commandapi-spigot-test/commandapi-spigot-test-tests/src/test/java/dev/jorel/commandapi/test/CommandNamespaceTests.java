@@ -190,7 +190,7 @@ public class CommandNamespaceTests extends TestBase {
 		assertCommandFailsWith(
 			player,
 			"minecraft:test alpha",
-			"Unknown or incomplete command, see below for error at position 0: <--[HERE]"
+			"Unknown or incomplete command. See below for error at position 0: <--[HERE]"
 		);
 
 		assertNoMoreResults(results);
@@ -239,7 +239,7 @@ public class CommandNamespaceTests extends TestBase {
 		assertCommandFailsWith(
 			player,
 			"minecraft:test alpha",
-			"Unknown or incomplete command, see below for error at position 0: <--[HERE]"
+			"Unknown or incomplete command. See below for error at position 0: <--[HERE]"
 		);
 
 		assertNoMoreResults(results);
@@ -363,17 +363,17 @@ public class CommandNamespaceTests extends TestBase {
 		assertCommandFailsWith(
 			player,
 			"minecraft:test discord",
-			"Unknown or incomplete command, see below for error at position 0: <--[HERE]"
+			"Unknown or incomplete command. See below for error at position 0: <--[HERE]"
 		);
 		assertCommandFailsWith(
 			player,
 			"minecraft:alpha discord",
-			"Unknown or incomplete command, see below for error at position 0: <--[HERE]"
+			"Unknown or incomplete command. See below for error at position 0: <--[HERE]"
 		);
 		assertCommandFailsWith(
 			player,
 			"minecraft:beta discord",
-			"Unknown or incomplete command, see below for error at position 0: <--[HERE]"
+			"Unknown or incomplete command. See below for error at position 0: <--[HERE]"
 		);
 
 		assertNoMoreResults(results);
@@ -443,17 +443,17 @@ public class CommandNamespaceTests extends TestBase {
 		assertCommandFailsWith(
 			player,
 			"minecraft:test discord",
-			"Unknown or incomplete command, see below for error at position 0: <--[HERE]"
+			"Unknown or incomplete command. See below for error at position 0: <--[HERE]"
 		);
 		assertCommandFailsWith(
 			player,
 			"minecraft:alpha discord",
-			"Unknown or incomplete command, see below for error at position 0: <--[HERE]"
+			"Unknown or incomplete command. See below for error at position 0: <--[HERE]"
 		);
 		assertCommandFailsWith(
 			player,
 			"minecraft:beta discord",
-			"Unknown or incomplete command, see below for error at position 0: <--[HERE]"
+			"Unknown or incomplete command. See below for error at position 0: <--[HERE]"
 		);
 
 		assertNoMoreResults(results);
@@ -684,12 +684,12 @@ public class CommandNamespaceTests extends TestBase {
 		assertCommandFailsWith(
 			player,
 			"minecraft:test a alpha",
-			"Unknown or incomplete command, see below for error at position 0: <--[HERE]"
+			"Unknown or incomplete command. See below for error at position 0: <--[HERE]"
 		);
 		assertCommandFailsWith(
 			player,
 			"minecraft:test b 123",
-			"Unknown or incomplete command, see below for error at position 0: <--[HERE]"
+			"Unknown or incomplete command. See below for error at position 0: <--[HERE]"
 		);
 
 		assertNoMoreResults(results);
@@ -749,12 +749,12 @@ public class CommandNamespaceTests extends TestBase {
 		assertCommandFailsWith(
 			player,
 			"minecraft:test a alpha",
-			"Unknown or incomplete command, see below for error at position 0: <--[HERE]"
+			"Unknown or incomplete command. See below for error at position 0: <--[HERE]"
 		);
 		assertCommandFailsWith(
 			player,
 			"minecraft:test b 123",
-			"Unknown or incomplete command, see below for error at position 0: <--[HERE]"
+			"Unknown or incomplete command. See below for error at position 0: <--[HERE]"
 		);
 
 		assertNoMoreResults(results);
@@ -767,7 +767,7 @@ public class CommandNamespaceTests extends TestBase {
 		// permission works in both cases.
 		assertThrowsWithMessage(
 			CommandSyntaxException.class,
-			"Unknown or incomplete command, see below for error at position 0: <--[HERE]",
+			"Unknown or incomplete command. See below for error at position 0: <--[HERE]",
 			() -> server.dispatchThrowableBrigadierCommand(sender, commandLine)
 		);
 

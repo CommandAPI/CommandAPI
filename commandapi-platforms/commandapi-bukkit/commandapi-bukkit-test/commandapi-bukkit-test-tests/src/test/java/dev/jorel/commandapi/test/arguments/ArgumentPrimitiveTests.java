@@ -11,7 +11,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import be.seeseemelk.mockbukkit.entity.PlayerMock;
+import org.mockbukkit.mockbukkit.entity.PlayerMock;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.BooleanArgument;
 import dev.jorel.commandapi.arguments.DoubleArgument;
@@ -71,7 +71,7 @@ class ArgumentPrimitiveTests extends TestBase {
 		assertEquals(false, results.get());
 
 		// /test aaaaa
-		assertCommandFailsWith(player, "test aaaaa", "Invalid boolean, expected 'true' or 'false' but found 'aaaaa' at position 5: test <--[HERE]");
+		assertCommandFailsWith(player, "test aaaaa", "Invalid boolean: expected 'true' or 'false' but found 'aaaaa' at position 5: test <--[HERE]");
 
 		assertNoMoreResults(results);
 	}
@@ -143,7 +143,7 @@ class ArgumentPrimitiveTests extends TestBase {
 		assertEquals(20, results.get());
 
 		// /test 0
-		assertCommandFailsWith(player, "test 0", "Integer must not be less than 10, found 0 at position 5: test <--[HERE]");
+		assertCommandFailsWith(player, "test 0", "Integer must not be less than 10: found 0 at position 5: test <--[HERE]");
 
 		assertNoMoreResults(results);
 	}
@@ -174,10 +174,10 @@ class ArgumentPrimitiveTests extends TestBase {
 		assertEquals(20, results.get());
 
 		// /test 0
-		assertCommandFailsWith(player, "test 0", "Integer must not be less than 10, found 0 at position 5: test <--[HERE]");
+		assertCommandFailsWith(player, "test 0", "Integer must not be less than 10: found 0 at position 5: test <--[HERE]");
 
 		// /test 30
-		assertCommandFailsWith(player, "test 30", "Integer must not be more than 20, found 30 at position 5: test <--[HERE]");
+		assertCommandFailsWith(player, "test 30", "Integer must not be more than 20: found 30 at position 5: test <--[HERE]");
 
 		assertNoMoreResults(results);
 	}
@@ -252,10 +252,10 @@ class ArgumentPrimitiveTests extends TestBase {
 		assertEquals(20.0F, results.get());
 
 		// /test 0
-		assertCommandFailsWith(player, "test 0", "Float must not be less than 10.0, found 0.0 at position 5: test <--[HERE]");
+		assertCommandFailsWith(player, "test 0", "Float must not be less than 10.0: found 0.0 at position 5: test <--[HERE]");
 
 		// /test 30
-		assertCommandFailsWith(player, "test 30", "Float must not be more than 20.0, found 30.0 at position 5: test <--[HERE]");
+		assertCommandFailsWith(player, "test 30", "Float must not be more than 20.0: found 30.0 at position 5: test <--[HERE]");
 
 		assertNoMoreResults(results);
 	}
@@ -330,10 +330,10 @@ class ArgumentPrimitiveTests extends TestBase {
 		assertEquals(20.0, results.get());
 
 		// /test 0
-		assertCommandFailsWith(player, "test 0", "Double must not be less than 10.0, found 0.0 at position 5: test <--[HERE]");
+		assertCommandFailsWith(player, "test 0", "Double must not be less than 10.0: found 0.0 at position 5: test <--[HERE]");
 
 		// /test 30
-		assertCommandFailsWith(player, "test 30", "Double must not be more than 20.0, found 30.0 at position 5: test <--[HERE]");
+		assertCommandFailsWith(player, "test 30", "Double must not be more than 20.0: found 30.0 at position 5: test <--[HERE]");
 
 		assertNoMoreResults(results);
 	}
@@ -405,7 +405,7 @@ class ArgumentPrimitiveTests extends TestBase {
 		assertEquals(20, results.get());
 
 		// /test 0
-		assertCommandFailsWith(player, "test 0", "Long must not be less than 10, found 0 at position 5: test <--[HERE]");
+		assertCommandFailsWith(player, "test 0", "Long must not be less than 10: found 0 at position 5: test <--[HERE]");
 
 		assertNoMoreResults(results);
 	}
@@ -436,10 +436,10 @@ class ArgumentPrimitiveTests extends TestBase {
 		assertEquals(20, results.get());
 
 		// /test 0
-		assertCommandFailsWith(player, "test 0", "Long must not be less than 10, found 0 at position 5: test <--[HERE]");
+		assertCommandFailsWith(player, "test 0", "Long must not be less than 10: found 0 at position 5: test <--[HERE]");
 
 		// /test 30
-		assertCommandFailsWith(player, "test 30", "Long must not be more than 20, found 30 at position 5: test <--[HERE]");
+		assertCommandFailsWith(player, "test 30", "Long must not be more than 20: found 30 at position 5: test <--[HERE]");
 
 		assertNoMoreResults(results);
 	}

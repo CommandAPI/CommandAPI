@@ -174,7 +174,6 @@ import org.bukkit.craftbukkit.CraftSound;
 import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.craftbukkit.block.CraftBlockEntityState;
 import org.bukkit.craftbukkit.block.CraftBlockStates;
-import org.bukkit.craftbukkit.block.data.CraftBlockData;
 import org.bukkit.craftbukkit.command.VanillaCommandWrapper;
 import org.bukkit.craftbukkit.entity.CraftEntity;
 import org.bukkit.craftbukkit.help.CustomHelpTopic;
@@ -230,8 +229,18 @@ public abstract class NMS_26_Common implements NMS<CommandSourceStack> {
 	// Derived from net.minecraft.commands.Commands;
 	private final Supplier<CommandBuildContext> commandBuildContext;
 
-	public NMS_26_Common(Supplier<CommandBuildContext> commandBuildContext) {
+	// This class is compiled against Spigot, but CraftBukkit's conversion methods differ on Paper (for example,
+	//  Paper 26.3's CraftItemStack#asBukkitCopy takes an ItemInstance). The platform implementations, which are
+	//  compiled against their own server, provide these conversions.
+	private final Function<ItemStack, org.bukkit.inventory.ItemStack> itemStackToBukkit;
+	private final Function<net.minecraft.world.level.block.state.BlockState, BlockData> blockStateToBukkit;
+
+	public NMS_26_Common(Supplier<CommandBuildContext> commandBuildContext,
+		Function<ItemStack, org.bukkit.inventory.ItemStack> itemStackToBukkit,
+		Function<net.minecraft.world.level.block.state.BlockState, BlockData> blockStateToBukkit) {
 		this.commandBuildContext = commandBuildContext;
+		this.itemStackToBukkit = itemStackToBukkit;
+		this.blockStateToBukkit = blockStateToBukkit;
 	}
 
 	// Compute all var handles all in one go so we don't do this during main server
@@ -767,7 +776,7 @@ public abstract class NMS_26_Common implements NMS<CommandSourceStack> {
 
 		// Create the basic ItemStack with an amount of 1
 		net.minecraft.world.item.ItemStack item = input.createItemStack(1);
-		return CraftItemStack.asBukkitCopy(item);
+		return itemStackToBukkit.apply(item);
 	}
 
 	@Override
@@ -858,7 +867,7 @@ public abstract class NMS_26_Common implements NMS<CommandSourceStack> {
 		if (particleOptions instanceof SimpleParticleType) {
 			return new ParticleData<Void>(particle, null);
 		} else if (particleOptions instanceof BlockParticleOption options) {
-			return new ParticleData<BlockData>(particle, CraftBlockData.fromData(options.getState()));
+			return new ParticleData<BlockData>(particle, blockStateToBukkit.apply(options.getState()));
 		} else if (particleOptions instanceof DustColorTransitionOptions options) {
 			return getParticleDataAsDustColorTransitionOption(particle, options);
 		} else if (particleOptions instanceof DustParticleOptions options) {
@@ -867,7 +876,7 @@ public abstract class NMS_26_Common implements NMS<CommandSourceStack> {
 			return new ParticleData<DustOptions>(particle, new DustOptions(color, options.getScale()));
 		} else if (particleOptions instanceof ItemParticleOption options) {
 			return new ParticleData<org.bukkit.inventory.ItemStack>(particle,
-				CraftItemStack.asBukkitCopy(options.getItem().create()));
+				itemStackToBukkit.apply(options.getItem().create()));
 		} else if (particleOptions instanceof VibrationParticleOption options) {
 			return getParticleDataAsVibrationParticleOption(cmdCtx, particle, options);
 		} else if (particleOptions instanceof ShriekParticleOption options) {
@@ -945,7 +954,7 @@ public abstract class NMS_26_Common implements NMS<CommandSourceStack> {
 	@Override
 	public final <T extends Recipe> T getRecipe(CommandContext<CommandSourceStack> cmdCtx, String key, BiFunction<NamespacedKey, Recipe, T> result) throws CommandSyntaxException {
 		RecipeHolder<?> recipe = ResourceKeyArgument.getRecipe(cmdCtx, key);
-		return result.apply(fromResourceLocation(recipe.id().registry()), recipe.toBukkitRecipe());
+		return result.apply(fromResourceLocation(recipe.id().identifier()), recipe.toBukkitRecipe());
 	}
 
 	@Override

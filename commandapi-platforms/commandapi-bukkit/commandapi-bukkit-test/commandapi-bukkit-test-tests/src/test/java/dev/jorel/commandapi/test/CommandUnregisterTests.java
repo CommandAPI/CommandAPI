@@ -1,6 +1,6 @@
 package dev.jorel.commandapi.test;
 
-import be.seeseemelk.mockbukkit.entity.PlayerMock;
+import org.mockbukkit.mockbukkit.entity.PlayerMock;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPIBukkit;
 import dev.jorel.commandapi.CommandAPICommand;
@@ -203,7 +203,7 @@ class CommandUnregisterTests extends TestBase {
 		assertStoresResult(player, "test word", bukkitResults, "word");
 		// minecraft:test fails
 		assertCommandFailsWith(player, "minecraft:test word",
-			"Unknown or incomplete command, see below for error at position 0: <--[HERE]");
+			"Unknown or incomplete command. See below for error at position 0: <--[HERE]");
 
 
 		// Bukkit unchanged
@@ -231,7 +231,7 @@ class CommandUnregisterTests extends TestBase {
 		assertStoresResult(player, "test word", bukkitResults, "word");
 		// minecraft:test fails
 		assertCommandFailsWith(player, "minecraft:test word",
-			"Unknown or incomplete command, see below for error at position 0: <--[HERE]");
+			"Unknown or incomplete command. See below for error at position 0: <--[HERE]");
 
 
 		// Bukkit unchanged
@@ -297,7 +297,7 @@ class CommandUnregisterTests extends TestBase {
 		assertStoresResult(player, "test word", bukkitResults, "word");
 		// bukkit:test fails
 		assertCommandFailsWith(player, "bukkit:test word",
-			"Unknown or incomplete command, see below for error at position 0: <--[HERE]");
+			"Unknown or incomplete command. See below for error at position 0: <--[HERE]");
 
 
 		assertNoMoreResults(vanillaResults);
@@ -325,7 +325,7 @@ class CommandUnregisterTests extends TestBase {
 		assertStoresResult(player, "test word", vanillaResults, "word");
 		// bukkit:test fails
 		assertCommandFailsWith(player, "bukkit:test word",
-			"Unknown or incomplete command, see below for error at position 0: <--[HERE]");
+			"Unknown or incomplete command. See below for error at position 0: <--[HERE]");
 
 
 		assertNoMoreResults(vanillaResults);

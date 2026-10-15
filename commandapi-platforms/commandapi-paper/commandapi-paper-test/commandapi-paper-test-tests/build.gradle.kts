@@ -26,17 +26,20 @@ dependencies {
 	testImplementation(project(":commandapi-kotlin-paper"))
 
 	// Adds the Paper server to the test classpath
-	paperweight.paperDevBundle("1.20.6-R0.1-SNAPSHOT")
+	paperweight.paperDevBundle(paper.versions.paper.api.v263)
 
 	// `mojang-mapped` must be before `core` so we resolve the correct version of `MojangMappedVersionHandler`
 	testImplementation(project(":commandapi-paper-mojang-mapped"))
 	testImplementation(project(":commandapi-paper-core"))
 	testImplementation(project(":commandapi-paper-api"))
-	testImplementation(project(":commandapi-paper-1.20.5", "include"))
-	testImplementation(project(":commandapi-bukkit-nms-common", "mojang"))
-	testImplementation(project(":commandapi-paper-test-impl-1.20.5", "include"))
+	testImplementation(project(":commandapi-paper-26.3", "include"))
+	testImplementation(project(":commandapi-bukkit-26-common"))
+	testImplementation(project(":commandapi-bukkit-26.3"))
+	testImplementation(project(":commandapi-paper-test-impl-26.3", "include"))
 
-	testImplementation(libs.org.junit.jupiter.junit.jupiter.engine)
+	// MockBukkit 4 uses JUnit 6
+	testImplementation(platform("org.junit:junit-bom:6.1.3"))
+	testImplementation("org.junit.jupiter:junit-jupiter-engine")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
@@ -61,15 +64,25 @@ fun registerServiceFilteredJar(taskName: String, jarName: String, services: List
 }
 
 // MockBukkit and the Paper server both provide implementations of these services, but Paper only accepts one
-// provider for each. MockBukkit is the running server here, so we mostly keep its providers. The exception is
-// RegistryAccess, because Paper's patched vanilla registries require Paper's implementation to bootstrap.
+// provider for each. MockBukkit is the running server here, so we keep its providers for the server itself.
+// Paper's providers are kept where they're backed by the (real) Minecraft registries and argument types the
+// CommandAPI converts from: registries, argument types, data components and Paper's internal API bridge.
 val filteredJars = listOf(
 	registerServiceFilteredJar("filterPaperServerServices", "mappedServerJar.jar", listOf(
 		"io.papermc.paper.ServerBuildInfo",
+		"io.papermc.paper.plugin.lifecycle.event.types.LifecycleEventTypeProvider",
+		"net.kyori.adventure.bossbar.BossBarImplementation\$Provider",
 		"net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer\$Provider",
+		"net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer\$Provider",
 		"org.bukkit.plugin.PluginLoader",
 	)),
-	registerServiceFilteredJar("filterMockBukkitServices", "MockBukkit-v1.20-3.93.2.jar", listOf(
+	registerServiceFilteredJar("filterMockBukkitServices", "mockbukkit-v26.2-4.117.0.jar", listOf(
+		"io.papermc.paper.InternalAPIBridge",
+		"io.papermc.paper.command.brigadier.MessageComponentSerializer",
+		"io.papermc.paper.command.brigadier.argument.VanillaArgumentProvider",
+		"io.papermc.paper.datacomponent.item.ItemComponentTypesBridge",
+		"io.papermc.paper.datacomponent.item.attribute.AttributeModifierDisplayBridge",
+		"io.papermc.paper.datacomponent.item.blocksattacks.BlocksAttacksBridge",
 		"io.papermc.paper.registry.RegistryAccess",
 	)),
 )
@@ -82,12 +95,6 @@ tasks.named<Test>("test") {
 		val byName = filtered.associateBy { it.asFile.name }
 		entries.map { (byName[it.asFile.name] ?: it).asFile }
 	})
-
-	// Paper 1.20.6 and MockBukkit-v1.20 target Java 21. The ByteBuddy version MockBukkit uses
-	// to load plugins doesn't support newer versions of Java
-	javaLauncher = javaToolchains.launcherFor {
-		languageVersion = JavaLanguageVersion.of(21)
-	}
 }
 
 tasks.withType<Test> {
@@ -101,22 +108,12 @@ tasks.withType<Test> {
 }
 
 /*
-   The tests in commandapi-bukkit-test-tests are shared between the platforms. Its CommandAPIVersionHandler
-   and Main are replaced by this module's, and tests that need another platform's implementation are excluded.
+   The tests in commandapi-bukkit-test-tests are shared between the platforms. They need this module's
+   CommandAPIVersionHandler and Main (and test resources), which set up the platform.
 */
 val sharedTests = objects.sourceDirectorySet("sharedTests", "Tests shared between the Bukkit platforms").apply {
 	srcDir(project(":commandapi-bukkit-test-tests").layout.projectDirectory.dir("src/test/java"))
 	include("**/*.java")
-	exclude(
-		"dev/jorel/commandapi/CommandAPIVersionHandler.java",
-		"dev/jorel/commandapi/test/Main.java",
-		// Version-specific tests for versions before 1.20
-		"dev/jorel/commandapi/test/arguments/ArgumentParticle_*Tests.java",
-	)
-	exclude(
-		// Uses particle names that were renamed in 1.20.5
-		"dev/jorel/commandapi/test/arguments/ArgumentParticleTests.java",
-	)
 }
 
 sourceSets.test {

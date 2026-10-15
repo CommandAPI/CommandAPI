@@ -1,6 +1,6 @@
 package dev.jorel.commandapi.test;
 
-import be.seeseemelk.mockbukkit.entity.PlayerMock;
+import org.mockbukkit.mockbukkit.entity.PlayerMock;
 import com.mojang.brigadier.tree.RootCommandNode;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPIBukkit;
@@ -249,7 +249,7 @@ class OnEnableTests extends TestBase {
 
 		// Command should fail
 		assertCommandFailsWith(runCommandsPlayer, "command argument",
-				"Unknown or incomplete command, see below for error at position 0: <--[HERE]");
+				"Unknown or incomplete command. See below for error at position 0: <--[HERE]");
 
 		// You would expect namespace to succeed since it is in the CommandMap
 		// However, running that command simply tells the Brig dispatcher to run the original command
@@ -274,7 +274,7 @@ class OnEnableTests extends TestBase {
 
 		// Namespace should fail
 		assertCommandFailsWith(runCommandsPlayer, "minecraft:command argument",
-				"Unknown or incomplete command, see below for error at position 0: <--[HERE]");
+				"Unknown or incomplete command. See below for error at position 0: <--[HERE]");
 
 		assertNoMoreResults(results);
 	}

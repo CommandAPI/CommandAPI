@@ -1,6 +1,6 @@
 package dev.jorel.commandapi.test.dsltests;
 
-import be.seeseemelk.mockbukkit.entity.PlayerMock
+import org.mockbukkit.mockbukkit.entity.PlayerMock
 import dev.jorel.commandapi.arguments.StringArgument
 import dev.jorel.commandapi.kotlindsl.argument
 import dev.jorel.commandapi.kotlindsl.commandAPICommand
@@ -55,7 +55,7 @@ class ArgumentMethodTests : TestBase() {
 		assertEquals("world", results.get())
 
 		// /test
-		assertCommandFailsWith(player, "test", "Unknown or incomplete command, see below for error at position 4: test<--[HERE]")
+		assertCommandFailsWith(player, "test", "Unknown or incomplete command. See below for error at position 4: test<--[HERE]")
 
 		assertNoMoreResults(results)
 	}
@@ -83,7 +83,7 @@ class ArgumentMethodTests : TestBase() {
 		assertEquals("world", results.get())
 
 		// /test
-		assertCommandFailsWith(player, "test", "Unknown or incomplete command, see below for error at position 4: test<--[HERE]")
+		assertCommandFailsWith(player, "test", "Unknown or incomplete command. See below for error at position 4: test<--[HERE]")
 
 		assertNoMoreResults(results)
 	}

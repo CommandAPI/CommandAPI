@@ -8,9 +8,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import be.seeseemelk.mockbukkit.entity.PlayerMock;
+import org.mockbukkit.mockbukkit.entity.PlayerMock;
 import dev.jorel.commandapi.CommandAPICommand;
-import dev.jorel.commandapi.MCVersion;
 import dev.jorel.commandapi.arguments.TimeArgument;
 import dev.jorel.commandapi.test.Mut;
 import dev.jorel.commandapi.test.TestBase;
@@ -78,21 +77,11 @@ class ArgumentTimeTests extends TestBase {
 
 		// /test -2
 		// Fails because -2 is negative (ticks can only be 0 or greater)
-		if (version.greaterThanOrEqualTo(MCVersion.V1_20_5)) {
-			assertCommandFailsWith(player, "test -2", "The tick count must not be less than 0, found -2 at position 7: test -2<--[HERE]");
-		} else if (version.greaterThanOrEqualTo(MCVersion.V1_19_4)) {
-			assertCommandFailsWith(player, "test -2", "Tick count must not be less than 0, found -2");
-		} else {
-			assertCommandFailsWith(player, "test -2", "Tick count must be non-negative");
-		}
+		assertCommandFailsWith(player, "test -2", "The tick count must not be less than 0: found -2 at position 7: test -2<--[HERE]");
 		
 		// /test 2x
 		// Fails because 'x' is not a valid unit
-		if (version.greaterThanOrEqualTo(MCVersion.V1_20_5)) {
-			assertCommandFailsWith(player, "test 2x", "Invalid unit at position 7: test 2x<--[HERE]");
-		} else {
-			assertCommandFailsWith(player, "test 2x", "Invalid unit");
-		}
+		assertCommandFailsWith(player, "test 2x", "Invalid unit at position 7: test 2x<--[HERE]");
 		
 		assertNoMoreResults(results);
 	}

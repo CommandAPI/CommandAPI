@@ -2,8 +2,6 @@ package dev.jorel.commandapi.test.arguments;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assumptions.assumeFalse;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.util.List;
 
@@ -12,9 +10,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import be.seeseemelk.mockbukkit.entity.PlayerMock;
+import org.mockbukkit.mockbukkit.entity.PlayerMock;
 import dev.jorel.commandapi.CommandAPICommand;
-import dev.jorel.commandapi.MCVersion;
 import dev.jorel.commandapi.arguments.FunctionArgument;
 import dev.jorel.commandapi.arguments.GreedyStringArgument;
 import dev.jorel.commandapi.test.MockNMS;
@@ -80,21 +77,10 @@ class ArgumentFunctionTests extends TestBase {
 		assertNoMoreResults(sayResults);
 
 		// Run the function (which should run the /mysay command)
-		int functionResult = result[0].run();
+		result[0].run();
 		
-		if (version.greaterThanOrEqualTo(MCVersion.V1_20_3)) {
-			assertEquals(1, MockNMS.getInstance().popFunctionCallbackResult());
-		} else {
-			assertEquals(1, functionResult);
-		}
+		assertEquals(1, MockNMS.getInstance().popFunctionCallbackResult());
 		
-		// TODO: I can't figure out how to get commands to run on 1.16.5 and
-		// I don't think we really care. If you decide you want to care, feel
-		// free to implement function running for 1.16.5, but I'm not spending
-		// any more time on it - Skepter
-		assumeTrue(version.greaterThanOrEqualTo(MCVersion.V1_17));
-		assumeTrue(version.lessThan(MCVersion.V1_20));
-
 		// Check that /mysay was run successfully...
 		assertEquals("hi", sayResults.get());
 
@@ -140,29 +126,12 @@ class ArgumentFunctionTests extends TestBase {
 
 		// Run the function (which should run the /mysay command)
 		for(FunctionWrapper wrapper : result) {
-			int functionResult = wrapper.run();
+			wrapper.run();
 			
-			if (version.greaterThanOrEqualTo(MCVersion.V1_20_3)) {
-				assertEquals(1, MockNMS.getInstance().popFunctionCallbackResult());
-				assertEquals(1, MockNMS.getInstance().popFunctionCallbackResult());
-			} else {
-				assertEquals(2, functionResult);
-			}
+			assertEquals(1, MockNMS.getInstance().popFunctionCallbackResult());
+			assertEquals(1, MockNMS.getInstance().popFunctionCallbackResult());
 		}
 		
-		// TODO: I can't figure out how to get commands to run on 1.16.5 and
-		// I don't think we really care. If you decide you want to care, feel
-		// free to implement function running for 1.16.5, but I'm not spending
-		// any more time on it. - Skepter
-		assumeTrue(version.greaterThanOrEqualTo(MCVersion.V1_17));
-		assumeTrue(version.lessThan(MCVersion.V1_20));
-		
-		// TODO: For reasons I can't figure out, the FunctionArgument suffers
-		// from a race condition when run on 1.18.1. This causes "hello" to be
-		// printed before "hi" and causes the test to fail. We don't really care
-		// too much about this, but worth noting. - Skepter
-		assumeFalse(version.equals(MCVersion.V1_18));
-
 		// Check that /mysay was run successfully...
 		assertEquals("hi", sayResults.get());
 		assertEquals("bye", sayResults.get());

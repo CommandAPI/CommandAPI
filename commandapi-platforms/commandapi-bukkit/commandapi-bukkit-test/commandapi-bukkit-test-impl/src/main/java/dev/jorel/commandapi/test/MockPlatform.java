@@ -178,7 +178,7 @@ public abstract class MockPlatform<CLW> implements NMS<CLW> {
 	static record Pair<A, B>(A first, B second) {}
 	
 	/**
-	 * Gets recipes from {@code data/minecraft/recipes/<file>.json}. Parses them and
+	 * Gets recipes from {@code data/minecraft/recipe/<file>.json}. Parses them and
 	 * returns a list of {@code {name, json}}, where {@code name} is the name of the
 	 * file without the {@code .json} extension, and {@code json} is the parsed JSON
 	 * result from the file
@@ -187,33 +187,19 @@ public abstract class MockPlatform<CLW> implements NMS<CLW> {
 	 * @return A list of pairs of resource locations (with no namespace) and JSON objects
 	 */
 	public final List<Pair<String, JsonObject>> getRecipes(Class<?> minecraftServerClass) {
+		final String recipeDirectory = "data/minecraft/recipe/";
 		List<Pair<String, JsonObject>> list = new ArrayList<>();
-		// Get the spigot-x.x.x-Rx.x-SNAPSHOT.jar file
+		// Get the server jar file
 		try(JarFile jar = new JarFile(minecraftServerClass.getProtectionDomain().getCodeSource().getLocation().getPath())) {
 			// Iterate over everything in the jar 
 			jar.entries().asIterator().forEachRemaining(entry -> {
-				if(entry.getName().startsWith("data/minecraft/recipes/") && entry.getName().endsWith(".json")) {
+				if(entry.getName().startsWith(recipeDirectory) && entry.getName().endsWith(".json")) {
 					// If it's what we want, read everything
 					InputStream is = minecraftServerClass.getClassLoader().getResourceAsStream(entry.getName());
-					String jsonStr = new BufferedReader(new InputStreamReader(is))
-						.lines()
-						.map(line -> {
-							// We can't load tags in the testing environment. If we have any recipes that
-							// use tags as ingredients (e.g. wooden_axe or charcoal), we'll get an illegal
-							// state exception from TagUtil complaining that a tag has been used before it
-							// was bound. To mitigate this, we simply remove all tags and put in a dummy
-							// item (in this case, stick)
-							if(line.contains("\"tag\": ")) {
-								return "\"item\": \"minecraft:stick\"";
-							}
-							return line;
-						})
-						.collect(Collectors.joining("\n"));
-					// Get the resource location (file name, no extension, no path) and parse the JSON.
-					// Using deprecated method as the alternative doesn't exist in 1.17
-					@SuppressWarnings("deprecation")
-					JsonObject parsedJson = new JsonParser().parse(jsonStr).getAsJsonObject();
-					list.add(new Pair<>(entry.getName().substring("data/minecraft/recipes/".length(), entry.getName().lastIndexOf(".")), parsedJson));
+					String jsonStr = new BufferedReader(new InputStreamReader(is)).lines().collect(Collectors.joining("\n"));
+					// Get the resource location (file name, no extension, no path) and parse the JSON
+					JsonObject parsedJson = JsonParser.parseString(jsonStr).getAsJsonObject();
+					list.add(new Pair<>(entry.getName().substring(recipeDirectory.length(), entry.getName().lastIndexOf(".")), parsedJson));
 				}
 			});
 		} catch (IOException e) {
@@ -253,6 +239,12 @@ public abstract class MockPlatform<CLW> implements NMS<CLW> {
 	public abstract List<String> getAllItemNames();
 	
 	public abstract List<NamespacedKey> getAllRecipes();
+
+	/**
+	 * @return the recipes that a {@code RecipeArgument} accepts. Minecraft doesn't accept its special recipes
+	 * (like banner duplication), even though they're suggested.
+	 */
+	public abstract List<NamespacedKey> getNonSpecialRecipes();
 	
 	/**********
 	 * Runtime object registries (enchantments, potions etc.)

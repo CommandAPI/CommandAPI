@@ -1,6 +1,6 @@
 package dev.jorel.commandapi.test;
 
-import be.seeseemelk.mockbukkit.entity.PlayerMock;
+import org.mockbukkit.mockbukkit.entity.PlayerMock;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.*;
 import org.junit.jupiter.api.AfterEach;

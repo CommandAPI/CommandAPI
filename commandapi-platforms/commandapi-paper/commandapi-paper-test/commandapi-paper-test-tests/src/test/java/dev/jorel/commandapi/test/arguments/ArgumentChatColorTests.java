@@ -9,7 +9,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import be.seeseemelk.mockbukkit.entity.PlayerMock;
+import org.mockbukkit.mockbukkit.entity.PlayerMock;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.ChatColorArgument;
 import dev.jorel.commandapi.test.Mut;
@@ -66,7 +66,7 @@ class ArgumentChatColorTests extends TestBase {
 
 		// /test reset
 		// Paper's NamedTextColor argument type has no color for reset
-		assertCommandFailsWith(player, "test reset", "Could not parse command: §r didn't have a color at position 10: test reset<--[HERE]");
+		assertCommandFailsWith(player, "test reset", "Unknown color 'reset' at position 10: test reset<--[HERE]");
 
 		assertNoMoreResults(results);
 	}

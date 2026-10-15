@@ -1,7 +1,7 @@
 package dev.jorel.commandapi.test.dsltests
 
-import be.seeseemelk.mockbukkit.command.ConsoleCommandSenderMock
-import be.seeseemelk.mockbukkit.entity.SimpleEntityMock
+import org.mockbukkit.mockbukkit.command.ConsoleCommandSenderMock
+import org.mockbukkit.mockbukkit.entity.SimpleEntityMock
 import dev.jorel.commandapi.executors.*
 import dev.jorel.commandapi.kotlindsl.commandAPICommand
 import dev.jorel.commandapi.kotlindsl.*

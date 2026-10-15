@@ -12,9 +12,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import be.seeseemelk.mockbukkit.entity.PlayerMock;
+import org.mockbukkit.mockbukkit.entity.PlayerMock;
 import dev.jorel.commandapi.CommandAPICommand;
-import dev.jorel.commandapi.MCVersion;
 import dev.jorel.commandapi.arguments.ScoreHolderArgument;
 import dev.jorel.commandapi.test.Mut;
 import dev.jorel.commandapi.test.TestBase;
@@ -67,14 +66,11 @@ class ArgumentScoreHolderTests extends TestBase {
 
 		// /test @e[type=player,scores={deaths=..9},limit=1]
 		// This should fail because the user doesn't have permission
-		assertCommandFailsWith(player, "test @e[type=player,scores={deaths=..9},limit=1]", "Selector not allowed");
+		assertCommandFailsWith(player, "test @e[type=player,scores={deaths=..9},limit=1]", "Selector not allowed at position 5: test <--[HERE]");
 
 		// /test @e[type=player,scores={deaths=..9}]
-		if (version.greaterThanOrEqualTo(MCVersion.V1_20_5)) {
-			assertCommandFailsWith(player, "test @e[type=player,scores={deaths=..9}]", "Only one entity is allowed, but the provided selector allows more than one at position 40: ...aths=..9}]<--[HERE]");
-		} else {
-			assertCommandFailsWith(player, "test @e[type=player,scores={deaths=..9}]", "Only one entity is allowed, but the provided selector allows more than one");
-		}
+		// The selector permission is checked before the number of entities
+		assertCommandFailsWith(player, "test @e[type=player,scores={deaths=..9}]", "Selector not allowed at position 5: test <--[HERE]");
 
 		player.setOp(true);
 		
@@ -110,11 +106,11 @@ class ArgumentScoreHolderTests extends TestBase {
 
 		// /test @e[type=player,scores={deaths=..9},limit=1]
 		// This should fail because the user doesn't have permission
-		assertCommandFailsWith(player, "test @e[type=player,scores={deaths=..9},limit=1]", "Selector not allowed");
+		assertCommandFailsWith(player, "test @e[type=player,scores={deaths=..9},limit=1]", "Selector not allowed at position 5: test <--[HERE]");
 
 		// /test @e[type=player,scores={deaths=..9}]
 		// This should fail because the user doesn't have permission
-		assertCommandFailsWith(player, "test @e[type=player,scores={deaths=..9}]", "Selector not allowed");
+		assertCommandFailsWith(player, "test @e[type=player,scores={deaths=..9}]", "Selector not allowed at position 5: test <--[HERE]");
 
 		player.setOp(true);
 

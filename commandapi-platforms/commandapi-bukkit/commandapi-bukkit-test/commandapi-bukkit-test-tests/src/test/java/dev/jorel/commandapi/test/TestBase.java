@@ -36,7 +36,7 @@ import com.mojang.brigadier.context.StringRange;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestion;
 
-import be.seeseemelk.mockbukkit.MockBukkit;
+import org.mockbukkit.mockbukkit.MockBukkit;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPIVersionHandler;
 import dev.jorel.commandapi.MCVersion;
@@ -68,9 +68,16 @@ public abstract class TestBase {
 
 	public <T extends JavaPlugin> void setUp(Class<T> pluginClass) {
 		// resetAllPotions();
-		
-		server = MockBukkit.mock(new CommandAPIServerMock());
+
+		server = MockBukkit.mock(createServer());
 		plugin = MockBukkit.load(pluginClass);
+	}
+
+	/**
+	 * @return the server to mock, which tests can override if they need a different one
+	 */
+	protected CommandAPIServerMock createServer() {
+		return new CommandAPIServerMock();
 	}
 
 	public void tearDown() {

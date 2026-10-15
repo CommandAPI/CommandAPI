@@ -33,6 +33,8 @@ import net.minecraft.world.level.WorldDataConfiguration;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.Recipe;
+import org.bukkit.craftbukkit.block.data.CraftBlockData;
+import org.bukkit.craftbukkit.inventory.CraftItemStack;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -86,7 +88,7 @@ public class SpigotNMS_26_3 extends SpigotNMS_26_Common {
 	@Override
 	public NMS_26_Common bukkitNMS() {
 		if (bukkitNMS == null) {
-			this.bukkitNMS = new NMS_26_3(() -> COMMAND_BUILD_CONTEXT, this::serializeComponents);
+			this.bukkitNMS = new NMS_26_3(() -> COMMAND_BUILD_CONTEXT, this::serializeComponents, CraftItemStack::asBukkitCopy, CraftBlockData::fromData);
 		}
 		return bukkitNMS;
 	}

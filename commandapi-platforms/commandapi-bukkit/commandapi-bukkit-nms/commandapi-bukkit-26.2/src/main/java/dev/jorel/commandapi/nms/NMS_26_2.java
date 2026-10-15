@@ -40,8 +40,10 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.Identifier;
+import org.bukkit.block.data.BlockData;
 
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -51,8 +53,10 @@ import java.util.stream.Stream;
  */
 @NMSMeta(compatibleWith = {"26.2"})
 public class NMS_26_2 extends NMS_26_Common {
-	public NMS_26_2(Supplier<CommandBuildContext> commandBuildContext) {
-		super(commandBuildContext);
+	public NMS_26_2(Supplier<CommandBuildContext> commandBuildContext,
+		Function<net.minecraft.world.item.ItemStack, org.bukkit.inventory.ItemStack> itemStackToBukkit,
+		Function<net.minecraft.world.level.block.state.BlockState, BlockData> blockStateToBukkit) {
+		super(commandBuildContext, itemStackToBukkit, blockStateToBukkit);
 	}
 
 	String serializeComponents(ItemInput itemInput, HolderLookup.Provider provider) {
