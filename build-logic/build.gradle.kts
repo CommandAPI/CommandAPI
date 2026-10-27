@@ -2,11 +2,6 @@ plugins {
 	`kotlin-dsl`
 }
 
-repositories {
-	gradlePluginPortal()
-	mavenCentral()
-}
-
 gradlePlugin {
 	plugins {
 		create("buildlogic.spigot-remap") {
@@ -21,7 +16,7 @@ gradlePlugin {
 }
 
 dependencies {
-	implementation("org.jetbrains.kotlin.jvm:org.jetbrains.kotlin.jvm.gradle.plugin:2.3.20")
+	implementation(libs.org.jetbrains.kotlin.kotlin.gradle.plugin)
 	implementation("com.vanniktech:gradle-maven-publish-plugin:0.37.0")
 	implementation("net.md-5:SpecialSource:1.11.3")
 	implementation("com.google.code.gson:gson:2.13.2")
