@@ -23,9 +23,14 @@ class Release(
 	fun deleteVersion() {
 		val toDelete = version!!
 		val releaseUrl = "https://api.github.com/repos/CommandAPI/CommandAPI/releases/${toDelete.third}"
-		val code = ApiHelper.delete(releaseUrl, apiKey)
+		var code = ApiHelper.delete(releaseUrl, apiKey)
 		if (code != 204) {
-			throw IllegalStateException("Something went wrong while trying to delete release ${toDelete.first}")
+			throw IllegalStateException("Something went wrong while trying to delete release ${toDelete.first} (response code ${code})")
+		}
+		val tagUrl = "https://api.github.com/repos/CommandAPI/CommandAPI/git/refs/tags/${toDelete.first}"
+		code = ApiHelper.delete(tagUrl, apiKey)
+		if (code != 204) {
+			throw IllegalStateException("Something went wrong while trying to delete tag ${toDelete.first} (response code ${code})")
 		}
 	}
 
