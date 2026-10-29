@@ -107,7 +107,7 @@ jobs:
 
       - name: Run Paper unit tests (26.3)
         # continue-on-error: true
-        run: ./gradlew :commandapi-paper-test-tests:clean :commandapi-paper-test-tests:test
+        run: ./gradlew :commandapi-paper-test-tests:clean :commandapi-paper-test-tests:test --rerun-tasks
 
       - name: Compile Spigot unit tests (26.3)
         run: ./gradlew :commandapi-spigot-test-tests:compileTestJava :commandapi-spigot-test-tests:compileTestKotlin
