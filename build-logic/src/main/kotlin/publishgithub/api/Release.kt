@@ -1,10 +1,10 @@
 package publishgithub.api
 
+import com.google.gson.JsonParser
 import org.gradle.api.logging.Logger
-import org.jetbrains.kotlin.com.google.gson.JsonParser
 import java.io.File
 
-class Release constructor(
+class Release(
 	val apiKey: String,
 	val commandAPIVersion: String,
 	val prerelease: Boolean,
@@ -12,7 +12,7 @@ class Release constructor(
 	val logger: Logger,
 	val version: Triple<String, Boolean, Long>? = null) {
 
-	fun createOrUpdate(files: MutableSet<File>) {
+	fun createOrUpdate(files: Set<File>) {
 		if (version == null) {
 			create(files)
 		} else {
@@ -25,12 +25,16 @@ class Release constructor(
 		val releaseUrl = "https://api.github.com/repos/CommandAPI/CommandAPI/releases/${toDelete.third}"
 		var code = ApiHelper.delete(releaseUrl, apiKey)
 		if (code != 204) {
-			throw IllegalStateException("Something went wrong while trying to delete release ${toDelete.first}")
+			throw IllegalStateException("Something went wrong while trying to delete release ${toDelete.first} (response code ${code})")
 		}
-		val tagUrl = "https://api.github.com/repos/CommandAPI/CommandAPI/git/refs/tags/$commandAPIVersion"
+		val tagUrl = "https://api.github.com/repos/CommandAPI/CommandAPI/git/refs/tags/${toDelete.first}"
+		code = ApiHelper.delete(tagUrl, apiKey)
+		if (code != 204) {
+			throw IllegalStateException("Something went wrong while trying to delete tag ${toDelete.first} (response code ${code})")
+		}
 	}
 
-	private fun create(files: MutableSet<File>) {
+	private fun create(files: Set<File>) {
 		val url = "https://api.github.com/repos/CommandAPI/CommandAPI/releases"
 		val json = ApiHelper.create(url, apiKey, commandAPIVersion, prerelease, changelog, logger)
 
@@ -42,10 +46,10 @@ class Release constructor(
 		}
 	}
 
-	private fun update(files: MutableSet<File>) {
-		val uploadedRelease = ReleaseInfo().getReleaseTags().find { it.second }!!
+	private fun update(files: Set<File>) {
+		val releaseId = version!!.third
 
-		val url = "https://api.github.com/repos/CommandAPI/CommandAPI/releases/${uploadedRelease.third}/assets"
+		val url = "https://api.github.com/repos/CommandAPI/CommandAPI/releases/$releaseId/assets"
 		val json = ApiHelper.get(url)
 
 		val assetIds = mutableListOf<Long>()
@@ -60,7 +64,7 @@ class Release constructor(
 		}
 
 		for (file in files) {
-			val fileUrl = "https://uploads.github.com/repos/CommandAPI/CommandAPI/releases/${uploadedRelease.third}/assets?name=${file.name}"
+			val fileUrl = "https://uploads.github.com/repos/CommandAPI/CommandAPI/releases/$releaseId/assets?name=${file.name}"
 			ApiHelper.uploadFile(fileUrl, apiKey, file, logger)
 		}
 	}

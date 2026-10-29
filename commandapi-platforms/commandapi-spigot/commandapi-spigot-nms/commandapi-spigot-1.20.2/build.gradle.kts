@@ -24,9 +24,7 @@ configurations.create("remapped") {
 }
 
 artifacts {
-	add("remapped", layout.buildDirectory.file("libs/${project.name}-${project.version}-spigot.jar")) {
-		builtBy(tasks.remapObfToSpigot)
-	}
+	add("remapped", tasks.remapObfToSpigot.flatMap { it.outputJarFile })
 }
 
 spigotRemap {

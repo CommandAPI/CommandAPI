@@ -40,9 +40,7 @@ configurations.create("mojang") {
 }
 
 artifacts {
-	add("spigot", layout.buildDirectory.file("libs/${project.name}-${project.version}-spigot.jar")) {
-		builtBy(tasks.remapObfToSpigot)
-	}
+	add("spigot", tasks.remapObfToSpigot.flatMap { it.outputJarFile })
 	add("mojang", tasks.jar)
 }
 

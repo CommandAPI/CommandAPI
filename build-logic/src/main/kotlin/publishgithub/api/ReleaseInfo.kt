@@ -1,7 +1,6 @@
 package publishgithub.api
 
-import org.gradle.internal.impldep.kotlinx.serialization.json.Json
-import org.jetbrains.kotlin.com.google.gson.JsonParser
+import com.google.gson.JsonParser
 
 class ReleaseInfo {
 

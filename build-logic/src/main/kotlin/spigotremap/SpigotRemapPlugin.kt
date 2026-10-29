@@ -49,6 +49,10 @@ class SpigotRemapPlugin : Plugin<Project> {
                 mavenPom() // To resolve `maven-metadata-local.xml`
                 artifact()
             }
+            // BuildTools installs the mappings here, nothing else should be resolved from it
+            content {
+                includeModule("org.spigotmc", "minecraft-server")
+            }
         }
 
 		// Read configuration
@@ -86,7 +90,8 @@ class SpigotRemapPlugin : Plugin<Project> {
         )
 
 		// These tasks create jar files
-        val assemble = project.tasks.getByName("assemble")
-        assemble.dependsOn(remapObfToSpigot)
+        project.tasks.named("assemble") {
+            dependsOn(remapObfToSpigot)
+        }
     }
 }

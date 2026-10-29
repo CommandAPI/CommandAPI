@@ -27,26 +27,15 @@ tasks.withType<ShadowJar> {
 	minimize()
 }
 
-val renameForPublishing = tasks.register("renameForPublishing") {
+val renameForPublishing = tasks.register<Copy>("renameForPublishing") {
 	group = "publishing"
 	description = "Copies the shadowJar output and renames the result for publishing to Modrinth"
-	dependsOn(tasks.shadowJar)
 
-	val outputFile = layout.buildDirectory.file("libs/CommandAPI-$version-Networking-Plugin.jar")
-	inputs.file(tasks.shadowJar.get().archiveFile)
-	outputs.file(outputFile)
-
-	doLast {
-		copy {
-			from(tasks.shadowJar.get().archiveFile)
-			into(layout.buildDirectory.dir("libs"))
-			rename { "CommandAPI-$version-Networking-Plugin.jar" }
-		}
-	}
-}
-
-tasks.named("build") {
-	dependsOn(tasks.shadowJar)
+	// Local, so the rename action doesn't reference the build script (not supported by the configuration cache)
+	val jarName = "CommandAPI-$version-Networking-Plugin.jar"
+	from(tasks.shadowJar)
+	into(layout.buildDirectory.dir("publishing"))
+	rename { jarName }
 }
 
 tasks.named("test") {
@@ -62,6 +51,6 @@ tasks.withType<ShadowJar> {
 }
 
 afterEvaluate {
-	configurations["shadowRuntimeElements"].isCanBeConsumed = false;
+	configurations["shadowRuntimeElements"].isCanBeConsumed = false
 	configurations["shadow"].isCanBeConsumed = false
 }

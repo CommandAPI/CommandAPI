@@ -3,6 +3,3 @@ plugins {
 }
 
 description = "Shared plugin library"
-
-dependencies {
-}

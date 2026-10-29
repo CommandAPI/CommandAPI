@@ -19,7 +19,7 @@ jobs:
               if: github.event.workflow_run.event == 'pull_request'
               uses: dawidd6/action-download-artifact@v2
               with:
-                  workflow: Java CI
+                  workflow: build.yml
                   run_id: ${{ github.event.workflow_run.id }}
                   name: PR_NUMBER
             - name: Read PR_NUMBER.txt
@@ -71,7 +71,11 @@ jobs:
               with:
                   distribution: temurin
                   java-version: 25
-                  cache: maven
+
+            - name: Setup Gradle
+              uses: gradle/actions/setup-gradle@v6
+              with:
+                  cache-read-only: false
 
             - name: Cache SonarCloud packages
               uses: actions/cache@v4
@@ -80,18 +84,15 @@ jobs:
                   key: ${{ runner.os }}-sonar
                   restore-keys: ${{ runner.os }}-sonar
 
-            - name: Cache Maven packages
-              uses: actions/cache@v4
-              with:
-                  path: ~/.m2
-                  key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-                  restore-keys: ${{ runner.os }}-m2
-
             # Apply SonarCloud
-            - name: Setup Paper NMS for all applicable versions
-              run: ./setupPaperNMS.sh
             - name: SonarCloud Analyze
-              run: mvn -B test-compile org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=JorelAli_CommandAPI -P Platform.Bukkit,Platform.Velocity -Dmaven.javadoc.skip=true
+              # The sonar task isn't compatible with the configuration cache
+              run: |
+                  args=("-Dsonar.branch.name=${{ env['sonar.branch.name'] }}")
+                  if [ -n "${{ env['sonar.branch.target'] }}" ]; then
+                      args+=("-Dsonar.branch.target=${{ env['sonar.branch.target'] }}")
+                  fi
+                  ./gradlew testClasses sonar --no-configuration-cache "${args[@]}"
               env:
                   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

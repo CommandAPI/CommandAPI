@@ -1,8 +1,14 @@
 pluginManagement {
+	includeBuild("build-logic")
 	repositories {
 		gradlePluginPortal()
 		maven("https://repo.papermc.io/repository/maven-public/")
 	}
+}
+
+plugins {
+	// Downloads the Java 17/21 toolchains used by the Kotlin modules and the Bukkit tests if they aren't installed
+	id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
 dependencyResolutionManagement {
@@ -28,29 +34,20 @@ val excludedModules = mapOf(
 	"spigot" to setOf("paper", "velocity"),
 	"velocity" to setOf("bukkit", "paper", "spigot", "commandapi-annotations")
 )
+val excluded = (excludedModules[profile] ?: error("Unknown profile: $profile! Please choose one of ${excludedModules.keys}")) + permanentlyExcluded
 
-fun canBuildModule(name: String): Boolean {
-	val excluded = excludedModules[profile] ?: error("Unknown profile: $profile! Please choose one of ${excludedModules.keys}")
-	for (exclusion in excluded) {
-		if (name.contains(exclusion)) {
-			return false;
-		}
-	}
-	for (exclusion in permanentlyExcluded) {
-		if (name.contains(exclusion)) {
-			return false;
-		}
-	}
-	return true;
-}
+// Directories that never contain modules, so we don't have to walk through them
+val ignoredDirectories = setOf("src", "build", "out", ".gradle")
+
+fun canBuildModule(name: String): Boolean = excluded.none { name.contains(it) }
 
 fun includeModules(dir: File, path: String) {
 	if (canBuildModule(dir.name) && dir.resolve("build.gradle.kts").exists()) {
 		include(":${dir.name}")
-		findProject(":${dir.name}")!!.projectDir = dir
+		project(":${dir.name}").projectDir = dir
 	}
 	dir.listFiles()?.forEach { entry ->
-		if (entry.isDirectory && canBuildModule("$path:${entry.name}")) {
+		if (entry.isDirectory && entry.name !in ignoredDirectories && canBuildModule("$path:${entry.name}")) {
 			includeModules(entry, "$path:${entry.name}")
 		}
 	}

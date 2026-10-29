@@ -20,19 +20,21 @@ import org.gradle.api.tasks.*
  * <a href="https://github.com/agaricusb/SpecialSourceMP/blob/a333c744e9e9b05aa8d567f3f63e19d27b63721f/src/main/java/net/md_5/specialsource/mavenplugin/RemapMojo.java#L205-L211">net.md_5.specialsource.mavenplugin.RemapMojo</a>
  * does.
  */
+@CacheableTask
 abstract class SpigotRemapTask : DefaultTask() {
     @get:InputFile
     @get:SkipWhenEmpty
+    @get:PathSensitive(PathSensitivity.NONE)
     abstract val inputJarFile: RegularFileProperty
 
     @get:OutputFile
     abstract val outputJarFile: RegularFileProperty
 
     @get:InputFile
+    @get:PathSensitive(PathSensitivity.NONE)
     abstract val mappingFile: RegularFileProperty
 
-    @get:InputFiles
-    @get:Optional
+    @get:Classpath
     abstract val inheritanceJars: ConfigurableFileCollection
 
     @get:Input

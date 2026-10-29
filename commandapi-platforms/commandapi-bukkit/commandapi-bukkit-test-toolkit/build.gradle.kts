@@ -1,5 +1,3 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-
 plugins {
 	id("buildlogic.java-conventions")
 }
@@ -26,18 +24,10 @@ dependencies {
 	testImplementation(project(":commandapi-bukkit-core"))
 }
 
-tasks.withType<JavaCompile> {
-	options.encoding = "UTF-8"
+tasks.withType<JavaCompile>().configureEach {
 	options.release = 21
 }
 
 tasks.withType<Test> {
 	useJUnitPlatform()
-}
-
-tasks.withType<ShadowJar> {
-	dependencies {
-		exclude(dependency(libs.org.mockbukkit.mockbukkit.mockbukkit.v121))
-	}
-	minimize()
 }

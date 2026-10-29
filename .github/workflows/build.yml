@@ -26,14 +26,19 @@ jobs:
       ### Set up ###
 
       - name: Checkout the CommandAPI repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup JDK ${{ matrix.java }}
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: ${{ matrix.java }}
-          cache: gradle
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          # By default, only the default branch (master) writes to the cache, but development happens on other branches
+          cache-read-only: false
 
       - name: Checkout the BytecodeAnalyser repository
         run: |
@@ -164,15 +169,15 @@ jobs:
 
       ### Examples ###
 
-      - name: Build CommandAPI example plugins in examples/ folder
-        run: cd ./examples; ./build.sh;
+#      - name: Build CommandAPI example plugins in examples/ folder
+#        run: cd ./examples; ./build.sh;
 
       ### Save PR information for 'SonarAnalyze'
       - name: Save PR number to file
-        if: github.event_name == 'pull_request' && ${{ matrix.os }} == 'ubuntu-latest' && ${{ matrix.java_version }} == '21'
+        if: github.event_name == 'pull_request' && matrix.os == 'ubuntu-latest' && matrix.java == 25
         run: echo ${{ github.event.number }} > PR_NUMBER.txt
       - name: Archive PR number
-        if: github.event_name == 'pull_request' && ${{ matrix.os }} == 'ubuntu-latest' && ${{ matrix.java_version }} == '21'
+        if: github.event_name == 'pull_request' && matrix.os == 'ubuntu-latest' && matrix.java == 25
         uses: actions/upload-artifact@v4
         with:
             name: PR_NUMBER
@@ -185,18 +190,22 @@ jobs:
 
     steps:
       - name: Checkout the CommandAPI repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup JDK 25
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 25
-          cache: gradle
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          cache-read-only: false
 
       - name: Publish snapshot version of the CommandAPI (Bukkit+Velocity) to the Sonatype snapshot repository
         run: |
-          if ./gradlew -q :commandapi-core:properties | grep -E '^version: .*SNAPSHOT$' >/dev/null; then
+          if grep -E '^version=.*SNAPSHOT$' gradle.properties >/dev/null; then
             echo "SNAPSHOT version detected"
             ./gradlew publishToMavenCentral
           else

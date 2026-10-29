@@ -33,22 +33,15 @@ tasks.withType<ShadowJar> {
 	from("LICENSE")
 }
 
-val renameForPublishing = tasks.register("renameForPublishing") {
+val renameForPublishing = tasks.register<Copy>("renameForPublishing") {
 	group = "publishing"
 	description = "Copies the shadowJar output and renames the result for publishing to Modrinth"
-	dependsOn(tasks.shadowJar)
 
-	val outputFile = layout.buildDirectory.file("libs/CommandAPI-$version-Spigot.jar")
-	inputs.file(tasks.shadowJar.get().archiveFile)
-	outputs.file(outputFile)
-
-	doLast {
-		copy {
-			from(tasks.shadowJar.get().archiveFile)
-			into(layout.buildDirectory.dir("libs"))
-			rename { "CommandAPI-$version-Spigot.jar" }
-		}
-	}
+	// Local, so the rename action doesn't reference the build script (not supported by the configuration cache)
+	val jarName = "CommandAPI-$version-Spigot.jar"
+	from(tasks.shadowJar)
+	into(layout.buildDirectory.dir("publishing"))
+	rename { jarName }
 }
 
 tasks.named("modrinth") {
@@ -56,21 +49,17 @@ tasks.named("modrinth") {
 }
 
 modrinth {
-	token = System.getenv("MODRINTH_TOKEN")
+	token = providers.environmentVariable("MODRINTH_TOKEN")
 	projectId = "commandapi"
 	versionNumber = project.version.toString()
 	versionType = if (project.version.toString().endsWith("-SNAPSHOT")) "beta" else "release" // adding this so we can potentially publish snapshots for easier access to Modrinth as well
-	uploadFile.set(renameForPublishing.flatMap { it.outputs.files.let { f -> layout.buildDirectory.file("libs/CommandAPI-$version-Spigot.jar") } })
+	uploadFile.set(layout.buildDirectory.file("publishing/CommandAPI-${project.version}-Spigot.jar"))
 	gameVersions.addAll("1.20", "1.20.1", "1.20.2", "1.20.3", "1.20.4", "1.20.5", "1.20.6", "1.21", "1.21.1", "1.21.2", "1.21.3", "1.21.4", "1.21.5", "1.21.6", "1.21.7", "1.21.8", "1.21.9", "1.21.10", "1.21.11", "26.1", "26.1.1", "26.1.2", "26.2", "26.3")
 	loaders.addAll("spigot")
 
-	changelog = File("changelog.md").readLines().joinToString("\n")
+	changelog = rootProject.file("changelog.md").readLines().joinToString("\n")
 
 	debugMode = !providers.gradleProperty("publish-modrinth").getOrElse("false").toBoolean()
-}
-
-tasks.named("build") {
-	dependsOn(tasks.shadowJar)
 }
 
 tasks.named("test") {
@@ -86,6 +75,6 @@ tasks.withType<ShadowJar> {
 }
 
 afterEvaluate {
-	configurations["shadowRuntimeElements"].isCanBeConsumed = false;
+	configurations["shadowRuntimeElements"].isCanBeConsumed = false
 	configurations["shadow"].isCanBeConsumed = false
 }

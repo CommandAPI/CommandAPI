@@ -1,27 +1,30 @@
 plugins {
-    `java-library`
+	`java-library`
 }
 
 repositories {
-    maven {
-        url = uri("https://repo.maven.apache.org/maven2/")
-    }
-    maven {
-        url = uri("https://libraries.minecraft.net")
-    }
-    maven {
-        url = uri("https://repo.codemc.org/repository/maven-public/")
-    }
-    maven {
-        url = uri("https://repo.codemc.io/repository/nms/")
-    }
+	mavenCentral()
+	maven {
+		url = uri("https://libraries.minecraft.net")
+		mavenContent {
+			includeGroup("com.mojang")
+		}
+	}
+	maven {
+		url = uri("https://repo.codemc.io/repository/maven-public/")
+	}
+	maven {
+		url = uri("https://repo.codemc.io/repository/nms/")
+	}
 	maven {
 		url = uri("https://repo.papermc.io/repository/maven-public/")
 	}
 	maven {
 		url = uri("https://central.sonatype.com/repository/maven-snapshots/")
+		mavenContent {
+			snapshotsOnly()
+		}
 	}
-	mavenCentral()
 	mavenLocal {
 		mavenContent {
 			includeModule("org.spigotmc", "spigot")
@@ -36,14 +39,14 @@ java {
 }
 
 tasks.withType<JavaCompile>().configureEach {
-    options.encoding = "UTF-8"
-	sourceCompatibility = "17"
-	targetCompatibility = "17"
+	options.encoding = "UTF-8"
+	// Unlike sourceCompatibility/targetCompatibility, this also checks that only Java 17 APIs are used
+	options.release = 17
 	options.compilerArgs.add("-Xpkginfo:always")
 }
 
-tasks.withType<Javadoc> {
-    options.encoding = "UTF-8"
+tasks.withType<Javadoc>().configureEach {
+	options.encoding = "UTF-8"
 	options {
 		this as StandardJavadocDocletOptions
 		tags(
@@ -52,15 +55,11 @@ tasks.withType<Javadoc> {
 	}
 }
 
-tasks.named("build") {
-	dependsOn(tasks.jar)
-}
-
 tasks.named("test") {
 	dependsOn(tasks.jar)
 }
 
-configurations.all {
+configurations.configureEach {
 	if (isCanBeResolved) {
 		attributes {
 			attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 25)

@@ -35,10 +35,6 @@ shadow {
 	addShadowVariantIntoJavaComponent = false
 }
 
-tasks.named("build") {
-	dependsOn(tasks.shadowJar)
-}
-
 tasks.withType<Jar> {
 	archiveClassifier = "thin"
 }
