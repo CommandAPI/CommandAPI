@@ -40,9 +40,11 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.Identifier;
+import org.bukkit.block.data.BlockData;
 
 import java.util.Optional;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -55,8 +57,10 @@ public class NMS_26_3 extends NMS_26_Common {
 
 	private final BiFunction<ItemInput, HolderLookup.Provider, String> serializeComponents;
 
-	public NMS_26_3(Supplier<CommandBuildContext> commandBuildContext, BiFunction<ItemInput, HolderLookup.Provider, String> serializeComponents) {
-		super(commandBuildContext);
+	public NMS_26_3(Supplier<CommandBuildContext> commandBuildContext, BiFunction<ItemInput, HolderLookup.Provider, String> serializeComponents,
+		Function<net.minecraft.world.item.ItemStack, org.bukkit.inventory.ItemStack> itemStackToBukkit,
+		Function<net.minecraft.world.level.block.state.BlockState, BlockData> blockStateToBukkit) {
+		super(commandBuildContext, itemStackToBukkit, blockStateToBukkit);
 		this.serializeComponents = serializeComponents;
 	}
 

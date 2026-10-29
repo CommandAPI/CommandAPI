@@ -1,7 +1,6 @@
 package dev.jorel.commandapi.test.arguments;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import org.bukkit.Keyed;
 import org.bukkit.Material;
@@ -12,10 +11,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import be.seeseemelk.mockbukkit.entity.PlayerMock;
+import org.mockbukkit.mockbukkit.entity.PlayerMock;
 import dev.jorel.commandapi.CommandAPICommand;
-import dev.jorel.commandapi.CommandAPIVersionHandler;
-import dev.jorel.commandapi.MCVersion;
 import dev.jorel.commandapi.arguments.RecipeArgument;
 import dev.jorel.commandapi.test.MockPlatform;
 import dev.jorel.commandapi.test.Mut;
@@ -40,21 +37,12 @@ class ArgumentRecipeTests extends TestBase {
 		super.tearDown();
 	}
 
-	private void assumeBukkitRecipesWork() {
-		// MockBukkit 3.93.2's paper-api has an ItemStack#isEmpty that reads fields Spigot's CraftItemStack doesn't set,
-		//  so on Spigot 1.20.5 every recipe result looks empty and converting recipes to Bukkit recipes fails
-		assumeTrue(CommandAPIVersionHandler.IS_PAPER || version.lessThan(MCVersion.V1_20_5),
-			"Bukkit recipes can't be created on Spigot 1.20.5 with paper-api's ItemStack");
-	}
-
 	/*********
 	 * Tests *
 	 *********/
 
 	@Test
 	void executionTestWithRecipeArgument() {
-		assumeBukkitRecipesWork();
-
 		Mut<Recipe> results = Mut.of();
 
 		new CommandAPICommand("test")
@@ -78,8 +66,6 @@ class ArgumentRecipeTests extends TestBase {
 
 	@Test
 	void executionTestWithRecipeArgumentKeyed() {
-		assumeBukkitRecipesWork();
-
 		Mut<Keyed> results = Mut.of();
 
 		new CommandAPICommand("test")
@@ -91,26 +77,10 @@ class ArgumentRecipeTests extends TestBase {
 
 		PlayerMock player = server.addPlayer();
 
-		for (NamespacedKey str : MockPlatform.getInstance().getAllRecipes()) {
-			if (version.greaterThanOrEqualTo(MCVersion.V1_20_5)) {
-				// Note that this will fail in 1.20.5 for certain items such as wolf armour
-				// because we're currently (as of 24th April 2024) running against 1.20.1.
-				// This isn't really important or anything, but it's better to test SOME
-				// things rather than skip this entire test altogether.
-				try {
-					server.dispatchCommand(player, "test " + str.toString());
-					assertEquals(str, results.get().getKey());
-				} catch(NullPointerException e) {
-					assertEquals("Cannot invoke \"org.bukkit.Material.isLegacy()\" because \"this.type\" is null", e.getMessage());
-					System.err.println("Error in testing " + str + " recipe: (Null recipe)");
-				} catch(IllegalArgumentException e) {
-					assertEquals("Cannot have null choice", e.getMessage());
-					System.err.println("Error in testing " + str + " recipe: (Null choice)");
-				}
-			} else {
-				server.dispatchCommand(player, "test " + str.toString());
-				assertEquals(str, results.get().getKey());
-			}
+		// Minecraft doesn't accept special recipes, like banner duplication
+		for (NamespacedKey str : MockPlatform.getInstance().getNonSpecialRecipes()) {
+			server.dispatchCommand(player, "test " + str.toString());
+			assertEquals(str, results.get().getKey());
 		}
 
 		assertNoMoreResults(results);

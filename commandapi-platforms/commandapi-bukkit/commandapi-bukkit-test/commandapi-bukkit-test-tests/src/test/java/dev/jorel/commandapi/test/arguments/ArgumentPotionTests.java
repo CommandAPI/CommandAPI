@@ -1,7 +1,6 @@
 package dev.jorel.commandapi.test.arguments;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.util.Arrays;
 
@@ -12,9 +11,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import be.seeseemelk.mockbukkit.entity.PlayerMock;
+import org.mockbukkit.mockbukkit.entity.PlayerMock;
 import dev.jorel.commandapi.CommandAPICommand;
-import dev.jorel.commandapi.MCVersion;
 import dev.jorel.commandapi.arguments.PotionEffectArgument;
 import dev.jorel.commandapi.test.MockPlatform;
 import dev.jorel.commandapi.test.Mut;
@@ -32,8 +30,6 @@ class ArgumentPotionTests extends TestBase {
 	@BeforeEach
 	public void setUp() {
 		super.setUp();
-
-		assumeTrue(version.lessThan(MCVersion.V1_20_3));
 	}
 
 	@AfterEach
@@ -68,11 +64,7 @@ class ArgumentPotionTests extends TestBase {
 
 		// /test bukkit:speed
 		// Unknown effect, bukkit:speed is not a valid potion effect
-		if (version.greaterThanOrEqualTo(MCVersion.V1_19_4)) {
-			assertCommandFailsWith(player, "test bukkit:speed", "Can't find element 'bukkit:speed' of type 'minecraft:mob_effect'");
-		} else {
-			assertCommandFailsWith(player, "test bukkit:speed", "Unknown effect: bukkit:speed");
-		}
+		assertCommandFailsWith(player, "test bukkit:speed", "Can't find element 'bukkit:speed' of type 'minecraft:mob_effect' at position 17: ...kkit:speed<--[HERE]");
 
 		assertNoMoreResults(results);
 	}
@@ -118,8 +110,8 @@ class ArgumentPotionTests extends TestBase {
 		assertEquals(NamespacedKey.minecraft("speed"), results.get());
 
 		// Only existing potion effects can be given, like the PotionEffectType variant
-		assertCommandFailsWith(player, "test unknowneffect", "Can't find element 'minecraft:unknowneffect' of type 'minecraft:mob_effect'");
-		assertCommandFailsWith(player, "test custom:unknowneffect", "Can't find element 'custom:unknowneffect' of type 'minecraft:mob_effect'");
+		assertCommandFailsWith(player, "test unknowneffect", "Can't find element 'minecraft:unknowneffect' of type 'minecraft:mob_effect' at position 18: ...nowneffect<--[HERE]");
+		assertCommandFailsWith(player, "test custom:unknowneffect", "Can't find element 'custom:unknowneffect' of type 'minecraft:mob_effect' at position 25: ...nowneffect<--[HERE]");
 
 		assertNoMoreResults(results);
 	}

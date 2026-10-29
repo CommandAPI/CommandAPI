@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 
-import be.seeseemelk.mockbukkit.plugin.PluginManagerMock;
+import org.mockbukkit.mockbukkit.plugin.PluginManagerMock;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
@@ -20,6 +20,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.defaults.VersionCommand;
 import org.bukkit.inventory.ItemFactory;
 import org.bukkit.loot.LootTable;
 import org.bukkit.plugin.messaging.Messenger;
@@ -35,9 +36,9 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
 
-import be.seeseemelk.mockbukkit.ServerMock;
-import be.seeseemelk.mockbukkit.WorldMock;
-import be.seeseemelk.mockbukkit.entity.PlayerMock;
+import org.mockbukkit.mockbukkit.ServerMock;
+import org.mockbukkit.mockbukkit.world.WorldMock;
+import org.mockbukkit.mockbukkit.entity.PlayerMock;
 import dev.jorel.commandapi.Brigadier;
 import org.mockito.Mockito;
 
@@ -49,6 +50,10 @@ public class CommandAPIServerMock extends ServerMock {
 		Mockito.doNothing().when(pluginManagerSpy).unsubscribeFromDefaultPerms(isA(Boolean.class), isA(Permissible.class));
 		Mockito.doNothing().when(pluginManagerSpy).subscribeToDefaultPerms(isA(Boolean.class), isA(Permissible.class));
 		MockPlatform.setField(ServerMock.class, "pluginManager", this, pluginManagerSpy);
+
+		// Real servers always have Bukkit's /version command. MockBukkit 4 creates its command map with the
+		//  constructor that doesn't register Bukkit's default commands.
+		getCommandMap().register("bukkit", new VersionCommand("version"));
 	}
 
 	@SuppressWarnings("unchecked")

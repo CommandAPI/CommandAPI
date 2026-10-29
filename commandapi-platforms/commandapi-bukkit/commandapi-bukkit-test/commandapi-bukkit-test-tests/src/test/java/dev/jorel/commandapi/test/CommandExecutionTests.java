@@ -19,8 +19,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 
-import be.seeseemelk.mockbukkit.command.ConsoleCommandSenderMock;
-import be.seeseemelk.mockbukkit.entity.SimpleEntityMock;
+import org.mockbukkit.mockbukkit.command.ConsoleCommandSenderMock;
+import org.mockbukkit.mockbukkit.entity.SimpleEntityMock;
 import dev.jorel.commandapi.BukkitExecutable;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.executors.ExecutorType;

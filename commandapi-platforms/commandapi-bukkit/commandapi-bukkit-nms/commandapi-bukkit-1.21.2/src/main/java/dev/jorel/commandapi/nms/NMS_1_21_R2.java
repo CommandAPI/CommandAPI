@@ -684,7 +684,7 @@ public class NMS_1_21_R2 extends NMS_Common {
 	@Override
 	public final <T extends Recipe> T getRecipe(CommandContext<CommandSourceStack> cmdCtx, String key, BiFunction<NamespacedKey, Recipe, T> result) throws CommandSyntaxException {
 		RecipeHolder<?> recipe = ResourceKeyArgument.getRecipe(cmdCtx, key);
-		return result.apply(fromResourceLocation(recipe.id().registry()), recipe.toBukkitRecipe());
+		return result.apply(fromResourceLocation(recipe.id().location()), recipe.toBukkitRecipe());
 	}
 
 	@Override

@@ -1,6 +1,6 @@
 package dev.jorel.commandapi.test;
 
-import be.seeseemelk.mockbukkit.entity.PlayerMock;
+import org.mockbukkit.mockbukkit.entity.PlayerMock;
 import dev.jorel.commandapi.CommandAPIBukkit;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.Platform;
@@ -71,7 +71,7 @@ class PaperPlatformTests extends TestBase {
 		assertEquals("hello", name.get());
 		assertEquals(5, amount.get());
 
-		assertCommandFailsWith(player, "test hello 11", "Integer must not be more than 10, found 11 at position 11: ...est hello <--[HERE]");
+		assertCommandFailsWith(player, "test hello 11", "Integer must not be more than 10: found 11 at position 11: ...est hello <--[HERE]");
 
 		assertNoMoreResults(name);
 		assertNoMoreResults(amount);

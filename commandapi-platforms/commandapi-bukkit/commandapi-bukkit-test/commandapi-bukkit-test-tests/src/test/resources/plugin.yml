@@ -1,8 +1,0 @@
-name: CommandAPITest
-main: dev.jorel.commandapi.test.Main
-version: 0.0.1
-description: A mock Bukkit plugin for CommandAPI testing
-author: Skepter
-website: https://www.jorel.dev/CommandAPI/
-softdepend: [NBTAPI]
-api-version: 1.13

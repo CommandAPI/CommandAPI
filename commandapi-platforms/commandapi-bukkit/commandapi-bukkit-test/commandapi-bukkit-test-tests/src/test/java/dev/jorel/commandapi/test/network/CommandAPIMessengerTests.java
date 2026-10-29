@@ -1,6 +1,6 @@
 package dev.jorel.commandapi.test.network;
 
-import be.seeseemelk.mockbukkit.entity.PlayerMock;
+import org.mockbukkit.mockbukkit.entity.PlayerMock;
 import dev.jorel.commandapi.exceptions.ProtocolVersionTooOldException;
 import dev.jorel.commandapi.network.BukkitPacketHandlerProvider;
 import dev.jorel.commandapi.network.CommandAPIPacket;

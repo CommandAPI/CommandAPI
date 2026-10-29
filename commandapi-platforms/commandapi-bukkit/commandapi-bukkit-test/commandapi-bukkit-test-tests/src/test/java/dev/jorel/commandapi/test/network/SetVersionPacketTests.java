@@ -1,6 +1,6 @@
 package dev.jorel.commandapi.test.network;
 
-import be.seeseemelk.mockbukkit.entity.PlayerMock;
+import org.mockbukkit.mockbukkit.entity.PlayerMock;
 import dev.jorel.commandapi.CommandAPIBukkit;
 import dev.jorel.commandapi.network.packets.SetVersionPacket;
 import org.bukkit.entity.Player;

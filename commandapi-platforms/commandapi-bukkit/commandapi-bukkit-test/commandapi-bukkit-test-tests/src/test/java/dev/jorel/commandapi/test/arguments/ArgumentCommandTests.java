@@ -11,7 +11,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import be.seeseemelk.mockbukkit.entity.PlayerMock;
+import org.mockbukkit.mockbukkit.entity.PlayerMock;
 import dev.jorel.commandapi.CommandAPIBukkit;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.ArgumentSuggestions;
@@ -107,11 +107,11 @@ class ArgumentCommandTests extends TestBase {
 
 		// /restrictedcommand data APlayer diamond
 		// Illegal command, "data" is not in the list of restricted commands
-		assertCommandFailsWith(player, "restrictedcommand data APlayer diamond", "Unknown or incomplete command, see below for error at position 0: <--[HERE]");
+		assertCommandFailsWith(player, "restrictedcommand data APlayer diamond", "Unknown or incomplete command. See below for error at position 0: <--[HERE]");
 		
 		// /restrictedcommand notacommand APlayer diamond
 		// Unknown command "notacommand"
-		assertCommandFailsWith(player, "restrictedcommand notacommand APlayer diamond", "Unknown or incomplete command, see below for error at position 0: <--[HERE]");
+		assertCommandFailsWith(player, "restrictedcommand notacommand APlayer diamond", "Unknown or incomplete command. See below for error at position 0: <--[HERE]");
 		
 		// /restrictedcommand give CPlayer diamond
 		// Incorrect argument "CPlayer" is not a valid player
@@ -201,11 +201,11 @@ class ArgumentCommandTests extends TestBase {
 
 		// /multiplecommands data get entity APlayer
 		// Illegal command, "data" is not in the list of restricted commands
-		assertCommandFailsWith(player, "multiplecommands data get entity APlayer", "Unknown or incomplete command, see below for error at position 0: <--[HERE]");
+		assertCommandFailsWith(player, "multiplecommands data get entity APlayer", "Unknown or incomplete command. See below for error at position 0: <--[HERE]");
 
 		// /multiplecommands notacommand APlayer diamond
 		// Unknown command "notacommand"
-		assertCommandFailsWith(player, "multiplecommands notacommand APlayer diamond", "Unknown or incomplete command, see below for error at position 0: <--[HERE]");
+		assertCommandFailsWith(player, "multiplecommands notacommand APlayer diamond", "Unknown or incomplete command. See below for error at position 0: <--[HERE]");
 
 		// /multiplecommands give CPlayer diamond
 		// Incorrect argument "CPlayer" is not a valid player

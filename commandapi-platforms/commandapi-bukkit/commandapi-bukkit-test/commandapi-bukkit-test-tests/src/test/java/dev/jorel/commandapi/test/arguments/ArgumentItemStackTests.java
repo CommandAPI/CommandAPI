@@ -15,12 +15,12 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import be.seeseemelk.mockbukkit.entity.PlayerMock;
+import org.mockbukkit.mockbukkit.entity.PlayerMock;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.ItemStackArgument;
 import dev.jorel.commandapi.test.MockPlatform;
@@ -30,7 +30,6 @@ import dev.jorel.commandapi.test.TestBase;
 /**
  * Tests for the {@link ItemStackArgument}
  */
-@Disabled("Disabled due to MockBukkit 1.20 issue. See https://github.com/MockBukkit/MockBukkit/issues/862 for more information")
 class ArgumentItemStackTests extends TestBase {
 
 	/*********
@@ -70,48 +69,38 @@ class ArgumentItemStackTests extends TestBase {
 		
 		// Dev note: We're no longer using assertEquals on the ItemStack
 		// object here because these itemstacks will now have ItemMeta
-		// which has a reference to the NBT Compound Tag which we can't
+		// which has a reference to the item's components which we can't
 		// perform equals against.
 		
 		// Dev note: To make these tests work, we have to overwrite MockBukkit's
 		// ItemFactory with our own, see CommandAPIServerMock#getItemFactory()
 		
-		// NBT examples from https://minecraft.wiki/w/Tutorials/Command_NBT_tags#Items
+		// Since 1.20.5, items are given components instead of NBT, see https://minecraft.wiki/w/Data_component_format
 		
-		// /test minecraft:stone{Count:3b}
+		// /test minecraft:diamond_sword[enchantments={"minecraft:sharpness":1}]
 		{
-			server.dispatchCommand(player, "test minecraft:stone{Count:3b}");
-			ItemStack actual = results.get();
-			assertEquals(Material.STONE, actual.getType());
-			assertEquals(3, actual.getAmount());
-		}
-		
-		// /test minecraft:diamond_sword{Enchantments:[{id:"minecraft:sharpness",lvl:1s}]}
-		{
-			server.dispatchCommand(player, "test minecraft:diamond_sword{Enchantments:[{id:\"minecraft:sharpness\",lvl:1s}]}");
+			server.dispatchCommand(player, "test minecraft:diamond_sword[enchantments={\"minecraft:sharpness\":1}]");
 			ItemStack actual = results.get();
 			assertEquals(Material.DIAMOND_SWORD, actual.getType());
 			assertEquals(1, actual.getAmount());
 			assertEquals(1, actual.getEnchantmentLevel(Enchantment.getByKey(org.bukkit.NamespacedKey.minecraft("sharpness"))));
 		}
 		
-		// The example on the MinecraftWiki is wrong!
-		// The MinecraftWiki has this:  {display:{Name:'{"text":"Tunic of Destiny","color":"blue",...}',Lore:['{"text":"A magical blue tunic"}','{"text":"worn by the gods..."}',color:3949738]}}
-		// The actual (correct) NBT is: {display:{Name:'{"text":"Tunic of Destiny","color":"blue"}',Lore:['{"text":"A magical blue tunic"}','{"text":"worn by the gods..."}'],color:3949738}}
-		// /test minecraft:leather_chestplate{display:{Name:'{"text":"Tunic of Destiny","color":"blue"}',Lore:['{"text":"A magical blue tunic"}','{"text":"worn by the gods..."}'],color:3949738}}
+		// /test minecraft:leather_chestplate[custom_name={text:"Tunic of Destiny",color:"blue"},lore=[{text:"A magical blue tunic"},{text:"worn by the gods..."}],dyed_color=3949738]
 		{
-			server.dispatchCommand(player, "test minecraft:leather_chestplate{display:{Name:'{\"text\":\"Tunic of Destiny\",\"color\":\"blue\"}',Lore:['{\"text\":\"A magical blue tunic\"}','{\"text\":\"worn by the gods...\"}'],color:3949738}}");
+			server.dispatchCommand(player, "test minecraft:leather_chestplate[custom_name={text:\"Tunic of Destiny\",color:\"blue\"},lore=[{text:\"A magical blue tunic\"},{text:\"worn by the gods...\"}],dyed_color=3949738]");
 			ItemStack actual = results.get();
 			ItemMeta actualMeta = actual.getItemMeta();
 			assertEquals(Material.LEATHER_CHESTPLATE, actual.getType());
 			assertEquals(1, actual.getAmount());
 			assertEquals(ChatColor.BLUE + "Tunic of Destiny", actualMeta.getDisplayName());
 			assertEquals(List.of("A magical blue tunic", "worn by the gods..."), actualMeta.getLore());
+			assertEquals(Color.fromRGB(3949738), ((LeatherArmorMeta) actualMeta).getColor());
 		}
 		
-		// /test minecraft:diamond_pickaxe{HideFlags:15}
+		// /test minecraft:diamond_pickaxe[tooltip_display={hidden_components:["enchantments","attribute_modifiers","unbreakable","can_break"]}]
 		{
-			server.dispatchCommand(player, "test minecraft:diamond_pickaxe{HideFlags:15}");
+			server.dispatchCommand(player, "test minecraft:diamond_pickaxe[tooltip_display={hidden_components:[\"enchantments\",\"attribute_modifiers\",\"unbreakable\",\"can_break\"]}]");
 			ItemStack actual = results.get();
 			assertEquals(Material.DIAMOND_PICKAXE, actual.getType());
 			assertEquals(1, actual.getAmount());
@@ -121,9 +110,9 @@ class ArgumentItemStackTests extends TestBase {
 			assertTrue(actual.getItemMeta().hasItemFlag(ItemFlag.HIDE_DESTROYS));
 		}
 
-		// /test firework_rocket{Fireworks:{Explosions:[{Type:3b,Flicker:1b,Colors:[I;4312372],FadeColors:[I;11743532]}],Flight:1b}}
+		// /test firework_rocket[fireworks={explosions:[{shape:"creeper",has_twinkle:true,colors:[I;4312372],fade_colors:[I;11743532]}],flight_duration:1}]
 		{
-			server.dispatchCommand(player, "test firework_rocket{Fireworks:{Explosions:[{Type:3b,Flicker:1b,Colors:[I;4312372],FadeColors:[I;11743532]}],Flight:1b}}");
+			server.dispatchCommand(player, "test firework_rocket[fireworks={explosions:[{shape:\"creeper\",has_twinkle:true,colors:[I;4312372],fade_colors:[I;11743532]}],flight_duration:1}]");
 			ItemStack actual = results.get();
 			ItemMeta actualMeta = actual.getItemMeta();
 			assertEquals(Material.FIREWORK_ROCKET, actual.getType());
@@ -143,9 +132,9 @@ class ArgumentItemStackTests extends TestBase {
 		// Fails because "item_that_doesnt_exist" isn't a valid item
 		assertCommandFailsWith(player, "test item_that_doesnt_exist", "Unknown item 'minecraft:item_that_doesnt_exist' at position 5: test <--[HERE]");
 		
-		// /test dirt{invalid_nbt}
-		// Fails because "{invalid_nbt}" isn't valid NBT
-		assertCommandFailsWith(player, "test dirt{invalid_nbt}", "Expected ':' at position 21: ...nvalid_nbt<--[HERE]");
+		// /test dirt[invalid_component]
+		// Fails because "invalid_component" isn't a component
+		assertCommandFailsWith(player, "test dirt[invalid_component]", "Unknown item component 'minecraft:invalid_component' at position 10: test dirt[<--[HERE]");
 
 		assertNoMoreResults(results);
 	}
@@ -173,16 +162,18 @@ class ArgumentItemStackTests extends TestBase {
 		assertEquals(MockPlatform.getInstance().getAllItemNames().stream().filter(s -> s.contains(":a") || s.contains("_a")).toList(), server.getSuggestions(player, "test a"));
 		
 		// test dirt
-		// Completed item names should suggest open brackets
-		assertEquals(List.of("{"), server.getSuggestions(player, "test dirt"));
+		// Completed item names should suggest opening the component list
+		assertEquals(List.of("["), server.getSuggestions(player, "test dirt"));
 		
-		// test dirt{
-		// NBT has no suggestions
-		assertEquals(List.of(), server.getSuggestions(player, "test dirt{"));
+		// test dirt[
+		// Components are suggested, as well as ! to remove one of the item's default components
+		List<String> suggestions = server.getSuggestions(player, "test dirt[");
+		assertEquals("!", suggestions.get(0));
+		assertTrue(suggestions.contains("minecraft:damage="));
 		
-		// test dirt{}
-		// NBT has no suggestions
-		assertEquals(List.of(), server.getSuggestions(player, "test dirt{}"));
+		// test dirt[]
+		// Nothing is suggested after the component list
+		assertEquals(List.of(), server.getSuggestions(player, "test dirt[]"));
 	}
 
 }

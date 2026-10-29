@@ -6,7 +6,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import be.seeseemelk.mockbukkit.entity.PlayerMock;
+import org.mockbukkit.mockbukkit.entity.PlayerMock;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.StringArgument;
 
@@ -49,7 +49,7 @@ class CommandPermissionTests extends TestBase {
 		// Player doesn't have permission //
 
 		// /test
-		assertCommandFailsWith(player, "test", "Unknown or incomplete command, see below for error at position 0: <--[HERE]");
+		assertCommandFailsWith(player, "test", "Unknown or incomplete command. See below for error at position 0: <--[HERE]");
 
 		// Player has permission //
 

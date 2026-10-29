@@ -10,6 +10,8 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.MinecraftServer;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.CraftServer;
+import org.bukkit.craftbukkit.block.data.CraftBlockData;
+import org.bukkit.craftbukkit.inventory.CraftItemStack;
 
 public class PaperNMS_26_1 implements PaperNMS<CommandSourceStack> {
 
@@ -33,7 +35,7 @@ public class PaperNMS_26_1 implements PaperNMS<CommandSourceStack> {
 	@Override
 	public NMS<CommandSourceStack> bukkitNMS() {
 		if (bukkitNMS == null) {
-			this.bukkitNMS = new NMS_26_1(this::getCommandBuildContext);
+			this.bukkitNMS = new NMS_26_1(this::getCommandBuildContext, CraftItemStack::asBukkitCopy, CraftBlockData::createData);
 		}
 		return bukkitNMS;
 	}

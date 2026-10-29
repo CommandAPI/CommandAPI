@@ -10,7 +10,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import be.seeseemelk.mockbukkit.entity.PlayerMock;
+import org.mockbukkit.mockbukkit.entity.PlayerMock;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.StringArgument;
 import dev.jorel.commandapi.exceptions.OptionalArgumentException;
@@ -237,7 +237,7 @@ class OptionalArgumentTests extends TestBase {
 		assertNull(results.get());
 
 		// /test hello
-		assertCommandFailsWith(player, "test hello", "Unknown or incomplete command, see below for error at position 10: test hello<--[HERE]");
+		assertCommandFailsWith(player, "test hello", "Unknown or incomplete command. See below for error at position 10: test hello<--[HERE]");
 
 		// /test hello 5
 		server.dispatchCommand(player, "test hello 5");

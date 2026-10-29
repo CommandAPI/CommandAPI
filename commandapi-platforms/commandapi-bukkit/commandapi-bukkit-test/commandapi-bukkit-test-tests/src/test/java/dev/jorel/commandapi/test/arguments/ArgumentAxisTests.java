@@ -10,9 +10,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import be.seeseemelk.mockbukkit.entity.PlayerMock;
+import org.mockbukkit.mockbukkit.entity.PlayerMock;
 import dev.jorel.commandapi.CommandAPICommand;
-import dev.jorel.commandapi.MCVersion;
 import dev.jorel.commandapi.arguments.AxisArgument;
 import dev.jorel.commandapi.test.Mut;
 import dev.jorel.commandapi.test.TestBase;
@@ -71,11 +70,7 @@ class ArgumentAxisTests extends TestBase {
 		assertEquals(EnumSet.of(Axis.X, Axis.Y, Axis.Z), results.get());
 
 		// /test w
-		if (version.greaterThanOrEqualTo(MCVersion.V1_20_5)) {
-			assertCommandFailsWith(player, "test w", "Invalid swizzle, expected combination of 'x', 'y' and 'z' at position 6: test w<--[HERE]");
-		} else {
-			assertCommandFailsWith(player, "test w", "Invalid swizzle, expected combination of 'x', 'y' and 'z'");
-		}
+		assertCommandFailsWith(player, "test w", "Invalid swizzle: expected combination of 'x', 'y' and 'z' at position 6: test w<--[HERE]");
 
 		assertNoMoreResults(results);
 	}

@@ -13,9 +13,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import be.seeseemelk.mockbukkit.entity.PlayerMock;
+import org.mockbukkit.mockbukkit.entity.PlayerMock;
 import dev.jorel.commandapi.CommandAPICommand;
-import dev.jorel.commandapi.MCVersion;
 import dev.jorel.commandapi.arguments.ItemStackPredicateArgument;
 import dev.jorel.commandapi.test.MockPlatform;
 import dev.jorel.commandapi.test.Mut;
@@ -97,10 +96,8 @@ class ArgumentItemStackPredicateTests extends TestBase {
 		// Identical to the ItemStackArgument tests, except ItemStackPredicates have a slightly
 		// different list of possible values because it can also accept * and tags (starting with #)
 		List<String> itemPredicateNames = new ArrayList<>(MockPlatform.getInstance().getAllItemNames());
-		if (version.greaterThanOrEqualTo(MCVersion.V1_20_5)) {
-			itemPredicateNames.add(0, "#");
-			itemPredicateNames.add(1, "*");
-		}
+		itemPredicateNames.add(0, "#");
+		itemPredicateNames.add(1, "*");
 		
 		// /test
 		// All items should be suggested
@@ -113,32 +110,19 @@ class ArgumentItemStackPredicateTests extends TestBase {
 		
 		// /test dirt
 		// Completed item names should suggest open curly braces (or square brackets in 1.20.5+)
-		if (version.greaterThanOrEqualTo(MCVersion.V1_20_5)) {
-			assertEquals(List.of("["), server.getSuggestions(player, "test dirt"));
-		} else {
-			assertEquals(List.of("{"), server.getSuggestions(player, "test dirt"));
-		}
+		assertEquals(List.of("["), server.getSuggestions(player, "test dirt"));
 		
 		// /test dirt{
 		// /test dirt[ (1.20.5+)
-		if (version.greaterThanOrEqualTo(MCVersion.V1_20_5)) {
-			// Components (and component predicates) are suggested, as well as ! to negate one and ] to close the list
-			List<String> suggestions = server.getSuggestions(player, "test dirt[");
-			assertEquals(List.of("!", "]"), suggestions.subList(0, 2));
-			assertTrue(suggestions.contains("minecraft:damage"));
-		} else {
-			// NBT has no suggestions
-			assertEquals(List.of(), server.getSuggestions(player, "test dirt{"));
-		}
+		// Components (and component predicates) are suggested, as well as ! to negate one and ] to close the list
+		List<String> suggestions = server.getSuggestions(player, "test dirt[");
+		assertEquals(List.of("!", "]"), suggestions.subList(0, 2));
+		assertTrue(suggestions.contains("minecraft:damage"));
 		
 		// /test dirt{}
 		// /test dirt[] (1.20.5+)
 		// Nothing is suggested after the NBT or component list
-		if (version.greaterThanOrEqualTo(MCVersion.V1_20_5)) {
-			assertEquals(List.of(), server.getSuggestions(player, "test dirt[]"));
-		} else {
-			assertEquals(List.of(), server.getSuggestions(player, "test dirt{}"));
-		}
+		assertEquals(List.of(), server.getSuggestions(player, "test dirt[]"));
 	}
 
 }

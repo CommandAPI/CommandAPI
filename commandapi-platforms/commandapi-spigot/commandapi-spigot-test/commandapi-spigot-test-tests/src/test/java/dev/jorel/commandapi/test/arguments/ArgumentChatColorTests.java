@@ -9,9 +9,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import be.seeseemelk.mockbukkit.entity.PlayerMock;
+import org.mockbukkit.mockbukkit.entity.PlayerMock;
 import dev.jorel.commandapi.CommandAPICommand;
-import dev.jorel.commandapi.MCVersion;
 import dev.jorel.commandapi.arguments.ChatColorArgument;
 import dev.jorel.commandapi.test.Mut;
 import dev.jorel.commandapi.test.TestBase;
@@ -77,19 +76,15 @@ class ArgumentChatColorTests extends TestBase {
 		for(ChatColor color : ChatColor.values()) {
 			if(color.isFormat() && !color.equals(ChatColor.RESET)) {
 				String colorName = color.name().toLowerCase();
-				if (version.greaterThanOrEqualTo(MCVersion.V1_20_5)) {
-					final String command = "test " + colorName;
-					final int errorPosition = command.length();
-					final String truncatedCommand;
-					if (command.length() > 10) {
-						truncatedCommand = "..." + command.substring(command.length() - 10, command.length());
-					} else {
-						truncatedCommand = command;
-					}
-					assertCommandFailsWith(player, command, String.format("Unknown color '%s' at position %d: %s<--[HERE]", colorName, errorPosition, truncatedCommand));
+				final String command = "test " + colorName;
+				final int errorPosition = command.length();
+				final String truncatedCommand;
+				if (command.length() > 10) {
+					truncatedCommand = "..." + command.substring(command.length() - 10, command.length());
 				} else {
-					assertCommandFailsWith(player, "test " + colorName, "Unknown color '" + colorName + "'");
+					truncatedCommand = command;
 				}
+				assertCommandFailsWith(player, command, String.format("Unknown color '%s' at position %d: %s<--[HERE]", colorName, errorPosition, truncatedCommand));
 			}
 		}
 
